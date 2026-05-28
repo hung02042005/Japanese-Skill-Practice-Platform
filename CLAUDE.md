@@ -31,8 +31,8 @@
 ### Sơ đồ tổng quan
 
 ```
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                         FRONTEND (ReactJS 18 + TypeScript)                   │
+┌────────────────────────────────────────────────────────────────────────┐
+│                         FRONTEND (ReactJS 18 + TypeScript)             │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
 │  │Dashboard │  │Learning  │  │Testing   │  │AI Module │  │Payment   │  │
 │  │(Student) │  │(Kanji,   │  │(JLPT     │  │(OCR,     │  │(VIP      │  │
@@ -42,10 +42,10 @@
         │             │             │             │             │
         ▼             ▼             ▼             ▼             ▼
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│                       BACKEND (Spring Boot 3.x + Java 21)                     │
+│                       BACKEND (Spring Boot 3.x + Java 21)                    │
 │  ┌────────────────────────────────────────────────────────────────────────┐  │
-│  │  REST API Layer → Service Layer → Repository Layer → Entity          │  │
-│  │  /api/auth  /api/courses  /api/lessons  /api/quizzes  /api/ai/*      │  │
+│  │  REST API Layer → Service Layer → Repository Layer → Entity            │  │
+│  │  /api/auth  /api/courses  /api/lessons  /api/quizzes  /api/ai/*        │  │
 │  └────────────────────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────────────────────┘
                               │
@@ -62,29 +62,29 @@
 ```
 ┌─────────────────────────────────────────┐
 │          Controller Layer               │  @RestController
-│   - Input validation (@Valid)          │  - Handle HTTP requests
+│   - Input validation (@Valid)           │  - Handle HTTP requests
 │   - Response formatting (DTO)           │  - Return ApiResponse<DTO>
 │   - HTTP status codes                   │
 └─────────────────┬───────────────────────┘
                   │
                   ▼
 ┌─────────────────────────────────────────┐
-│           Service Layer                  │  @Service
+│           Service Layer                 │  @Service
 │   - Business logic                      │  - @Transactional HERE
-│   - Authorization (Role + Level)         │  - Audit logging
+│   - Authorization (Role + Level)        │  - Audit logging
 │   - AI orchestration                    │
 └─────────────────┬───────────────────────┘
                   │
                   ▼
 ┌─────────────────────────────────────────┐
-│          Repository Layer                │  @Repository
+│          Repository Layer               │  @Repository
 │   - JPA/Hibernate queries               │  - Spring Data JPA
-│   - Custom JPQL / @Query               │
+│   - Custom JPQL / @Query                │
 └─────────────────┬───────────────────────┘
                   │
                   ▼
 ┌─────────────────────────────────────────┐
-│           Entity Layer                   │  @Entity
+│           Entity Layer                  │  @Entity
 │   - DB table mapping                    │  - JPA annotations
 │   - Soft delete (is_deleted)            │
 └─────────────────────────────────────────┘
@@ -410,8 +410,8 @@ frontend/
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  specify → plan → implement → test → review → deploy     │
-│  Define     Plan     Build       Verify   Review         │
+│  specify → plan → implement → test → review → deploy    │
+│  Define     Plan     Build       Verify   Review        │
 └─────────────────────────────────────────────────────────┘
 ```
 

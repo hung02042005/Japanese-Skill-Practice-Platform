@@ -213,11 +213,11 @@ Trước khi commit, verify:
 ┌─────────────────────────────────────────────────────────┐
 │  Issue                              →    Solution       │
 ├─────────────────────────────────────────────────────────┤
-│  Unclear spec                       →    Ask user      │
-│  Architecture change needed         →    Vote (100%)   │
-│  Emergency (production down)        →    1 approval    │
+│  Unclear spec                       →    Ask user       │
+│  Architecture change needed         →    Vote (100%)    │
+│  Emergency (production down)        →    1 approval     │
 │                                         + Post-mortem   │
-│  AI output suspicious               →    Ask team      │
+│  AI output suspicious               →    Ask team       │
 └─────────────────────────────────────────────────────────┘
 ```
 
