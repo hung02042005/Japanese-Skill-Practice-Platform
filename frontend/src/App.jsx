@@ -1,11 +1,20 @@
-﻿function App() {
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/login/Login';
+import ForgotPassword from './pages/forgot-password/ForgotPassword';
+import ResetPassword from './pages/forgot-password/ResetPassword';
+import Register from './pages/register/Register';
+
+function App() {
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900">JLPT E-Learning Platform</h1>
-        <p className="mt-4 text-lg text-gray-600">React + Vite</p>
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -1,0 +1,60 @@
+/* ===== Register Page ===== */
+.reg-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f5f4;
+  padding: 20px;
+  font-family: Inter, -apple-system, system-ui, 'Segoe UI', Helvetica, sans-serif;
+}
+
+.reg-container {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Reuse .fp-brand, .fp-card, .form-group, .form-label, .form-input,
+   .has-error, .field-error, .alert, .alert-error, .alert-icon,
+   .btn, .btn-primary, .spinner, .btn-loading from ForgotPassword.css */
+
+.reg-success {
+  text-align: center;
+}
+
+.reg-success .btn {
+  display: inline-flex;
+  width: auto;
+  text-decoration: none;
+  margin-top: 8px;
+  padding: 10px 24px;
+}
+
+.reg-success .fp-card-title {
+  margin-top: 16px;
+}
+
+.reg-login-link {
+  text-align: center;
+  font-size: 13px;
+  color: #5d5b54;
+  margin: 20px 0 0;
+}
+
+.reg-login-link a {
+  color: #0075de;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.reg-login-link a:hover {
+  text-decoration: underline;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .reg-page {
+    padding: 16px;
+    background: #ffffff;
+  }
+}
