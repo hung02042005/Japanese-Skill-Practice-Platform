@@ -8,7 +8,7 @@
 **Domain:** E-Learning / Ngôn ngữ học / Luyện thi JLPT
 **Giai đoạn:** Development
 
-> **Tech Stack**: Java 21 + Spring Boot 3.x (Backend) | React 18 + TypeScript (Frontend) | SQL Server
+> **Tech Stack**: Java 21 + Spring Boot 3.x (Backend) | React 18 (Frontend) | SQL Server
 > Xem chi tiết: `CONSTITUTION.md § ĐIỀU 1`
 
 **Mục tiêu chính**: Xây dựng hệ thống học tiếng Nhật hỗ trợ lộ trình từ N5 đến N1 với các tính năng chuyên sâu: Kanji, Kana, Ngữ pháp, Từ vựng, và luyện tập AI (OCR & Speech Recognition); đảm bảo lộ trình học, tính điểm, phân quyền, và trải nghiệm người dùng được thực thi chính xác và có audit trail đầy đủ.
@@ -42,6 +42,31 @@ Entity (JPA)  ──mapping──►  DTO (Request/Response)  ──►  API
 - **MUST** dùng SLF4J Logger — **KHÔNG BAO GIỜ** `System.out.println()` / `console.log()`
 - Log format: `[LEVEL] timestamp [class] message {context}`
 
+### 2.4. Frontend / Backend Separation (BẮT BUỘC)
+
+> ⚠️ Vi phạm nguyên tắc này là lỗi nghiêm trọng — mọi logic quan trọng phải nằm ở backend.
+
+#### Backend chịu trách nhiệm TOÀN BỘ:
+- **Business logic**: tính điểm, kiểm tra điều kiện mở khóa bài, xử lý tiến trình học
+- **Authorization**: kiểm tra Role + Subscription trước khi trả data
+- **Validation**: validate input, business rule (score range, level access, v.v.)
+- **State quan trọng**: thời gian làm bài, kết quả thi, trạng thái subscription
+
+#### Frontend CHỈ được phép:
+- Render/hiển thị data nhận từ API
+- Gọi API và xử lý response (loading, error state)
+- Validation UX cục bộ (format email, required field) — **KHÔNG thay thế** backend validation
+- Quản lý UI state (modal open/close, tab active, v.v.)
+
+#### Cấm tuyệt đối ở Frontend:
+| ❌ Không được | ✅ Thay bằng |
+|--------------|-------------|
+| Tính điểm quiz ở client | Gửi answers lên API, nhận score về |
+| Kiểm tra quyền truy cập bằng JS | Backend trả 403, frontend chỉ handle lỗi |
+| Lưu kết quả thi vào localStorage | Backend lưu DB, frontend chỉ hiển thị |
+| Validate business rule (score range, level) | Backend validate, trả error message |
+| Trust dữ liệu từ client không qua backend | Luôn verify lại ở Service layer |
+
 ---
 
 ## 3. NAMING CONVENTIONS
@@ -64,10 +89,9 @@ Entity (JPA)  ──mapping──►  DTO (Request/Response)  ──►  API
 
 | Loại | Convention | Ví dụ |
 |------|------------|-------|
-| Component | PascalCase + `.tsx` | `KanjiFlashcard.tsx`, `ExamTimer.tsx` |
-| Hook | camelCase + `use` prefix | `useAuth.ts`, `useFlashcard.ts` |
-| Utility | camelCase | `formatDate.ts`, `calculateScore.ts` |
-| Type | PascalCase | `UserType.ts`, `CourseType.ts` |
+| Component | PascalCase + `.jsx` | `KanjiFlashcard.jsx`, `ExamTimer.jsx` |
+| Hook | camelCase + `use` prefix | `useAuth.js`, `useFlashcard.js` |
+| Utility | camelCase | `formatDate.js`, `calculateScore.js` |
 
 ### 3.3. API Routes
 
@@ -113,6 +137,8 @@ Entity (JPA)  ──mapping──►  DTO (Request/Response)  ──►  API
 | 8 | **NEVER** để TODO comments trong code đã merge | Technical debt |
 | 9 | **NEVER** trả Entity/JPA trực tiếp ra API | Information leakage |
 | 10 | **NEVER** bypass validation annotations | Security vulnerability |
+| 11 | **NEVER** đặt business logic (tính điểm, kiểm tra quyền, validate nghiệp vụ) ở Frontend | Frontend là untrusted client |
+| 12 | **NEVER** trust dữ liệu từ client mà không validate lại ở backend | Security vulnerability |
 
 ---
 
@@ -190,15 +216,14 @@ Entity (JPA)  ──mapping──►  DTO (Request/Response)  ──►  API
 | 1 | `is_vip_only = true` chỉ hiển thị khi `user.subscription = VIP` |
 | 2 | Authorization check **CẢ Role VÀ subscription/level** |
 | 3 | Subscription hết hạn check **real-time** — cache tối đa **5 phút** |
-| 4 | Thay đổi subscription phải có audit log + `payment_reference` |
-| 5 | Webhook thanh toán phải implement **idempotency key** |
-| 6 | Admin bắt buộc **2FA (TOTP)** — không bypass |
+| 4 | Thay đổi subscription phải có audit log |
+| 5 | Admin bắt buộc **2FA (TOTP)** — không bypass |
 
 ### 7.4. Luật Soft Delete
 
 | Entity | Soft Delete Method |
 |--------|-------------------|
-| User, Course, Lesson, Quiz, Payment | `is_deleted = true` |
+| User, Course, Lesson, Quiz | `is_deleted = true` |
 | QuizAttempt, LearningActivityLog | `status = INACTIVE/CANCELLED` |
 | Mọi bảng quan trọng | Phải có `created_at`, `updated_at`, `created_by` |
 
@@ -363,53 +388,7 @@ public class OcrService {
 }
 ```
 
-### 8.5. Payment Idempotency Pattern
-
-```java
-@Service
-@RequiredArgsConstructor
-@Slf4j
-public class PaymentService {
-    
-    @Transactional
-    public PaymentResult processWebhook(PaymentWebhookRequest webhook) {
-        String idempotencyKey = webhook.getTransactionId();
-        
-        // Check if already processed
-        Optional<Payment> existing = paymentRepository
-            .findByIdempotencyKey(idempotencyKey);
-        
-        if (existing.isPresent()) {
-            Payment existingPayment = existing.get();
-            log.info("Duplicate webhook detected: {}", idempotencyKey);
-            return PaymentResult.of(existingPayment);
-        }
-        
-        // Process new payment
-        Payment payment = Payment.builder()
-            .user(findUserById(webhook.getUserId()))
-            .amount(webhook.getAmount())
-            .status(mapGatewayStatus(webhook.getStatus()))
-            .idempotencyKey(idempotencyKey)
-            .gatewayReference(webhook.getGatewayRef())
-            .build();
-        
-        payment = paymentRepository.save(payment);
-        
-        // Update subscription
-        if (payment.isSuccess()) {
-            subscriptionService.upgradeToVip(payment.getUser(), payment);
-        }
-        
-        auditLog.log("PAYMENT_SUCCESS", payment.getUser().getId(),
-            Map.of("paymentId", payment.getId(), "amount", payment.getAmount()));
-        
-        return PaymentResult.of(payment);
-    }
-}
-```
-
-### 8.6. Exception Handling Pattern
+### 8.5. Exception Handling Pattern
 
 ```java
 // Custom Exception
@@ -462,7 +441,7 @@ public class GlobalExceptionHandler {
 
 ### 9.2. High-Risk Operations
 
-Trước khi sửa flow điểm số, tiến trình học, thanh toán, xác thực:
+Trước khi sửa flow điểm số, tiến trình học, xác thực:
 - Đọc code liên quan trong `CLAUDE.md`
 - Đọc spec hiện hành
 - Kiểm tra module lân cận
@@ -490,7 +469,6 @@ Trước khi báo cáo hoàn thành task, tự kiểm tra:
 - [ ] Luật điểm số (score >= 0, score <= max_score)
 - [ ] Luật question lock (quiz đã thi không sửa được)
 - [ ] Luật subscription (VIP check)
-- [ ] Luật idempotency (payment webhook)
 
 ### Security & Authorization
 - [ ] Phân quyền theo Role VÀ subscription/level

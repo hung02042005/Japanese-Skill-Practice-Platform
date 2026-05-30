@@ -11,7 +11,7 @@
 | Layer | Công nghệ | Ghi chú |
 |-------|-----------|---------|
 | Backend | Java 21 + Spring Boot 3.x | Maven |
-| Frontend | React 18 + TypeScript | npm |
+| Frontend | React 18 + Tailwind CSS | npm |
 | Database | SQL Server | KHÔNG dùng NoSQL |
 | ORM | Spring Data JPA + Hibernate | |
 | Migration | Flyway / Liquibase | Mọi thay đổi schema BẮT BUỘC có migration |
@@ -48,13 +48,28 @@
 - ❌ **TUYỆT ĐỐI KHÔNG** có TODO comments trong code merge
 - ❌ KHÔNG commit code với `console.log()` / `System.out.println()`
 
-### 2.4. TypeScript/Java Rules
+### 2.4. Java Rules
 
-| Ngôn ngữ | Rule | Enforcement |
-|----------|------|-------------|
-| TypeScript | `noImplicitAny: true` | strict mode |
-| Java | `@Transactional` chỉ ở Service layer | SonarLint rule |
-| Java | `@Valid` trên mọi `@RequestBody` | Review |
+| Rule | Enforcement |
+|------|-------------|
+| `@Transactional` chỉ ở Service layer | SonarLint rule |
+| `@Valid` trên mọi `@RequestBody` | Review |
+
+### 2.5. Frontend / Backend Separation (BẮT BUỘC)
+
+> ⚠️ Vi phạm nguyên tắc này là lỗi **NGHIÊM TRỌNG** — mọi business logic phải nằm ở backend.
+
+| Trách nhiệm | Backend | Frontend |
+|-------------|---------|----------|
+| Business logic (tính điểm, mở khóa bài) | ✅ BẮT BUỘC | ❌ CẤM |
+| Authorization (Role + Subscription check) | ✅ BẮT BUỘC | ❌ CẤM |
+| Validation nghiệp vụ (score range, level) | ✅ BẮT BUỘC | ❌ CẤM |
+| State quan trọng (kết quả thi, subscription) | ✅ BẮT BUỘC | ❌ CẤM |
+| Render/hiển thị data nhận từ API | N/A | ✅ |
+| UI state (modal, tab, loading/error) | N/A | ✅ |
+| UX validation (format email, required) | N/A | ✅ (không thay thế backend) |
+
+> 📖 Chi tiết + bảng cấm cụ thể: `AGENTS.md §2.4`
 
 ---
 
@@ -74,7 +89,7 @@
 |------|---------------|
 | Secrets management | Chỉ trong `.env` — **KHÔNG** commit lên source |
 | SQL Injection | Chỉ JPA/Hibernate parameterized queries — **ZERO TOLERANCE** |
-| Input validation | Jakarta Bean Validation (Backend) / Zod (Frontend) |
+| Input validation | Jakarta Bean Validation (Backend) / HTML5 + custom hook UX (Frontend) |
 
 ### 3.3. File Upload
 
@@ -101,7 +116,7 @@ origins = ["*"]  // TUYỆT ĐỐI KHÔNG
 
 ```
 feat/[name]     → Tính năng mới (VD: feat/kanji-ocr)
-fix/[name]      → Sửa lỗi (VD: fix/payment-webhook)
+fix/[name]      → Sửa lỗi (VD: fix/quiz-score-bug)
 chore/[name]    → Maintenance (VD: chore/update-deps)
 spec/[name]     → Viết spec (VD: spec/quiz-module)
 ```
@@ -116,7 +131,7 @@ Max: 72 ký tự
 
 Ví dụ:
 feat(auth): add JWT login with 2FA for admin
-fix(payment): prevent duplicate VIP upgrade on webhook
+fix(quiz): prevent duplicate attempt on submit
 test(quiz): add unit test for score calculation
 ```
 
@@ -173,10 +188,10 @@ test(quiz): add unit test for score calculation
 
 ### 6.1. Pre-work Checklist
 
-- [ ] Đọc `AGENTS.md` → Project context, Domain Rules
-- [ ] Đọc `CONSTITUTION.md` → Tech stack, Security, Standards
-- [ ] Đọc `CLAUDE.md` → Architecture, ADR, Anti-patterns
-- [ ] Đọc Use Cases (`/docs/use-cases/`) → Business logic
+- [ ] Đọc `CONSTITUTION.md` → Tech stack, Security, Code Standards
+- [ ] Đọc `CLAUDE.md` → Architecture, ADR, Lessons Learned, Anti-patterns
+- [ ] Đọc `AGENTS.md` → Domain Rules, Forbidden Patterns, Golden Patterns
+- [ ] Đọc Use Cases (`/docs/use-cases/`) → Business logic theo vai trò
 
 ### 6.2. Human Oversight Rules
 
@@ -236,7 +251,6 @@ Trước khi commit, verify:
 | Check | Tool | Action |
 |-------|------|--------|
 | Lint (0 warnings) | ESLint / Spotless | CI fail |
-| Type check | TypeScript strict | CI fail |
 | Coverage >= 80% | JaCoCo / Jest | CI fail |
 | Security scan | Snyk / OWASP | CI fail |
 | Secret detection | GitLeaks | CI fail |
@@ -247,7 +261,7 @@ Trước khi commit, verify:
 |-------|-----|------|
 | Code review | Team member | Every PR |
 | Spec review | Team lead | Before coding |
-| Security review | Tech lead | VIP/Payment features |
+| Security review | Tech lead | VIP/Subscription features |
 
 ---
 
@@ -260,7 +274,6 @@ frontend/
 ├── .prettierrc           # Code formatter
 ├── .eslintrc.json        # Linting rules
 ├── .eslintignore         # Ignore patterns
-├── tsconfig.json         # TypeScript strict mode
 └── tailwind.config.js    # Tailwind CSS config
 ```
 
@@ -281,7 +294,7 @@ backend/
 # .env (KHÔNG commit lên git)
 DATABASE_URL=
 JWT_SECRET=
-STRIPE_API_KEY=
+AI_API_KEY=
 ```
 
 ---
@@ -292,3 +305,4 @@ STRIPE_API_KEY=
 |---------|------|--------|---------|
 | 1.0 | [DATE] | [TEAM] | Initial |
 | 2.0 | 2026-05-27 | Architect | Consolidated, added enforcement |
+| 2.1 | 2026-05-30 | Dev Team | Bỏ TypeScript & Payment; thêm §2.5 Frontend/Backend Separation; đồng bộ AGENTS.md |

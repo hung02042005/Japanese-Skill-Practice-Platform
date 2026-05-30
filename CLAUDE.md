@@ -14,7 +14,7 @@
 - **E-learning luyện thi JLPT** tích hợp AI (N5 → N1)
 - **3 Roles**: Student, Staff, Admin
 - **AI Modules**: OCR (Kanji) + Speech Recognition (Shadowing)
-- **Payment**: VIP subscription qua gateway
+- **Subscription**: VIP subscription management
 
 ### Key Rules
 - ✅ DTO Pattern bắt buộc
@@ -32,15 +32,15 @@
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                         FRONTEND (ReactJS 18 + TypeScript)             │
+│                         FRONTEND (ReactJS 18)                          │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
-│  │Dashboard │  │Learning  │  │Testing   │  │AI Module │  │Payment   │  │
-│  │(Student) │  │(Kanji,   │  │(JLPT     │  │(OCR,     │  │(VIP      │  │
-│  │          │  │Vocab)    │  │Mock Exam)│  │Speech)   │  │Upgrade)  │  │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘  │
-└───────┼─────────────┼─────────────┼─────────────┼─────────────┼────────┘
-        │             │             │             │             │
-        ▼             ▼             ▼             ▼             ▼
+│  │Dashboard │  │Learning  │  │Testing   │  │AI Module │             │
+│  │(Student) │  │(Kanji,   │  │(JLPT     │  │(OCR,     │             │
+│  │          │  │Vocab)    │  │Mock Exam)│  │Speech)   │             │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘             │
+└───────┼─────────────┼─────────────┼─────────────┼─────────────────────┘
+        │             │             │             │
+        ▼             ▼             ▼             ▼
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                       BACKEND (Spring Boot 3.x + Java 21)                    │
 │  ┌────────────────────────────────────────────────────────────────────────┐  │
@@ -119,13 +119,6 @@
 └── Speech - Shadowing transcription
 ```
 
-### Payment Module
-```
-├── VIP upgrade (packages)
-├── Payment gateway (VNPay/Stripe)
-└── Transaction history
-```
-
 ---
 
 ## FLOWS
@@ -151,18 +144,6 @@ Student → Upload image
        → Returns { jobId, status: PENDING }
        → Poll GET /api/ai/ocr/{jobId}
        → When ready: { similarity, result }
-```
-
-### VIP Payment Flow
-
-```
-Student → Select package
-       → POST /api/payment/initiate
-       → Gateway redirect
-       → Webhook /api/payment/webhook
-           ├── Check idempotency_key
-           ├── Process (or skip if duplicate)
-           └── Update subscription
 ```
 
 ---
@@ -256,11 +237,6 @@ Student → Select package
 
 ---
 
-### LESSON-004: Payment phải Idempotent
-**Sai lầm**: Webhook retry → duplicate VIP upgrade
-**Giải pháp**: Idempotency key + full logging
-**Áp dụng**: PaymentService, webhook handler
-
 ---
 
 ### LESSON-005: Quiz câu hỏi phải Lock
@@ -323,13 +299,16 @@ Student → Select package
 
 | Anti-Pattern | Tránh bằng cách |
 |--------------|-----------------|
-| **Prop Drilling** | Context hoặc Zustand store |
+| **Prop Drilling** | Context hoặc React Context |
 | **Memory Leaks** | Cleanup trong `useEffect` return |
 | **God Component** | Tách sub-components nhỏ |
 | **Inline Functions in JSX** | Định nghĩa ngoài JSX, `useCallback` nếu cần |
 | **Mixed Role UI** | Tách page/component theo role |
 | **Direct API in Component** | Tách vào `services/` folder |
 | **No Loading/Error State** | Luôn có `isLoading`, `error` |
+| **Business Logic in Frontend** | Mọi tính toán nghiệp vụ phải ở backend Service layer (xem `AGENTS.md §2.4`) |
+| **Client-trusted Data** | KHÔNG tin giá trị client gửi lên — backend phải validate lại toàn bộ |
+| **Authorization by UI hide** | Ẩn UI chỉ là UX — backend phải trả 403/401 khi không có quyền |
 
 ---
 
@@ -373,7 +352,6 @@ backend/
 │   │   ├── AuthService.java
 │   │   ├── UserService.java
 │   │   ├── QuizService.java
-│   │   ├── PaymentService.java
 │   │   └── OcrService.java
 │   ├── repository/          # Spring Data JPA
 │   ├── entity/              # JPA Entities
@@ -398,8 +376,7 @@ frontend/
 │   ├── pages/               # Pages (PascalCase, nhóm theo role)
 │   ├── hooks/               # Custom Hooks (camelCase)
 │   ├── services/            # API calls
-│   ├── stores/              # State (Zustand/Redux)
-│   ├── types/               # TypeScript types
+│   ├── context/             # State (React Context)
 │   └── utils/               # Utilities
 └── public/
 ```
@@ -449,8 +426,6 @@ FlashCard (jlpt_level)
 └── UserFlashcardProgress (Spaced Repetition)
 
 ExamAttempt (student_id, exam_id, score, timestamps)
-
-Payment (user_id, amount, status, idempotency_key)
 ```
 
 ---
@@ -466,8 +441,8 @@ Payment (user_id, amount, status, idempotency_key)
 | Java Constant | UPPER_SNAKE_CASE |
 | DB Table/Column | snake_case |
 | API Path | kebab-case, plural |
-| React Component | PascalCase.tsx |
-| React Hook | camelCase.ts |
+| React Component | PascalCase.jsx |
+| React Hook | camelCase.js |
 
 ---
 
