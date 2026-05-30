@@ -1,12 +1,17 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { forgotPasswordThunk, clearError } from '../../store/slices/authSlice';
 import './ForgotPassword.css';
 
 function ForgotPassword() {
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { status, error } = useAppSelector((state) => state.auth);
+
   const [email, setEmail] = useState('');
   const [fieldError, setFieldError] = useState(null);
   const [isSent, setIsSent] = useState(false);
+
+  const isLoading = status === 'loading';
 
   function validate() {
     if (!email.trim()) { setFieldError('Vui lòng nhập email'); return false; }
@@ -15,9 +20,21 @@ function ForgotPassword() {
     return true;
   }
 
-  function handleSubmit(e) {
+  function handleEmailChange(e) {
+    setEmail(e.target.value);
+    if (fieldError) setFieldError(null);
+    if (error) dispatch(clearError());
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (validate()) setIsSent(true);
+    if (!validate()) return;
+    try {
+      await dispatch(forgotPasswordThunk({ email })).unwrap();
+      setIsSent(true);
+    } catch {
+      // lỗi API đã được set vào Redux state
+    }
   }
 
   if (isSent) {
@@ -42,7 +59,9 @@ function ForgotPassword() {
             </p>
             <p className="fp-card-hint">
               Không nhận được email?{' '}
-              <button className="link-btn" onClick={() => setIsSent(false)}>Gửi lại</button>
+              <button className="link-btn" onClick={() => { setIsSent(false); dispatch(clearError()); }}>
+                Gửi lại
+              </button>
             </p>
             <a className="fp-back-link" href="/login">Quay lại đăng nhập</a>
           </div>
@@ -64,6 +83,8 @@ function ForgotPassword() {
             Nhập email đã đăng ký, chúng tôi sẽ gửi link đặt lại mật khẩu cho bạn.
           </p>
 
+          {error && <div className="api-error">{error}</div>}
+
           <form onSubmit={handleSubmit} noValidate>
             <div className={`form-group ${fieldError ? 'has-error' : ''}`}>
               <label className="form-label" htmlFor="fp-email">Email</label>
@@ -73,13 +94,15 @@ function ForgotPassword() {
                 type="email"
                 placeholder="example@email.com"
                 value={email}
-                onChange={(e) => { setEmail(e.target.value); if (fieldError) setFieldError(null); }}
+                onChange={handleEmailChange}
                 autoComplete="email"
                 autoFocus
               />
               {fieldError && <span className="field-error">{fieldError}</span>}
             </div>
-            <button className="btn btn-primary" type="submit">Gửi link đặt lại mật khẩu</button>
+            <button className="btn btn-primary" type="submit" disabled={isLoading}>
+              {isLoading ? 'Đang gửi...' : 'Gửi link đặt lại mật khẩu'}
+            </button>
           </form>
 
           <a className="fp-back-link" href="/login">Quay lại đăng nhập</a>

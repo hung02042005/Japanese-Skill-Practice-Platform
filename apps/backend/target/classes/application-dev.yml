@@ -1,0 +1,27 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=jlpt_dev;encrypt=true;trustServerCertificate=true
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    username: sa
+    password: ${DATABASE_PASSWORD}
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+
+  flyway:
+    locations: classpath:db/migration
+
+  h2:
+    console:
+      enabled: false
+
+logging:
+  level:
+    com.jlpt: DEBUG
+    org.springframework.security: DEBUG

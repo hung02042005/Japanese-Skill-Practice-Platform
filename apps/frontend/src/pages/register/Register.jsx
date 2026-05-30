@@ -1,16 +1,22 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { registerThunk, clearError } from '../../store/slices/authSlice';
 import './Register.css';
 
 function Register() {
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { status, error } = useAppSelector((state) => state.auth);
+
   const [form, setForm] = useState({ fullName: '', email: '', password: '', confirmPassword: '' });
   const [fieldErrors, setFieldErrors] = useState({});
   const [isDone, setIsDone] = useState(false);
 
+  const isLoading = status === 'loading';
+
   function setField(name, value) {
     setForm((prev) => ({ ...prev, [name]: value }));
     if (fieldErrors[name]) setFieldErrors((prev) => ({ ...prev, [name]: null }));
+    if (error) dispatch(clearError());
   }
 
   function validate() {
@@ -28,9 +34,17 @@ function Register() {
     return Object.keys(errors).length === 0;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (validate()) setIsDone(true);
+    if (!validate()) return;
+    try {
+      await dispatch(
+        registerThunk({ fullName: form.fullName, email: form.email, password: form.password }),
+      ).unwrap();
+      setIsDone(true);
+    } catch {
+      // lỗi API đã được set vào Redux state
+    }
   }
 
   if (isDone) {
@@ -70,6 +84,8 @@ function Register() {
           <h2 className="fp-card-title">Tạo tài khoản</h2>
           <p className="fp-card-desc">Bắt đầu hành trình học tiếng Nhật của bạn.</p>
 
+          {error && <div className="api-error">{error}</div>}
+
           <form onSubmit={handleSubmit} noValidate>
             <div className={`form-group ${fieldErrors.fullName ? 'has-error' : ''}`}>
               <label className="form-label" htmlFor="reg-name">Họ và tên</label>
@@ -99,7 +115,9 @@ function Register() {
               {fieldErrors.confirmPassword && <span className="field-error">{fieldErrors.confirmPassword}</span>}
             </div>
 
-            <button className="btn btn-primary" type="submit">Đăng ký</button>
+            <button className="btn btn-primary" type="submit" disabled={isLoading}>
+              {isLoading ? 'Đang đăng ký...' : 'Đăng ký'}
+            </button>
           </form>
 
           <p className="reg-login-link">

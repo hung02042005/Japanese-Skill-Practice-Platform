@@ -4,22 +4,22 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
 });
+
+// ─── Request interceptor: đính Bearer token ────────────────────────────────────
 
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
   (error) => Promise.reject(error),
 );
+
+// ─── Response interceptor: tự động refresh khi 401 ────────────────────────────
 
 api.interceptors.response.use(
   (response) => response,
@@ -33,9 +33,8 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem('refreshToken');
         if (!refreshToken) throw new Error('No refresh token');
 
-        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-          refreshToken,
-        });
+        // Dùng axios thuần để tránh vòng lặp interceptor
+        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
 
         localStorage.setItem('accessToken', data.data.accessToken);
         localStorage.setItem('refreshToken', data.data.refreshToken);
@@ -45,7 +44,7 @@ api.interceptors.response.use(
       } catch {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
+        localStorage.removeItem('jlpt-user');
         window.location.href = '/login';
         return Promise.reject(error);
       }
@@ -54,6 +53,8 @@ api.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+// ─── Auth API functions ────────────────────────────────────────────────────────
 
 export async function login(credentials) {
   const response = await api.post('/auth/login', credentials);
@@ -69,7 +70,21 @@ export async function logout() {
   const response = await api.post('/auth/logout');
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
-  localStorage.removeItem('user');
+  localStorage.removeItem('jlpt-user');
+  return response.data;
+}
+
+export async function forgotPassword(email) {
+  const response = await api.post('/auth/forgot-password', { email });
+  return response.data;
+}
+
+export async function resetPassword({ token, newPassword, confirmPassword }) {
+  const response = await api.post('/auth/reset-password', {
+    token,
+    newPassword,
+    confirmPassword,
+  });
   return response.data;
 }
 

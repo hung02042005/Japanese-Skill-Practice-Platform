@@ -1,9 +1,13 @@
 import { useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { resetPasswordThunk, clearError } from '../../store/slices/authSlice';
 import './ResetPassword.css';
 
 function ResetPassword() {
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { status, error } = useAppSelector((state) => state.auth);
+
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
 
@@ -11,6 +15,8 @@ function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [isDone, setIsDone] = useState(false);
+
+  const isLoading = status === 'loading';
 
   function validate() {
     const errors = {};
@@ -24,9 +30,17 @@ function ResetPassword() {
     return Object.keys(errors).length === 0;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (validate() && token) setIsDone(true);
+    if (!validate() || !token) return;
+    try {
+      await dispatch(
+        resetPasswordThunk({ token, newPassword, confirmPassword }),
+      ).unwrap();
+      setIsDone(true);
+    } catch {
+      // lỗi API đã được set vào Redux state
+    }
   }
 
   if (!token) {
@@ -91,6 +105,8 @@ function ResetPassword() {
           <h2 className="fp-card-title">Đặt lại mật khẩu</h2>
           <p className="fp-card-desc">Nhập mật khẩu mới cho tài khoản của bạn.</p>
 
+          {error && <div className="api-error">{error}</div>}
+
           <form onSubmit={handleSubmit} noValidate>
             <div className={`form-group ${fieldErrors.newPassword ? 'has-error' : ''}`}>
               <label className="form-label" htmlFor="rp-new">Mật khẩu mới</label>
@@ -100,7 +116,11 @@ function ResetPassword() {
                 type="password"
                 placeholder="Ít nhất 8 ký tự, 1 hoa, 1 số"
                 value={newPassword}
-                onChange={(e) => { setNewPassword(e.target.value); if (fieldErrors.newPassword) setFieldErrors((p) => ({ ...p, newPassword: null })); }}
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  if (fieldErrors.newPassword) setFieldErrors((p) => ({ ...p, newPassword: null }));
+                  if (error) dispatch(clearError());
+                }}
                 autoComplete="new-password"
                 autoFocus
               />
@@ -115,13 +135,18 @@ function ResetPassword() {
                 type="password"
                 placeholder="Nhập lại mật khẩu mới"
                 value={confirmPassword}
-                onChange={(e) => { setConfirmPassword(e.target.value); if (fieldErrors.confirmPassword) setFieldErrors((p) => ({ ...p, confirmPassword: null })); }}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (fieldErrors.confirmPassword) setFieldErrors((p) => ({ ...p, confirmPassword: null }));
+                }}
                 autoComplete="new-password"
               />
               {fieldErrors.confirmPassword && <span className="field-error">{fieldErrors.confirmPassword}</span>}
             </div>
 
-            <button className="btn btn-primary" type="submit">Đặt lại mật khẩu</button>
+            <button className="btn btn-primary" type="submit" disabled={isLoading}>
+              {isLoading ? 'Đang xử lý...' : 'Đặt lại mật khẩu'}
+            </button>
           </form>
         </div>
       </div>

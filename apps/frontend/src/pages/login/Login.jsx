@@ -1,13 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { loginThunk, clearError } from '../../store/slices/authSlice';
 import './Login.css';
 
 function Login() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { status, error } = useAppSelector((state) => state.auth);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+
+  const isLoading = status === 'loading';
 
   function validateForm() {
     const errors = {};
@@ -17,10 +24,26 @@ function Login() {
     return Object.keys(errors).length === 0;
   }
 
-  function handleSubmit(e) {
+  function handleEmailChange(e) {
+    setEmail(e.target.value);
+    if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: null }));
+    if (error) dispatch(clearError());
+  }
+
+  function handlePasswordChange(e) {
+    setPassword(e.target.value);
+    if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: null }));
+    if (error) dispatch(clearError());
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (validateForm()) {
+    if (!validateForm()) return;
+    try {
+      await dispatch(loginThunk({ email, password })).unwrap();
       navigate('/dashboard');
+    } catch {
+      // lỗi API đã được set vào Redux state
     }
   }
 
@@ -43,6 +66,8 @@ function Login() {
             Chào mừng bạn trở lại! Vui lòng đăng nhập để tiếp tục.
           </p>
 
+          {error && <div className="api-error">{error}</div>}
+
           <div className={`form-group ${fieldErrors.email ? 'has-error' : ''}`}>
             <label className="form-label" htmlFor="email">Email</label>
             <input
@@ -51,10 +76,7 @@ function Login() {
               type="email"
               placeholder="example@email.com"
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: null }));
-              }}
+              onChange={handleEmailChange}
               autoComplete="email"
               autoFocus
             />
@@ -72,10 +94,7 @@ function Login() {
               type="password"
               placeholder="••••••••"
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: null }));
-              }}
+              onChange={handlePasswordChange}
               autoComplete="current-password"
             />
             {fieldErrors.password && <span className="field-error">{fieldErrors.password}</span>}
@@ -93,8 +112,8 @@ function Login() {
             </label>
           </div>
 
-          <button className="btn btn-primary" type="submit">
-            Đăng nhập
+          <button className="btn btn-primary" type="submit" disabled={isLoading}>
+            {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
           </button>
 
           <div className="divider">
