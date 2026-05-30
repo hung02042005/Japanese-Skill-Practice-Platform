@@ -7,6 +7,64 @@
     @apply border-gray-200;
   }
   body {
-    @apply bg-gray-50 text-gray-900;
+    font-family: 'Nunito', 'Noto Sans JP', system-ui, sans-serif;
+    background-color: #FAF7F4;
+    color: #2D2D2D;
   }
+}
+
+/* ===== Design Tokens — SakuJi ===== */
+:root {
+  /* Color Primary (Sakura Pink) */
+  --color-primary:        #E8637A;
+  --color-primary-light:  #F4A7B3;
+  --color-primary-dark:   #C44E62;
+  --color-primary-bg:     #FFF0F3;
+
+  /* Color Secondary (Emerald Green) */
+  --color-secondary:      #4CAF50;
+  --color-secondary-light:#81C784;
+  --color-secondary-bg:   #F1F8E9;
+
+  /* Color Accent (Soft Gold) */
+  --color-accent:         #F5C842;
+  --color-accent-bg:      #FFFDE7;
+
+  /* Surface */
+  --color-bg:             #FAF7F4;
+  --color-card:           #FFFFFF;
+  --color-border:         #E8E0DC;
+
+  /* Text */
+  --color-text:           #2D2D2D;
+  --color-text-sub:       #757575;
+  --color-text-disabled:  #BDBDBD;
+
+  /* Semantic */
+  --color-error:          #E53935;
+  --color-warning:        #FB8C00;
+
+  /* Landing-page only */
+  --color-cream:          #F7F4E6;
+  --color-hero-bg:        #FFF8FA;
+
+  /* Border Radius */
+  --radius-sm:    8px;
+  --radius-md:    12px;
+  --radius-lg:    16px;
+  --radius-xl:    24px;
+  --radius-full:  9999px;
+
+  /* Shadow */
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.07);
+  --shadow-md:   0 4px 12px rgba(0,0,0,0.10);
+  --shadow-lg:   0 8px 24px rgba(0,0,0,0.12);
+  --shadow-card: 0 4px 20px rgba(0,0,0,0.08);
+  --shadow-hero: 0 8px 40px rgba(232,99,122,0.12);
+
+  /* Font */
+  --font-base: 'Nunito', 'Noto Sans JP', system-ui, sans-serif;
+
+  /* Transition */
+  --transition: 200ms ease;
 }

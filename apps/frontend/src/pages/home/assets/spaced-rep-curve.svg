@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 190" fill="none">
+  <rect width="340" height="190" rx="12" fill="white"/>
+
+  <!-- Grid lines -->
+  <line x1="50" y1="20" x2="50" y2="155" stroke="#E8E0DC" stroke-width="1"/>
+  <line x1="50" y1="155" x2="320" y2="155" stroke="#E8E0DC" stroke-width="1"/>
+  <line x1="50" y1="87" x2="320" y2="87" stroke="#E8E0DC" stroke-width="0.5" stroke-dasharray="4 3"/>
+  <line x1="50" y1="20" x2="320" y2="20" stroke="#E8E0DC" stroke-width="0.5" stroke-dasharray="4 3"/>
+
+  <!-- Y axis labels -->
+  <text x="10" y="24" font-family="Nunito, sans-serif" font-size="10" fill="#757575">100%</text>
+  <text x="18" y="91" font-family="Nunito, sans-serif" font-size="10" fill="#757575">50%</text>
+  <text x="28" y="158" font-family="Nunito, sans-serif" font-size="10" fill="#757575">0%</text>
+
+  <!-- X axis labels -->
+  <text x="68" y="170" font-family="Nunito, sans-serif" font-size="9" fill="#757575" text-anchor="middle">Day 1</text>
+  <text x="126" y="170" font-family="Nunito, sans-serif" font-size="9" fill="#757575" text-anchor="middle">Day 3</text>
+  <text x="190" y="170" font-family="Nunito, sans-serif" font-size="9" fill="#757575" text-anchor="middle">Day 7</text>
+  <text x="258" y="170" font-family="Nunito, sans-serif" font-size="9" fill="#757575" text-anchor="middle">Day 14</text>
+  <text x="316" y="170" font-family="Nunito, sans-serif" font-size="9" fill="#757575" text-anchor="middle">Day 30</text>
+
+  <!-- Axis tick marks -->
+  <line x1="68" y1="153" x2="68" y2="157" stroke="#E8E0DC" stroke-width="1"/>
+  <line x1="126" y1="153" x2="126" y2="157" stroke="#E8E0DC" stroke-width="1"/>
+  <line x1="190" y1="153" x2="190" y2="157" stroke="#E8E0DC" stroke-width="1"/>
+  <line x1="258" y1="153" x2="258" y2="157" stroke="#E8E0DC" stroke-width="1"/>
+  <line x1="316" y1="153" x2="316" y2="157" stroke="#E8E0DC" stroke-width="1"/>
+
+  <!-- Forgetting curve (dashed, gray) -->
+  <path d="M68 24 C110 55 180 105 316 145" stroke="#BDBDBD" stroke-width="2" stroke-dasharray="5 4" fill="none"/>
+
+  <!-- SakuJi spaced repetition curve (solid, pink) -->
+  <!-- Start → drop → review at Day 3 → jump up → drop → review at Day 7 → jump → drop → review Day 14 → hold -->
+  <path d="
+    M68 24
+    C90 42 115 72 126 90
+    L126 36
+    C148 52 172 72 190 86
+    L190 30
+    C214 46 238 62 258 76
+    L258 24
+    C276 36 298 48 316 56
+  " stroke="#E8637A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Review point ripples -->
+  <circle cx="126" cy="90" r="10" fill="#F5C842" opacity="0.2"/>
+  <circle cx="190" cy="86" r="10" fill="#F5C842" opacity="0.2"/>
+  <circle cx="258" cy="76" r="10" fill="#F5C842" opacity="0.2"/>
+
+  <!-- Review points (gold dots) -->
+  <circle cx="126" cy="90" r="5" fill="#F5C842" stroke="white" stroke-width="1.5"/>
+  <circle cx="190" cy="86" r="5" fill="#F5C842" stroke="white" stroke-width="1.5"/>
+  <circle cx="258" cy="76" r="5" fill="#F5C842" stroke="white" stroke-width="1.5"/>
+
+  <!-- "Time to review" label at Day 7 point -->
+  <rect x="148" y="60" width="76" height="18" rx="9" fill="#FFFDE7" stroke="#F5C842" stroke-width="1"/>
+  <text x="186" y="73" text-anchor="middle" font-family="Nunito, sans-serif" font-size="9" font-weight="700" fill="#F5C842">Time to review</text>
+  <line x1="190" y1="78" x2="190" y2="85" stroke="#F5C842" stroke-width="1"/>
+
+  <!-- Legend -->
+  <line x1="58" y1="183" x2="78" y2="183" stroke="#BDBDBD" stroke-width="2" stroke-dasharray="4 3"/>
+  <text x="82" y="186" font-family="Nunito, sans-serif" font-size="9" fill="#757575">Quên bình thường</text>
+  <line x1="178" y1="183" x2="198" y2="183" stroke="#E8637A" stroke-width="2.5"/>
+  <text x="202" y="186" font-family="Nunito, sans-serif" font-size="9" fill="#E8637A" font-weight="700">SakuJi</text>
+</svg>
