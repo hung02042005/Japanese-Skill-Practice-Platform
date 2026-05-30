@@ -1,6 +1,6 @@
 # CLAUDE.md — JLPT E-Learning System v2.0
 ## Hệ Thống Học Tập & Luyện Thi Tiếng Nhật Cấp Độ N5→N1
-
+hung dau c
 > **Mục đích**: Bản đồ địa hình — Kiến trúc, ADR, Lessons Learned, Anti-patterns
 > **Đọc trước**: `CONSTITUTION.md` (stack, security, standards) | `AGENTS.md` (domain rules, golden patterns)
 
