@@ -1,52 +1,90 @@
 japanese-elearning-project/
 │
-├── 1.sdd/                         # Toàn bộ "não" đặc tả của dự án (SDD artifacts) [3]
-│   ├── constitution.md            # "Hiến pháp" dự án (Hard rules, bảo mật, kiến trúc) [3, 4]
-│   ├── shared_context.md          # Nguồn sự thật chung để đồng bộ giữa các AI Agent [3, 5]
-│   ├── constraints/               # Ràng buộc chi tiết cho AI Agent [3, 6]
-│   │   ├── global.md              # Ràng buộc Tech stack (Node.js, React), Naming convention [7]
-│   │   ├── business.md            # Ràng buộc nghiệp vụ (Ví dụ: quy tắc JWT, Soft delete) [8]
-│   │   └── safety.md              # Ràng buộc an toàn (Ví dụ: Cấm xóa DB production) [9]
-│   ├── specs/                     # Đặc tả tính năng chi tiết (Feature specs) [3, 10]
-│   │   ├── _template.md           # Template mẫu để tạo Spec mới [10]
-│   │   ├── feat-auth/             # Đặc tả module Đăng nhập/Đăng ký [11, 12]
-│   │   │   ├── SPEC.md            # File đặc tả đã chốt (Locked spec) [3, 13]
-│   │   │   ├── PLAN.md            # Kế hoạch thực thi do AI lập [3, 14]
-│   │   │   └── TASKS.md           # Danh sách các task nhỏ đã chia [3, 15]
-│   │   ├── feat-mock-test/        # Đặc tả tính năng Thi thử JLPT Mock Test [16]
-│   │   └── feat-flashcard/        # Đặc tả tính năng Quản lý Flashcard [17]
-│   ├── skills/                    # Thư viện kỹ năng chuyên sâu (SKILL.md) cho Agent [3, 18]
-│   │   └── sql-performance.md     # Ví dụ: Kỹ năng tối ưu truy vấn Database [19]
-│   ├── rfcs/                      # Lưu trữ các quyết định thay đổi kiến trúc (ADR) [3, 20]
-│   └── reviews/                   # Lưu kết quả AI review Spec để phát hiện lỗi [3, 10]
+├── .sdd/                              # ✅ [ĐỔI] Bỏ prefix "1." → tự ẩn trên Linux/Mac
+│   ├── constitution.md                # "Hiến pháp" dự án (Hard rules, bảo mật, kiến trúc)
+│   ├── shared_context.md             # Ngữ cảnh dùng chung để đồng bộ giữa các AI Agent
+│   │
+│   ├── constraints/                   # Ràng buộc chi tiết cho AI Agent
+│   │   ├── global.md                  # Tech stack (Java, React), Naming convention
+│   │   ├── business.md                # Ràng buộc nghiệp vụ (JWT, Soft delete, JLPT rules)
+│   │   └── safety.md                  # Ràng buộc an toàn (Cấm xóa DB production)
+│   │
+│   ├── specs/                         # Đặc tả tính năng chi tiết
+│   │   ├── _template.md               # Template mẫu để tạo Spec mới
+│   │   ├── feat-auth/                 # Module Đăng nhập / Đăng ký
+│   │   │   ├── SPEC.md                # Đặc tả đã chốt (Locked)
+│   │   │   ├── PLAN.md                # Kế hoạch thực thi do AI lập
+│   │   │   └── TASKS.md               # Danh sách task nhỏ đã chia
+│   │   ├── feat-mock-test/            # Tính năng Thi thử JLPT Mock Test
+│   │   └── feat-flashcard/            # Tính năng Quản lý Flashcard
+│   │
+│   ├── skills/                        # ✅ [GIỮ] Thư viện kỹ năng chuyên sâu cho Agent
+│   │   └── sql-performance.md         # Kỹ năng tối ưu truy vấn Database
+│   │
+│   ├── rfcs/                          # Lưu trữ các quyết định kiến trúc (ADR)
+│   └── reviews/                       # ✅ [GIỮ] Kết quả AI review Spec để phát hiện lỗi
 │
-├── 2.agents/                      # Thư mục chứa cấu hình AI Agent [3]
-│   ├── AGENTS.md                  # Định nghĩa Persona, công nghệ, giới hạn của Agent [3, 21]
-│   ├── CLAUDE.md                  # Project DNA, bài học kinh nghiệm, ngữ cảnh làm việc [3, 22]
-│   └── .agentignore               # Danh sách file cấm AI đọc để tránh nhiễu ngữ cảnh [3, 23]
+├── .agents/                           # ✅ [ĐỔI] Bỏ prefix "2." → tự ẩn
+│   ├── AGENTS.md                      # Persona, công nghệ, giới hạn của Agent
+│   ├── CLAUDE.md                      # Project DNA, bài học kinh nghiệm, ngữ cảnh
+│   └── .agentignore                   # File cấm AI đọc để tránh nhiễu ngữ cảnh
 │
-├── 3.src/                         # Source Code cốt lõi (Áp dụng Clean Architecture) [3]
-│   ├── domain/                    # Chứa Entities cốt lõi (Student, Course, MockTest...) [3]
-│   ├── usecase/                   # Chứa Business logic (Quy tắc tính điểm thi, xếp loại) [3]
-│   ├── interface/                 # HTTP routes, Controllers (Express/React) [3]
-│   └── infra/                     # Data access, Prisma setup, cấu hình kết nối PostgreSQL [3]
+├── .github/                           # ✅ [ĐỔI] Bỏ prefix "6." → dùng tên chuẩn GitHub
+│   ├── workflows/
+│   │   ├── constitution-check.yml     # Validation gate chặn commit vi phạm quy tắc
+│   │   └── consistency-gate.yml       # Kiểm tra độ đồng nhất giữa Code và Spec
+│   └── PULL_REQUEST_TEMPLATE/
+│       └── prompt_change.md           # Template bắt buộc điền khi sửa AGENTS.md
 │
-├── 4.tests/                       # Thư mục kiểm thử tự động [3]
-│   ├── unit/                      # Unit tests cho các logic độc lập (Không DB/Mạng) [3]
-│   ├── integration/               # Integration tests (Kiểm tra API kết hợp Database) [3]
-│   └── e2e/                       # End-to-End tests cho toàn bộ luồng sử dụng [3]
+├── apps/                              # 🌟 [THAY ĐỔI LỚN] Monorepo — mã nguồn chính
+│   │
+│   ├── backend/                       # Toàn bộ code Java / Spring Boot
+│   │   ├── src/
+│   │   │   ├── main/
+│   │   │   │   ├── java/com/jlpt/
+│   │   │   │   │   ├── controller/    # REST Controllers
+│   │   │   │   │   ├── service/       # Business Logic
+│   │   │   │   │   ├── repository/    # JPA Repositories
+│   │   │   │   │   ├── entity/        # JPA Entities
+│   │   │   │   │   ├── dto/           # Request / Response DTOs
+│   │   │   │   │   ├── mapper/        # Entity ↔ DTO Mappers
+│   │   │   │   │   ├── config/        # Spring Security, JWT, CORS config
+│   │   │   │   │   └── exception/     # Global Exception Handler
+│   │   │   │   └── resources/
+│   │   │   │       ├── application.yml
+│   │   │   │       ├── application-dev.yml
+│   │   │   │       └── db/migration/  # Flyway migration scripts (V1__, V2__...)
+│   │   │   └── test/                  # Unit & Integration Tests
+│   │   │       └── java/com/jlpt/
+│   │   └── pom.xml
+│   │
+│   └── frontend/                      # Toàn bộ code React / TypeScript
+│       ├── src/
+│       │   ├── components/            # UI Components (PascalCase.tsx)
+│       │   ├── pages/                 # Page-level components
+│       │   ├── hooks/                 # Custom Hooks (useXxx.ts)
+│       │   ├── api/                   # API Client functions
+│       │   ├── types/                 # TypeScript Types (XxxType.ts)
+│       │   ├── schemas/               # Zod validation schemas
+│       │   └── utils/                 # Utility functions
+│       ├── cypress/                   # E2E Testing
+│       └── package.json
 │
-├── 5.docs/                        # Tài liệu kỹ thuật của dự án [3]
-│   ├── api/                       # File OpenAPI / Swagger specs cho các endpoints [3]
-│   └── architecture/              # Sơ đồ thiết kế hệ thống, Database Schema [3]
+├── database/                          # 🌟 [THÊM MỚI] Quản lý Database tập trung
+│   ├── init.sql                       # Script tạo DB ban đầu (PostgreSQL / SQL Server)
+│   ├── seeds/                         # Dữ liệu mẫu
+│   │   ├── kanji_seed.sql             # Dữ liệu Kanji N5–N1
+│   │   ├── vocabulary_seed.sql        # Dữ liệu Từ vựng
+│   │   └── users_seed.sql             # Tài khoản test (Admin, Student, Staff)
+│   └── erd-diagram.png                # Sơ đồ thiết kế Database
 │
-├── 6.github/                      # Pipelines CI/CD để tự động hóa [3, 24]
-│   ├── workflows/                 # GitHub Actions workflows
-│   │   ├── constitution-check.yml # Validation gate chặn commit vi phạm quy tắc [25]
-│   │   └── consistency-gate.yml  # Kiểm tra độ đồng nhất giữa Code và Spec [26]
-│   └── PULL_REQUEST_TEMPLATE/     # 🌟 [THÊM MỚI] Thư mục chứa các mẫu Pull Request
-│       └── prompt_change.md       # 🌟 [THÊM MỚI] Template bắt buộc điền khi sửa file AGENTS.md
+├── docs/                              # ✅ [ĐỔI] Bỏ prefix "5."
+│   ├── api/                           # API Contract (Swagger / OpenAPI JSON)
+│   ├── architecture/                  # Sơ đồ luồng hệ thống
+│   └── deployment/                    # 🌟 [THÊM MỚI] Hướng dẫn deploy lên server
 │
-├── plan.md                        # File theo dõi tiến độ Task hiện tại (Plan-Act-Check) [3, 27]
-├── AGENTS.md                      # Symlink trỏ về 2.agents/AGENTS.md [3]
-└── CLAUDE.md                      # Symlink trỏ về 2.agents/CLAUDE.md [3]
+├── plan.md                            # Master Plan — quản lý Task hiện tại
+├── docker-compose.yml                 # 🌟 [THÊM MỚI] Môi trường Dev (PostgreSQL, Redis...)
+├── .env.example                       # 🌟 [THÊM MỚI] Template biến môi trường
+├── AGENTS.md                          # Symlink → .agents/AGENTS.md
+└── CLAUDE.md                          # Symlink → .agents/CLAUDE.md
