@@ -1,78 +1,72 @@
-# ==============================
+# ================================
 # JAVA / SPRING BOOT (Backend)
-# ==============================
+# ================================
 apps/backend/target/
 apps/backend/*.log
-apps/backend/*.pid
+apps/backend/*.err
 apps/backend/app.pid
-apps/backend/.env
 *.class
 *.jar
 *.war
 *.ear
 *.nar
+*.zip
+*.tar.gz
+*.rar
 hs_err_pid*
+replay_pid*
 
 # Maven
 .mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
 
-# ==============================
+# ================================
 # NODE / REACT (Frontend)
-# ==============================
+# ================================
 apps/frontend/node_modules/
 apps/frontend/dist/
 apps/frontend/.env
 apps/frontend/.env.local
 apps/frontend/.env.*.local
-apps/frontend/coverage/
-
-# Legacy paths (nếu còn sót)
-frontend/node_modules/
-frontend/dist/
 node_modules/
+dist/
+build/
 
-# ==============================
+# ================================
 # ENVIRONMENT & SECRETS
-# ==============================
+# ================================
 .env
 .env.local
-.env.production
-.env.staging
-# Giữ lại .env.example (template)
+.env.*.local
 !.env.example
-!apps/backend/.env.example
-!apps/frontend/.env.example
 
-# ==============================
+# ================================
 # IDE & EDITOR
-# ==============================
+# ================================
 .idea/
 *.iml
-*.iws
 .vscode/settings.json
-.vscode/launch.json
-*.swp
-*.swo
+*.suo
+*.user
+.vs/
+
+# ================================
+# OS
+# ================================
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# ==============================
-# BUILD / LOGS
-# ==============================
+# ================================
+# LOGS & TEMP
+# ================================
 *.log
+*.err
+app.pid
 backend.log
 backend.err
-*.pid
-build/
-dist/
-out/
 
-# ==============================
+# ================================
 # DATABASE
-# ==============================
-# Không ignore database/ vì chứa init.sql và docs
-# Chỉ ignore file dump tạm
-*.dump
-*.bak
+# ================================
+*.db
+*.sqlite
