@@ -1,7 +1,13 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { loginThunk, clearError } from '../../store/slices/authSlice';
+import AuthTopBar from '../../components/auth/AuthTopBar';
+import SakuChan from '../../components/auth/SakuChan';
+import EyeIcon from '../../components/auth/EyeIcon';
+import AuthBanner from '../../components/auth/AuthBanner';
+import AuthDivider from '../../components/auth/AuthDivider';
+import GoogleButton from '../../components/auth/GoogleButton';
 import './Login.css';
 
 function Login() {
@@ -9,31 +15,35 @@ function Login() {
   const dispatch = useAppDispatch();
   const { status, error } = useAppSelector((state) => state.auth);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [email, setEmail]             = useState('');
+  const [password, setPassword]       = useState('');
+  const [showPwd, setShowPwd]         = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
 
   const isLoading = status === 'loading';
 
   function validateForm() {
     const errors = {};
-    if (!email.trim()) errors.email = 'Vui lòng nhập email';
-    if (!password) errors.password = 'Vui lòng nhập mật khẩu';
+    if (!email.trim()) {
+      errors.email = 'Email là bắt buộc';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = 'Email không hợp lệ';
+    }
+    if (!password) errors.password = 'Mật khẩu là bắt buộc';
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   }
 
   function handleEmailChange(e) {
     setEmail(e.target.value);
-    if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: null }));
-    if (error) dispatch(clearError());
+    if (fieldErrors.email) setFieldErrors((p) => ({ ...p, email: null }));
+    if (error)             dispatch(clearError());
   }
 
   function handlePasswordChange(e) {
     setPassword(e.target.value);
-    if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: null }));
-    if (error) dispatch(clearError());
+    if (fieldErrors.password) setFieldErrors((p) => ({ ...p, password: null }));
+    if (error)                dispatch(clearError());
   }
 
   async function handleSubmit(e) {
@@ -43,99 +53,117 @@ function Login() {
       await dispatch(loginThunk({ email, password })).unwrap();
       navigate('/dashboard');
     } catch {
-      // lỗi API đã được set vào Redux state
+      /* lỗi API đã được set vào Redux state */
     }
   }
 
-  function handleGoogleLogin() {
-    window.location.href = 'http://localhost:8080/api/auth/oauth/google';
-  }
+  const isLocked   = error && (error.includes('khóa') || error.includes('locked'));
+  const needVerify = error && (error.includes('xác minh') || error.includes('verified'));
 
   return (
     <div className="login-page">
-      <div className="login-container">
-        <div className="login-brand">
-          <div className="brand-logo">日</div>
-          <h1 className="brand-title">JLPT Platform</h1>
-          <p className="brand-subtitle">Hệ thống học tiếng Nhật trực tuyến</p>
-        </div>
+      <AuthTopBar />
 
-        <form className="login-form" onSubmit={handleSubmit} noValidate>
-          <h2 className="form-title">Đăng nhập</h2>
-          <p className="form-description">
-            Chào mừng bạn trở lại! Vui lòng đăng nhập để tiếp tục.
-          </p>
+      <main className="login-main">
+        <span className="login-petal login-petal--1" aria-hidden="true">🌸</span>
+        <span className="login-petal login-petal--2" aria-hidden="true">🌸</span>
+        <span className="login-petal login-petal--3" aria-hidden="true">🌸</span>
 
-          {error && <div className="api-error">{error}</div>}
+        <div className="auth-card" role="main">
+          <SakuChan />
 
-          <div className={`form-group ${fieldErrors.email ? 'has-error' : ''}`}>
-            <label className="form-label" htmlFor="email">Email</label>
-            <input
-              id="email"
-              className="form-input"
-              type="email"
-              placeholder="example@email.com"
-              value={email}
-              onChange={handleEmailChange}
-              autoComplete="email"
-              autoFocus
-            />
-            {fieldErrors.email && <span className="field-error">{fieldErrors.email}</span>}
-          </div>
+          <h1 className="auth-title">Chào mừng trở lại</h1>
+          <p className="auth-subtitle">Đăng nhập để tiếp tục hành trình học tiếng Nhật</p>
 
-          <div className={`form-group ${fieldErrors.password ? 'has-error' : ''}`}>
-            <div className="form-label-row">
-              <label className="form-label" htmlFor="password">Mật khẩu</label>
-              <a className="forgot-link" href="/forgot-password">Quên mật khẩu?</a>
-            </div>
-            <input
-              id="password"
-              className="form-input"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={handlePasswordChange}
-              autoComplete="current-password"
-            />
-            {fieldErrors.password && <span className="field-error">{fieldErrors.password}</span>}
-          </div>
+          {isLocked && <AuthBanner type="warning">{error}</AuthBanner>}
+          {needVerify && (
+            <AuthBanner type="info">
+              {error}{' '}
+              <Link to="/register" className="auth-banner-link">Gửi lại email xác minh</Link>
+            </AuthBanner>
+          )}
+          {error && !isLocked && !needVerify && (
+            <AuthBanner type="error">{error}</AuthBanner>
+          )}
 
-          <div className="form-group form-group-checkbox">
-            <label className="checkbox-label">
+          <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
+            <div className={`form-field${fieldErrors.email ? ' has-error' : ''}`}>
+              <label className="form-label" htmlFor="login-email">Email</label>
               <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
+                id="login-email"
+                className="form-input"
+                type="email"
+                placeholder="email@example.com"
+                value={email}
+                onChange={handleEmailChange}
+                autoComplete="email"
+                autoFocus
+                aria-describedby={fieldErrors.email ? 'login-email-err' : undefined}
+                aria-invalid={!!fieldErrors.email}
               />
-              <span className="checkbox-custom"></span>
-              Ghi nhớ đăng nhập
-            </label>
-          </div>
+              {fieldErrors.email && (
+                <span id="login-email-err" className="field-error">{fieldErrors.email}</span>
+              )}
+            </div>
 
-          <button className="btn btn-primary" type="submit" disabled={isLoading}>
-            {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
-          </button>
+            <div className={`form-field${fieldErrors.password ? ' has-error' : ''}`}>
+              <div className="form-label-row">
+                <label className="form-label" htmlFor="login-password">Mật khẩu</label>
+                <Link to="/forgot-password" className="form-forgot-link">Quên mật khẩu?</Link>
+              </div>
+              <div className="form-input-wrapper">
+                <input
+                  id="login-password"
+                  className="form-input"
+                  type={showPwd ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  autoComplete="current-password"
+                  aria-describedby={fieldErrors.password ? 'login-pwd-err' : undefined}
+                  aria-invalid={!!fieldErrors.password}
+                />
+                <button
+                  type="button"
+                  className="form-eye-btn"
+                  onClick={() => setShowPwd((v) => !v)}
+                  aria-label={showPwd ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                >
+                  <EyeIcon open={showPwd} />
+                </button>
+              </div>
+              {fieldErrors.password && (
+                <span id="login-pwd-err" className="field-error">{fieldErrors.password}</span>
+              )}
+            </div>
 
-          <div className="divider">
-            <span className="divider-text">Hoặc</span>
-          </div>
+            <button
+              className="btn-submit"
+              type="submit"
+              disabled={isLoading}
+              aria-label="Đăng nhập vào tài khoản"
+            >
+              {isLoading ? (
+                <><span className="btn-spinner" aria-hidden="true"/>Đang đăng nhập...</>
+              ) : 'ĐĂNG NHẬP'}
+            </button>
+          </form>
 
-          <button className="btn btn-google" type="button" onClick={handleGoogleLogin}>
-            <svg className="google-icon" viewBox="0 0 24 24" width="20" height="20">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            Đăng nhập với Google
-          </button>
+          <AuthDivider />
 
-          <p className="register-link">
+          <GoogleButton
+            onClick={() => { window.location.href = 'http://localhost:8080/api/auth/oauth/google'; }}
+            ariaLabel="Đăng nhập bằng tài khoản Google"
+          >
+            Tiếp tục với Google
+          </GoogleButton>
+
+          <p className="auth-redirect">
             Chưa có tài khoản?{' '}
-            <a href="/register">Đăng ký ngay</a>
+            <Link to="/register" className="auth-redirect-link">Đăng ký ngay</Link>
           </p>
-        </form>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

@@ -1,15 +1,19 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { forgotPasswordThunk, clearError } from '../../store/slices/authSlice';
+import AuthTopBar from '../../components/auth/AuthTopBar';
+import SakuChan from '../../components/auth/SakuChan';
+import AuthBanner from '../../components/auth/AuthBanner';
 import './ForgotPassword.css';
 
 function ForgotPassword() {
   const dispatch = useAppDispatch();
   const { status, error } = useAppSelector((state) => state.auth);
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail]           = useState('');
   const [fieldError, setFieldError] = useState(null);
-  const [isSent, setIsSent] = useState(false);
+  const [isSent, setIsSent]         = useState(false);
 
   const isLoading = status === 'loading';
 
@@ -23,7 +27,7 @@ function ForgotPassword() {
   function handleEmailChange(e) {
     setEmail(e.target.value);
     if (fieldError) setFieldError(null);
-    if (error) dispatch(clearError());
+    if (error)      dispatch(clearError());
   }
 
   async function handleSubmit(e) {
@@ -33,60 +37,61 @@ function ForgotPassword() {
       await dispatch(forgotPasswordThunk({ email })).unwrap();
       setIsSent(true);
     } catch {
-      // lỗi API đã được set vào Redux state
+      /* lỗi API đã được set vào Redux state */
     }
   }
 
   if (isSent) {
     return (
       <div className="fp-page">
-        <div className="fp-container">
-          <div className="fp-brand">
-            <div className="brand-logo">日</div>
-            <h1 className="brand-title">JLPT Platform</h1>
-          </div>
-          <div className="fp-card">
-            <div className="fp-icon-success">
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                <rect width="48" height="48" rx="24" fill="#E8F5E9"/>
-                <path d="M14 24l7 7 13-13" stroke="#1AAE39" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <h2 className="fp-card-title">Kiểm tra email của bạn</h2>
-            <p className="fp-card-desc">
-              Nếu email <strong>{email}</strong> tồn tại trong hệ thống,
-              bạn sẽ nhận được link đặt lại mật khẩu trong vài phút.
+        <AuthTopBar />
+        <main className="fp-main">
+          <div className="auth-card fp-success-card">
+            <SakuChan variant="happy" />
+            <h1 className="auth-title">Kiểm tra email của bạn</h1>
+            <p className="fp-success-desc">
+              Nếu email{' '}
+              <strong className="fp-success-email">{email}</strong>{' '}
+              tồn tại trong hệ thống, bạn sẽ nhận được link đặt lại mật khẩu trong vài phút.
             </p>
-            <p className="fp-card-hint">
+            <p className="fp-success-hint">
               Không nhận được email?{' '}
-              <button className="link-btn" onClick={() => { setIsSent(false); dispatch(clearError()); }}>
+              <button
+                className="fp-link-btn"
+                onClick={() => { setIsSent(false); dispatch(clearError()); }}
+                aria-label="Gửi lại email đặt lại mật khẩu"
+              >
                 Gửi lại
               </button>
             </p>
-            <a className="fp-back-link" href="/login">Quay lại đăng nhập</a>
+            <Link to="/login" className="fp-back-link">Quay lại đăng nhập</Link>
           </div>
-        </div>
+        </main>
       </div>
     );
   }
 
   return (
     <div className="fp-page">
-      <div className="fp-container">
-        <div className="fp-brand">
-          <div className="brand-logo">日</div>
-          <h1 className="brand-title">JLPT Platform</h1>
-        </div>
-        <div className="fp-card">
-          <h2 className="fp-card-title">Quên mật khẩu?</h2>
-          <p className="fp-card-desc">
+      <AuthTopBar />
+
+      <main className="fp-main">
+        <span className="fp-petal fp-petal--1" aria-hidden="true">🌸</span>
+        <span className="fp-petal fp-petal--2" aria-hidden="true">🌸</span>
+        <span className="fp-petal fp-petal--3" aria-hidden="true">🌸</span>
+
+        <div className="auth-card" role="main">
+          <SakuChan />
+
+          <h1 className="auth-title">Quên mật khẩu?</h1>
+          <p className="auth-subtitle">
             Nhập email đã đăng ký, chúng tôi sẽ gửi link đặt lại mật khẩu cho bạn.
           </p>
 
-          {error && <div className="api-error">{error}</div>}
+          {error && <AuthBanner type="error">{error}</AuthBanner>}
 
-          <form onSubmit={handleSubmit} noValidate>
-            <div className={`form-group ${fieldError ? 'has-error' : ''}`}>
+          <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
+            <div className={`form-field${fieldError ? ' has-error' : ''}`}>
               <label className="form-label" htmlFor="fp-email">Email</label>
               <input
                 id="fp-email"
@@ -97,17 +102,25 @@ function ForgotPassword() {
                 onChange={handleEmailChange}
                 autoComplete="email"
                 autoFocus
+                aria-invalid={!!fieldError}
+                aria-describedby={fieldError ? 'fp-email-err' : undefined}
               />
-              {fieldError && <span className="field-error">{fieldError}</span>}
+              {fieldError && (
+                <span id="fp-email-err" className="field-error">{fieldError}</span>
+              )}
             </div>
-            <button className="btn btn-primary" type="submit" disabled={isLoading}>
-              {isLoading ? 'Đang gửi...' : 'Gửi link đặt lại mật khẩu'}
+
+            <button className="btn-submit" type="submit" disabled={isLoading}>
+              {isLoading
+                ? <><span className="btn-spinner" aria-hidden="true" />Đang gửi...</>
+                : 'GỬI LINK ĐẶT LẠI MẬT KHẨU'
+              }
             </button>
           </form>
 
-          <a className="fp-back-link" href="/login">Quay lại đăng nhập</a>
+          <Link to="/login" className="fp-back-link">Quay lại đăng nhập</Link>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
