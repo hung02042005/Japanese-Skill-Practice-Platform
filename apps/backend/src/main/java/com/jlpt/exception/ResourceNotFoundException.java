@@ -1,4 +1,5 @@
-﻿package com.jlpt.exception;
+/* (c) JLPT E-Learning Platform */
+package com.jlpt.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

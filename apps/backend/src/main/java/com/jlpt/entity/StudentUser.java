@@ -1,14 +1,19 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "student_users")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@SQLRestriction("status <> 'DELETED' and status <> 'deleted'")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class StudentUser {
 
@@ -43,12 +48,24 @@ public class StudentUser {
     @Column(length = 20)
     private String phone;
 
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
+
+    @Column(length = 500)
+    private String bio;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "oauth_provider", length = 30)
     private OauthProvider oauthProvider;
 
     @Column(name = "oauth_provider_id", length = 255)
     private String oauthProviderId;
+
+    @Column(name = "oauth_provider_email", length = 255)
+    private String oauthProviderEmail;
+
+    @Column(name = "oauth_linked_at")
+    private LocalDateTime oauthLinkedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "current_jlpt_level", length = 5)
@@ -94,11 +111,47 @@ public class StudentUser {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @PreUpdate
-    protected void onUpdate() { updatedAt = LocalDateTime.now(); }
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
-    public enum StudentStatus { ACTIVE("active"), SUSPENDED("suspended"), PENDING("pending"), DELETED("deleted");
-        private final String v; StudentStatus(String v) { this.v = v; } public String getValue() { return v; } }
-    public enum OauthProvider { GOOGLE("google"), FACEBOOK("facebook"), APPLE("apple"), GITHUB("github");
-        private final String v; OauthProvider(String v) { this.v = v; } public String getValue() { return v; } }
-    public enum JlptLevel { N5, N4, N3, N2, N1 }
+    public enum StudentStatus {
+        ACTIVE("active"),
+        SUSPENDED("suspended"),
+        PENDING("pending"),
+        DELETED("deleted");
+        private final String v;
+
+        StudentStatus(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
+
+    public enum OauthProvider {
+        GOOGLE("google"),
+        FACEBOOK("facebook"),
+        APPLE("apple"),
+        GITHUB("github");
+        private final String v;
+
+        OauthProvider(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
+
+    public enum JlptLevel {
+        N5,
+        N4,
+        N3,
+        N2,
+        N1
+    }
 }

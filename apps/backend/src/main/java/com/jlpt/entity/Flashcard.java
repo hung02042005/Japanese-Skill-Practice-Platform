@@ -1,14 +1,17 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "flashcards")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Flashcard {
 
@@ -64,8 +67,34 @@ public class Flashcard {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public enum ContentType { KANJI("kanji"), VOCABULARY("vocabulary"), GRAMMAR("grammar"), CUSTOM("custom");
-        private final String v; ContentType(String v) { this.v = v; } public String getValue() { return v; } }
-    public enum LastRating { EASY("easy"), HARD("hard"), WRONG("wrong");
-        private final String v; LastRating(String v) { this.v = v; } public String getValue() { return v; } }
+    public enum ContentType {
+        KANJI("kanji"),
+        VOCABULARY("vocabulary"),
+        GRAMMAR("grammar"),
+        CUSTOM("custom");
+        private final String v;
+
+        ContentType(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
+
+    public enum LastRating {
+        EASY("easy"),
+        HARD("hard"),
+        WRONG("wrong");
+        private final String v;
+
+        LastRating(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
 }

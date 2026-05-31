@@ -1,13 +1,16 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "tickets")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Ticket {
 
@@ -53,8 +56,35 @@ public class Ticket {
     @Column(name = "resolved_at")
     private LocalDateTime resolvedAt;
 
-    public enum Priority { LOW("low"), NORMAL("normal"), HIGH("high"), URGENT("urgent");
-        private final String v; Priority(String v) { this.v = v; } public String getValue() { return v; } }
-    public enum TicketStatus { OPEN("open"), IN_PROGRESS("in_progress"), RESOLVED("resolved"), CLOSED("closed");
-        private final String v; TicketStatus(String v) { this.v = v; } public String getValue() { return v; } }
+    public enum Priority {
+        LOW("low"),
+        NORMAL("normal"),
+        HIGH("high"),
+        URGENT("urgent");
+        private final String v;
+
+        Priority(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
+
+    public enum TicketStatus {
+        OPEN("open"),
+        IN_PROGRESS("in_progress"),
+        RESOLVED("resolved"),
+        CLOSED("closed");
+        private final String v;
+
+        TicketStatus(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
 }

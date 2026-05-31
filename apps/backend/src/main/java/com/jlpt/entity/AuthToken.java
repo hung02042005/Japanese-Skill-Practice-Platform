@@ -1,13 +1,16 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "auth_tokens")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class AuthToken {
 
@@ -49,10 +52,35 @@ public class AuthToken {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public enum ActorType { ADMIN("admin"), STAFF("staff"), STUDENT("student");
-        private final String v; ActorType(String v) { this.v = v; } public String getValue() { return v; } }
+    public enum ActorType {
+        ADMIN("admin"),
+        STAFF("staff"),
+        STUDENT("student");
+        private final String v;
+
+        ActorType(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
+
     public enum TokenType {
-        SESSION("session"), EMAIL_VERIFICATION("email_verification"),
-        PASSWORD_RESET("password_reset"), TFA_TEMP("2fa_temp"), REFRESH("refresh");
-        private final String v; TokenType(String v) { this.v = v; } public String getValue() { return v; } }
+        SESSION("session"),
+        EMAIL_VERIFICATION("email_verification"),
+        PASSWORD_RESET("password_reset"),
+        TFA_TEMP("2fa_temp"),
+        REFRESH("refresh");
+        private final String v;
+
+        TokenType(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
 }

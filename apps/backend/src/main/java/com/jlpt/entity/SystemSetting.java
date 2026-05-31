@@ -1,13 +1,16 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "system_settings")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class SystemSetting {
 
@@ -43,8 +46,23 @@ public class SystemSetting {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @PreUpdate
-    protected void onUpdate() { updatedAt = LocalDateTime.now(); }
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
-    public enum ValueType { STRING("string"), INTEGER("integer"), BOOLEAN("boolean"), TIME("time");
-        private final String v; ValueType(String v) { this.v = v; } public String getValue() { return v; } }
+    public enum ValueType {
+        STRING("string"),
+        INTEGER("integer"),
+        BOOLEAN("boolean"),
+        TIME("time");
+        private final String v;
+
+        ValueType(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
 }

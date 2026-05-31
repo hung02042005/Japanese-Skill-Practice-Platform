@@ -1,3 +1,4 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
@@ -5,8 +6,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "kana_characters")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class KanaCharacter {
 
@@ -35,6 +38,17 @@ public class KanaCharacter {
     @Builder.Default
     private Integer displayOrder = 0;
 
-    public enum KanaType { HIRAGANA("hiragana"), KATAKANA("katakana");
-        private final String v; KanaType(String v) { this.v = v; } public String getValue() { return v; } }
+    public enum KanaType {
+        HIRAGANA("hiragana"),
+        KATAKANA("katakana");
+        private final String v;
+
+        KanaType(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
 }

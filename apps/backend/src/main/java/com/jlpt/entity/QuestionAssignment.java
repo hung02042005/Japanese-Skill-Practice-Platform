@@ -1,13 +1,16 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.math.BigDecimal;
+import lombok.*;
 
 @Entity
 @Table(name = "question_assignments")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class QuestionAssignment {
 
@@ -38,6 +41,17 @@ public class QuestionAssignment {
     @Builder.Default
     private Integer displayOrder = 0;
 
-    public enum ParentType { ASSESSMENT("assessment"), LESSON("lesson");
-        private final String v; ParentType(String v) { this.v = v; } public String getValue() { return v; } }
+    public enum ParentType {
+        ASSESSMENT("assessment"),
+        LESSON("lesson");
+        private final String v;
+
+        ParentType(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
 }

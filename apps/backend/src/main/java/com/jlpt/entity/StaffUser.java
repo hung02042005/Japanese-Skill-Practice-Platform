@@ -1,13 +1,18 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
+import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "staff_users")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@SQLRestriction("status <> 'DELETED' and status <> 'deleted'")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class StaffUser {
 
@@ -66,14 +71,37 @@ public class StaffUser {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @PreUpdate
-    protected void onUpdate() { updatedAt = LocalDateTime.now(); }
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     public enum StaffRole {
-        STAFF("staff"), STAFF_MANAGER("staff_manager");
-        private final String v; StaffRole(String v) { this.v = v; } public String getValue() { return v; }
+        STAFF("staff"),
+        STAFF_MANAGER("staff_manager");
+        private final String v;
+
+        StaffRole(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
     }
+
     public enum StaffStatus {
-        ACTIVE("active"), SUSPENDED("suspended"), PENDING("pending"), DELETED("deleted");
-        private final String v; StaffStatus(String v) { this.v = v; } public String getValue() { return v; }
+        ACTIVE("active"),
+        SUSPENDED("suspended"),
+        PENDING("pending"),
+        DELETED("deleted");
+        private final String v;
+
+        StaffStatus(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
     }
 }

@@ -1,13 +1,18 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
+import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "admin_users")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@SQLRestriction("status <> 'DELETED' and status <> 'deleted'")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class AdminUser {
 
@@ -73,9 +78,18 @@ public class AdminUser {
     }
 
     public enum AdminStatus {
-        ACTIVE("active"), SUSPENDED("suspended"), PENDING("pending"), DELETED("deleted");
+        ACTIVE("active"),
+        SUSPENDED("suspended"),
+        PENDING("pending"),
+        DELETED("deleted");
         private final String value;
-        AdminStatus(String value) { this.value = value; }
-        public String getValue() { return value; }
+
+        AdminStatus(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 }

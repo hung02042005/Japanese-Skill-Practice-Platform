@@ -1,14 +1,17 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "student_submissions")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class StudentSubmission {
 
@@ -106,10 +109,37 @@ public class StudentSubmission {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @PreUpdate
-    protected void onUpdate() { updatedAt = LocalDateTime.now(); }
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
-    public enum SubmissionType { SPEAKING("speaking"), HANDWRITING("handwriting");
-        private final String v; SubmissionType(String v) { this.v = v; } public String getValue() { return v; } }
-    public enum SubmissionStatus { PENDING("pending"), AI_GRADED("ai_graded"), GRADED("graded"), REJECTED("rejected");
-        private final String v; SubmissionStatus(String v) { this.v = v; } public String getValue() { return v; } }
+    public enum SubmissionType {
+        SPEAKING("speaking"),
+        HANDWRITING("handwriting");
+        private final String v;
+
+        SubmissionType(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
+
+    public enum SubmissionStatus {
+        PENDING("pending"),
+        AI_GRADED("ai_graded"),
+        GRADED("graded"),
+        REJECTED("rejected");
+        private final String v;
+
+        SubmissionStatus(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
 }

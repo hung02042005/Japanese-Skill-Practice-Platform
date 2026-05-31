@@ -1,13 +1,16 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "notifications")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Notification {
 
@@ -71,8 +74,36 @@ public class Notification {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public enum NotificationType { NEWS("news"), WARNING("warning"), PROMOTION("promotion"), SYSTEM("system"), ACHIEVEMENT("achievement"), REMINDER("reminder");
-        private final String v; NotificationType(String v) { this.v = v; } public String getValue() { return v; } }
-    public enum Channel { IN_APP("in_app"), EMAIL("email"), BOTH("both");
-        private final String v; Channel(String v) { this.v = v; } public String getValue() { return v; } }
+    public enum NotificationType {
+        NEWS("news"),
+        WARNING("warning"),
+        PROMOTION("promotion"),
+        SYSTEM("system"),
+        ACHIEVEMENT("achievement"),
+        REMINDER("reminder");
+        private final String v;
+
+        NotificationType(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
+
+    public enum Channel {
+        IN_APP("in_app"),
+        EMAIL("email"),
+        BOTH("both");
+        private final String v;
+
+        Channel(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
 }

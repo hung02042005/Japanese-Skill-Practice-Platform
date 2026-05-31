@@ -1,14 +1,17 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "test_attempts")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class TestAttempt {
 
@@ -65,10 +68,51 @@ public class TestAttempt {
     @Builder.Default
     private AttemptStatus status = AttemptStatus.IN_PROGRESS;
 
-    public enum AttemptType { EXAM("exam"), QUIZ("quiz"), PRACTICE("practice"), READING("reading"), LISTENING("listening");
-        private final String v; AttemptType(String v) { this.v = v; } public String getValue() { return v; } }
-    public enum ParentType { ASSESSMENT("assessment"), LESSON("lesson"), RANDOM_PRACTICE("random_practice");
-        private final String v; ParentType(String v) { this.v = v; } public String getValue() { return v; } }
-    public enum AttemptStatus { IN_PROGRESS("in_progress"), SUBMITTED("submitted"), AUTO_SUBMITTED("auto_submitted"), ABANDONED("abandoned");
-        private final String v; AttemptStatus(String v) { this.v = v; } public String getValue() { return v; } }
+    public enum AttemptType {
+        EXAM("exam"),
+        QUIZ("quiz"),
+        PRACTICE("practice"),
+        READING("reading"),
+        LISTENING("listening");
+        private final String v;
+
+        AttemptType(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
+
+    public enum ParentType {
+        ASSESSMENT("assessment"),
+        LESSON("lesson"),
+        RANDOM_PRACTICE("random_practice");
+        private final String v;
+
+        ParentType(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
+
+    public enum AttemptStatus {
+        IN_PROGRESS("in_progress"),
+        SUBMITTED("submitted"),
+        AUTO_SUBMITTED("auto_submitted"),
+        ABANDONED("abandoned");
+        private final String v;
+
+        AttemptStatus(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
 }

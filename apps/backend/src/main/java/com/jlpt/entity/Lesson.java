@@ -1,13 +1,16 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "lessons")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Lesson {
 
@@ -72,12 +75,41 @@ public class Lesson {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @PreUpdate
-    protected void onUpdate() { updatedAt = LocalDateTime.now(); }
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
-    public enum LessonType { LESSON("lesson"), READING("reading"), LISTENING("listening"), SPEAKING("speaking");
-        private final String v; LessonType(String v) { this.v = v; } public String getValue() { return v; } }
+    public enum LessonType {
+        LESSON("lesson"),
+        READING("reading"),
+        LISTENING("listening"),
+        SPEAKING("speaking");
+        private final String v;
+
+        LessonType(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
+
     public enum LessonStatus {
-        DRAFT("draft"), PENDING_REVIEW("pending_review"), REJECTED("rejected"),
-        PUBLISHED("published"), ARCHIVED("archived"), DELETED("deleted");
-        private final String v; LessonStatus(String v) { this.v = v; } public String getValue() { return v; } }
+        DRAFT("draft"),
+        PENDING_REVIEW("pending_review"),
+        REJECTED("rejected"),
+        PUBLISHED("published"),
+        ARCHIVED("archived"),
+        DELETED("deleted");
+        private final String v;
+
+        LessonStatus(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
 }

@@ -1,13 +1,16 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "questions")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Question {
 
@@ -83,10 +86,40 @@ public class Question {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @PreUpdate
-    protected void onUpdate() { updatedAt = LocalDateTime.now(); }
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
-    public enum QuestionType { MULTIPLE_CHOICE("multiple_choice"), FILL_BLANK("fill_blank"), TRUE_FALSE("true_false");
-        private final String v; QuestionType(String v) { this.v = v; } public String getValue() { return v; } }
-    public enum Skill { VOCABULARY("vocabulary"), GRAMMAR("grammar"), KANJI("kanji"), READING("reading"), LISTENING("listening"), MIXED("mixed");
-        private final String v; Skill(String v) { this.v = v; } public String getValue() { return v; } }
+    public enum QuestionType {
+        MULTIPLE_CHOICE("multiple_choice"),
+        FILL_BLANK("fill_blank"),
+        TRUE_FALSE("true_false");
+        private final String v;
+
+        QuestionType(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
+
+    public enum Skill {
+        VOCABULARY("vocabulary"),
+        GRAMMAR("grammar"),
+        KANJI("kanji"),
+        READING("reading"),
+        LISTENING("listening"),
+        MIXED("mixed");
+        private final String v;
+
+        Skill(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
 }

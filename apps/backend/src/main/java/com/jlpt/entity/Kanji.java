@@ -1,13 +1,16 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "kanji")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Kanji {
 
@@ -72,10 +75,25 @@ public class Kanji {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @PreUpdate
-    protected void onUpdate() { updatedAt = LocalDateTime.now(); }
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     public enum ContentStatus {
-        DRAFT("draft"), PENDING_REVIEW("pending_review"), REJECTED("rejected"),
-        PUBLISHED("published"), ARCHIVED("archived"), DELETED("deleted");
-        private final String v; ContentStatus(String v) { this.v = v; } public String getValue() { return v; } }
+        DRAFT("draft"),
+        PENDING_REVIEW("pending_review"),
+        REJECTED("rejected"),
+        PUBLISHED("published"),
+        ARCHIVED("archived"),
+        DELETED("deleted");
+        private final String v;
+
+        ContentStatus(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
 }
