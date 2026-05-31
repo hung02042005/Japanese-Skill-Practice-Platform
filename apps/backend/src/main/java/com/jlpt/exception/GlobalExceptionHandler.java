@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 @Slf4j
 @RestControllerAdvice
@@ -70,7 +70,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
     public ResponseEntity<ApiResponse<Void>> handleOptimisticLocking(ObjectOptimisticLockingFailureException ex) {
         log.warn("Optimistic locking failure (concurrent update/delete): {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(409, "Dữ liệu đã bị thay đổi hoặc không còn tồn tại do thao tác đồng thời."));
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(409, "Dữ liệu đã bị thay đổi hoặc không còn tồn tại do thao tác đồng thời."));
     }
 
     @ExceptionHandler(Exception.class)

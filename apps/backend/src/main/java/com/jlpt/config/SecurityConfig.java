@@ -28,7 +28,9 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private static final String[] PUBLIC_URLS = {"/api/auth/**", "/api/admin/auth/**", "/api/staff/auth/**", "/h2-console/**", "/actuator/health"};
+    private static final String[] PUBLIC_URLS = {
+        "/api/auth/**", "/api/admin/auth/**", "/api/staff/auth/**", "/h2-console/**", "/actuator/health"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

@@ -17,7 +17,8 @@ public class StaffUserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + staffUser.getStaffRole().name()));
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_" + staffUser.getStaffRole().name()));
     }
 
     @Override
@@ -37,8 +38,7 @@ public class StaffUserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        if (staffUser.getLockedUntil() != null
-                && staffUser.getLockedUntil().isAfter(java.time.LocalDateTime.now())) {
+        if (staffUser.getLockedUntil() != null && staffUser.getLockedUntil().isAfter(java.time.LocalDateTime.now())) {
             return false;
         }
         return staffUser.getStatus() != StaffUser.StaffStatus.SUSPENDED;

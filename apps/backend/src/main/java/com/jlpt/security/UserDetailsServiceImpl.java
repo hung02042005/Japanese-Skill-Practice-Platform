@@ -19,10 +19,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        throw new UsernameNotFoundException("Use loadUserByUsernameAndActorType instead");
+        // This is primarily used by AuthenticationManager during Student login
+        StudentUser user = studentUserRepository
+                .findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+        return new UserDetailsImpl(user);
     }
 
-    public UserDetails loadUserByUsernameAndActorType(String username, com.jlpt.entity.AuthToken.ActorType actorType) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsernameAndActorType(String username, com.jlpt.entity.AuthToken.ActorType actorType)
+            throws UsernameNotFoundException {
         if (actorType == com.jlpt.entity.AuthToken.ActorType.STUDENT) {
             StudentUser user = studentUserRepository
                     .findByEmail(username)

@@ -39,7 +39,8 @@ public class JwtProvider {
         return generateTokenFromUsername(userPrincipal.getUsername(), actorType, jwtRefreshExpirationMs);
     }
 
-    public String generateTokenFromUsername(String username, com.jlpt.entity.AuthToken.ActorType actorType, long expirationMs) {
+    public String generateTokenFromUsername(
+            String username, com.jlpt.entity.AuthToken.ActorType actorType, long expirationMs) {
         return Jwts.builder()
                 .subject(username)
                 .claim("actorType", actorType.name())
@@ -65,7 +66,9 @@ public class JwtProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("actorType", String.class);
-        return actorType != null ? com.jlpt.entity.AuthToken.ActorType.valueOf(actorType) : com.jlpt.entity.AuthToken.ActorType.STUDENT;
+        return actorType != null
+                ? com.jlpt.entity.AuthToken.ActorType.valueOf(actorType)
+                : com.jlpt.entity.AuthToken.ActorType.STUDENT;
     }
 
     public boolean validateJwtToken(String authToken) {

@@ -180,8 +180,10 @@ public class AuthService {
                 .findById(tokenEntity.getStudentId())
                 .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"));
 
-        String newAccessToken = jwtProvider.generateTokenFromUsername(user.getEmail(), AuthToken.ActorType.STUDENT, 900000); // 15 mins
-        String newRefreshToken = jwtProvider.generateTokenFromUsername(user.getEmail(), AuthToken.ActorType.STUDENT, 604800000); // 7 days
+        String newAccessToken =
+                jwtProvider.generateTokenFromUsername(user.getEmail(), AuthToken.ActorType.STUDENT, 900000); // 15 mins
+        String newRefreshToken = jwtProvider.generateTokenFromUsername(
+                user.getEmail(), AuthToken.ActorType.STUDENT, 604800000); // 7 days
 
         tokenEntity.setTokenValue(newRefreshToken);
         tokenEntity.setExpiresAt(LocalDateTime.now().plusDays(7));
@@ -314,8 +316,10 @@ public class AuthService {
         studentUserRepository.save(user);
 
         // Generate JWT tokens directly (no password involved)
-        String accessToken = jwtProvider.generateTokenFromUsername(user.getEmail(), AuthToken.ActorType.STUDENT, 900000L);
-        String refreshToken = jwtProvider.generateTokenFromUsername(user.getEmail(), AuthToken.ActorType.STUDENT, 604800000L);
+        String accessToken =
+                jwtProvider.generateTokenFromUsername(user.getEmail(), AuthToken.ActorType.STUDENT, 900000L);
+        String refreshToken =
+                jwtProvider.generateTokenFromUsername(user.getEmail(), AuthToken.ActorType.STUDENT, 604800000L);
 
         AuthToken tokenEntity = AuthToken.builder()
                 .actorType(AuthToken.ActorType.STUDENT)

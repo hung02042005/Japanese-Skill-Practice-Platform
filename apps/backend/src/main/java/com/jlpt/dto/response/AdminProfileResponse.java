@@ -1,9 +1,9 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Data
 @Builder

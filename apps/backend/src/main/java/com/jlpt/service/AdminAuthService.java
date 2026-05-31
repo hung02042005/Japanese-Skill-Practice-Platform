@@ -13,7 +13,6 @@ import com.jlpt.repository.AuthTokenRepository;
 import com.jlpt.security.JwtProvider;
 import dev.samstevens.totp.code.DefaultCodeGenerator;
 import dev.samstevens.totp.code.DefaultCodeVerifier;
-import dev.samstevens.totp.code.HashingAlgorithm;
 import dev.samstevens.totp.time.SystemTimeProvider;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -42,7 +41,8 @@ public class AdminAuthService {
         if (admin.getLockedUntil() != null && admin.getLockedUntil().isAfter(LocalDateTime.now())) {
             throw new BusinessException(429, "TOO_MANY_REQUESTS", "Quá nhiều lần thử. Vui lòng thử lại sau.");
         }
-        if (admin.getStatus() == AdminUser.AdminStatus.SUSPENDED || admin.getStatus() == AdminUser.AdminStatus.DELETED) {
+        if (admin.getStatus() == AdminUser.AdminStatus.SUSPENDED
+                || admin.getStatus() == AdminUser.AdminStatus.DELETED) {
             throw new BusinessException(403, "ACCOUNT_SUSPENDED", "Tài khoản bị vô hiệu hóa.");
         }
 
@@ -117,8 +117,10 @@ public class AdminAuthService {
         tokenEntity.setRevokedAt(LocalDateTime.now());
         authTokenRepository.save(tokenEntity);
 
-        String accessToken = jwtProvider.generateTokenFromUsername(admin.getEmail(), AuthToken.ActorType.ADMIN, 900000L);
-        String refreshToken = jwtProvider.generateTokenFromUsername(admin.getEmail(), AuthToken.ActorType.ADMIN, 604800000L);
+        String accessToken =
+                jwtProvider.generateTokenFromUsername(admin.getEmail(), AuthToken.ActorType.ADMIN, 900000L);
+        String refreshToken =
+                jwtProvider.generateTokenFromUsername(admin.getEmail(), AuthToken.ActorType.ADMIN, 604800000L);
 
         AuthToken refreshTokenEntity = AuthToken.builder()
                 .actorType(AuthToken.ActorType.ADMIN)

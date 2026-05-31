@@ -37,8 +37,7 @@ public class AdminUserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        if (adminUser.getLockedUntil() != null
-                && adminUser.getLockedUntil().isAfter(java.time.LocalDateTime.now())) {
+        if (adminUser.getLockedUntil() != null && adminUser.getLockedUntil().isAfter(java.time.LocalDateTime.now())) {
             return false;
         }
         return adminUser.getStatus() != AdminUser.AdminStatus.SUSPENDED;

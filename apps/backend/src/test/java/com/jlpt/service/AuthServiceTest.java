@@ -74,8 +74,10 @@ class AuthServiceTest {
         Authentication mockAuth = mock(Authentication.class);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(mockAuth);
-        when(jwtProvider.generateAccessToken(any(Authentication.class), eq(AuthToken.ActorType.STUDENT))).thenReturn("access-token");
-        when(jwtProvider.generateRefreshToken(any(Authentication.class), eq(AuthToken.ActorType.STUDENT))).thenReturn("refresh-token");
+        when(jwtProvider.generateAccessToken(any(Authentication.class), eq(AuthToken.ActorType.STUDENT)))
+                .thenReturn("access-token");
+        when(jwtProvider.generateRefreshToken(any(Authentication.class), eq(AuthToken.ActorType.STUDENT)))
+                .thenReturn("refresh-token");
         when(authTokenRepository.save(any(AuthToken.class))).thenReturn(new AuthToken());
 
         AuthResponse response = authService.login(loginRequest, "127.0.0.1");
