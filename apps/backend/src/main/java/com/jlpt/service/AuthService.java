@@ -74,8 +74,8 @@ public class AuthService {
             user.setLastLoginIp(ip);
             studentUserRepository.save(user);
 
-            String accessToken = jwtProvider.generateAccessToken(authentication);
-            String refreshToken = jwtProvider.generateRefreshToken(authentication);
+            String accessToken = jwtProvider.generateAccessToken(authentication, AuthToken.ActorType.STUDENT);
+            String refreshToken = jwtProvider.generateRefreshToken(authentication, AuthToken.ActorType.STUDENT);
 
             // Save refresh token
             AuthToken tokenEntity = AuthToken.builder()
@@ -180,8 +180,8 @@ public class AuthService {
                 .findById(tokenEntity.getStudentId())
                 .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"));
 
-        String newAccessToken = jwtProvider.generateTokenFromUsername(user.getEmail(), 900000); // 15 mins
-        String newRefreshToken = jwtProvider.generateTokenFromUsername(user.getEmail(), 604800000); // 7 days
+        String newAccessToken = jwtProvider.generateTokenFromUsername(user.getEmail(), AuthToken.ActorType.STUDENT, 900000); // 15 mins
+        String newRefreshToken = jwtProvider.generateTokenFromUsername(user.getEmail(), AuthToken.ActorType.STUDENT, 604800000); // 7 days
 
         tokenEntity.setTokenValue(newRefreshToken);
         tokenEntity.setExpiresAt(LocalDateTime.now().plusDays(7));
@@ -195,8 +195,10 @@ public class AuthService {
 
     @Transactional
     public void logout(com.jlpt.dto.request.LogoutRequest request) {
-        // Here you would invalidate the refresh token in the database
-        authTokenRepository.findByTokenValue(request.getRefreshToken()).ifPresent(authTokenRepository::delete);
+        authTokenRepository.findByTokenValue(request.getRefreshToken()).ifPresent(token -> {
+            token.setRevokedAt(LocalDateTime.now());
+            authTokenRepository.save(token);
+        });
     }
 
     @Transactional
@@ -312,8 +314,8 @@ public class AuthService {
         studentUserRepository.save(user);
 
         // Generate JWT tokens directly (no password involved)
-        String accessToken = jwtProvider.generateTokenFromUsername(user.getEmail(), 900000L);
-        String refreshToken = jwtProvider.generateTokenFromUsername(user.getEmail(), 604800000L);
+        String accessToken = jwtProvider.generateTokenFromUsername(user.getEmail(), AuthToken.ActorType.STUDENT, 900000L);
+        String refreshToken = jwtProvider.generateTokenFromUsername(user.getEmail(), AuthToken.ActorType.STUDENT, 604800000L);
 
         AuthToken tokenEntity = AuthToken.builder()
                 .actorType(AuthToken.ActorType.STUDENT)

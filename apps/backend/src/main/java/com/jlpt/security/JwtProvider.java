@@ -29,19 +29,20 @@ public class JwtProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateAccessToken(Authentication authentication) {
+    public String generateAccessToken(Authentication authentication, com.jlpt.entity.AuthToken.ActorType actorType) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-        return generateTokenFromUsername(userPrincipal.getUsername(), jwtAccessExpirationMs);
+        return generateTokenFromUsername(userPrincipal.getUsername(), actorType, jwtAccessExpirationMs);
     }
 
-    public String generateRefreshToken(Authentication authentication) {
+    public String generateRefreshToken(Authentication authentication, com.jlpt.entity.AuthToken.ActorType actorType) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-        return generateTokenFromUsername(userPrincipal.getUsername(), jwtRefreshExpirationMs);
+        return generateTokenFromUsername(userPrincipal.getUsername(), actorType, jwtRefreshExpirationMs);
     }
 
-    public String generateTokenFromUsername(String username, long expirationMs) {
+    public String generateTokenFromUsername(String username, com.jlpt.entity.AuthToken.ActorType actorType, long expirationMs) {
         return Jwts.builder()
                 .subject(username)
+                .claim("actorType", actorType.name())
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + expirationMs))
                 .signWith(getSigningKey())
@@ -55,6 +56,16 @@ public class JwtProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+
+    public com.jlpt.entity.AuthToken.ActorType getActorTypeFromJwtToken(String token) {
+        String actorType = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("actorType", String.class);
+        return actorType != null ? com.jlpt.entity.AuthToken.ActorType.valueOf(actorType) : com.jlpt.entity.AuthToken.ActorType.STUDENT;
     }
 
     public boolean validateJwtToken(String authToken) {

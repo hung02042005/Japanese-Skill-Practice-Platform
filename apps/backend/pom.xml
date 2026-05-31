@@ -76,6 +76,13 @@
             <artifactId>flyway-sqlserver</artifactId>
         </dependency>
 
+        <!-- TOTP for Admin 2FA -->
+        <dependency>
+            <groupId>dev.samstevens.totp</groupId>
+            <artifactId>totp</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+
         <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

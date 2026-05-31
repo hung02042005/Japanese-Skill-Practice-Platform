@@ -1,4 +1,6 @@
-﻿spring:
+spring:
+  profiles:
+    active: dev
   application:
     name: jlpt-backend
 
@@ -11,7 +13,7 @@
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: false
     properties:
       hibernate:
@@ -26,7 +28,7 @@ server:
 
 # JWT Configuration (override in production)
 jwt:
-  secret: jlpt-dev-secret-key-must-be-replaced-in-production-min-256-bits
+  secret: amxwdC1kZXYtc2VjcmV0LWtleS1tdXN0LWJlLXJlcGxhY2VkLWluLXByb2R1Y3Rpb24tbWluLTI1Ni1iaXRz
   access-expiration-ms: 900000
   refresh-expiration-ms: 604800000
 

@@ -31,7 +31,7 @@ class JwtProviderTest {
 
     @Test
     void testGenerateAndValidateAccessToken() {
-        String token = jwtProvider.generateAccessToken(auth);
+        String token = jwtProvider.generateAccessToken(auth, com.jlpt.entity.AuthToken.ActorType.STUDENT);
         assertNotNull(token);
         assertTrue(jwtProvider.validateJwtToken(token));
         assertEquals("test@example.com", jwtProvider.getUserNameFromJwtToken(token));
@@ -39,7 +39,7 @@ class JwtProviderTest {
 
     @Test
     void testGenerateAndValidateRefreshToken() {
-        String token = jwtProvider.generateRefreshToken(auth);
+        String token = jwtProvider.generateRefreshToken(auth, com.jlpt.entity.AuthToken.ActorType.STUDENT);
         assertNotNull(token);
         assertTrue(jwtProvider.validateJwtToken(token));
     }
