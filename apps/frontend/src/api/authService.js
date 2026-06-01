@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -67,10 +67,26 @@ export async function register(data) {
 }
 
 export async function logout() {
-  const response = await api.post('/auth/logout');
+  const refreshToken = localStorage.getItem('refreshToken');
+  const response = await api.post('/auth/logout', { refreshToken });
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('jlpt-user');
+  return response.data;
+}
+
+export async function resendVerification(email) {
+  const response = await api.post('/auth/resend-verification', { email });
+  return response.data;
+}
+
+export async function verifyEmail(token) {
+  const response = await api.post('/auth/verify-email', { token });
+  return response.data;
+}
+
+export async function googleLogin(idToken) {
+  const response = await api.post('/auth/google', { idToken });
   return response.data;
 }
 

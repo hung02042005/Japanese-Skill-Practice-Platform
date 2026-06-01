@@ -56,9 +56,9 @@ export const forgotPasswordThunk = createAsyncThunk(
 
 export const resetPasswordThunk = createAsyncThunk(
   'auth/resetPassword',
-  async ({ token, newPassword }, { rejectWithValue }) => {
+  async ({ token, newPassword, confirmPassword }, { rejectWithValue }) => {
     try {
-      const res = await authService.resetPassword({ token, newPassword });
+      const res = await authService.resetPassword({ token, newPassword, confirmPassword });
       return res.data;
     } catch (err) {
       return rejectWithValue(
@@ -76,6 +76,22 @@ export const fetchProfileThunk = createAsyncThunk(
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message ?? 'Tải hồ sơ thất bại');
+    }
+  },
+);
+
+export const googleLoginThunk = createAsyncThunk(
+  'auth/googleLogin',
+  async ({ idToken }, { rejectWithValue }) => {
+    try {
+      const res = await authService.googleLogin(idToken);
+      const { accessToken, refreshToken, student } = res.data;
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('jlpt-user', JSON.stringify(student));
+      return student;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message ?? 'Đăng nhập Google thất bại');
     }
   },
 );
@@ -99,7 +115,7 @@ function loadPersistedUser() {
     const raw = localStorage.getItem('jlpt-user');
     const token = localStorage.getItem('accessToken');
     if (raw && token) return JSON.parse(raw);
-  } catch {}
+  } catch { /* ignore invalid localStorage data */ }
   return null;
 }
 
@@ -142,6 +158,21 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
       })
       .addCase(loginThunk.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // googleLogin
+      .addCase(googleLoginThunk.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(googleLoginThunk.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.user = action.payload;
+        state.isAuthenticated = true;
+      })
+      .addCase(googleLoginThunk.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       })

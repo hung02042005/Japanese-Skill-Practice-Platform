@@ -13,4 +13,6 @@ public interface AuthTokenRepository extends JpaRepository<AuthToken, Long> {
     Optional<AuthToken> findByTokenValueAndTokenType(String tokenValue, AuthToken.TokenType tokenType);
 
     void deleteByTokenValue(String tokenValue);
+
+    void deleteByStudentIdAndTokenType(Long studentId, AuthToken.TokenType tokenType);
 }

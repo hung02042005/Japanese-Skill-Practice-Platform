@@ -34,7 +34,7 @@ public class StudentUser {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private StudentStatus status = StudentStatus.ACTIVE;
+    private StudentStatus status = StudentStatus.PENDING;
 
     @Column(name = "suspend_reason", length = 500)
     private String suspendReason;

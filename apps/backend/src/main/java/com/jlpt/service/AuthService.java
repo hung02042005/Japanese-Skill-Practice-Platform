@@ -168,9 +168,12 @@ public class AuthService {
     @Transactional
     public com.jlpt.dto.response.RefreshTokenResponse refresh(com.jlpt.dto.request.RefreshTokenRequest request) {
         AuthToken tokenEntity = authTokenRepository
-                .findByTokenValue(request.getRefreshToken())
+                .findByTokenValueAndTokenType(request.getRefreshToken(), AuthToken.TokenType.REFRESH)
                 .orElseThrow(() -> new BusinessException(401, "INVALID_TOKEN", "Refresh token không hợp lệ"));
 
+        if (tokenEntity.getRevokedAt() != null) {
+            throw new BusinessException(401, "TOKEN_REVOKED", "Refresh token đã bị thu hồi");
+        }
         if (tokenEntity.getExpiresAt().isBefore(LocalDateTime.now())) {
             authTokenRepository.delete(tokenEntity);
             throw new BusinessException(401, "TOKEN_EXPIRED", "Refresh token đã hết hạn");
@@ -206,7 +209,7 @@ public class AuthService {
     @Transactional
     public void verifyEmail(com.jlpt.dto.request.VerifyEmailRequest request) {
         AuthToken tokenEntity = authTokenRepository
-                .findByTokenValue(request.getToken())
+                .findByTokenValueAndTokenType(request.getToken(), AuthToken.TokenType.EMAIL_VERIFICATION)
                 .orElseThrow(() -> new BusinessException(400, "INVALID_TOKEN", "Mã xác minh không hợp lệ"));
 
         if (tokenEntity.getExpiresAt().isBefore(LocalDateTime.now())) {
@@ -234,6 +237,8 @@ public class AuthService {
             throw new BusinessException(400, "ALREADY_VERIFIED", "Tài khoản đã được xác minh hoặc bị khóa");
         }
 
+        authTokenRepository.deleteByStudentIdAndTokenType(user.getId(), AuthToken.TokenType.EMAIL_VERIFICATION);
+
         String verificationToken = UUID.randomUUID().toString();
         AuthToken tokenEntity = AuthToken.builder()
                 .actorType(AuthToken.ActorType.STUDENT)
@@ -250,9 +255,14 @@ public class AuthService {
 
     @Transactional
     public void forgotPassword(com.jlpt.dto.request.ForgotPasswordRequest request) {
-        StudentUser user = studentUserRepository
-                .findByEmail(request.getEmail())
-                .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"));
+        Optional<StudentUser> userOpt = studentUserRepository.findByEmail(request.getEmail());
+        if (userOpt.isEmpty()) {
+            log.info("[AuthService] Forgot password requested for unknown email (suppressed for security)");
+            return;
+        }
+        StudentUser user = userOpt.get();
+
+        authTokenRepository.deleteByStudentIdAndTokenType(user.getId(), AuthToken.TokenType.PASSWORD_RESET);
 
         String resetToken = UUID.randomUUID().toString();
         AuthToken tokenEntity = AuthToken.builder()
@@ -366,7 +376,7 @@ public class AuthService {
         }
 
         AuthToken tokenEntity = authTokenRepository
-                .findByTokenValue(request.getToken())
+                .findByTokenValueAndTokenType(request.getToken(), AuthToken.TokenType.PASSWORD_RESET)
                 .orElseThrow(() -> new BusinessException(400, "INVALID_TOKEN", "Mã đặt lại mật khẩu không hợp lệ"));
 
         if (tokenEntity.getExpiresAt().isBefore(LocalDateTime.now())) {

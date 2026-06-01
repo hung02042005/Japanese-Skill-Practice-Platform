@@ -1,5 +1,12 @@
 /* ===== Register Page — SakuJi Theme ===== */
 
+.google-gsi-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}
+
 /* ─── Page shell ─── */
 .reg-page {
   min-height: 100vh;

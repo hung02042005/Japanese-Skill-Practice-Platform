@@ -1,18 +1,19 @@
 import { useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { registerThunk, clearError } from '../../store/slices/authSlice';
+import { registerThunk, clearError, googleLoginThunk } from '../../store/slices/authSlice';
+import { useGoogleSignIn } from '../../hooks/useGoogleSignIn';
 import AuthTopBar from '../../components/auth/AuthTopBar';
 import SakuChan from '../../components/auth/SakuChan';
 import EyeIcon from '../../components/auth/EyeIcon';
 import AuthBanner from '../../components/auth/AuthBanner';
 import AuthDivider from '../../components/auth/AuthDivider';
-import GoogleButton from '../../components/auth/GoogleButton';
 import PasswordStrengthBar from '../../components/auth/PasswordStrengthBar';
 import './Register.css';
 
 function Register() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { status, error } = useAppSelector((state) => state.auth);
 
   const [form, setForm]               = useState({ fullName: '', email: '', password: '', confirmPassword: '' });
@@ -23,6 +24,15 @@ function Register() {
 
   const isLoading = status === 'loading';
   const confirmOk = form.confirmPassword.length > 0 && form.password === form.confirmPassword;
+
+  const handleGoogleCredential = useCallback(async (idToken) => {
+    try {
+      await dispatch(googleLoginThunk({ idToken })).unwrap();
+      navigate('/');
+    } catch { /* lỗi đã được set vào Redux state */ }
+  }, [dispatch, navigate]);
+
+  const googleBtnRef = useGoogleSignIn(handleGoogleCredential);
 
   const setField = useCallback((name, value) => {
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -65,7 +75,12 @@ function Register() {
     if (!validate()) return;
     try {
       await dispatch(
-        registerThunk({ fullName: form.fullName, email: form.email, password: form.password }),
+        registerThunk({
+          fullName: form.fullName,
+          email: form.email,
+          password: form.password,
+          confirmPassword: form.confirmPassword,
+        }),
       ).unwrap();
       setIsDone(true);
     } catch {
@@ -246,12 +261,7 @@ function Register() {
 
           <AuthDivider />
 
-          <GoogleButton
-            onClick={() => { window.location.href = 'http://localhost:8080/api/auth/oauth/google'; }}
-            ariaLabel="Đăng ký bằng tài khoản Google"
-          >
-            Đăng ký với Google
-          </GoogleButton>
+          <div ref={googleBtnRef} className="google-gsi-container" aria-label="Đăng ký bằng Google" />
 
           <p className="auth-redirect">
             Đã có tài khoản?{' '}

@@ -4,10 +4,10 @@ spring:
       on-profile: dev
 
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=jlpt_dev;encrypt=true;trustServerCertificate=true
+    url: jdbc:sqlserver://localhost:1433;databaseName=JLPT_LearningDB;encrypt=true;trustServerCertificate=true
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     username: sa
-    password: ${DATABASE_PASSWORD}
+    password: sa
 
   jpa:
     properties:
@@ -20,6 +20,25 @@ spring:
   h2:
     console:
       enabled: false
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: datzozz1212@gmail.com
+    password: rptl gzay orro tscv
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+app:
+  frontend-url: http://localhost:3000
+
+google:
+  client-id: 551958940696-9iq0q2u3d64t7533fdr46q4155ta3t81.apps.googleusercontent.com
 
 logging:
   level:

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d921ebec-8460-497c-9d94-5374150b7a6d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/target/classes/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/@reduxjs_toolkit.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/@reduxjs_toolkit.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/@reduxjs_toolkit.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/@reduxjs_toolkit.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/_metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/axios.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/axios.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/axios.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/axios.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/chunk-DC5AMYBS.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/chunk-DC5AMYBS.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/chunk-DC5AMYBS.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/chunk-DC5AMYBS.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/chunk-NUMECXU6.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/chunk-NUMECXU6.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/chunk-RLJ2RCJQ.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/chunk-RLJ2RCJQ.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-dom.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-dom.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-dom.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-dom.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-dom_client.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-dom_client.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-dom_client.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-dom_client.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-redux.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-redux.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-redux.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-redux.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-router-dom.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-router-dom.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-router-dom.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react-router-dom.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react_jsx-dev-runtime.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react_jsx-dev-runtime.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react_jsx-dev-runtime.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react_jsx-dev-runtime.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react_jsx-runtime.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react_jsx-runtime.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react_jsx-runtime.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/node_modules/.vite/deps/react_jsx-runtime.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/api/authService.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/api/authService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/main.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/main.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/login/Login.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/login/Login.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/register/Register.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/register/Register.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/store/slices/authSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/store/slices/authSlice.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/vite.config.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 1,
+  "fromUser": false
+}]]></component>
+  <component name="ProjectId" id="3EV0pyyvGBeW4ftXjlY6IMk76gR" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.24374.151" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.24374.151" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d921ebec-8460-497c-9d94-5374150b7a6d" name="Changes" comment="" />
+      <created>1780248616168</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1780248616168</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

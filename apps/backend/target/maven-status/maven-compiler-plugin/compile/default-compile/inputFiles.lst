@@ -1,31 +1,67 @@
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\common\ApiResponse.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\config\SecurityConfig.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\AdminAuditLog.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\AdminUser.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Assessment.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\AttemptAnswer.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\AuthToken.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Flashcard.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\GrammarPoint.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\KanaCharacter.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Kanji.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Lesson.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Notification.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Question.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\QuestionAssignment.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\StaffUser.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\StudentContentProgress.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\StudentSubmission.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\StudentUser.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\SystemSetting.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\TestAttempt.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Ticket.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\TicketReply.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Vocabulary.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\exception\BadRequestException.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\exception\BusinessRuleException.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\exception\DuplicateResourceException.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\exception\ForbiddenException.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\exception\GlobalExceptionHandler.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\exception\ResourceNotFoundException.java
-D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\JlptApplication.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\common\ApiResponse.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\config\AsyncConfig.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\config\SecurityConfig.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\controller\auth\AdminAuthController.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\controller\auth\AuthController.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\controller\student\StudentController.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\AdminLoginRequest.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\ChangePasswordRequest.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\ForgotPasswordRequest.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\GoogleTokenRequest.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\LoginRequest.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\LogoutRequest.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\RefreshTokenRequest.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\RegisterRequest.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\ResendVerificationRequest.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\ResetPasswordRequest.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\UpdateProfileRequest.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\Verify2FaRequest.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\VerifyEmailRequest.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\response\AdminAuthResponse.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\response\AdminProfileResponse.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\response\AuthResponse.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\response\RefreshTokenResponse.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\response\StudentResponse.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\AdminAuditLog.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\AdminUser.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Assessment.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\AttemptAnswer.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\AuthToken.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Flashcard.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\GrammarPoint.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\KanaCharacter.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Kanji.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Lesson.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Notification.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Question.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\QuestionAssignment.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\StaffUser.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\StudentContentProgress.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\StudentSubmission.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\StudentUser.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\SystemSetting.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\TestAttempt.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Ticket.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\TicketReply.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\entity\Vocabulary.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\exception\BadRequestException.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\exception\BusinessException.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\exception\BusinessRuleException.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\exception\DuplicateResourceException.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\exception\ForbiddenException.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\exception\GlobalExceptionHandler.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\exception\ResourceNotFoundException.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\JlptApplication.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\repository\AdminUserRepository.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\repository\AuthTokenRepository.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\repository\StaffUserRepository.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\repository\StudentUserRepository.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\security\AdminUserDetailsImpl.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\security\JwtAuthenticationFilter.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\security\JwtProvider.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\security\StaffUserDetailsImpl.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\security\UserDetailsImpl.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\security\UserDetailsServiceImpl.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\service\AdminAuthService.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\service\AuthService.java
+C:\Users\Tien Dat\OneDrive\Documents\GitHub\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\service\EmailService.java

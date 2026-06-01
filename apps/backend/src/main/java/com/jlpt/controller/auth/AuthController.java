@@ -30,8 +30,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse<StudentResponse>> register(@Valid @RequestBody RegisterRequest request) {
         StudentResponse response = authService.register(request);
         return ResponseEntity.status(201)
-                .body(ApiResponse.success(
-                        "Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản.", response));
+                .body(ApiResponse.<StudentResponse>builder()
+                        .status(201)
+                        .message("Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản.")
+                        .data(response)
+                        .build());
     }
 
     @PostMapping("/refresh")

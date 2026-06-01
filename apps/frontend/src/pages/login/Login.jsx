@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { loginThunk, clearError } from '../../store/slices/authSlice';
+import { loginThunk, clearError, googleLoginThunk } from '../../store/slices/authSlice';
+import { resendVerification } from '../../api/authService';
+import { useGoogleSignIn } from '../../hooks/useGoogleSignIn';
 import AuthTopBar from '../../components/auth/AuthTopBar';
 import SakuChan from '../../components/auth/SakuChan';
 import EyeIcon from '../../components/auth/EyeIcon';
 import AuthBanner from '../../components/auth/AuthBanner';
 import AuthDivider from '../../components/auth/AuthDivider';
-import GoogleButton from '../../components/auth/GoogleButton';
 import './Login.css';
 
 function Login() {
@@ -19,6 +20,16 @@ function Login() {
   const [password, setPassword]       = useState('');
   const [showPwd, setShowPwd]         = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [resendStatus, setResendStatus] = useState('idle'); // 'idle' | 'loading' | 'done'
+
+  const handleGoogleCredential = useCallback(async (idToken) => {
+    try {
+      await dispatch(googleLoginThunk({ idToken })).unwrap();
+      navigate('/');
+    } catch { /* lỗi đã được set vào Redux state */ }
+  }, [dispatch, navigate]);
+
+  const googleBtnRef = useGoogleSignIn(handleGoogleCredential);
 
   const isLoading = status === 'loading';
 
@@ -51,7 +62,7 @@ function Login() {
     if (!validateForm()) return;
     try {
       await dispatch(loginThunk({ email, password })).unwrap();
-      navigate('/dashboard');
+      navigate('/');
     } catch {
       /* lỗi API đã được set vào Redux state */
     }
@@ -79,7 +90,27 @@ function Login() {
           {needVerify && (
             <AuthBanner type="info">
               {error}{' '}
-              <Link to="/register" className="auth-banner-link">Gửi lại email xác minh</Link>
+              {resendStatus === 'done' ? (
+                <span className="auth-banner-link">Đã gửi lại!</span>
+              ) : (
+                <button
+                  type="button"
+                  className="auth-banner-link"
+                  disabled={resendStatus === 'loading'}
+                  onClick={async () => {
+                    if (!email) return;
+                    setResendStatus('loading');
+                    try {
+                      await resendVerification(email);
+                      setResendStatus('done');
+                    } catch {
+                      setResendStatus('idle');
+                    }
+                  }}
+                >
+                  {resendStatus === 'loading' ? 'Đang gửi...' : 'Gửi lại email xác minh'}
+                </button>
+              )}
             </AuthBanner>
           )}
           {error && !isLocked && !needVerify && (
@@ -151,12 +182,7 @@ function Login() {
 
           <AuthDivider />
 
-          <GoogleButton
-            onClick={() => { window.location.href = 'http://localhost:8080/api/auth/oauth/google'; }}
-            ariaLabel="Đăng nhập bằng tài khoản Google"
-          >
-            Tiếp tục với Google
-          </GoogleButton>
+          <div ref={googleBtnRef} className="google-gsi-container" aria-label="Đăng nhập bằng Google" />
 
           <p className="auth-redirect">
             Chưa có tài khoản?{' '}
