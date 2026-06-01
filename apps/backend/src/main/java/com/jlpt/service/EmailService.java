@@ -33,6 +33,15 @@ public class EmailService {
     }
 
     @Async
+    public void sendStaffInvitationEmail(String toEmail, String token) {
+        String setupLink = frontendUrl + "/staff/setup-password?token=" + token;
+        String subject = "[JLPT Platform] Lời mời tham gia hệ thống — Thiết lập mật khẩu";
+        String body = buildStaffInvitationEmailBody(setupLink);
+        sendHtmlEmail(toEmail, subject, body);
+        log.info("[EmailService] Staff invitation email sent to: {}", toEmail);
+    }
+
+    @Async
     public void sendPasswordResetEmail(String toEmail, String token) {
         String resetLink = frontendUrl + "/reset-password?token=" + token;
         String subject = "[JLPT Platform] Đặt lại mật khẩu";
@@ -53,6 +62,55 @@ public class EmailService {
         } catch (Exception e) {
             log.error("[EmailService] Failed to send email to {}: {}", to, e.getMessage(), e);
         }
+    }
+
+    private String buildStaffInvitationEmailBody(String setupLink) {
+        return """
+                <!DOCTYPE html>
+                <html lang="vi">
+                <head><meta charset="UTF-8"></head>
+                <body style="font-family: 'Segoe UI', Arial, sans-serif; background:#f4f6fb; margin:0; padding:0;">
+                  <table width="100%%" cellpadding="0" cellspacing="0" style="background:#f4f6fb; padding:40px 0;">
+                    <tr><td align="center">
+                      <table width="560" cellpadding="0" cellspacing="0"
+                             style="background:#ffffff; border-radius:12px; box-shadow:0 4px 24px rgba(0,0,0,0.08); overflow:hidden;">
+                        <tr>
+                          <td style="background:linear-gradient(135deg,#0f766e,#0891b2); padding:36px 40px; text-align:center;">
+                            <h1 style="color:#ffffff; margin:0; font-size:26px; font-weight:700;">🎌 JLPT Platform</h1>
+                            <p style="color:#a5f3fc; margin:8px 0 0; font-size:14px;">Lời mời tham gia hệ thống</p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="padding:40px;">
+                            <h2 style="color:#1e1b4b; margin:0 0 16px; font-size:20px;">Chào mừng bạn đến với JLPT Platform!</h2>
+                            <p style="color:#4b5563; font-size:15px; line-height:1.7; margin:0 0 24px;">
+                              Bạn đã được Admin mời tham gia hệ thống với vai trò <strong>Staff</strong>.
+                              Vui lòng nhấn nút bên dưới để thiết lập mật khẩu và kích hoạt tài khoản.
+                            </p>
+                            <div style="text-align:center; margin:32px 0;">
+                              <a href="%s"
+                                 style="background:linear-gradient(135deg,#0f766e,#0891b2); color:#ffffff;
+                                        padding:14px 36px; border-radius:8px; text-decoration:none;
+                                        font-size:16px; font-weight:600; display:inline-block;">
+                                🔑 Thiết lập mật khẩu
+                              </a>
+                            </div>
+                            <p style="color:#9ca3af; font-size:13px; line-height:1.6;">
+                              Link có hiệu lực trong <strong>24 giờ</strong>. Nếu bạn không mong đợi lời mời này, hãy bỏ qua email này.
+                            </p>
+                            <hr style="border:none; border-top:1px solid #e5e7eb; margin:24px 0;">
+                            <p style="color:#9ca3af; font-size:12px; text-align:center; margin:0;">
+                              © 2025 JLPT E-Learning Platform. Mọi quyền được bảo lưu.
+                            </p>
+                          </td>
+                        </tr>
+                      </table>
+                    </td></tr>
+                  </table>
+                </body>
+                </html>
+                """
+                .formatted(setupLink);
     }
 
     private String buildVerificationEmailBody(String verifyLink) {
