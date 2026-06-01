@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { loginThunk, verifyMfaThunk, clearError } from '../../store/slices/authSlice';
+import { loginThunk, verifyMfaThunk, clearError, loginWithGoogleThunk } from '../../store/slices/authSlice';
 import AuthTopBar from '../../components/auth/AuthTopBar';
 import SakuChan from '../../components/auth/SakuChan';
 import EyeIcon from '../../components/auth/EyeIcon';
 import AuthBanner from '../../components/auth/AuthBanner';
 import AuthDivider from '../../components/auth/AuthDivider';
-import GoogleButton from '../../components/auth/GoogleButton';
 import './Login.css';
 
 function Login() {
@@ -49,6 +49,15 @@ function Login() {
       }
     } catch {
       /* Lỗi được set vào Redux state */
+    }
+  }
+
+  async function handleGoogleSuccess(credentialResponse) {
+    try {
+      await dispatch(loginWithGoogleThunk(credentialResponse.credential)).unwrap();
+      navigate('/dashboard');
+    } catch {
+      /* lỗi đã set vào Redux state */
     }
   }
 
@@ -101,7 +110,7 @@ function Login() {
             </form>
 
             <p className="auth-redirect">
-              <button 
+              <button
                 onClick={() => {
                   dispatch(clearError());
                   setOtpCode('');
@@ -199,12 +208,16 @@ function Login() {
 
           <AuthDivider />
 
-          <GoogleButton
-            onClick={() => { window.location.href = 'http://localhost:8080/api/auth/oauth/google'; }}
-            ariaLabel="Đăng nhập bằng tài khoản Google"
-          >
-            Tiếp tục với Google
-          </GoogleButton>
+          <div className="google-login-wrapper">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => dispatch(clearError())}
+              text="signin_with"
+              shape="rectangular"
+              locale="vi"
+              width="100%"
+            />
+          </div>
 
           <p className="auth-redirect">
             Chưa có tài khoản?{' '}

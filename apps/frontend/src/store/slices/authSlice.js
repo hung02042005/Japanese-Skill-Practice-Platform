@@ -137,6 +137,27 @@ export const updateProfileThunk = createAsyncThunk(
   },
 );
 
+export const loginWithGoogleThunk = createAsyncThunk(
+  'auth/loginWithGoogle',
+  async (idToken, { rejectWithValue }) => {
+    try {
+      const res = await authService.googleLogin(idToken);
+      // Backend AuthResponse: { accessToken, refreshToken, student }
+      const { accessToken, refreshToken, student } = res.data;
+      const userData = { ...student, role: 'STUDENT' };
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('jlpt-user', JSON.stringify(userData));
+      return userData;
+    } catch (err) {
+      if (!err.response) {
+        return rejectWithValue('Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối và thử lại.');
+      }
+      return rejectWithValue(err.response.data?.message ?? 'Đăng nhập bằng Google thất bại');
+    }
+  },
+);
+
 // ─── Rehydrate từ localStorage khi app khởi động ──────────────────────────────
 
 function loadPersistedUser() {
@@ -313,6 +334,21 @@ const authSlice = createSlice({
         state.status = 'succeeded';
       })
       .addCase(verifyEmailThunk.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // loginWithGoogle
+      .addCase(loginWithGoogleThunk.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(loginWithGoogleThunk.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.user = action.payload;
+        state.isAuthenticated = true;
+      })
+      .addCase(loginWithGoogleThunk.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       });

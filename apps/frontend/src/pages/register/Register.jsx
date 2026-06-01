@@ -1,16 +1,17 @@
 import { useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { registerThunk, clearError } from '../../store/slices/authSlice';
+import { registerThunk, clearError, loginWithGoogleThunk } from '../../store/slices/authSlice';
 import AuthTopBar from '../../components/auth/AuthTopBar';
 import SakuChan from '../../components/auth/SakuChan';
 import EyeIcon from '../../components/auth/EyeIcon';
 import AuthBanner from '../../components/auth/AuthBanner';
 import AuthDivider from '../../components/auth/AuthDivider';
-import GoogleButton from '../../components/auth/GoogleButton';
 import './Register.css';
 
 function Register() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { status, error } = useAppSelector((state) => state.auth);
 
@@ -36,6 +37,15 @@ function Register() {
       setIsDone(true);
     } catch {
       /* lỗi API đã được set vào Redux state */
+    }
+  }
+
+  async function handleGoogleSuccess(credentialResponse) {
+    try {
+      await dispatch(loginWithGoogleThunk(credentialResponse.credential)).unwrap();
+      navigate('/dashboard');
+    } catch {
+      /* lỗi đã set vào Redux state */
     }
   }
 
@@ -189,12 +199,16 @@ function Register() {
 
           <AuthDivider />
 
-          <GoogleButton
-            onClick={() => { window.location.href = 'http://localhost:8080/api/auth/oauth/google'; }}
-            ariaLabel="Đăng ký bằng tài khoản Google"
-          >
-            Đăng ký với Google
-          </GoogleButton>
+          <div className="google-login-wrapper">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => dispatch(clearError())}
+              text="signup_with"
+              shape="rectangular"
+              locale="vi"
+              width="100%"
+            />
+          </div>
 
           <p className="auth-redirect">
             Đã có tài khoản?{' '}

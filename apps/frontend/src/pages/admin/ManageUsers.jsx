@@ -11,9 +11,9 @@ import './ManageUsers.css';
 const PAGE_SIZE = 20;
 
 const TYPE_TABS = [
-  { value: 'student', icon: '📚', label: 'Học viên' },
-  { value: 'staff',   icon: '🌿', label: 'Nhân viên' },
-  { value: 'admin',   icon: '👑', label: 'Quản trị' },
+  { value: 'student', label: 'Học viên' },
+  { value: 'staff',   label: 'Nhân viên' },
+  { value: 'admin',   label: 'Quản trị' },
 ];
 
 const STATUS_LABELS = {
@@ -146,6 +146,131 @@ function IcTrash() {
     </svg>
   );
 }
+
+/* Header chip — mini crown to replace generic user-group icon */
+function IcAdminChip() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 22 18" fill="none" aria-hidden="true">
+      <path d="M2 14L5 5l4.5 4L11 2l1.5 7L17 5l3 9H2z" fill="currentColor" opacity="0.82" strokeLinejoin="round"/>
+      <rect x="2" y="14.5" width="18" height="2.5" rx="1.25" fill="currentColor" opacity="0.82"/>
+      <circle cx="11" cy="2" r="1.3" fill="currentColor"/>
+    </svg>
+  );
+}
+
+/* Add staff button — sprouting leaf + plus mark */
+function IcAddStaff() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 21v-8M12 13C9 13 5.5 10.5 4 6c3.5.5 6.5 3.5 8 7M12 13c3 0 6.5-2.5 8-7-3.5.5-6.5 3.5-8 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M12 7V2M9.5 4.5h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+/* Search — magnifying glass with soft inner bloom */
+function IcSearchGlass() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="10.5" cy="10.5" r="7.5" stroke="currentColor" strokeWidth="2"/>
+      <circle cx="10.5" cy="10.5" r="3" fill="currentColor" opacity="0.1"/>
+      <ellipse cx="10.5" cy="7.5" rx="1.1" ry="1.8" fill="currentColor" opacity="0.18"/>
+      <ellipse cx="10.5" cy="7.5" rx="1.1" ry="1.8" fill="currentColor" opacity="0.18" transform="rotate(90 10.5 10.5)"/>
+      <path d="M16.5 16.5l4.2 4.2" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+/* ═══════════════════════════════════════
+   TYPE TAB ICONS
+   Dẫn xuất từ heroicons nhưng thêm
+   chi tiết riêng theo theme SakuJi.
+═══════════════════════════════════════ */
+
+/* Student — graduation cap + petal tassel
+   Base: heroicons academic-cap, simplified */
+function TabIconStudent() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      {/* Diamond cap top */}
+      <path d="M12 3L2 9l10 6 10-6-10-6z"
+        stroke="currentColor" strokeWidth="1.8"
+        strokeLinejoin="round"
+        fill="currentColor" opacity="0.12"/>
+      {/* Cap body */}
+      <path d="M6 12.5v4C6 18.43 8.686 20 12 20s6-1.57 6-3.5v-4"
+        stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+      {/* Tassel string */}
+      <path d="M20.5 9.5v5"
+        stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+      {/* Petal at tassel tip */}
+      <ellipse cx="20.5" cy="15.5" rx="1.3" ry="2"
+        fill="currentColor" opacity="0.45"
+        transform="rotate(12 20.5 15.5)"/>
+    </svg>
+  );
+}
+
+/* Staff — person silhouette + leaf sprouting from shoulder
+   Base: heroicons user, added leaf accent */
+function TabIconStaff() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      {/* Head */}
+      <circle cx="12" cy="7" r="3.5"
+        stroke="currentColor" strokeWidth="1.8"/>
+      {/* Shoulders */}
+      <path d="M4.5 21c0-4.14 3.36-7.5 7.5-7.5s7.5 3.36 7.5 7.5"
+        stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+      {/* Leaf sprouting from right shoulder — organic accent */}
+      <path d="M17.5 11c0-2.5 3-4.5 5.5-4.5C22.5 9 20.5 11 17.5 11z"
+        fill="currentColor" opacity="0.38"
+        stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+      <path d="M17.5 11c.5-1.5 2.5-3 4-3"
+        stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.5"/>
+    </svg>
+  );
+}
+
+/* Admin — 5-point star + small petal crown tip
+   Base: heroicons star, drawn with exact geometry */
+function TabIconAdmin() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      {/* 5-point star — outer r=10, inner r=4.5 */}
+      <path d="M12 2l2.6 8.4H22l-6.3 4.6 2.4 8-6.1-4.4-6.1 4.4 2.4-8L2 10.4h7.4L12 2z"
+        stroke="currentColor" strokeWidth="1.8"
+        strokeLinejoin="round" strokeLinecap="round"
+        fill="currentColor" opacity="0.13"/>
+      {/* Petal accent at crown tip */}
+      <ellipse cx="12" cy="2.8" rx="1.1" ry="1.7"
+        fill="currentColor" opacity="0.42"
+        transform="rotate(0 12 2.8)"/>
+    </svg>
+  );
+}
+
+/* Role modal checkmark — sakura bloom check */
+function IcBloomCheck() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <ellipse cx="12" cy="7"  rx="1.8" ry="3.2" fill="var(--color-primary)" opacity="0.26" transform="rotate(0 12 12)"/>
+      <ellipse cx="12" cy="7"  rx="1.8" ry="3.2" fill="var(--color-primary)" opacity="0.26" transform="rotate(72 12 12)"/>
+      <ellipse cx="12" cy="7"  rx="1.8" ry="3.2" fill="var(--color-primary)" opacity="0.26" transform="rotate(144 12 12)"/>
+      <ellipse cx="12" cy="7"  rx="1.8" ry="3.2" fill="var(--color-primary)" opacity="0.26" transform="rotate(216 12 12)"/>
+      <ellipse cx="12" cy="7"  rx="1.8" ry="3.2" fill="var(--color-primary)" opacity="0.26" transform="rotate(288 12 12)"/>
+      <circle cx="12" cy="12" r="4.5" fill="var(--color-primary)" opacity="0.14"/>
+      <path d="M9 12l2.2 2.2 4-4.5" stroke="var(--color-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+/* TAB_ICONS declared here, after all TabIcon* components */
+const TAB_ICONS = {
+  student: <TabIconStudent />,
+  staff:   <TabIconStaff />,
+  admin:   <TabIconAdmin />,
+};
 
 /* ═══════════════════════════════════════
    SHARED VISUAL SUB-COMPONENTS
@@ -383,12 +508,7 @@ function ChangeStaffRoleModal({ modal, onConfirm, onClose, isSubmitting }) {
                 <span className="mu-role-opt-label">{r.label}</span>
                 <span className="mu-role-opt-desc">{r.desc}</span>
               </div>
-              {selected===r.value && (
-                <svg className="mu-role-check" width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="11" fill="var(--color-primary)" opacity="0.12"/>
-                  <polyline points="7 12 10.5 15.5 17 8.5" stroke="var(--color-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              )}
+              {selected===r.value && <span className="mu-role-check"><IcBloomCheck /></span>}
             </label>
           ))}
         </div>
@@ -566,11 +686,7 @@ function ManageUsers() {
         <div className="mu-header-inner">
           <div className="mu-header-text">
             <span className="mu-header-chip">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
+              <IcAdminChip />
               Quản trị viên
             </span>
             <h1 className="mu-header-title">Quản lý Người Dùng</h1>
@@ -611,17 +727,14 @@ function ManageUsers() {
                 className={`mu-type-tab${activeType===tab.value?' mu-type-tab--on':''}`}
                 onClick={() => { setActiveType(tab.value); setSearch(''); setStatusFilter(''); setJlptFilter(''); setStaffRole(''); }}
               >
-                <span className="mu-tab-icon">{tab.icon}</span>
+                <span className="mu-tab-icon">{TAB_ICONS[tab.value]}</span>
                 {tab.label}
               </button>
             ))}
           </div>
           {activeType === 'staff' && (
             <button type="button" className="mu-btn mu-btn--primary mu-btn--add" onClick={() => setCreateStaff(true)}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                <line x1="5"  y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-              </svg>
+              <IcAddStaff />
               Tạo nhân viên mới
             </button>
           )}
@@ -630,10 +743,7 @@ function ManageUsers() {
         {/* Filter bar */}
         <div className="mu-filter-bar">
           <div className="mu-search">
-            <svg className="mu-search-ic" width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
-              <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
+            <span className="mu-search-ic"><IcSearchGlass /></span>
             <input
               type="text"
               className="mu-search-input"

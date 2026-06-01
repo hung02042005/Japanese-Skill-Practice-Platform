@@ -54,7 +54,9 @@ totp:
   encryption-key: ${TOTP_ENCRYPTION_KEY:c29tZS1hZXMtMjU2LWtleS1mb3ItZGV2ZWxvcG1lbnQ=}
 
 google:
-  client-id: 551958940696-9iq0q2u3d64t7533fdr46q4155ta3t81.apps.googleusercontent.com
+  client-id: 1026924631015-rdakmj5lvlb2d8jm5lddtu3s2g5qvacc.apps.googleusercontent.com
+  client-secret: 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
+
 
 logging:
   level:
