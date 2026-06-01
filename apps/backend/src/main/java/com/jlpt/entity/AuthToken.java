@@ -48,6 +48,11 @@ public class AuthToken {
     @Column(name = "revoked_at")
     private LocalDateTime revokedAt;
 
+    /** Tracks wrong TOTP entries for TFA_TEMP tokens (BR-35-05: revoke after 5 failures). */
+    @Column(name = "mfa_attempts", nullable = false)
+    @Builder.Default
+    private Integer mfaAttempts = 0;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

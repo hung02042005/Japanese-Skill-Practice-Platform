@@ -6,11 +6,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.jlpt.dto.request.LoginRequest;
-import com.jlpt.dto.response.AuthResponse;
+import com.jlpt.dto.response.LoginApiResponse;
 import com.jlpt.entity.AuthToken;
 import com.jlpt.entity.StudentUser;
 import com.jlpt.exception.BusinessException;
+import com.jlpt.repository.AdminUserRepository;
 import com.jlpt.repository.AuthTokenRepository;
+import com.jlpt.repository.StaffUserRepository;
 import com.jlpt.repository.StudentUserRepository;
 import com.jlpt.security.JwtProvider;
 import java.time.LocalDateTime;
@@ -48,6 +50,15 @@ class AuthServiceTest {
     @Mock
     private EmailService emailService;
 
+    @Mock
+    private AdminUserRepository adminUserRepository;
+
+    @Mock
+    private StaffUserRepository staffUserRepository;
+
+    @Mock
+    private AdminAuthService adminAuthService;
+
     @InjectMocks
     private AuthService authService;
 
@@ -78,7 +89,7 @@ class AuthServiceTest {
         when(jwtProvider.generateRefreshToken(mockAuth)).thenReturn("refresh-token");
         when(authTokenRepository.save(any(AuthToken.class))).thenReturn(new AuthToken());
 
-        AuthResponse response = authService.login(loginRequest, "127.0.0.1");
+        LoginApiResponse response = authService.login(loginRequest, "127.0.0.1");
 
         assertNotNull(response);
         assertEquals("access-token", response.getAccessToken());
@@ -143,8 +154,8 @@ class AuthServiceTest {
 
         BusinessException ex =
                 assertThrows(BusinessException.class, () -> authService.login(loginRequest, "127.0.0.1"));
-        assertEquals(429, ex.getStatus());
-        assertEquals("TOO_MANY_REQUESTS", ex.getErrorCode());
+        assertEquals(401, ex.getStatus());
+        assertEquals("INVALID_CREDENTIALS", ex.getErrorCode());
         assertEquals(5, mockUser.getLoginAttempts());
         assertNotNull(mockUser.getLockedUntil());
         verify(studentUserRepository).save(mockUser);

@@ -8,12 +8,19 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.jlpt.dto.request.GoogleTokenRequest;
 import com.jlpt.dto.request.LoginRequest;
 import com.jlpt.dto.request.RegisterRequest;
+import com.jlpt.dto.request.VerifyMfaRequest;
+import com.jlpt.dto.response.AdminVerifyMfaResponse;
 import com.jlpt.dto.response.AuthResponse;
+import com.jlpt.dto.response.LoginApiResponse;
 import com.jlpt.dto.response.StudentResponse;
+import com.jlpt.entity.AdminUser;
 import com.jlpt.entity.AuthToken;
+import com.jlpt.entity.StaffUser;
 import com.jlpt.entity.StudentUser;
 import com.jlpt.exception.BusinessException;
+import com.jlpt.repository.AdminUserRepository;
 import com.jlpt.repository.AuthTokenRepository;
+import com.jlpt.repository.StaffUserRepository;
 import com.jlpt.repository.StudentUserRepository;
 import com.jlpt.security.JwtProvider;
 import java.time.LocalDateTime;
@@ -39,20 +46,88 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
     private final StudentUserRepository studentUserRepository;
+    private final StaffUserRepository staffUserRepository;
+    private final AdminUserRepository adminUserRepository;
     private final AuthTokenRepository authTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final AdminAuthService adminAuthService;
 
     @Value("${google.client-id}")
     private String googleClientId;
 
+    /**
+     * Unified login endpoint for all roles (UC-35 §3.2).
+     * Lookup order: admin_users → staff_users → student_users.
+     * Admin always receives a 2FA challenge; staff/student receive tokens directly.
+     */
     @Transactional
-    public AuthResponse login(LoginRequest request, String ip) {
-        StudentUser user = studentUserRepository
-                .findByEmail(request.getEmail())
-                .orElseThrow(() -> new BusinessException(401, "INVALID_CREDENTIALS", "Email hoặc mật khẩu không đúng"));
+    public LoginApiResponse login(LoginRequest request, String ip) {
+        Optional<AdminUser> adminOpt = adminUserRepository.findByEmail(request.getEmail());
+        if (adminOpt.isPresent()) {
+            return adminAuthService.processAdminLogin(adminOpt.get(), request.getPassword(), ip);
+        }
 
-        // Check lock
+        Optional<StaffUser> staffOpt = staffUserRepository.findByEmail(request.getEmail());
+        if (staffOpt.isPresent()) {
+            return handleStaffLogin(staffOpt.get(), request.getPassword(), ip);
+        }
+
+        Optional<StudentUser> studentOpt = studentUserRepository.findByEmail(request.getEmail());
+        if (studentOpt.isPresent()) {
+            return handleStudentLogin(studentOpt.get(), request.getPassword(), ip);
+        }
+
+        // BR-35-09: generic error regardless of which table was checked
+        throw new BusinessException(401, "INVALID_CREDENTIALS", "Email hoặc mật khẩu không đúng");
+    }
+
+    /** Delegates admin 2FA verification to AdminAuthService. */
+    @Transactional
+    public AdminVerifyMfaResponse verifyMfa(VerifyMfaRequest request, String ip) {
+        return adminAuthService.verifyMfa(request, ip);
+    }
+
+    private LoginApiResponse handleStaffLogin(StaffUser staff, String rawPassword, String ip) {
+        if (staff.getLockedUntil() != null && staff.getLockedUntil().isAfter(LocalDateTime.now())) {
+            throw new BusinessException(429, "TOO_MANY_REQUESTS", "Quá nhiều lần thử. Vui lòng thử lại sau.");
+        }
+        if (staff.getStatus() == StaffUser.StaffStatus.SUSPENDED) {
+            throw new BusinessException(403, "ACCOUNT_SUSPENDED", "Tài khoản bị đình chỉ: " + staff.getSuspendReason());
+        }
+        if (!passwordEncoder.matches(rawPassword, staff.getPasswordHash())) {
+            staff.setLoginAttempts(staff.getLoginAttempts() + 1);
+            if (staff.getLoginAttempts() >= 5) {
+                staff.setLockedUntil(LocalDateTime.now().plusMinutes(15));
+            }
+            staffUserRepository.save(staff);
+            throw new BusinessException(401, "INVALID_CREDENTIALS", "Email hoặc mật khẩu không đúng");
+        }
+        staff.setLoginAttempts(0);
+        staff.setLastLoginAt(LocalDateTime.now());
+        staff.setLastLoginIp(ip);
+        staffUserRepository.save(staff);
+
+        String accessToken = jwtProvider.generateStaffAccessToken(staff.getId(), staff.getEmail());
+        String refreshToken = UUID.randomUUID().toString();
+        authTokenRepository.save(AuthToken.builder()
+                .actorType(AuthToken.ActorType.STAFF)
+                .staffId(staff.getId())
+                .tokenType(AuthToken.TokenType.REFRESH)
+                .tokenValue(refreshToken)
+                .expiresAt(LocalDateTime.now().plusDays(7))
+                .build());
+
+        log.info("[AuthService] Staff login success email={}", staff.getEmail());
+        return LoginApiResponse.builder()
+                .requiresTwoFactor(false)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .role("STAFF")
+                .build();
+    }
+
+    private LoginApiResponse handleStudentLogin(StudentUser user, String rawPassword, String ip) {
         if (user.getLockedUntil() != null && user.getLockedUntil().isAfter(LocalDateTime.now())) {
             throw new BusinessException(429, "TOO_MANY_REQUESTS", "Quá nhiều lần thử. Vui lòng thử lại sau.");
         }
@@ -62,12 +137,9 @@ public class AuthService {
         if (user.getStatus() == StudentUser.StudentStatus.PENDING) {
             throw new BusinessException(403, "EMAIL_NOT_VERIFIED", "Vui lòng xác minh email trước khi đăng nhập");
         }
-
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-
-            // Reset attempts on success
+                    new UsernamePasswordAuthenticationToken(user.getEmail(), rawPassword));
             user.setLoginAttempts(0);
             user.setLockedUntil(null);
             user.setLastLoginAt(LocalDateTime.now());
@@ -76,36 +148,29 @@ public class AuthService {
 
             String accessToken = jwtProvider.generateAccessToken(authentication);
             String refreshToken = jwtProvider.generateRefreshToken(authentication);
-
-            // Save refresh token
-            AuthToken tokenEntity = AuthToken.builder()
+            authTokenRepository.save(AuthToken.builder()
                     .actorType(AuthToken.ActorType.STUDENT)
                     .studentId(user.getId())
                     .tokenType(AuthToken.TokenType.REFRESH)
                     .tokenValue(refreshToken)
                     .expiresAt(LocalDateTime.now().plusDays(7))
-                    .build();
-            authTokenRepository.save(tokenEntity);
+                    .build());
 
-            log.info("[AuthService] Login success for email: {}", user.getEmail());
-
-            return AuthResponse.builder()
+            log.info("[AuthService] Student login success email={}", user.getEmail());
+            return LoginApiResponse.builder()
+                    .requiresTwoFactor(false)
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
-                    .student(mapToStudentResponse(user))
+                    .role("STUDENT")
+                    .user(mapToStudentResponse(user))
                     .build();
-
         } catch (BadCredentialsException ex) {
             user.setLoginAttempts(user.getLoginAttempts() + 1);
             if (user.getLoginAttempts() >= 5) {
                 user.setLockedUntil(LocalDateTime.now().plusMinutes(15));
-                studentUserRepository.save(user);
-                log.warn("[AuthService] Account locked for email: {}", user.getEmail());
-                throw new BusinessException(
-                        429, "TOO_MANY_REQUESTS", "Tài khoản tạm thời bị khóa do sai mật khẩu 5 lần.");
+                log.warn("[AuthService] Student account locked email={}", user.getEmail());
             }
             studentUserRepository.save(user);
-            log.warn("[AuthService] Login failed for email: {}", user.getEmail());
             throw new BusinessException(401, "INVALID_CREDENTIALS", "Email hoặc mật khẩu không đúng");
         }
     }
@@ -217,8 +282,7 @@ public class AuthService {
         user.setEmailVerifiedAt(LocalDateTime.now());
         studentUserRepository.save(user);
 
-        authTokenRepository.bulkDeleteByTokenValueAndType(
-                request.getToken(), AuthToken.TokenType.EMAIL_VERIFICATION);
+        authTokenRepository.bulkDeleteByTokenValueAndType(request.getToken(), AuthToken.TokenType.EMAIL_VERIFICATION);
     }
 
     @Transactional

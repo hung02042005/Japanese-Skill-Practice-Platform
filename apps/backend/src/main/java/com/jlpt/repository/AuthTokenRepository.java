@@ -21,6 +21,6 @@ public interface AuthTokenRepository extends JpaRepository<AuthToken, Long> {
 
     @Modifying
     @Query("DELETE FROM AuthToken t WHERE t.tokenValue = :tokenValue AND t.tokenType = :tokenType")
-    void bulkDeleteByTokenValueAndType(@Param("tokenValue") String tokenValue,
-                                       @Param("tokenType") AuthToken.TokenType tokenType);
+    void bulkDeleteByTokenValueAndType(
+            @Param("tokenValue") String tokenValue, @Param("tokenType") AuthToken.TokenType tokenType);
 }

@@ -48,6 +48,41 @@ public class JwtProvider {
                 .compact();
     }
 
+    /** Issues a 15-min JWT with role=ADMIN claim for Admin Panel access (BR-35-07). */
+    public String generateAdminAccessToken(Long adminId, String email) {
+        return Jwts.builder()
+                .subject(email)
+                .claim("role", "ADMIN")
+                .claim("adminId", adminId)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + jwtAccessExpirationMs))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    /** Issues a 15-min JWT with role=STAFF claim (UC-36). */
+    public String generateStaffAccessToken(Long staffId, String email) {
+        return Jwts.builder()
+                .subject(email)
+                .claim("role", "STAFF")
+                .claim("staffId", staffId)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + jwtAccessExpirationMs))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    /** Returns the role claim value ("ADMIN", "STAFF") or null for legacy student tokens. */
+    public String getRoleFromToken(String token) {
+        Object role = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role");
+        return role != null ? role.toString() : null;
+    }
+
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())

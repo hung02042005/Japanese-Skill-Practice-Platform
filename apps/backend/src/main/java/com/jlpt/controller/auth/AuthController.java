@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+// UC-35: shared login endpoint; admin 2FA challenge and verify-mfa live here
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -19,11 +21,22 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(
+    public ResponseEntity<ApiResponse<LoginApiResponse>> login(
             @Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
         String ip = httpRequest.getRemoteAddr();
-        AuthResponse response = authService.login(request, ip);
-        return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", response));
+        LoginApiResponse response = authService.login(request, ip);
+        String message = Boolean.TRUE.equals(response.getRequiresTwoFactor())
+                ? "Xác thực thành công. Vui lòng nhập mã xác thực 2 yếu tố."
+                : "Đăng nhập thành công";
+        return ResponseEntity.ok(ApiResponse.success(message, response));
+    }
+
+    @PostMapping("/verify-mfa")
+    public ResponseEntity<ApiResponse<AdminVerifyMfaResponse>> verifyMfa(
+            @Valid @RequestBody VerifyMfaRequest request, HttpServletRequest httpRequest) {
+        String ip = httpRequest.getRemoteAddr();
+        AdminVerifyMfaResponse response = authService.verifyMfa(request, ip);
+        return ResponseEntity.ok(ApiResponse.success("Xác thực 2 yếu tố thành công. Chào mừng trở lại.", response));
     }
 
     @PostMapping("/register")
