@@ -67,10 +67,24 @@ export async function register(data) {
 }
 
 export async function logout() {
-  const response = await api.post('/auth/logout');
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
-  localStorage.removeItem('jlpt-user');
+  const refreshToken = localStorage.getItem('refreshToken');
+  try {
+    const response = await api.post('/auth/logout', { refreshToken });
+    return response.data;
+  } finally {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('jlpt-user');
+  }
+}
+
+export async function verifyEmail(token) {
+  const response = await api.post('/auth/verify-email', { token });
+  return response.data;
+}
+
+export async function resendVerification(email) {
+  const response = await api.post('/auth/resend-verification', { email });
   return response.data;
 }
 

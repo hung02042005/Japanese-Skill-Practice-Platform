@@ -1,7 +1,7 @@
-export default function SakuChan({ variant = 'idle' }) {
+export default function SakuChan({ variant = 'idle', size = 80 }) {
   return (
     <div className={`saku-chan${variant !== 'idle' ? ` saku-chan--${variant}` : ''}`} aria-hidden="true">
-      <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+      <svg width={size} height={size} viewBox="0 0 80 80" fill="none">
         <ellipse cx="26" cy="19" rx="7" ry="11" fill="#E8637A" transform="rotate(-28 26 19)"/>
         <ellipse cx="40" cy="14" rx="7" ry="11" fill="#E8637A"/>
         <ellipse cx="54" cy="19" rx="7" ry="11" fill="#E8637A" transform="rotate(28 54 19)"/>

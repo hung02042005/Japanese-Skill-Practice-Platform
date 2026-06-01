@@ -1,0 +1,719 @@
+/* ===== Dashboard Page — SakuJi Theme ===== */
+
+/* ─── Page shell ─── */
+.dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  font-family: var(--font-base);
+}
+
+/* ─── 3-column body ─── */
+.dashboard-body {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+  padding: 24px 32px;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: flex-start;
+}
+
+.dashboard-left   { width: 220px; flex-shrink: 0; }
+.dashboard-center { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.dashboard-right  { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; }
+
+/* ══════════════════════════════════════════
+   STREAK CARD
+══════════════════════════════════════════ */
+.streak-card {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  border-radius: var(--radius-xl);
+  padding: 20px 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(232, 99, 122, 0.28);
+}
+
+.streak-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.streak-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.streak-flame {
+  font-size: 18px;
+  opacity: 0.30;
+  display: inline-block;
+}
+
+.streak-flame--active {
+  opacity: 1;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.streak-number {
+  font-size: 52px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.streak-unit {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 16px;
+}
+
+/* Week dots */
+.streak-week {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.streak-day-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.streak-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.22);
+  transition: background var(--transition);
+}
+
+.streak-dot--done {
+  background: rgba(255, 255, 255, 0.90);
+}
+
+.streak-dot--today {
+  outline: 2px solid rgba(255, 255, 255, 0.90);
+  outline-offset: 2px;
+}
+
+.streak-day-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.70);
+  line-height: 1;
+}
+
+/* Mascot */
+.streak-mascot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.streak-mascot .saku-chan {
+  margin: 0;
+  animation: saku-sway 3s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+/* ══════════════════════════════════════════
+   HERO BANNER
+══════════════════════════════════════════ */
+.hero-banner {
+  background: linear-gradient(135deg, var(--color-primary-bg) 0%, #FFF8FA 100%);
+  border: 1px solid var(--color-primary-light);
+  border-radius: var(--radius-xl);
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  gap: 16px;
+}
+
+.hero-content {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* JLPT badge */
+.hero-badge {
+  display: inline-block;
+  border-radius: var(--radius-full);
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* Heading */
+.hero-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.25;
+  margin: 0 0 6px;
+}
+
+.hero-desc {
+  font-size: 14px;
+  color: var(--color-text-sub);
+  line-height: 1.6;
+  margin: 0 0 16px;
+  max-width: 360px;
+}
+
+/* Progress bar */
+.hero-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.hero-progress-track {
+  flex: 1;
+  height: 8px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.hero-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+}
+
+.hero-progress-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+  white-space: nowrap;
+}
+
+/* CTA button */
+.hero-cta {
+  background: var(--color-secondary);
+  color: #ffffff;
+  font-family: var(--font-base);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 13px 32px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.30);
+  transition: filter var(--transition), transform 100ms, box-shadow var(--transition);
+}
+
+.hero-cta:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.38);
+}
+
+.hero-cta:active { transform: scale(0.97); }
+
+/* Mascot */
+.hero-mascot {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-mascot .saku-chan {
+  margin: 0;
+  animation: saku-sway 3.5s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+/* Petal decorations */
+.hero-petal {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.13;
+  font-size: 20px;
+  animation: petalDrift 5s ease-in-out infinite alternate;
+}
+
+.hero-petal--1 { top: 12%;    right: 32%; font-size: 22px; animation-delay: 0s;   }
+.hero-petal--2 { top: 45%;    right: 24%; font-size: 16px; animation-delay: 1.4s; }
+.hero-petal--3 { bottom: 14%; right: 30%; font-size: 18px; animation-delay: 0.7s; }
+
+/* ══════════════════════════════════════════
+   LESSON SECTION HEADER
+══════════════════════════════════════════ */
+.lesson-section-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.start-here-chip {
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.lesson-divider {
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* ══════════════════════════════════════════
+   LESSON LIST
+══════════════════════════════════════════ */
+.lesson-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ══════════════════════════════════════════
+   LESSON CARD
+══════════════════════════════════════════ */
+.lesson-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  border: 1.5px solid transparent;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-family: var(--font-base);
+  position: relative;
+  transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+  animation: slideUp 250ms ease both;
+}
+
+.lesson-card:nth-child(1) { animation-delay: 0ms;   }
+.lesson-card:nth-child(2) { animation-delay: 50ms;  }
+.lesson-card:nth-child(3) { animation-delay: 100ms; }
+.lesson-card:nth-child(4) { animation-delay: 150ms; }
+.lesson-card:nth-child(5) { animation-delay: 200ms; }
+
+.lesson-card--available:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+  border-color: var(--color-primary-light);
+}
+
+.lesson-card--active {
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 10px rgba(232, 99, 122, 0.22);
+  padding: 18px 22px;
+}
+
+.lesson-card--locked {
+  opacity: 0.55;
+  cursor: default;
+  background: var(--color-bg);
+}
+
+/* Active bar */
+.lesson-active-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--color-primary);
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+/* Thumbnail circle */
+.lesson-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--transition);
+}
+
+.lesson-thumb--active {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+}
+
+.lesson-thumb--locked {
+  background: var(--color-border);
+  color: var(--color-text-disabled);
+}
+
+.lesson-thumb-char {
+  font-size: 22px;
+  font-family: var(--font-base);
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.lesson-thumb--active .lesson-thumb-char { color: #ffffff; }
+
+/* Content */
+.lesson-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.lesson-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+
+.lesson-card--locked .lesson-title { color: var(--color-text-disabled); }
+
+.lesson-desc {
+  font-size: 13px;
+  color: var(--color-text-sub);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 6px;
+}
+
+/* Mini progress bar */
+.lesson-progress-track {
+  height: 4px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.lesson-progress-fill {
+  height: 100%;
+  background: var(--color-secondary);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+/* Meta */
+.lesson-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.lesson-badge {
+  border-radius: var(--radius-full);
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.lesson-card svg { color: var(--color-text-disabled); transition: color var(--transition); }
+.lesson-card--available:hover svg { color: var(--color-primary); }
+
+/* ══════════════════════════════════════════
+   JLPT LEVEL COLOURS
+══════════════════════════════════════════ */
+.jlpt-n5 { background: #E8F5E9; color: #2E7D32; }
+.jlpt-n4 { background: #E3F2FD; color: #1565C0; }
+.jlpt-n3 { background: #FFF3E0; color: #E65100; }
+.jlpt-n2 { background: #F3E5F5; color: #6A1B9A; }
+.jlpt-n1 { background: #FCE4EC; color: #C62828; }
+
+/* ══════════════════════════════════════════
+   QUICK ACTION CARDS
+══════════════════════════════════════════ */
+.qa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qa-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  font-family: var(--font-base);
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.qa-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.qa-card:hover .qa-arrow { color: var(--color-primary); transform: translateX(3px); }
+
+.qa-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.qa-icon--flashcard  { background: var(--color-primary-bg);   }
+.qa-icon--exam       { background: #E3F2FD; }
+.qa-icon--dictionary { background: var(--color-secondary-bg); }
+.qa-icon--progress   { background: var(--color-accent-bg);    }
+
+.qa-content { flex: 1; min-width: 0; }
+
+.qa-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qa-desc {
+  font-size: 11px;
+  color: var(--color-text-sub);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qa-arrow {
+  color: var(--color-text-disabled);
+  flex-shrink: 0;
+  transition: color var(--transition), transform var(--transition);
+}
+
+/* ══════════════════════════════════════════
+   STAT CARDS
+══════════════════════════════════════════ */
+.stat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.stat-card {
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card--words {
+  background: var(--color-accent-bg);
+  border: 2px solid var(--color-accent);
+}
+
+.stat-card--days {
+  background: var(--color-secondary-bg);
+  border: 2px solid var(--color-secondary);
+}
+
+.stat-card-icon {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-size: 28px;
+  opacity: 0.20;
+}
+
+.stat-card-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-card-label {
+  font-size: 12px;
+  color: var(--color-text-sub);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* ══════════════════════════════════════════
+   SKELETON LOADING
+══════════════════════════════════════════ */
+.db-skeleton {
+  background: var(--color-border);
+  border-radius: var(--radius-lg);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.db-skeleton--streak { width: 100%; height: 240px; border-radius: var(--radius-xl); }
+.db-skeleton--hero   { width: 100%; height: 180px; border-radius: var(--radius-xl); }
+.db-skeleton--lesson { width: 100%; height: 72px;  margin-bottom: 10px; }
+.db-skeleton--stat   { width: 100%; height: 72px;  }
+
+/* ══════════════════════════════════════════
+   EMPTY STATE
+══════════════════════════════════════════ */
+.dashboard-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.dashboard-empty .saku-chan {
+  margin: 0 auto 16px;
+  animation: saku-sway 3s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.dashboard-empty-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 8px;
+}
+
+.dashboard-empty-desc {
+  font-size: 14px;
+  color: var(--color-text-sub);
+  line-height: 1.6;
+  margin: 0 0 24px;
+}
+
+.dashboard-empty-cta {
+  background: var(--color-secondary);
+  color: #ffffff;
+  font-family: var(--font-base);
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 11px 28px;
+  cursor: pointer;
+  transition: filter var(--transition);
+}
+
+.dashboard-empty-cta:hover { filter: brightness(1.08); }
+
+/* ══════════════════════════════════════════
+   SAKU-CHAN (shared)
+══════════════════════════════════════════ */
+.saku-chan {
+  display: block;
+  width: fit-content;
+  animation: saku-sway 3s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.saku-chan--happy    { animation: saku-bounce 0.7s ease forwards; }
+.saku-chan--thinking { animation: saku-think 2s ease-in-out infinite; }
+
+/* ══════════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════════ */
+@keyframes saku-sway {
+  0%, 100% { transform: rotate(-3.5deg); }
+  50%       { transform: rotate(3.5deg); }
+}
+
+@keyframes saku-bounce {
+  0%   { transform: translateY(0) rotate(0); }
+  30%  { transform: translateY(-14px) rotate(-6deg); }
+  60%  { transform: translateY(-8px) rotate(5deg); }
+  100% { transform: translateY(0) rotate(0); }
+}
+
+@keyframes saku-think {
+  0%, 100% { transform: rotate(-2deg) translateY(0); }
+  25%       { transform: rotate(2deg)  translateY(-3px); }
+  50%       { transform: rotate(-2deg) translateY(-2px); }
+  75%       { transform: rotate(2deg)  translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.20); }
+}
+
+@keyframes petalDrift {
+  0%   { transform: translateY(0) rotate(0deg);    opacity: 0.13; }
+  100% { transform: translateY(-8px) rotate(14deg); opacity: 0.07; }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media (max-width: 1199px) {
+  .dashboard-left { display: none; }
+  .dashboard-body { padding: 20px 20px; }
+}
+
+@media (max-width: 767px) {
+  .dashboard-body   { flex-direction: column; padding: 16px; gap: 16px; }
+  .dashboard-right  { display: none; }
+  .hero-banner      { padding: 20px 20px; }
+  .hero-mascot      { display: none; }
+  .hero-title       { font-size: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .saku-chan,
+  .streak-flame--active,
+  .hero-petal,
+  .lesson-card,
+  .db-skeleton { animation: none !important; }
+  .lesson-card,
+  .qa-card,
+  .hero-cta { transition: none !important; }
+}

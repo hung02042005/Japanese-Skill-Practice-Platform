@@ -35,12 +35,12 @@ spring:
             required: true
 
 app:
-  frontend-url: http://localhost:5173
+  frontend-url: http://localhost:3000
 
 google:
   client-id: 551958940696-9iq0q2u3d64t7533fdr46q4155ta3t81.apps.googleusercontent.com
 
 logging:
   level:
-    com.jlpt: DEBUG
-    org.springframework.security: DEBUG
+    "[com.jlpt]": DEBUG
+    "[org.springframework.security]": DEBUG

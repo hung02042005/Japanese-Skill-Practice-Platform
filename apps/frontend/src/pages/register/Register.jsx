@@ -65,7 +65,7 @@ function Register() {
     if (!validate()) return;
     try {
       await dispatch(
-        registerThunk({ fullName: form.fullName, email: form.email, password: form.password }),
+        registerThunk({ fullName: form.fullName, email: form.email, password: form.password, confirmPassword: form.confirmPassword }),
       ).unwrap();
       setIsDone(true);
     } catch {

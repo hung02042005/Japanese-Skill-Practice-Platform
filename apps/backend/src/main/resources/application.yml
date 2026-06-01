@@ -1,8 +1,8 @@
-﻿spring:
+﻿
+spring:
   application:
     name: jlpt-backend
 
-  # Default profile uses H2 for dev (override with application-dev.yml)
   datasource:
     url: jdbc:h2:mem:jlptdb;MODE=MSSQLServer
     driver-class-name: org.h2.Driver
@@ -21,32 +21,34 @@
   flyway:
     enabled: false
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: datzozz1212@gmail.com
+    password: rptl gzay orro tscv
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 server:
   port: 8080
 
-# JWT Configuration (override in production)
 jwt:
-  secret: jlpt-dev-secret-key-must-be-replaced-in-production-min-256-bits
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
   access-expiration-ms: 900000
   refresh-expiration-ms: 604800000
 
-# Upload configuration
-upload:
-  max-file-size: 10MB
-  path: ./uploads
+app:
+  frontend-url: http://localhost:3000
 
-# AI configuration
-ai:
-  ocr:
-    timeout-seconds: 30
-    max-retries: 3
-  speech:
-    timeout-seconds: 30
-    max-retries: 3
+google:
+  client-id: ${GOOGLE_CLIENT_ID:placeholder-replace-with-real-client-id}
 
-# Logging
 logging:
   level:
-    com.jlpt: DEBUG
-    org.springframework.security: INFO
-    org.hibernate.SQL: WARN
+    "[com.jlpt]": INFO
+    "[org.springframework.security]": INFO
+    "[org.hibernate.SQL]": WARN

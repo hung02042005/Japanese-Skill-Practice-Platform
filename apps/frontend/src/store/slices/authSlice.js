@@ -1,6 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as authService from '../../api/authService';
 
+export const verifyEmailThunk = createAsyncThunk(
+  'auth/verifyEmail',
+  async (token, { rejectWithValue }) => {
+    try {
+      const res = await authService.verifyEmail(token);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message ?? 'Xác minh email thất bại');
+    }
+  },
+);
+
 // ─── Thunks ───────────────────────────────────────────────────────────────────
 
 export const loginThunk = createAsyncThunk(
@@ -56,9 +68,9 @@ export const forgotPasswordThunk = createAsyncThunk(
 
 export const resetPasswordThunk = createAsyncThunk(
   'auth/resetPassword',
-  async ({ token, newPassword }, { rejectWithValue }) => {
+  async ({ token, newPassword, confirmPassword }, { rejectWithValue }) => {
     try {
-      const res = await authService.resetPassword({ token, newPassword });
+      const res = await authService.resetPassword({ token, newPassword, confirmPassword });
       return res.data;
     } catch (err) {
       return rejectWithValue(
@@ -219,6 +231,19 @@ const authSlice = createSlice({
         localStorage.setItem('jlpt-user', JSON.stringify(action.payload));
       })
       .addCase(updateProfileThunk.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // verifyEmail
+      .addCase(verifyEmailThunk.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(verifyEmailThunk.fulfilled, (state) => {
+        state.status = 'succeeded';
+      })
+      .addCase(verifyEmailThunk.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       });

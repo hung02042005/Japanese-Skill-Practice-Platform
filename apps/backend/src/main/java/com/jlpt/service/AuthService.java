@@ -202,7 +202,7 @@ public class AuthService {
     @Transactional
     public void verifyEmail(com.jlpt.dto.request.VerifyEmailRequest request) {
         AuthToken tokenEntity = authTokenRepository
-                .findByTokenValue(request.getToken())
+                .findByTokenValueAndTokenType(request.getToken(), AuthToken.TokenType.EMAIL_VERIFICATION)
                 .orElseThrow(() -> new BusinessException(400, "INVALID_TOKEN", "Mã xác minh không hợp lệ"));
 
         if (tokenEntity.getExpiresAt().isBefore(LocalDateTime.now())) {
@@ -217,7 +217,8 @@ public class AuthService {
         user.setEmailVerifiedAt(LocalDateTime.now());
         studentUserRepository.save(user);
 
-        authTokenRepository.delete(tokenEntity);
+        authTokenRepository.bulkDeleteByTokenValueAndType(
+                request.getToken(), AuthToken.TokenType.EMAIL_VERIFICATION);
     }
 
     @Transactional
@@ -229,6 +230,8 @@ public class AuthService {
         if (user.getStatus() != StudentUser.StudentStatus.PENDING) {
             throw new BusinessException(400, "ALREADY_VERIFIED", "Tài khoản đã được xác minh hoặc bị khóa");
         }
+
+        authTokenRepository.deleteByStudentIdAndTokenType(user.getId(), AuthToken.TokenType.EMAIL_VERIFICATION);
 
         String verificationToken = UUID.randomUUID().toString();
         AuthToken tokenEntity = AuthToken.builder()
@@ -249,6 +252,8 @@ public class AuthService {
         StudentUser user = studentUserRepository
                 .findByEmail(request.getEmail())
                 .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"));
+
+        authTokenRepository.deleteByStudentIdAndTokenType(user.getId(), AuthToken.TokenType.PASSWORD_RESET);
 
         String resetToken = UUID.randomUUID().toString();
         AuthToken tokenEntity = AuthToken.builder()
@@ -360,7 +365,7 @@ public class AuthService {
         }
 
         AuthToken tokenEntity = authTokenRepository
-                .findByTokenValue(request.getToken())
+                .findByTokenValueAndTokenType(request.getToken(), AuthToken.TokenType.PASSWORD_RESET)
                 .orElseThrow(() -> new BusinessException(400, "INVALID_TOKEN", "Mã đặt lại mật khẩu không hợp lệ"));
 
         if (tokenEntity.getExpiresAt().isBefore(LocalDateTime.now())) {
