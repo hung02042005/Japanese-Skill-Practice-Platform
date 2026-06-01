@@ -971,3 +971,153 @@
   .mu-btn,
   .mu-tr { transition: none !important; }
 }
+
+/* ════════════════════════════════════
+   TYPE TABS BAR
+════════════════════════════════════ */
+.mu-type-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mu-type-tabs {
+  display: flex;
+  gap: 6px;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 6px;
+  box-shadow: var(--shadow-sm);
+}
+
+.mu-type-tab {
+  padding: 8px 20px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  font-family: var(--font-base);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-sub);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+  white-space: nowrap;
+}
+
+.mu-type-tab:hover { background: var(--color-bg); color: var(--color-text); }
+
+.mu-type-tab--on {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 0 2px 10px rgba(232, 99, 122, 0.32);
+}
+
+.mu-type-tab--on:hover { filter: brightness(1.07); }
+
+.mu-btn--add {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+}
+
+/* ════════════════════════════════════
+   NEW STATUS BADGES
+════════════════════════════════════ */
+.mu-badge--suspended  { background: #FEF2F2; color: #B71C1C; }
+.mu-badge--pending    { background: #FFF8E1; color: #F57F17; }
+.mu-badge--deleted    { background: #F5F5F5; color: #757575; }
+
+.mu-status-dot--suspended { background: var(--color-error); }
+.mu-status-dot--pending   { background: #FFA000; animation: onlinePulse 2s ease-in-out infinite; }
+.mu-status-dot--deleted   { background: #BDBDBD; }
+
+/* ════════════════════════════════════
+   MODAL FORM FIELDS
+════════════════════════════════════ */
+.mu-modal--form { max-width: 440px; text-align: left; }
+
+.mu-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.mu-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: left;
+  margin-bottom: 0;
+}
+
+.mu-modal--form .mu-modal-desc { text-align: left; }
+
+.mu-form-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.mu-required { color: var(--color-error); margin-left: 2px; }
+
+.mu-form-input,
+.mu-form-textarea,
+.mu-form-select {
+  width: 100%;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-family: var(--font-base);
+  font-size: 14px;
+  color: var(--color-text);
+  background: var(--color-bg);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.mu-form-input:focus,
+.mu-form-textarea:focus,
+.mu-form-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(232, 99, 122, 0.12);
+  background: white;
+}
+
+.mu-form-input--err { border-color: var(--color-error); }
+.mu-form-input--err:focus { box-shadow: 0 0 0 3px rgba(229,57,53,0.12); }
+
+.mu-form-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+.mu-form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23BDBDBD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.mu-char-count {
+  font-size: 12px;
+  color: var(--color-text-disabled);
+  text-align: right;
+  font-weight: 600;
+}
+
+.mu-char-count--err { color: var(--color-error); }
+
+.mu-form-error {
+  font-size: 12px;
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+/* Suspend modal keeps single field layout */
+.mu-modal--form .mu-form-field { margin-bottom: 8px; }
+.mu-modal--form .mu-modal-desc { margin-bottom: 16px; }
