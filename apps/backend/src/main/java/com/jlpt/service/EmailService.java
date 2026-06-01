@@ -61,6 +61,7 @@ public class EmailService {
             mailSender.send(message);
         } catch (Exception e) {
             log.error("[EmailService] Failed to send email to {}: {}", to, e.getMessage(), e);
+            throw new RuntimeException("Gửi email thất bại tới " + to, e);
         }
     }
 

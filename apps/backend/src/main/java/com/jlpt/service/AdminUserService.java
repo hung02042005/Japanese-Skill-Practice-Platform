@@ -455,16 +455,6 @@ public class AdminUserService {
 
     // ── Legacy methods kept for backward compatibility ──────────────────────
 
-    @Transactional(readOnly = true)
-    public java.util.List<AdminUserResponse> listAllUsers() {
-        java.util.List<AdminUserResponse> result = new java.util.ArrayList<>();
-        studentUserRepository.findAll().stream().map(this::toLegacyResponse).forEach(result::add);
-        staffUserRepository.findAll().stream().map(this::toLegacyResponse).forEach(result::add);
-        adminUserRepository.findAll().stream().map(this::toLegacyResponse).forEach(result::add);
-        result.sort(java.util.Comparator.comparing(AdminUserResponse::getCreatedAt).reversed());
-        return result;
-    }
-
     @Transactional
     public AdminUserResponse updateUserStatus(String userType, Long id, UpdateUserStatusRequest request) {
         boolean isBan = "BAN".equals(request.getAction());

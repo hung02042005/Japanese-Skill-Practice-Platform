@@ -56,6 +56,12 @@ public class AuthService {
     @Value("${google.client-id}")
     private String googleClientId;
 
+    @Value("${jwt.access-expiration-ms:900000}")
+    private long accessExpirationMs;
+
+    @Value("${jwt.refresh-expiration-ms:604800000}")
+    private long refreshExpirationMs;
+
     /**
      * Unified login endpoint for all roles (UC-35 §3.2).
      * Lookup order: admin_users → staff_users → student_users.
@@ -236,17 +242,19 @@ public class AuthService {
                 .findByTokenValue(request.getRefreshToken())
                 .orElseThrow(() -> new BusinessException(401, "INVALID_TOKEN", "Refresh token không hợp lệ"));
 
+        if (tokenEntity.getRevokedAt() != null) {
+            throw new BusinessException(401, "TOKEN_REVOKED", "Refresh token đã bị thu hồi");
+        }
+
         if (tokenEntity.getExpiresAt().isBefore(LocalDateTime.now())) {
             authTokenRepository.delete(tokenEntity);
             throw new BusinessException(401, "TOKEN_EXPIRED", "Refresh token đã hết hạn");
         }
 
-        StudentUser user = studentUserRepository
-                .findById(tokenEntity.getStudentId())
-                .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"));
+        String email = resolveEmailFromToken(tokenEntity);
 
-        String newAccessToken = jwtProvider.generateTokenFromUsername(user.getEmail(), 900000); // 15 mins
-        String newRefreshToken = jwtProvider.generateTokenFromUsername(user.getEmail(), 604800000); // 7 days
+        String newAccessToken = jwtProvider.generateTokenFromUsername(email, accessExpirationMs);
+        String newRefreshToken = jwtProvider.generateTokenFromUsername(email, refreshExpirationMs);
 
         tokenEntity.setTokenValue(newRefreshToken);
         tokenEntity.setExpiresAt(LocalDateTime.now().plusDays(7));
@@ -381,8 +389,8 @@ public class AuthService {
         studentUserRepository.save(user);
 
         // Generate JWT tokens directly (no password involved)
-        String accessToken = jwtProvider.generateTokenFromUsername(user.getEmail(), 900000L);
-        String refreshToken = jwtProvider.generateTokenFromUsername(user.getEmail(), 604800000L);
+        String accessToken = jwtProvider.generateTokenFromUsername(user.getEmail(), accessExpirationMs);
+        String refreshToken = jwtProvider.generateTokenFromUsername(user.getEmail(), refreshExpirationMs);
 
         AuthToken tokenEntity = AuthToken.builder()
                 .actorType(AuthToken.ActorType.STUDENT)
@@ -471,6 +479,23 @@ public class AuthService {
         }
 
         return mapToStudentResponse(studentUserRepository.save(user));
+    }
+
+    private String resolveEmailFromToken(AuthToken token) {
+        return switch (token.getActorType()) {
+            case STUDENT -> studentUserRepository
+                    .findById(token.getStudentId())
+                    .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"))
+                    .getEmail();
+            case STAFF -> staffUserRepository
+                    .findById(token.getStaffId())
+                    .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"))
+                    .getEmail();
+            case ADMIN -> adminUserRepository
+                    .findById(token.getAdminId())
+                    .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"))
+                    .getEmail();
+        };
     }
 
     @Transactional

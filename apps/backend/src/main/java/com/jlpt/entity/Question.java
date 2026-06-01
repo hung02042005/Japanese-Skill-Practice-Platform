@@ -55,7 +55,7 @@ public class Question {
     @Column(name = "option_d", columnDefinition = "NVARCHAR(MAX)")
     private String optionD;
 
-    @Column(name = "correct_option", length = 1)
+    @Column(name = "correct_option", columnDefinition = "CHAR(1)")
     private String correctOption;
 
     @Column(name = "correct_answer_text", columnDefinition = "NVARCHAR(MAX)")
@@ -68,7 +68,7 @@ public class Question {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private Kanji.ContentStatus status = Kanji.ContentStatus.DRAFT;
+    private ContentStatus status = ContentStatus.DRAFT;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approved_by")
@@ -115,6 +115,24 @@ public class Question {
         private final String v;
 
         Skill(String v) {
+            this.v = v;
+        }
+
+        public String getValue() {
+            return v;
+        }
+    }
+
+    public enum ContentStatus {
+        DRAFT("draft"),
+        PENDING_REVIEW("pending_review"),
+        REJECTED("rejected"),
+        PUBLISHED("published"),
+        ARCHIVED("archived"),
+        DELETED("deleted");
+        private final String v;
+
+        ContentStatus(String v) {
             this.v = v;
         }
 

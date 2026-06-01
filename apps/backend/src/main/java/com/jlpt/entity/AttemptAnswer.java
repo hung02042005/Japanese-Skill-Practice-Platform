@@ -28,7 +28,7 @@ public class AttemptAnswer {
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 
-    @Column(name = "selected_option", length = 1)
+    @Column(name = "selected_option", columnDefinition = "CHAR(1)")
     private String selectedOption;
 
     @Column(name = "answer_text", columnDefinition = "NVARCHAR(MAX)")
