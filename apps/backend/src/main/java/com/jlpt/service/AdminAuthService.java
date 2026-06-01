@@ -50,7 +50,7 @@ public class AdminAuthService {
         if (admin.getLockedUntil() != null && admin.getLockedUntil().isAfter(LocalDateTime.now())) {
             long minutesLeft = ChronoUnit.MINUTES.between(LocalDateTime.now(), admin.getLockedUntil()) + 1;
             audit(
-                    null,
+                    admin,
                     "ADMIN_LOGIN_BLOCKED_LOCKED",
                     "admin_users",
                     admin.getId(),

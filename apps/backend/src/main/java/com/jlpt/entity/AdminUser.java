@@ -1,6 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
+import com.jlpt.converter.AdminStatusConverter;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -30,7 +31,7 @@ public class AdminUser {
     @Column(name = "full_name", nullable = false, length = 150)
     private String fullName;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = AdminStatusConverter.class)
     @Column(nullable = false, length = 20)
     @Builder.Default
     private AdminStatus status = AdminStatus.ACTIVE;

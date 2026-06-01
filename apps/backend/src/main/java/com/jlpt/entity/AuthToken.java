@@ -1,6 +1,8 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
+import com.jlpt.converter.ActorTypeConverter;
+import com.jlpt.converter.TokenTypeConverter;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -19,7 +21,7 @@ public class AuthToken {
     @Column(name = "token_id")
     private Long id;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ActorTypeConverter.class)
     @Column(name = "actor_type", nullable = false, length = 20)
     private ActorType actorType;
 
@@ -32,7 +34,7 @@ public class AuthToken {
     @Column(name = "student_id")
     private Long studentId;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = TokenTypeConverter.class)
     @Column(name = "token_type", nullable = false, length = 30)
     private TokenType tokenType;
 

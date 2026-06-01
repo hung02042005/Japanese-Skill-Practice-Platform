@@ -11,28 +11,13 @@ function ForgotPassword() {
   const dispatch = useAppDispatch();
   const { status, error } = useAppSelector((state) => state.auth);
 
-  const [email, setEmail]           = useState('');
-  const [fieldError, setFieldError] = useState(null);
-  const [isSent, setIsSent]         = useState(false);
+  const [email, setEmail] = useState('');
+  const [isSent, setIsSent] = useState(false);
 
   const isLoading = status === 'loading';
 
-  function validate() {
-    if (!email.trim()) { setFieldError('Vui lòng nhập email'); return false; }
-    if (!/\S+@\S+\.\S+/.test(email)) { setFieldError('Email không hợp lệ'); return false; }
-    setFieldError(null);
-    return true;
-  }
-
-  function handleEmailChange(e) {
-    setEmail(e.target.value);
-    if (fieldError) setFieldError(null);
-    if (error)      dispatch(clearError());
-  }
-
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!validate()) return;
     try {
       await dispatch(forgotPasswordThunk({ email })).unwrap();
       setIsSent(true);
@@ -91,7 +76,7 @@ function ForgotPassword() {
           {error && <AuthBanner type="error">{error}</AuthBanner>}
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
-            <div className={`form-field${fieldError ? ' has-error' : ''}`}>
+            <div className="form-field">
               <label className="form-label" htmlFor="fp-email">Email</label>
               <input
                 id="fp-email"
@@ -99,15 +84,10 @@ function ForgotPassword() {
                 type="email"
                 placeholder="example@email.com"
                 value={email}
-                onChange={handleEmailChange}
+                onChange={(e) => { setEmail(e.target.value); if (error) dispatch(clearError()); }}
                 autoComplete="email"
                 autoFocus
-                aria-invalid={!!fieldError}
-                aria-describedby={fieldError ? 'fp-email-err' : undefined}
               />
-              {fieldError && (
-                <span id="fp-email-err" className="field-error">{fieldError}</span>
-              )}
             </div>
 
             <button className="btn-submit" type="submit" disabled={isLoading}>

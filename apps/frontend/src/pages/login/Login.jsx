@@ -15,43 +15,15 @@ function Login() {
   const dispatch = useAppDispatch();
   const { status, error, requiresTwoFactor, mfaToken, tempRole } = useAppSelector((state) => state.auth);
 
-  const [email, setEmail]             = useState('');
-  const [password, setPassword]       = useState('');
-  const [showPwd, setShowPwd]         = useState(false);
-  const [fieldErrors, setFieldErrors] = useState({});
-
-  const [otpCode, setOtpCode]         = useState('');
-  const [otpError, setOtpError]       = useState('');
+  const [email, setEmail]       = useState('');
+  const [password, setPassword] = useState('');
+  const [showPwd, setShowPwd]   = useState(false);
+  const [otpCode, setOtpCode]   = useState('');
 
   const isLoading = status === 'loading';
 
-  function validateForm() {
-    const errors = {};
-    if (!email.trim()) {
-      errors.email = 'Email là bắt buộc';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = 'Email không hợp lệ';
-    }
-    if (!password) errors.password = 'Mật khẩu là bắt buộc';
-    setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
-  }
-
-  function handleEmailChange(e) {
-    setEmail(e.target.value);
-    if (fieldErrors.email) setFieldErrors((p) => ({ ...p, email: null }));
-    if (error)             dispatch(clearError());
-  }
-
-  function handlePasswordChange(e) {
-    setPassword(e.target.value);
-    if (fieldErrors.password) setFieldErrors((p) => ({ ...p, password: null }));
-    if (error)                dispatch(clearError());
-  }
-
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!validateForm()) return;
     try {
       const res = await dispatch(loginThunk({ email, password })).unwrap();
       if (!res.requiresTwoFactor) {
@@ -68,10 +40,6 @@ function Login() {
 
   async function handleOtpSubmit(e) {
     e.preventDefault();
-    if (!otpCode || otpCode.length !== 6) {
-      setOtpError('Mã xác thực phải gồm 6 chữ số');
-      return;
-    }
     try {
       await dispatch(verifyMfaThunk({ mfaToken, totpCode: otpCode })).unwrap();
       if (tempRole === 'ADMIN') {
@@ -104,10 +72,9 @@ function Login() {
             <p className="auth-subtitle">Nhập mã OTP 6 chữ số từ ứng dụng Authenticator của bạn</p>
 
             {error && <AuthBanner type="error">{error}</AuthBanner>}
-            {otpError && <AuthBanner type="warning">{otpError}</AuthBanner>}
 
             <form className="auth-form" onSubmit={handleOtpSubmit} noValidate aria-busy={isLoading}>
-              <div className={`form-field${otpError ? ' has-error' : ''}`}>
+              <div className="form-field">
                 <label className="form-label" htmlFor="otp-code">Mã OTP</label>
                 <input
                   id="otp-code"
@@ -116,12 +83,8 @@ function Login() {
                   placeholder="000000"
                   maxLength={6}
                   value={otpCode}
-                  onChange={(e) => {
-                    setOtpCode(e.target.value.replace(/\D/g, ''));
-                    setOtpError('');
-                  }}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                   autoFocus
-                  required
                 />
               </div>
 
@@ -142,8 +105,7 @@ function Login() {
                 onClick={() => {
                   dispatch(clearError());
                   setOtpCode('');
-                  setOtpError('');
-                }} 
+                }}
                 className="auth-redirect-link bg-transparent border-0 cursor-pointer text-sm underline hover:text-sakura"
                 style={{ background: 'none', border: 'none', cursor: 'pointer' }}
               >
@@ -183,7 +145,7 @@ function Login() {
           )}
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
-            <div className={`form-field${fieldErrors.email ? ' has-error' : ''}`}>
+            <div className="form-field">
               <label className="form-label" htmlFor="login-email">Email</label>
               <input
                 id="login-email"
@@ -191,18 +153,13 @@ function Login() {
                 type="email"
                 placeholder="email@example.com"
                 value={email}
-                onChange={handleEmailChange}
+                onChange={(e) => { setEmail(e.target.value); if (error) dispatch(clearError()); }}
                 autoComplete="email"
                 autoFocus
-                aria-describedby={fieldErrors.email ? 'login-email-err' : undefined}
-                aria-invalid={!!fieldErrors.email}
               />
-              {fieldErrors.email && (
-                <span id="login-email-err" className="field-error">{fieldErrors.email}</span>
-              )}
             </div>
 
-            <div className={`form-field${fieldErrors.password ? ' has-error' : ''}`}>
+            <div className="form-field">
               <div className="form-label-row">
                 <label className="form-label" htmlFor="login-password">Mật khẩu</label>
                 <Link to="/forgot-password" className="form-forgot-link">Quên mật khẩu?</Link>
@@ -214,10 +171,8 @@ function Login() {
                   type={showPwd ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={password}
-                  onChange={handlePasswordChange}
+                  onChange={(e) => { setPassword(e.target.value); if (error) dispatch(clearError()); }}
                   autoComplete="current-password"
-                  aria-describedby={fieldErrors.password ? 'login-pwd-err' : undefined}
-                  aria-invalid={!!fieldErrors.password}
                 />
                 <button
                   type="button"
@@ -228,9 +183,6 @@ function Login() {
                   <EyeIcon open={showPwd} />
                 </button>
               </div>
-              {fieldErrors.password && (
-                <span id="login-pwd-err" className="field-error">{fieldErrors.password}</span>
-              )}
             </div>
 
             <button

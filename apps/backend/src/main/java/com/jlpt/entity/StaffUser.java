@@ -1,6 +1,8 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
+import com.jlpt.converter.StaffRoleConverter;
+import com.jlpt.converter.StaffStatusConverter;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -30,12 +32,12 @@ public class StaffUser {
     @Column(name = "full_name", nullable = false, length = 150)
     private String fullName;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = StaffRoleConverter.class)
     @Column(name = "staff_role", nullable = false, length = 30)
     @Builder.Default
     private StaffRole staffRole = StaffRole.STAFF;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = StaffStatusConverter.class)
     @Column(nullable = false, length = 20)
     @Builder.Default
     private StaffStatus status = StaffStatus.ACTIVE;

@@ -34,7 +34,10 @@ export const loginThunk = createAsyncThunk(
       localStorage.setItem('jlpt-user', JSON.stringify(userData));
       return { requiresTwoFactor: false, user: userData, role };
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message ?? 'Đăng nhập thất bại');
+      if (!err.response) {
+        return rejectWithValue('Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối và thử lại.');
+      }
+      return rejectWithValue(err.response.data?.message ?? 'Đăng nhập thất bại');
     }
   },
 );
@@ -53,7 +56,10 @@ export const verifyMfaThunk = createAsyncThunk(
       localStorage.setItem('jlpt-user', JSON.stringify(adminWithRole));
       return adminWithRole;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message ?? 'Xác thực 2 yếu tố thất bại');
+      if (!err.response) {
+        return rejectWithValue('Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối và thử lại.');
+      }
+      return rejectWithValue(err.response.data?.message ?? 'Xác thực 2 yếu tố thất bại');
     }
   },
 );

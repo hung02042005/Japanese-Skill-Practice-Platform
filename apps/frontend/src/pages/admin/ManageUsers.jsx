@@ -1,31 +1,14 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import AdminTopNav from '../../components/layout/AdminTopNav';
 import SakuChan from '../../components/auth/SakuChan';
+import { fetchAdminUsers, updateUserStatus, updateUserRole } from '../../api/adminService';
 import './ManageUsers.css';
 
 /* ── Constants ── */
 const PAGE_SIZE = 7;
 
-const ROLE_LABELS  = { STUDENT: 'Học viên', STAFF: 'Nhân viên', ADMIN: 'Quản trị' };
+const ROLE_LABELS   = { STUDENT: 'Học viên', STAFF: 'Nhân viên', ADMIN: 'Quản trị' };
 const STATUS_LABELS = { ACTIVE: 'Hoạt động', BANNED: 'Bị khóa' };
-
-/* ── Demo data ── */
-const INITIAL_USERS = [
-  { id: 1,  fullName: 'Nguyễn Thị Hoa',   email: 'hoa.nguyen@gmail.com',  role: 'STUDENT', jlptLevel: 'N3', subscription: 'VIP',  status: 'ACTIVE', createdAt: '2025-11-01', streak: 15,  wordsLearned: 320  },
-  { id: 2,  fullName: 'Trần Văn Minh',    email: 'minh.tran@gmail.com',   role: 'STUDENT', jlptLevel: 'N5', subscription: 'FREE', status: 'ACTIVE', createdAt: '2026-01-15', streak: 3,   wordsLearned: 45   },
-  { id: 3,  fullName: 'Lê Thanh Tâm',     email: 'tam.le@jlpt.edu.vn',    role: 'STAFF',   jlptLevel: 'N1', subscription: 'VIP',  status: 'ACTIVE', createdAt: '2025-08-20', streak: 42,  wordsLearned: 1200 },
-  { id: 4,  fullName: 'Phạm Thu Hương',   email: 'huong.pham@gmail.com',  role: 'STUDENT', jlptLevel: 'N4', subscription: 'FREE', status: 'BANNED', createdAt: '2025-11-05', streak: 0,   wordsLearned: 88   },
-  { id: 5,  fullName: 'Hoàng Quốc Bảo',  email: 'bao.hoang@gmail.com',   role: 'STUDENT', jlptLevel: 'N2', subscription: 'VIP',  status: 'ACTIVE', createdAt: '2026-02-10', streak: 28,  wordsLearned: 750  },
-  { id: 6,  fullName: 'Vũ Thị Lan',       email: 'lan.vu@jlpt.edu.vn',    role: 'STAFF',   jlptLevel: 'N2', subscription: 'VIP',  status: 'ACTIVE', createdAt: '2025-09-12', streak: 60,  wordsLearned: 980  },
-  { id: 7,  fullName: 'Đặng Hữu Phúc',   email: 'phuc.dang@gmail.com',   role: 'STUDENT', jlptLevel: 'N5', subscription: 'FREE', status: 'ACTIVE', createdAt: '2026-03-18', streak: 1,   wordsLearned: 12   },
-  { id: 8,  fullName: 'Bùi Thị Ngọc',    email: 'ngoc.bui@gmail.com',    role: 'STUDENT', jlptLevel: 'N3', subscription: 'VIP',  status: 'BANNED', createdAt: '2025-10-30', streak: 0,   wordsLearned: 210  },
-  { id: 9,  fullName: 'Ngô Thành Tùng',  email: 'tung.ngo@jlpt.edu.vn',  role: 'ADMIN',   jlptLevel: 'N1', subscription: 'VIP',  status: 'ACTIVE', createdAt: '2025-07-01', streak: 100, wordsLearned: 2000 },
-  { id: 10, fullName: 'Đinh Thị Mai',    email: 'mai.dinh@gmail.com',    role: 'STUDENT', jlptLevel: 'N4', subscription: 'FREE', status: 'ACTIVE', createdAt: '2026-04-02', streak: 7,   wordsLearned: 95   },
-  { id: 11, fullName: 'Cao Xuân Nghĩa',  email: 'nghia.cao@gmail.com',   role: 'STUDENT', jlptLevel: 'N3', subscription: 'VIP',  status: 'ACTIVE', createdAt: '2026-05-14', streak: 21,  wordsLearned: 430  },
-  { id: 12, fullName: 'Trịnh Minh Thư',  email: 'thu.trinh@jlpt.edu.vn', role: 'STAFF',   jlptLevel: 'N2', subscription: 'VIP',  status: 'ACTIVE', createdAt: '2025-12-01', streak: 35,  wordsLearned: 850  },
-  { id: 13, fullName: 'Lý Văn Dũng',     email: 'dung.ly@gmail.com',     role: 'STUDENT', jlptLevel: 'N5', subscription: 'FREE', status: 'ACTIVE', createdAt: '2026-05-28', streak: 2,   wordsLearned: 8    },
-  { id: 14, fullName: 'Phan Thị Yến',    email: 'yen.phan@gmail.com',    role: 'STUDENT', jlptLevel: 'N4', subscription: 'VIP',  status: 'ACTIVE', createdAt: '2026-06-01', streak: 0,   wordsLearned: 150  },
-];
 
 /* ── Helpers ── */
 function formatDate(d) {
@@ -85,6 +68,7 @@ function StatusBadge({ status }) {
 }
 
 function SubBadge({ sub }) {
+  if (!sub) return null;
   return (
     <span className={`mu-badge mu-badge--sub mu-badge--sub-${sub.toLowerCase()}`}>
       {sub === 'VIP' ? '⭐ VIP' : 'FREE'}
@@ -148,7 +132,7 @@ function ToastContainer({ toasts, onRemove }) {
 }
 
 /* Confirm modal (ban / activate) */
-function ConfirmModal({ modal, onConfirm, onClose }) {
+function ConfirmModal({ modal, onConfirm, onClose, isSubmitting }) {
   if (!modal.open) return null;
   const isBan = modal.action === 'ban';
   return (
@@ -173,8 +157,9 @@ function ConfirmModal({ modal, onConfirm, onClose }) {
             type="button"
             className={`mu-btn ${isBan ? 'mu-btn--danger' : 'mu-btn--success'}`}
             onClick={onConfirm}
+            disabled={isSubmitting}
           >
-            {isBan ? '🔒 Khóa ngay' : '✅ Mở khóa'}
+            {isSubmitting ? 'Đang xử lý...' : isBan ? 'Khóa ngay' : 'Mở khóa'}
           </button>
         </div>
       </div>
@@ -183,7 +168,7 @@ function ConfirmModal({ modal, onConfirm, onClose }) {
 }
 
 /* Edit role modal */
-function EditRoleModal({ modal, onConfirm, onClose }) {
+function EditRoleModal({ modal, onConfirm, onClose, isSubmitting }) {
   const [selected, setSelected] = useState('STUDENT');
 
   useEffect(() => {
@@ -238,9 +223,9 @@ function EditRoleModal({ modal, onConfirm, onClose }) {
           ))}
         </div>
         <div className="mu-modal-row">
-          <button type="button" className="mu-btn mu-btn--ghost" onClick={onClose}>Huỷ</button>
-          <button type="button" className="mu-btn mu-btn--primary" onClick={() => onConfirm(selected)}>
-            Lưu thay đổi
+          <button type="button" className="mu-btn mu-btn--ghost" onClick={onClose} disabled={isSubmitting}>Huỷ</button>
+          <button type="button" className="mu-btn mu-btn--primary" onClick={() => onConfirm(selected)} disabled={isSubmitting}>
+            {isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
           </button>
         </div>
       </div>
@@ -260,15 +245,34 @@ function ManageUsers() {
   const [jlptFilter, setJlpt]       = useState('ALL');
   const [page, setPage]             = useState(1);
   const [openMenuId, setOpenMenuId] = useState(null);
-  const [confirmModal, setConfirm]  = useState({ open: false, userId: null, userName: '', action: 'ban' });
-  const [editModal, setEditModal]   = useState({ open: false, userId: null, userName: '', currentRole: 'STUDENT' });
-  const [toasts, setToasts]         = useState([]);
+  const [confirmModal, setConfirm]    = useState({ open: false, userId: null, userType: null, userName: '', action: 'ban' });
+  const [editModal, setEditModal]     = useState({ open: false, userId: null, userType: null, userName: '', currentRole: 'STUDENT' });
+  const [toasts, setToasts]           = useState([]);
+  const [isSubmitting, setSubmitting] = useState(false);
 
-  /* Simulate API fetch */
-  useEffect(() => {
-    const t = setTimeout(() => { setUsers(INITIAL_USERS); setIsLoading(false); }, 800);
-    return () => clearTimeout(t);
+  /* Toast helpers — defined first so they can be used in effects below */
+  const addToast = useCallback((type, message) => {
+    const id = Date.now() + Math.random();
+    setToasts((p) => [...p, { id, type, message }]);
+    setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 3200);
   }, []);
+
+  const removeToast = useCallback((id) => setToasts((p) => p.filter((t) => t.id !== id)), []);
+
+  /* Load users from API */
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoading(true);
+    fetchAdminUsers()
+      .then((data) => { if (!cancelled) { setUsers(data); setIsLoading(false); } })
+      .catch(() => {
+        if (!cancelled) {
+          setIsLoading(false);
+          addToast('error', 'Không thể tải danh sách người dùng, vui lòng thử lại!');
+        }
+      });
+    return () => { cancelled = true; };
+  }, [addToast]);
 
   /* Close action menu on Escape */
   useEffect(() => {
@@ -277,23 +281,15 @@ function ManageUsers() {
     return () => document.removeEventListener('keydown', onKey);
   }, []);
 
-  /* Toast helpers */
-  const addToast = useCallback((type, message) => {
-    const id = Date.now();
-    setToasts((p) => [...p, { id, type, message }]);
-    setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 3200);
-  }, []);
-
-  const removeToast = useCallback((id) => setToasts((p) => p.filter((t) => t.id !== id)), []);
-
   /* Computed stats */
   const stats = useMemo(() => {
     const total    = users.length;
     const active   = users.filter((u) => u.status === 'ACTIVE').length;
     const banned   = users.filter((u) => u.status === 'BANNED').length;
+    const now = new Date();
     const newMonth = users.filter((u) => {
       const d = new Date(u.createdAt);
-      return d.getFullYear() === 2026 && d.getMonth() === 5; /* June 2026 */
+      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
     }).length;
     return { total, active, banned, newMonth };
   }, [users]);
@@ -320,35 +316,50 @@ function ManageUsers() {
   /* Action handlers */
   function openBan(userId) {
     const u = users.find((x) => x.id === userId);
-    setConfirm({ open: true, userId, userName: u?.fullName ?? '', action: 'ban' });
+    setConfirm({ open: true, userId, userType: u?.userType, userName: u?.fullName ?? '', action: 'ban' });
     setOpenMenuId(null);
   }
 
   function openActivate(userId) {
     const u = users.find((x) => x.id === userId);
-    setConfirm({ open: true, userId, userName: u?.fullName ?? '', action: 'activate' });
+    setConfirm({ open: true, userId, userType: u?.userType, userName: u?.fullName ?? '', action: 'activate' });
     setOpenMenuId(null);
   }
 
-  function handleConfirmStatus() {
-    const { userId, action } = confirmModal;
-    const newStatus = action === 'ban' ? 'BANNED' : 'ACTIVE';
-    setUsers((p) => p.map((u) => u.id === userId ? { ...u, status: newStatus, streak: action === 'ban' ? 0 : u.streak } : u));
-    addToast('success', action === 'ban' ? '🔒 Đã khóa tài khoản thành công!' : '✅ Đã mở khóa tài khoản!');
-    setConfirm({ open: false, userId: null, userName: '', action: 'ban' });
+  async function handleConfirmStatus() {
+    const { userId, userType, action } = confirmModal;
+    setSubmitting(true);
+    try {
+      const updated = await updateUserStatus(userType, userId, action === 'ban' ? 'BAN' : 'ACTIVATE');
+      setUsers((p) => p.map((u) => (u.id === userId && u.userType === userType ? { ...u, ...updated } : u)));
+      addToast('success', action === 'ban' ? 'Đã khóa tài khoản thành công!' : 'Đã mở khóa tài khoản!');
+    } catch (err) {
+      addToast('error', err?.response?.data?.message ?? 'Có lỗi xảy ra, vui lòng thử lại');
+    } finally {
+      setSubmitting(false);
+      setConfirm({ open: false, userId: null, userType: null, userName: '', action: 'ban' });
+    }
   }
 
   function openEditRole(userId) {
     const u = users.find((x) => x.id === userId);
-    setEditModal({ open: true, userId, userName: u?.fullName ?? '', currentRole: u?.role ?? 'STUDENT' });
+    setEditModal({ open: true, userId, userType: u?.userType, userName: u?.fullName ?? '', currentRole: u?.role ?? 'STUDENT' });
     setOpenMenuId(null);
   }
 
-  function handleConfirmRole(newRole) {
-    const { userId } = editModal;
-    setUsers((p) => p.map((u) => u.id === userId ? { ...u, role: newRole } : u));
-    addToast('success', `✏️ Đã cập nhật vai trò thành ${ROLE_LABELS[newRole]}!`);
-    setEditModal({ open: false, userId: null, userName: '', currentRole: 'STUDENT' });
+  async function handleConfirmRole(newRole) {
+    const { userId, userType } = editModal;
+    setSubmitting(true);
+    try {
+      const updated = await updateUserRole(userType, userId, newRole);
+      setUsers((p) => p.map((u) => (u.id === userId && u.userType === userType ? { ...u, ...updated } : u)));
+      addToast('success', `Đã cập nhật vai trò thành ${ROLE_LABELS[newRole]}!`);
+    } catch (err) {
+      addToast('error', err?.response?.data?.message ?? 'Có lỗi xảy ra, vui lòng thử lại');
+    } finally {
+      setSubmitting(false);
+      setEditModal({ open: false, userId: null, userType: null, userName: '', currentRole: 'STUDENT' });
+    }
   }
 
   /* ── Render ── */
@@ -627,12 +638,14 @@ function ManageUsers() {
       <ConfirmModal
         modal={confirmModal}
         onConfirm={handleConfirmStatus}
-        onClose={() => setConfirm((m) => ({ ...m, open: false }))}
+        onClose={() => !isSubmitting && setConfirm((m) => ({ ...m, open: false }))}
+        isSubmitting={isSubmitting}
       />
       <EditRoleModal
         modal={editModal}
         onConfirm={handleConfirmRole}
-        onClose={() => setEditModal((m) => ({ ...m, open: false }))}
+        onClose={() => !isSubmitting && setEditModal((m) => ({ ...m, open: false }))}
+        isSubmitting={isSubmitting}
       />
 
       {/* Toasts */}

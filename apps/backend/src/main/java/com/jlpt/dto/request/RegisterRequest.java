@@ -4,12 +4,14 @@ package com.jlpt.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class RegisterRequest {
 
     @NotBlank(message = "Họ tên là bắt buộc")
+    @Size(min = 2, message = "Họ tên phải có ít nhất 2 ký tự")
     private String fullName;
 
     @NotBlank(message = "Email là bắt buộc")

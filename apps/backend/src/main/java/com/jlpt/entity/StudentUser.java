@@ -1,6 +1,8 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
+import com.jlpt.converter.OauthProviderConverter;
+import com.jlpt.converter.StudentStatusConverter;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,7 +33,7 @@ public class StudentUser {
     @Column(name = "full_name", nullable = false, length = 150)
     private String fullName;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = StudentStatusConverter.class)
     @Column(nullable = false, length = 20)
     @Builder.Default
     private StudentStatus status = StudentStatus.ACTIVE;
@@ -54,7 +56,7 @@ public class StudentUser {
     @Column(length = 500)
     private String bio;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = OauthProviderConverter.class)
     @Column(name = "oauth_provider", length = 30)
     private OauthProvider oauthProvider;
 

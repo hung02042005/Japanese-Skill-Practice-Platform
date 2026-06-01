@@ -8,7 +8,6 @@ import EyeIcon from '../../components/auth/EyeIcon';
 import AuthBanner from '../../components/auth/AuthBanner';
 import AuthDivider from '../../components/auth/AuthDivider';
 import GoogleButton from '../../components/auth/GoogleButton';
-import PasswordStrengthBar from '../../components/auth/PasswordStrengthBar';
 import './Register.css';
 
 function Register() {
@@ -16,7 +15,6 @@ function Register() {
   const { status, error } = useAppSelector((state) => state.auth);
 
   const [form, setForm]               = useState({ fullName: '', email: '', password: '', confirmPassword: '' });
-  const [fieldErrors, setFieldErrors] = useState({});
   const [showPwd, setShowPwd]         = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isDone, setIsDone]           = useState(false);
@@ -26,43 +24,11 @@ function Register() {
 
   const setField = useCallback((name, value) => {
     setForm((prev) => ({ ...prev, [name]: value }));
-    if (fieldErrors[name]) setFieldErrors((prev) => ({ ...prev, [name]: null }));
-    if (error)             dispatch(clearError());
-  }, [fieldErrors, error, dispatch]);
-
-  function validate() {
-    const errors = {};
-    if (!form.fullName.trim()) {
-      errors.fullName = 'Họ tên là bắt buộc';
-    } else if (form.fullName.trim().length < 2) {
-      errors.fullName = 'Họ tên phải có ít nhất 2 ký tự';
-    }
-    if (!form.email.trim()) {
-      errors.email = 'Email là bắt buộc';
-    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      errors.email = 'Email không hợp lệ';
-    }
-    if (!form.password) {
-      errors.password = 'Mật khẩu là bắt buộc';
-    } else if (form.password.length < 8) {
-      errors.password = 'Mật khẩu phải có ít nhất 8 ký tự';
-    } else if (!/[A-Z]/.test(form.password)) {
-      errors.password = 'Mật khẩu cần có ít nhất 1 chữ hoa';
-    } else if (!/[0-9]/.test(form.password)) {
-      errors.password = 'Mật khẩu cần có ít nhất 1 chữ số';
-    }
-    if (!form.confirmPassword) {
-      errors.confirmPassword = 'Xác nhận mật khẩu là bắt buộc';
-    } else if (form.password !== form.confirmPassword) {
-      errors.confirmPassword = 'Mật khẩu xác nhận không khớp';
-    }
-    setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
-  }
+    if (error) dispatch(clearError());
+  }, [error, dispatch]);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!validate()) return;
     try {
       await dispatch(
         registerThunk({ fullName: form.fullName, email: form.email, password: form.password, confirmPassword: form.confirmPassword }),
@@ -122,7 +88,7 @@ function Register() {
           )}
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
-            <div className={`form-field${fieldErrors.fullName ? ' has-error' : ''}`}>
+            <div className="form-field">
               <label className="form-label" htmlFor="reg-name">Họ và tên</label>
               <input
                 id="reg-name"
@@ -133,15 +99,10 @@ function Register() {
                 onChange={(e) => setField('fullName', e.target.value)}
                 autoComplete="name"
                 autoFocus
-                aria-describedby={fieldErrors.fullName ? 'reg-name-err' : undefined}
-                aria-invalid={!!fieldErrors.fullName}
               />
-              {fieldErrors.fullName && (
-                <span id="reg-name-err" className="field-error">{fieldErrors.fullName}</span>
-              )}
             </div>
 
-            <div className={`form-field${fieldErrors.email ? ' has-error' : ''}`}>
+            <div className="form-field">
               <label className="form-label" htmlFor="reg-email">Email</label>
               <input
                 id="reg-email"
@@ -151,27 +112,20 @@ function Register() {
                 value={form.email}
                 onChange={(e) => setField('email', e.target.value)}
                 autoComplete="email"
-                aria-describedby={fieldErrors.email ? 'reg-email-err' : undefined}
-                aria-invalid={!!fieldErrors.email}
               />
-              {fieldErrors.email && (
-                <span id="reg-email-err" className="field-error">{fieldErrors.email}</span>
-              )}
             </div>
 
-            <div className={`form-field${fieldErrors.password ? ' has-error' : ''}`}>
+            <div className="form-field">
               <label className="form-label" htmlFor="reg-pass">Mật khẩu</label>
               <div className="form-input-wrapper">
                 <input
                   id="reg-pass"
                   className="form-input"
                   type={showPwd ? 'text' : 'password'}
-                  placeholder="Tối thiểu 8 ký tự"
+                  placeholder="Tối thiểu 8 ký tự, 1 chữ hoa, 1 chữ số"
                   value={form.password}
                   onChange={(e) => setField('password', e.target.value)}
                   autoComplete="new-password"
-                  aria-describedby="reg-pwd-strength reg-pass-err"
-                  aria-invalid={!!fieldErrors.password}
                 />
                 <button
                   type="button"
@@ -182,15 +136,9 @@ function Register() {
                   <EyeIcon open={showPwd} />
                 </button>
               </div>
-              <PasswordStrengthBar password={form.password} />
-              {fieldErrors.password ? (
-                <span id="reg-pass-err" className="field-error">{fieldErrors.password}</span>
-              ) : (
-                !form.password && <span className="form-hint">Tối thiểu 8 ký tự, 1 chữ hoa, 1 chữ số</span>
-              )}
             </div>
 
-            <div className={`form-field${fieldErrors.confirmPassword ? ' has-error' : ''}`}>
+            <div className="form-field">
               <label className="form-label" htmlFor="reg-confirm">Xác nhận mật khẩu</label>
               <div className="form-input-wrapper">
                 <input
@@ -201,8 +149,6 @@ function Register() {
                   value={form.confirmPassword}
                   onChange={(e) => setField('confirmPassword', e.target.value)}
                   autoComplete="new-password"
-                  aria-describedby={fieldErrors.confirmPassword ? 'reg-confirm-err' : undefined}
-                  aria-invalid={!!fieldErrors.confirmPassword}
                 />
                 {!form.confirmPassword ? (
                   <button
@@ -227,9 +173,6 @@ function Register() {
                   </span>
                 )}
               </div>
-              {fieldErrors.confirmPassword && (
-                <span id="reg-confirm-err" className="field-error">{fieldErrors.confirmPassword}</span>
-              )}
             </div>
 
             <button

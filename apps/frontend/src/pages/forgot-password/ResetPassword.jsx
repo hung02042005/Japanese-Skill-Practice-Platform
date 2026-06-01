@@ -19,35 +19,14 @@ function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNew, setShowNew]                 = useState(false);
   const [showConfirm, setShowConfirm]         = useState(false);
-  const [fieldErrors, setFieldErrors]         = useState({});
   const [isDone, setIsDone]                   = useState(false);
 
   const isLoading = status === 'loading';
   const confirmOk = confirmPassword.length > 0 && newPassword === confirmPassword;
 
-  function validate() {
-    const errors = {};
-    if (!newPassword) {
-      errors.newPassword = 'Vui lòng nhập mật khẩu mới';
-    } else if (newPassword.length < 8) {
-      errors.newPassword = 'Mật khẩu phải có ít nhất 8 ký tự';
-    } else if (!/[A-Z]/.test(newPassword)) {
-      errors.newPassword = 'Mật khẩu phải có ít nhất 1 chữ hoa';
-    } else if (!/[0-9]/.test(newPassword)) {
-      errors.newPassword = 'Mật khẩu phải có ít nhất 1 chữ số';
-    }
-    if (!confirmPassword) {
-      errors.confirmPassword = 'Vui lòng xác nhận mật khẩu';
-    } else if (newPassword !== confirmPassword) {
-      errors.confirmPassword = 'Mật khẩu xác nhận không khớp';
-    }
-    setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
-  }
-
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!validate() || !token) return;
+    if (!token) return;
     try {
       await dispatch(resetPasswordThunk({ token, newPassword, confirmPassword })).unwrap();
       setIsDone(true);
@@ -132,7 +111,7 @@ function ResetPassword() {
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
             {/* Mật khẩu mới */}
-            <div className={`form-field${fieldErrors.newPassword ? ' has-error' : ''}`}>
+            <div className="form-field">
               <label className="form-label" htmlFor="rp-new">Mật khẩu mới</label>
               <div className="form-input-wrapper">
                 <input
@@ -141,15 +120,9 @@ function ResetPassword() {
                   type={showNew ? 'text' : 'password'}
                   placeholder="Ít nhất 8 ký tự, 1 hoa, 1 số"
                   value={newPassword}
-                  onChange={(e) => {
-                    setNewPassword(e.target.value);
-                    if (fieldErrors.newPassword) setFieldErrors((p) => ({ ...p, newPassword: null }));
-                    if (error) dispatch(clearError());
-                  }}
+                  onChange={(e) => { setNewPassword(e.target.value); if (error) dispatch(clearError()); }}
                   autoComplete="new-password"
                   autoFocus
-                  aria-invalid={!!fieldErrors.newPassword}
-                  aria-describedby={fieldErrors.newPassword ? 'rp-new-err' : undefined}
                 />
                 <button
                   type="button"
@@ -160,13 +133,10 @@ function ResetPassword() {
                   <EyeIcon open={showNew} />
                 </button>
               </div>
-              {fieldErrors.newPassword && (
-                <span id="rp-new-err" className="field-error">{fieldErrors.newPassword}</span>
-              )}
             </div>
 
             {/* Xác nhận mật khẩu */}
-            <div className={`form-field${fieldErrors.confirmPassword ? ' has-error' : ''}`}>
+            <div className="form-field">
               <label className="form-label" htmlFor="rp-confirm">Xác nhận mật khẩu mới</label>
               <div className="form-input-wrapper">
                 <input
@@ -175,13 +145,8 @@ function ResetPassword() {
                   type={showConfirm ? 'text' : 'password'}
                   placeholder="Nhập lại mật khẩu mới"
                   value={confirmPassword}
-                  onChange={(e) => {
-                    setConfirmPassword(e.target.value);
-                    if (fieldErrors.confirmPassword) setFieldErrors((p) => ({ ...p, confirmPassword: null }));
-                  }}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   autoComplete="new-password"
-                  aria-invalid={!!fieldErrors.confirmPassword}
-                  aria-describedby={fieldErrors.confirmPassword ? 'rp-confirm-err' : undefined}
                 />
                 {!confirmPassword ? (
                   <button
@@ -208,9 +173,6 @@ function ResetPassword() {
                   </span>
                 )}
               </div>
-              {fieldErrors.confirmPassword && (
-                <span id="rp-confirm-err" className="field-error">{fieldErrors.confirmPassword}</span>
-              )}
             </div>
 
             <button className="btn-submit" type="submit" disabled={isLoading}>

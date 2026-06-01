@@ -2,8 +2,16 @@ D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\common\A
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\config\AsyncConfig.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\config\DevDataSeeder.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\config\SecurityConfig.java
+D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\controller\admin\AdminController.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\controller\auth\AuthController.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\controller\student\StudentController.java
+D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\converter\ActorTypeConverter.java
+D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\converter\AdminStatusConverter.java
+D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\converter\OauthProviderConverter.java
+D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\converter\StaffRoleConverter.java
+D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\converter\StaffStatusConverter.java
+D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\converter\StudentStatusConverter.java
+D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\converter\TokenTypeConverter.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\ChangePasswordRequest.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\ForgotPasswordRequest.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\GoogleTokenRequest.java
@@ -14,8 +22,11 @@ D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\requ
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\ResendVerificationRequest.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\ResetPasswordRequest.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\UpdateProfileRequest.java
+D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\UpdateUserRoleRequest.java
+D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\UpdateUserStatusRequest.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\VerifyEmailRequest.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\request\VerifyMfaRequest.java
+D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\response\AdminUserResponse.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\response\AdminVerifyMfaResponse.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\response\AuthResponse.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\dto\response\LoginApiResponse.java
@@ -61,6 +72,7 @@ D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\security
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\security\UserDetailsImpl.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\security\UserDetailsServiceImpl.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\service\AdminAuthService.java
+D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\service\AdminUserService.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\service\AuthService.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\service\EmailService.java
 D:\Japanese-Skill-Practice-Platform\apps\backend\src\main\java\com\jlpt\service\TotpService.java
