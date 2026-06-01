@@ -550,6 +550,7 @@ public class AdminUserService {
                 .email(s.getEmail())
                 .status(s.getStatus().getValue())
                 .currentJlptLevel(s.getCurrentJlptLevel() != null ? s.getCurrentJlptLevel().name() : null)
+                .currentStreak(s.getCurrentStreak())
                 .createdAt(s.getCreatedAt())
                 .build();
     }
@@ -561,6 +562,7 @@ public class AdminUserService {
                 .fullName(st.getFullName())
                 .email(st.getEmail())
                 .status(st.getStatus().getValue())
+                .staffRole(st.getStaffRole().getValue())
                 .createdAt(st.getCreatedAt())
                 .build();
     }

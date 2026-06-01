@@ -1,4 +1,5 @@
-import SakuChan from '../../components/auth/SakuChan';
+import SakuChan from '../auth/SakuChan';
+import './StreakCard.css';
 
 const DAY_LABELS = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
 
@@ -13,7 +14,6 @@ function StreakCard({ streak = 0, weekDays = [] }) {
 
   return (
     <div className="streak-card" aria-label={`Streak hiện tại: ${streak} ngày`}>
-      {/* Header */}
       <div className="streak-header">
         <span
           className={`streak-flame${hasStreak ? ' streak-flame--active' : ''}`}
@@ -24,11 +24,9 @@ function StreakCard({ streak = 0, weekDays = [] }) {
         <span className="streak-label">Ngày Streak</span>
       </div>
 
-      {/* Streak count */}
       <div className="streak-number">{streak}</div>
       <div className="streak-unit">ngày liên tiếp</div>
 
-      {/* Week dots */}
       <div className="streak-week" aria-label="Tiến độ 7 ngày">
         {DAY_LABELS.map((label, i) => (
           <div key={i} className="streak-day-col">
@@ -45,7 +43,6 @@ function StreakCard({ streak = 0, weekDays = [] }) {
         ))}
       </div>
 
-      {/* Mascot */}
       <div className="streak-mascot" aria-hidden="true">
         <SakuChan variant="idle" size={72} />
       </div>

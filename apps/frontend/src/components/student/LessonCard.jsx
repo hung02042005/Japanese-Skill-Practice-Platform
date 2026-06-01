@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-
-const JLPT_CLASS = { N5: 'jlpt-n5', N4: 'jlpt-n4', N3: 'jlpt-n3', N2: 'jlpt-n2', N1: 'jlpt-n1' };
+import { JlptBadge } from '../common/Badges';
+import { ProgressBar } from '../common/ProgressBar';
+import './LessonCard.css';
 
 const LockIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -40,27 +41,29 @@ function LessonCard({ lesson }) {
     >
       {isActive && <div className="lesson-active-bar" aria-hidden="true" />}
 
-      {/* Thumbnail */}
       <div className={`lesson-thumb${isActive ? ' lesson-thumb--active' : ''}${isLocked ? ' lesson-thumb--locked' : ''}`}>
-        {isLocked ? <LockIcon /> : (
-          <span className="lesson-thumb-char">{thumbnail}</span>
-        )}
+        {isLocked
+          ? <LockIcon />
+          : <span className="lesson-thumb-char">{thumbnail}</span>
+        }
       </div>
 
-      {/* Content */}
       <div className="lesson-content">
         <div className="lesson-title">{title}</div>
         <div className="lesson-desc">{description}</div>
         {progressPct > 0 && (
-          <div className="lesson-progress-track" aria-label={`${progressPct}% hoàn thành`}>
-            <div className="lesson-progress-fill" style={{ width: `${progressPct}%` }} />
-          </div>
+          <ProgressBar
+            value={progressPct}
+            max={100}
+            height={4}
+            color="var(--color-secondary)"
+            label={`${progressPct}% hoàn thành`}
+          />
         )}
       </div>
 
-      {/* Meta */}
       <div className="lesson-meta">
-        <span className={`lesson-badge ${JLPT_CLASS[jlptLevel] ?? 'jlpt-n5'}`}>{jlptLevel}</span>
+        <JlptBadge level={jlptLevel} />
         {!isLocked && <ChevronRight />}
       </div>
     </Tag>

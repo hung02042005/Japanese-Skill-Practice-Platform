@@ -17,5 +17,7 @@ public class UserSummaryResponse {
     private String email;
     private String status;
     private String currentJlptLevel;
+    private String staffRole;
+    private Integer currentStreak;
     private LocalDateTime createdAt;
 }

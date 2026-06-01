@@ -1,0 +1,66 @@
+/* ===== Shared badge components ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  font-family: var(--font-base);
+  line-height: 1.5;
+}
+
+/* ── Role badges ── */
+.badge--role-student { background: #E3F2FD; color: #1565C0; }
+.badge--role-staff   { background: var(--color-secondary-bg); color: #2E7D32; }
+.badge--role-admin   { background: #F3E5F5; color: #6A1B9A; }
+
+/* ── Status badges ── */
+.badge--active    { background: var(--color-secondary-bg); color: #2E7D32; }
+.badge--suspended { background: #FEF2F2; color: #B71C1C; }
+.badge--pending   { background: #FFF8E1; color: #F57F17; }
+.badge--deleted   { background: #F5F5F5; color: #757575; }
+
+/* ── Status dot ── */
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.status-dot--active {
+  background: #4CAF50;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+.status-dot--suspended { background: var(--color-error); }
+
+.status-dot--pending {
+  background: #FFA000;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+.status-dot--deleted { background: #BDBDBD; }
+
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 0 0   rgba(76, 175, 80, 0.40); }
+  50%       { box-shadow: 0 0 0 4px rgba(76, 175, 80, 0);    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dot--active,
+  .status-dot--pending { animation: none !important; }
+}
+
+/* ════════════════════════════════════
+   JLPT level colours — shared globally
+   Usage: <span className="jlpt-n5">N5</span>
+════════════════════════════════════ */
+.jlpt-n5 { background: #E8F5E9; color: #2E7D32; }
+.jlpt-n4 { background: #E3F2FD; color: #1565C0; }
+.jlpt-n3 { background: #FFF3E0; color: #E65100; }
+.jlpt-n2 { background: #F3E5F5; color: #6A1B9A; }
+.jlpt-n1 { background: #FCE4EC; color: #C62828; }
