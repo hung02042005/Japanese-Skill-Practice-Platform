@@ -1,5 +1,9 @@
-ALTER TABLE staff_users
-ADD must_change_password BIT NOT NULL CONSTRAINT DF_staff_users_must_change_password DEFAULT 0;
+IF NOT EXISTS (
+    SELECT 1 FROM sys.columns
+    WHERE object_id = OBJECT_ID('staff_users') AND name = 'must_change_password'
+)
+    ALTER TABLE staff_users
+    ADD must_change_password BIT NOT NULL CONSTRAINT DF_staff_users_must_change_password DEFAULT 0;
 GO
 
 CREATE TABLE staff_password_reset_requests (
@@ -22,20 +26,15 @@ CREATE INDEX IX_reset_req_status_expires ON staff_password_reset_requests (statu
 CREATE INDEX IX_reset_req_staff_requested ON staff_password_reset_requests (staff_id, requested_at);
 GO
 
-DECLARE @constraintName NVARCHAR(128)
-DECLARE @sql NVARCHAR(500)
-
-SELECT TOP 1 @constraintName = cc.name
-FROM sys.check_constraints cc
-JOIN sys.tables t ON cc.parent_object_id = t.object_id
-WHERE t.name = 'auth_tokens'
-  AND cc.definition LIKE '%token_type%'
-
-IF @constraintName IS NOT NULL
-BEGIN
-    SET @sql = N'ALTER TABLE auth_tokens DROP CONSTRAINT [' + @constraintName + N']'
-    EXEC sp_executesql @sql
-END
+EXEC sp_executesql N'
+    DECLARE @cn NVARCHAR(128);
+    SELECT TOP 1 @cn = cc.name
+    FROM sys.check_constraints cc
+    JOIN sys.tables t ON cc.parent_object_id = t.object_id
+    WHERE t.name = N''auth_tokens'' AND cc.definition LIKE N''%token_type%'';
+    IF @cn IS NOT NULL
+        EXEC(''ALTER TABLE auth_tokens DROP CONSTRAINT ['' + @cn + '']'');
+';
 GO
 
 ALTER TABLE auth_tokens ADD CONSTRAINT CK_auth_tokens_token_type

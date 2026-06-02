@@ -168,7 +168,6 @@ public class AuthService {
         }
         staff.setLoginAttempts(0);
         staff.setLastLoginAt(LocalDateTime.now());
-        staff.setLastLoginIp(ip);
         staffUserRepository.save(staff);
 
         if (Boolean.TRUE.equals(staff.getMustChangePassword())) {
@@ -227,7 +226,6 @@ public class AuthService {
             user.setLoginAttempts(0);
             user.setLockedUntil(null);
             user.setLastLoginAt(LocalDateTime.now());
-            user.setLastLoginIp(ip);
             studentUserRepository.save(user);
 
             String accessToken = jwtProvider.generateAccessToken(authentication);
@@ -527,7 +525,6 @@ public class AuthService {
                 .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"));
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
-        user.setPasswordChangedAt(LocalDateTime.now());
         studentUserRepository.save(user);
 
         authTokenRepository.delete(tokenEntity);
@@ -548,8 +545,6 @@ public class AuthService {
 
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
-        user.setBio(request.getBio());
-        user.setDateOfBirth(request.getDateOfBirth());
         user.setAvatarUrl(request.getAvatarUrl());
 
         if (request.getTargetJlptLevel() != null) {
@@ -591,7 +586,6 @@ public class AuthService {
         }
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
-        user.setPasswordChangedAt(LocalDateTime.now());
         studentUserRepository.save(user);
     }
 }

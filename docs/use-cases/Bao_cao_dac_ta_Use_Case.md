@@ -196,7 +196,7 @@ Phần này đặc tả chi tiết 20 Use Case dành cho học viên, sắp xế
   2. Hệ thống hiển thị: Ảnh đại diện, Họ tên, Email, Cấp độ JLPT hiện tại, Ngày tham gia hệ thống.
   3. Học viên chỉnh sửa thông tin (Họ tên, ảnh đại diện, số điện thoại, cấp độ JLPT mục tiêu) và click 'Lưu'.
   4. Hệ thống cập nhật và phản hồi thành công.
-- **Bảng dữ liệu liên quan:** `student_users` (avatar_url, full_name, phone, date_of_birth, bio, current_jlpt_level, target_jlpt_level)
+- **Bảng dữ liệu liên quan:** `student_users` (avatar_url, full_name, phone, current_jlpt_level, target_jlpt_level)
 
 ---
 

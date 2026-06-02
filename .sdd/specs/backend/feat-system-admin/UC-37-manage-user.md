@@ -116,7 +116,7 @@ Bước 6 [Backend]:  Trả về HTTP 200 kèm thông tin đã cập nhật
 ```
 
 **Trường được phép chỉnh sửa:**
-- Student: `full_name`, `phone`, `date_of_birth`, `bio`, `target_jlpt_level`
+- Student: `full_name`, `phone`, `target_jlpt_level`
 - Staff: `full_name`
 - Admin: không cho phép chỉnh sửa thông tin Admin khác qua endpoint này
 
@@ -374,8 +374,6 @@ sequenceDiagram
     "fullName": "Nguyen Van A",
     "email": "student@example.com",
     "phone": "0901234567",
-    "dateOfBirth": "2000-05-15",
-    "bio": "Đang ôn thi N3",
     "avatarUrl": "/uploads/avatars/12.jpg",
     "status": "active",
     "suspendReason": null,

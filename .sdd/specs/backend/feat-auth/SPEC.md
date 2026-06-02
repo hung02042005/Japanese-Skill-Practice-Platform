@@ -69,8 +69,8 @@ Không có xác thực → không thể cá nhân hóa lộ trình học, lưu t
 
 | ID | EARS Requirement |
 |:---|:---|
-| FR-AUTH-30 | WHEN an authenticated Student accesses the profile page, THE SYSTEM SHALL display: avatar_url, full_name, email, current_jlpt_level, target_jlpt_level, date_of_birth, bio, phone, and join date. |
-| FR-AUTH-31 | WHEN a Student submits profile updates (full_name, phone, date_of_birth, bio, target_jlpt_level, avatar_url), THE SYSTEM SHALL validate and persist changes to `student_users`. |
+| FR-AUTH-30 | WHEN an authenticated Student accesses the profile page, THE SYSTEM SHALL display: avatar_url, full_name, email, current_jlpt_level, target_jlpt_level, phone, and join date. |
+| FR-AUTH-31 | WHEN a Student submits profile updates (full_name, phone, target_jlpt_level, avatar_url), THE SYSTEM SHALL validate and persist changes to `student_users`. |
 | FR-AUTH-32 | THE SYSTEM SHALL NOT allow a Student to change their own `email` or `role` via the profile endpoint. |
 | FR-AUTH-33 | WHILE uploading an avatar image, THE SYSTEM SHALL store the file in `/uploads` or S3 and save only the URL in `student_users.avatar_url`. THE SYSTEM SHALL NOT store image BLOB in the database. |
 
@@ -173,8 +173,6 @@ CREATE TABLE student_users (
     email_verified_at    DATETIME2       NULL,
     avatar_url           NVARCHAR(500)   NULL,
     phone                NVARCHAR(20)    NULL,
-    date_of_birth        DATE            NULL,                       -- UC-04 User Profile
-    bio                  NVARCHAR(500)   NULL,                       -- UC-04 User Profile (short bio)
 
     -- OAuth fields (single identity per student)
     oauth_provider       NVARCHAR(30)    NULL
@@ -389,8 +387,6 @@ erDiagram
     "fullName": "string",
     "email": "string",
     "phone": "string|null",
-    "dateOfBirth": "date|null",
-    "bio": "string|null",
     "avatarUrl": "string|null",
     "currentJlptLevel": "string",
     "targetJlptLevel": "string|null",
@@ -409,8 +405,6 @@ erDiagram
 {
   "fullName": "string|optional",
   "phone": "string|optional",
-  "dateOfBirth": "date|optional",
-  "bio": "string|optional — max 500 chars",
   "targetJlptLevel": "string|optional — N5|N4|N3|N2|N1",
   "avatarUrl": "string|optional — URL after upload"
 }

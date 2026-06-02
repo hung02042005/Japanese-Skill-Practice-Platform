@@ -168,7 +168,6 @@ public class AdminUserService {
 
         staff.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         staff.setStatus(StaffUser.StaffStatus.ACTIVE);
-        staff.setEmailVerifiedAt(LocalDateTime.now());
         staffUserRepository.save(staff);
 
         authTokenRepository.delete(token);
@@ -197,12 +196,6 @@ public class AdminUserService {
                 }
                 if (req.getPhone() != null) {
                     s.setPhone(req.getPhone().isBlank() ? null : req.getPhone().trim());
-                }
-                if (req.getDateOfBirth() != null) {
-                    s.setDateOfBirth(req.getDateOfBirth());
-                }
-                if (req.getBio() != null) {
-                    s.setBio(req.getBio().isBlank() ? null : req.getBio().trim());
                 }
                 if (StringUtils.hasText(req.getTargetJlptLevel())) {
                     s.setTargetJlptLevel(StudentUser.JlptLevel.valueOf(req.getTargetJlptLevel().toUpperCase()));
@@ -625,8 +618,6 @@ public class AdminUserService {
                 .fullName(s.getFullName())
                 .email(s.getEmail())
                 .phone(s.getPhone())
-                .dateOfBirth(s.getDateOfBirth())
-                .bio(s.getBio())
                 .avatarUrl(s.getAvatarUrl())
                 .status(s.getStatus().getValue())
                 .suspendReason(s.getSuspendReason())

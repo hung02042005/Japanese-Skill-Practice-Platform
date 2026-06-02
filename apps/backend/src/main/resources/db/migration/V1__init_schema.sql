@@ -37,16 +37,13 @@ CREATE TABLE admin_users (
     status               NVARCHAR(20)    NOT NULL DEFAULT 'active'
         CHECK (status IN ('active','suspended','pending','deleted')),
     suspend_reason       NVARCHAR(500)   NULL,
-    email_verified_at    DATETIME2      NULL,
     -- Bảo mật & Xác thực (Tích hợp từ user_security)
     login_attempts       INT             NOT NULL DEFAULT 0,
     locked_until         DATETIME2       NULL,
     last_login_at        DATETIME2       NULL,
-    last_login_ip        NVARCHAR(45)    NULL,
-    password_changed_at  DATETIME2       NULL,
     two_factor_enabled   BIT             NOT NULL DEFAULT 0,
     two_factor_secret    NVARCHAR(255)   NULL,
-    
+
     created_at           DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME(),
     updated_at           DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME()
 );
@@ -66,14 +63,12 @@ CREATE TABLE staff_users (
     status               NVARCHAR(20)    NOT NULL DEFAULT 'active'
         CHECK (status IN ('active','suspended','pending','deleted')),
     suspend_reason       NVARCHAR(500)   NULL,
-    email_verified_at    DATETIME2      NULL,
     -- Bảo mật & Xác thực (Tích hợp từ user_security)
     login_attempts       INT             NOT NULL DEFAULT 0,
     locked_until         DATETIME2       NULL,
     last_login_at        DATETIME2       NULL,
-    last_login_ip        NVARCHAR(45)    NULL,
-    password_changed_at  DATETIME2       NULL,
-    
+    must_change_password BIT             NOT NULL DEFAULT 0,
+
     created_at           DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME(),
     updated_at           DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME()
 );
@@ -114,9 +109,7 @@ CREATE TABLE student_users (
     login_attempts       INT             NOT NULL DEFAULT 0,
     locked_until         DATETIME2       NULL,
     last_login_at        DATETIME2       NULL,
-    last_login_ip        NVARCHAR(45)    NULL,
-    password_changed_at  DATETIME2       NULL,
-    
+
     created_at           DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME(),
     updated_at           DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME()
 );

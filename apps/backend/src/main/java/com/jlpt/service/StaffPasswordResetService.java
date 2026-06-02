@@ -84,7 +84,6 @@ public class StaffPasswordResetService {
         LocalDateTime now = LocalDateTime.now();
         staff.setPasswordHash(passwordEncoder.encode(tempPassword));
         staff.setMustChangePassword(true);
-        staff.setPasswordChangedAt(now);
         staffUserRepository.save(staff);
 
         authTokenRepository.revokeActiveByStaffIdAndTokenTypes(
@@ -137,7 +136,6 @@ public class StaffPasswordResetService {
         LocalDateTime now = LocalDateTime.now();
         staff.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         staff.setMustChangePassword(false);
-        staff.setPasswordChangedAt(now);
         staffUserRepository.save(staff);
 
         token.setRevokedAt(now);

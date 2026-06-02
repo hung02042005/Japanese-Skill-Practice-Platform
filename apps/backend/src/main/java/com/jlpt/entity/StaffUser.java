@@ -45,9 +45,6 @@ public class StaffUser {
     @Column(name = "suspend_reason", length = 500)
     private String suspendReason;
 
-    @Column(name = "email_verified_at")
-    private LocalDateTime emailVerifiedAt;
-
     @Column(name = "login_attempts", nullable = false)
     @Builder.Default
     private Integer loginAttempts = 0;
@@ -57,12 +54,6 @@ public class StaffUser {
 
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
-
-    @Column(name = "last_login_ip", length = 45)
-    private String lastLoginIp;
-
-    @Column(name = "password_changed_at")
-    private LocalDateTime passwordChangedAt;
 
     @Column(name = "must_change_password", nullable = false)
     @Builder.Default

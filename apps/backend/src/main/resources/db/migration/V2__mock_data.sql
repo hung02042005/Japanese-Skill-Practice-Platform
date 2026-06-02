@@ -28,14 +28,14 @@ DECLARE @admin_id      BIGINT,
 IF NOT EXISTS (SELECT 1 FROM admin_users WHERE email = 'admin@sakuji.com')
     INSERT INTO admin_users (
         email, password_hash, full_name,
-        status, email_verified_at,
+        status,
         two_factor_enabled,
         login_attempts, created_at, updated_at
     ) VALUES (
         'admin@sakuji.com',
         '$2b$12$kJcYAwbtPEqtu8tZUWv4fetUeoydXgfwS4ckmsiHW3oLU3Hhtig/G',   -- Admin@123456
         N'Quản Trị Viên',
-        'active', SYSUTCDATETIME(),
+        'active',
         0,   -- tắt 2FA cho môi trường DEV
         0, SYSUTCDATETIME(), SYSUTCDATETIME()
     );
@@ -45,14 +45,14 @@ SELECT @admin_id = admin_id FROM admin_users WHERE email = 'admin@sakuji.com';
 IF NOT EXISTS (SELECT 1 FROM staff_users WHERE email = 'manager@sakuji.com')
     INSERT INTO staff_users (
         email, password_hash, full_name, staff_role,
-        status, email_verified_at,
+        status,
         login_attempts, created_at, updated_at
     ) VALUES (
         'manager@sakuji.com',
         '$2b$12$9HCWZhWE7OgwP2/SMU3Ob.zscUYQ2oV28ArNO3x6F/NboRnFhofmu',   -- Staff@123456
         N'Trưởng Nhóm Nội Dung',
         'staff_manager',
-        'active', SYSUTCDATETIME(),
+        'active',
         0, SYSUTCDATETIME(), SYSUTCDATETIME()
     );
 SELECT @manager_id = staff_id FROM staff_users WHERE email = 'manager@sakuji.com';
@@ -61,14 +61,14 @@ SELECT @manager_id = staff_id FROM staff_users WHERE email = 'manager@sakuji.com
 IF NOT EXISTS (SELECT 1 FROM staff_users WHERE email = 'staff@sakuji.com')
     INSERT INTO staff_users (
         email, password_hash, full_name, staff_role,
-        status, email_verified_at,
+        status,
         login_attempts, created_at, updated_at
     ) VALUES (
         'staff@sakuji.com',
         '$2b$12$9HCWZhWE7OgwP2/SMU3Ob.zscUYQ2oV28ArNO3x6F/NboRnFhofmu',   -- Staff@123456
         N'Biên Soạn Viên',
         'staff',
-        'active', SYSUTCDATETIME(),
+        'active',
         0, SYSUTCDATETIME(), SYSUTCDATETIME()
     );
 SELECT @staff_id = staff_id FROM staff_users WHERE email = 'staff@sakuji.com';

@@ -80,8 +80,6 @@ CREATE TABLE student_users (
     email_verified_at    DATETIME2       NULL,
     avatar_url           NVARCHAR(500)   NULL,
     phone                NVARCHAR(20)    NULL,
-    date_of_birth        DATE            NULL,                       -- UC-04 User Profile
-    bio                  NVARCHAR(500)   NULL,                       -- UC-04 User Profile (short bio)
 
     -- OAuth fields (single identity per student)
     oauth_provider       NVARCHAR(30)    NULL
