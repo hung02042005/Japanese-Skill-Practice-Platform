@@ -4,6 +4,9 @@ import ForgotPassword from './pages/forgot-password/ForgotPassword';
 import ResetPassword from './pages/forgot-password/ResetPassword';
 import Register from './pages/register/Register';
 import Home from './pages/home/Home';
+import Features from './pages/features/Features';
+import Pricing from './pages/pricing/Pricing';
+import Blog from './pages/blog/Blog';
 import Dashboard from './pages/dashboard/Dashboard';
 import VerifyEmail from './pages/verify-email/VerifyEmail';
 import ManageUsers from './pages/admin/ManageUsers';
@@ -16,6 +19,9 @@ function App() {
       <Routes>
         {/* Public */}
         <Route path="/" element={<Home />} />
+        <Route path="/tinh-nang" element={<Features />} />
+        <Route path="/bang-gia" element={<Pricing />} />
+        <Route path="/blog" element={<Blog />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

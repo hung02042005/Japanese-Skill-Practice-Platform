@@ -1,10 +1,58 @@
 # SPEC — Dashboard Học Sinh (Student Dashboard)
 > **Feature ID:** `feat-dashboard` | **Page:** `Dashboard`
 > **Route:** `/dashboard` (private — yêu cầu role STUDENT, redirect `/login` nếu chưa auth)
-> **Version:** 1.0 | **Status:** Draft
-> **Author:** Team | **Last Updated:** 2026-06-01
+> **UC Coverage:** UC-19 (Student Progress & Stats)
+> **Version:** 1.1 | **Status:** Draft
+> **Author:** Team | **Last Updated:** 2026-06-02
 > **Design ref:** `DESIGN.md` — SakuJi · Hanami E-learning
 > **Backend ref:** `.sdd/specs/backend/feat-learning-analytics/SPEC.md`
+
+---
+
+## ACTOR
+
+| Actor | Role | Điều kiện tiền quyết |
+|:---|:---|:---|
+| **Student** | Học viên đã đăng nhập | `isAuthenticated = true`, `role = STUDENT`, token hợp lệ |
+
+---
+
+## FUNCTIONAL REQUIREMENTS (EARS)
+
+| ID | EARS Requirement |
+|:---|:---|
+| FR-DASH-01 | WHEN an authenticated Student navigates to `/dashboard`, THE SYSTEM SHALL dispatch `fetchDashboardThunk` to `GET /api/students/dashboard`. |
+| FR-DASH-02 | WHILE `status === 'loading'`, THE SYSTEM SHALL render skeleton components in place of StreakCard, HeroBanner, LessonList, and StatCards. |
+| FR-DASH-03 | WHEN `fetchDashboardThunk` fulfilled, THE SYSTEM SHALL render StreakCard with `streak` and `weekDays`, HeroBanner with `course` data and progress bar, LessonList ordered by `lesson_order`, QuickActionCards, and StatCards. |
+| FR-DASH-04 | IF `lessons` array is empty, THE SYSTEM SHALL render `<EmptyState>` instead of LessonList with message "Chưa có bài học nào" and CTA "Xem khoá học khác". |
+| FR-DASH-05 | WHEN a Student clicks a LessonCard with `status = 'active'` or `'available'`, THE SYSTEM SHALL navigate to the lesson detail page (route TBD). |
+| FR-DASH-06 | WHEN a Student clicks a LessonCard with `status = 'locked'`, THE SYSTEM SHALL NOT navigate and SHALL display `aria-disabled` state. |
+| FR-DASH-07 | WHEN a Student clicks the "HỌC TỪ MỚI" CTA in HeroBanner, THE SYSTEM SHALL navigate to `/learn/new`. |
+| FR-DASH-08 | WHEN a Student clicks a QuickActionCard, THE SYSTEM SHALL navigate to its corresponding route (`/flashcard`, `/mock-test`, `/dictionary`, `/progress`). |
+| FR-DASH-09 | WHEN `fetchDashboardThunk` rejected, THE SYSTEM SHALL display an inline error state and allow retry. |
+
+## NON-FUNCTIONAL REQUIREMENTS
+
+| ID | Category | Requirement |
+|:---|:---|:---|
+| NFR-DASH-01 | Architecture | All data must come via `studentSlice` — KHÔNG gọi API trực tiếp trong component |
+| NFR-DASH-02 | UX | Skeleton must appear within 100ms of navigation; no flash of blank content |
+| NFR-DASH-03 | Correctness | Dashboard must handle `streak=0`, `lessons=[]`, `weekDays` với tất cả false gracefully |
+| NFR-DASH-04 | Security | Dashboard route must be wrapped in `<PrivateRoute role="STUDENT">` — non-student roles redirect to their respective dashboard |
+
+## ACCEPTANCE CRITERIA
+
+| ID | Given | When | Then |
+|:---|:---|:---|:---|
+| AC-DASH-01 | Student navigates to /dashboard | fetchDashboardThunk resolves | StreakCard shows correct streak number and weekly dots |
+| AC-DASH-02 | streak = 0 | Dashboard renders | Flame icon opacity 0.30, no pulse animation |
+| AC-DASH-03 | streak > 0 | Dashboard renders | Flame icon pulses, streak number shows correctly |
+| AC-DASH-04 | Lessons include active + locked items | Dashboard renders | Active card has pink border + glow; locked card has opacity 0.55 and lock icon |
+| AC-DASH-05 | Student clicks locked LessonCard | Click event | No navigation, aria-disabled=true |
+| AC-DASH-06 | Student clicks "HỌC TỪ MỚI" button | Click event | Navigates to /learn/new |
+| AC-DASH-07 | API is loading | Page renders | All three columns show skeleton blocks, no undefined errors |
+| AC-DASH-08 | lessons array is empty | Data resolves | EmptyState renders with mascot, title, and CTA |
+| AC-DASH-09 | Screen width < 768px | Dashboard renders | Left sidebar hidden, right sidebar hidden, single-column layout |
 
 ---
 

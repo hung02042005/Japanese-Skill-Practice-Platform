@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import AppLogo from '../../../components/common/AppLogo';
 import './TopBar.css';
 
@@ -20,9 +20,9 @@ function TopBar() {
         </a>
 
         <nav className="topbar-nav" aria-label="Điều hướng chính">
-          <a href="#features" className="topbar-nav-link">Tính năng</a>
-          <a href="#pricing" className="topbar-nav-link">Bảng giá</a>
-          <a href="#blog" className="topbar-nav-link">Blog</a>
+          <Link to="/tinh-nang" className="topbar-nav-link">Tính năng</Link>
+          <Link to="/bang-gia" className="topbar-nav-link">Bảng giá</Link>
+          <Link to="/blog" className="topbar-nav-link">Blog</Link>
         </nav>
 
         <div className="topbar-actions">
@@ -50,9 +50,9 @@ function TopBar() {
 
       {menuOpen && (
         <nav className="topbar-drawer" aria-label="Menu điều hướng di động">
-          <a href="#features" className="topbar-drawer-link" onClick={closeMenu}>Tính năng</a>
-          <a href="#pricing" className="topbar-drawer-link" onClick={closeMenu}>Bảng giá</a>
-          <a href="#blog" className="topbar-drawer-link" onClick={closeMenu}>Blog</a>
+          <Link to="/tinh-nang" className="topbar-drawer-link" onClick={closeMenu}>Tính năng</Link>
+          <Link to="/bang-gia" className="topbar-drawer-link" onClick={closeMenu}>Bảng giá</Link>
+          <Link to="/blog" className="topbar-drawer-link" onClick={closeMenu}>Blog</Link>
           <div className="topbar-drawer-actions">
             <button className="topbar-btn-login" onClick={() => { navigate('/login'); closeMenu(); }}>
               Đăng nhập
