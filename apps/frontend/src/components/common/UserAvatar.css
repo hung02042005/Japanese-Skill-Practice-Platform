@@ -13,12 +13,12 @@
 
 .user-avatar--student {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-  box-shadow: 0 2px 8px rgba(232, 99, 122, 0.28);
+  box-shadow: 0 2px 8px rgba(232, 154, 170, 0.28);
 }
 
 .user-avatar--staff {
-  background: linear-gradient(135deg, #4CAF50 0%, #81C784 100%);
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.28);
+  background: linear-gradient(135deg, #5DBB69 0%, #8DD494 100%);
+  box-shadow: 0 2px 8px rgba(93, 187, 105, 0.28);
 }
 
 .user-avatar--admin {
@@ -40,8 +40,8 @@
 }
 
 @keyframes avatarOnlinePulse {
-  0%, 100% { box-shadow: 0 0 0 0   rgba(76, 175, 80, 0.40); }
-  50%       { box-shadow: 0 0 0 4px rgba(76, 175, 80, 0);    }
+  0%, 100% { box-shadow: 0 0 0 0   rgba(93, 187, 105, 0.40); }
+  50%       { box-shadow: 0 0 0 4px rgba(93, 187, 105, 0);    }
 }
 
 @media (prefers-reduced-motion: reduce) {

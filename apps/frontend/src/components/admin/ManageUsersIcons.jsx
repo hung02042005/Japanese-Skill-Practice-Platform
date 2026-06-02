@@ -194,3 +194,107 @@ export const STAT_ICONS = {
   suspended: <StatIconSuspended />,
   pending:   <StatIconPending />,
 };
+
+/* ════════════════════════════════════
+   NEW — Dashboard icons
+════════════════════════════════════ */
+export function IcChart() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3"  y="12" width="4" height="9" rx="1.5" fill="currentColor" opacity="0.18"/>
+      <rect x="10" y="6"  width="4" height="15" rx="1.5" fill="currentColor" opacity="0.18"/>
+      <rect x="17" y="9"  width="4" height="12" rx="1.5" fill="currentColor" opacity="0.18"/>
+      <rect x="3"  y="12" width="4" height="9"  rx="1.5" stroke="currentColor" strokeWidth="1.8"/>
+      <rect x="10" y="6"  width="4" height="15" rx="1.5" stroke="currentColor" strokeWidth="1.8"/>
+      <rect x="17" y="9"  width="4" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.8"/>
+      <path d="M2 21h20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+      <ellipse cx="22" cy="4" rx="1.2" ry="2" fill="currentColor" opacity="0.18" transform="rotate(-15 22 4)"/>
+    </svg>
+  );
+}
+
+export function IcSystemHealth() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M2 12h4l2-5 3 10 3-8 2 3h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="9" cy="7" r="1.5" fill="currentColor" opacity="0.35"/>
+      <ellipse cx="21" cy="4" rx="1.3" ry="2.2" fill="currentColor" opacity="0.15" transform="rotate(-20 21 4)"/>
+    </svg>
+  );
+}
+
+/* ════════════════════════════════════
+   NEW — Settings tab icons
+════════════════════════════════════ */
+export function IcMail() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="2" y="4" width="20" height="16" rx="2.5" fill="currentColor" opacity="0.08"/>
+      <rect x="2" y="4" width="20" height="16" rx="2.5" stroke="currentColor" strokeWidth="2"/>
+      <path d="M2 7l10 7 10-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <ellipse cx="20.5" cy="3" rx="1" ry="1.8" fill="currentColor" opacity="0.20" transform="rotate(-15 20.5 3)"/>
+    </svg>
+  );
+}
+
+export function IcShield() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 2l8 3v7c0 4.5-3.5 8.5-8 10-4.5-1.5-8-5.5-8-10V5l8-3z"
+            fill="currentColor" opacity="0.10"
+            stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+      <path d="M8.5 12l2.5 2.5 5-5.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+export function IcWrench() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
+            fill="currentColor" opacity="0.08"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <ellipse cx="21" cy="4" rx="1" ry="1.8" fill="currentColor" opacity="0.18" transform="rotate(-30 21 4)"/>
+    </svg>
+  );
+}
+
+export function IcBell() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
+            fill="currentColor" opacity="0.10"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <circle cx="12" cy="3" r="1.5" fill="currentColor" opacity="0.30"/>
+      <ellipse cx="20" cy="5" rx="1" ry="1.8" fill="currentColor" opacity="0.15" transform="rotate(15 20 5)"/>
+    </svg>
+  );
+}
+
+export function IcPlus() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+export function IcEdit() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+            fill="currentColor" opacity="0.12"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+export const SETTINGS_TAB_ICONS = {
+  system:        <IcWrench />,
+  email:         <IcMail />,
+  security:      <IcShield />,
+  notifications: <IcBell />,
+};

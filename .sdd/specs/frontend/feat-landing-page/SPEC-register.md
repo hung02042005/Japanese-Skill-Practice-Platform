@@ -41,8 +41,8 @@ apps/frontend/src/
 ```css
 /* Giống LoginPage — xem SPEC-login.md § 2 */
 /* Bổ sung dành riêng cho Register: */
---color-success-bg: var(--color-secondary-bg); /* #F1F8E9 */
---color-success:    var(--color-secondary);     /* #4CAF50 */
+--color-success-bg: var(--color-secondary-bg); /* #F4FBF5 */
+--color-success:    var(--color-secondary);     /* #5DBB69 */
 ```
 
 ---
@@ -157,7 +157,7 @@ Display:        flex, flex-direction: column, gap: 20px
     Bar fill:  height 100%, border-radius var(--radius-full)
 
   4 mức độ:
-    weak   (1–3 điểm): fill 25%, background #E53935 (đỏ)
+    weak   (1–3 điểm): fill 25%, background #E57373 (đỏ)
     fair   (4–5 điểm): fill 50%, background var(--color-warning) (cam)
     good   (6–7 điểm): fill 75%, background var(--color-accent) (vàng)
     strong (8+ điểm):  fill 100%, background var(--color-secondary) (xanh)

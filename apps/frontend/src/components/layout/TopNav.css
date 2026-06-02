@@ -121,7 +121,7 @@
 /* ─── Avatar open state ─── */
 .topnav-avatar--open {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(232, 99, 122, 0.20);
+  box-shadow: 0 0 0 3px rgba(232, 154, 170, 0.20);
 }
 
 /* ══════════════════════════════════════════

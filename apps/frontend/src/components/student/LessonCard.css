@@ -42,7 +42,7 @@
 
 .lesson-card--active {
   border-color: var(--color-primary);
-  box-shadow: 0 2px 10px rgba(232, 99, 122, 0.22);
+  box-shadow: 0 2px 10px rgba(232, 154, 170, 0.22);
   padding: 18px 22px;
 }
 

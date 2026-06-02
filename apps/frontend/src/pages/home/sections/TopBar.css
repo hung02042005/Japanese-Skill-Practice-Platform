@@ -97,7 +97,7 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.30);
+  box-shadow: 0 2px 8px rgba(93, 187, 105, 0.30);
   transition: filter var(--transition), transform var(--transition);
 }
 

@@ -36,7 +36,7 @@
   background: var(--color-primary);
   color: white;
   border-color: var(--color-primary);
-  box-shadow: 0 2px 10px rgba(232, 99, 122, 0.32);
+  box-shadow: 0 2px 10px rgba(232, 154, 170, 0.32);
 }
 
 .pg-btn--on:hover { filter: brightness(1.06); }

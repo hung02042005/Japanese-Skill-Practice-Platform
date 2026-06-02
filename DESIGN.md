@@ -9,9 +9,9 @@ Type is handled by two families: **Nunito** (rounded humanist sans) for all UI t
 Buttons are pill-shaped — `border-radius: 9999px` on all primary and secondary CTAs, evoking the oval outline of a falling petal. Cards use generous corner radii (12–24 px). No element in the UI has a 0 px corner.
 
 **Key Characteristics:**
-- Sakura pink (`#E8637A`) as the primary brand hue — active nav states, Saku-chan's crown accent, highlighted text.
-- Emerald green (`#4CAF50`) for positive action CTAs ("HỌC TỪ MỚI"), correct-answer feedback, and study-days stat cards.
-- Soft gold (`#F5C842`) for word-count achievements, star decorations, and streak flame.
+- Sakura pink (`#E89AAA`) as the primary brand hue — active nav states, highlighted text, streak indicators.
+- Emerald green (`#5DBB69`) for positive action CTAs ("HỌC TỪ MỚI"), correct-answer feedback, and study-days stat cards.
+- Soft gold (`#F7C948`) for word-count achievements, star decorations, and streak flame.
 - Ivory canvas (`#FAF7F4`) instead of flat gray — the washi-paper warmth that ties the sakura theme together.
 - Saku-chan mascot on every key screen: idle (drifting), happy (spinning), correct (jumping + petals), wrong (wilting briefly), empty state (sleeping on a branch).
 - Three-column dashboard (Streak sidebar | Main content | Stat sidebar), collapsing to one column on mobile.
@@ -22,28 +22,28 @@ Buttons are pill-shaped — `border-radius: 9999px` on all primary and secondary
 ## Colors
 
 ### Brand & Accent
-- **Sakura Pink** (`--color-primary` — `#E8637A`): The brand's signature. Used for active nav tab underlines, Saku-chan crown accent, streak card gradient, highlighted inline text. Never used as a large fill background.
-- **Petal Light** (`--color-primary-light` — `#F4A7B3`): Hover states, streak card gradient end-stop, soft badge tints.
-- **Deep Petal** (`--color-primary-dark` — `#C44E62`): Pressed/active states on primary-coloured elements.
+- **Sakura Pink** (`--color-primary` — `#E89AAA`): The brand's signature. Soft pastel sakura pink used for active nav tab underlines, streak card gradient, highlighted inline text. Never used as a large fill background.
+- **Petal Light** (`--color-primary-light` — `#F7CBD4`): Hover states, streak card gradient end-stop, soft badge tints, petal effects.
+- **Deep Petal** (`--color-primary-dark` — `#D84F68`): Pressed/active states on primary-coloured elements.
 - **Blossom Tint** (`--color-primary-bg` — `#FFF0F3`): Nav tab hover background, primary chip fill, streak-related highlight rows.
 
 ### Surface
 - **Washi** (`--color-bg` — `#FAF7F4`): The default page background — warm ivory that evokes Japanese washi paper and lifts white cards without harsh contrast.
 - **Card** (`--color-card` — `#FFFFFF`): Every content card, modal, and panel surface.
-- **Secondary Tint** (`--color-secondary-bg` — `#F1F8E9`): Stat card background for the "days studied" variant.
-- **Gold Tint** (`--color-accent-bg` — `#FFFDE7`): Stat card background for the "words learned" variant.
+- **Secondary Tint** (`--color-secondary-bg` — `#F4FBF5`): Stat card background for the "days studied" variant.
+- **Gold Tint** (`--color-accent-bg` — `#FFF7DD`): Stat card background for the "words learned" variant.
 
 ### Text
 - **Ink** (`--color-text` — `#2D2D2D`): All body text, headings, and label copy.
-- **Mist** (`--color-text-sub` — `#757575`): Supporting labels, nav tab inactive, captions, placeholders.
-- **Disabled** (`--color-text-disabled` — `#BDBDBD`): Disabled form fields and buttons.
+- **Mist** (`--color-text-sub` — `#6B625E`): Supporting labels, nav tab inactive, captions, placeholders.
+- **Disabled** (`--color-text-disabled` — `#B7ABA5`): Disabled form fields and buttons.
 - **Divider** (`--color-border` — `#E8E0DC`): Input borders, card separators, nav bottom edge — slightly warm to match the washi canvas.
 
 ### Semantic
-- **Success / Go** (`--color-secondary` — `#4CAF50`): Primary CTA button fill, correct-answer feedback, study-days stat card border.
-- **Achievement / Gold** (`--color-accent` — `#F5C842`): Word-count stat card border, star icon fill, streak flame glow, achievement badge.
-- **Error** (`--color-error` — `#E53935`): Form field error border, wrong-answer flash, inline error message.
-- **Warning** (`--color-warning` — `#FB8C00`): Near-deadline notices, VIP expiry alerts.
+- **Success / Go** (`--color-secondary` — `#5DBB69`): Primary CTA button fill, correct-answer feedback, study-days stat card border.
+- **Achievement / Gold** (`--color-accent` — `#F7C948`): Word-count stat card border, star icon fill, streak flame glow, achievement badge.
+- **Error** (`--color-error` — `#E57373`): Form field error border, wrong-answer flash, inline error message.
+- **Warning** (`--color-warning` — `#F4A261`): Near-deadline notices, VIP expiry alerts.
 
 ### JLPT Level Colours
 Each JLPT level has a dedicated chip colour pair used consistently across badges, filter tabs, and lesson headers:
@@ -161,7 +161,7 @@ All interactive elements must be at minimum **44 × 44px**. Nav tabs, icon butto
 | Level 1 — Card | `box-shadow: 0 2px 8px rgba(0,0,0,0.07)` | Content cards, input fields on white bg |
 | Level 2 — Raised | `box-shadow: 0 4px 12px rgba(0,0,0,0.10)` | Stat cards, flashcard face, CTA buttons |
 | Level 3 — Floating | `box-shadow: 0 8px 24px rgba(0,0,0,0.12)` | Modals, dropdown menus, toast notifications |
-| Petal Glow | `box-shadow: 0 2px 10px rgba(232,99,122,0.22)` | StreakCard and primary-pink interactive cards on hover |
+| Petal Glow | `box-shadow: 0 2px 10px rgba(232,154,170,0.22)` | StreakCard and primary-pink interactive cards on hover |
 
 Borders are used only for semantic state — error (red), focus (pink ring), and stat card variant (gold/green). Structural dividers use `border-bottom: 1px solid var(--color-border)` on the TopNav only. No hard borders on cards.
 
@@ -184,7 +184,7 @@ The brand **never uses 0px corners** on any interactive element. Even the most c
 ### Saku-chan Geometry
 - Saku-chan fills a square bounding box; the organic petal silhouette is handled entirely by the illustration — CSS applies no clipping.
 - Rendered as a transparent PNG dropped directly onto the canvas, without a card or coloured background behind it.
-- The petal-crown on Saku-chan's head uses the primary sakura pink `#E8637A` as its accent fill — the only place in the UI where the mascot's colour and the brand primary colour must match.
+- The petal-crown on Saku-chan's head uses the dedicated crown colour `#E8637A` — a deeper sakura tone, distinct from the brand primary `#E89AAA`. Crown colour must never be changed.
 
 ---
 
@@ -252,9 +252,9 @@ Layout: `[Logo + "SakuJi" wordmark 160px] [Nav tabs — flex centre] [User area 
 **`form-input`** — standard text input:
 - Background: `#FAF7F4` (washi tint). Border: `1.5px solid var(--color-border)`. Border-radius: `--radius-md`.
 - Height: 48px. Padding: 0 16px. Font: `body-lg`.
-- Focus: `border-color: var(--color-primary)`, `box-shadow: 0 0 0 3px rgba(232,99,122,0.18)`, `background: white`.
+- Focus: `border-color: var(--color-primary)`, `box-shadow: 0 0 0 3px rgba(232,154,170,0.18)`, `background: white`.
 - Error state (`.has-error`): `border-color: var(--color-error)`, `background: #FEF2F2`.
-- Error focus: `box-shadow: 0 0 0 3px rgba(229,57,53,0.12)`.
+- Error focus: `box-shadow: 0 0 0 3px rgba(229,115,115,0.12)`.
 
 **`field-error`** — inline error below input:
 - `font-size: 12px`, `color: var(--color-error)`, `margin-top: 4px`.

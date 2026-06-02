@@ -76,6 +76,56 @@ export async function issueTempPassword(staffId, requestId) {
   return res.data.data;
 }
 
+// ── UC-36: Dashboard summary ────────────────────────────────────────────────
+export async function getDashboardSummary() {
+  const res = await api.get('/admin/dashboard/summary');
+  return res.data.data;
+}
+
+// ── UC-36: Audit log ────────────────────────────────────────────────────────
+export async function getAuditLog({ page = 0, size = 10 } = {}) {
+  const res = await api.get('/admin/audit-log', { params: { page, size } });
+  return res.data.data;
+}
+
+// ── UC-39: System settings ──────────────────────────────────────────────────
+export async function getSettings(group) {
+  const url = group ? `/admin/settings/${group}` : '/admin/settings';
+  const res = await api.get(url);
+  return res.data.data;
+}
+
+export async function updateSetting(group, key, value) {
+  const res = await api.put(`/admin/settings/${group}/${key}`, { settingValue: value });
+  return res.data.data;
+}
+
+export async function testSmtp() {
+  const res = await api.post('/admin/settings/smtp/test');
+  return res.data;
+}
+
+// ── UC-40: Notification rules ───────────────────────────────────────────────
+export async function getNotificationRules() {
+  const res = await api.get('/admin/notification-rules');
+  return res.data.data;
+}
+
+export async function createNotificationRule(data) {
+  const res = await api.post('/admin/notification-rules', data);
+  return res.data.data;
+}
+
+export async function updateNotificationRule(ruleId, data) {
+  const res = await api.put(`/admin/notification-rules/${ruleId}`, data);
+  return res.data.data;
+}
+
+export async function deleteNotificationRule(ruleId) {
+  const res = await api.delete(`/admin/notification-rules/${ruleId}`);
+  return res.data;
+}
+
 // ── Legacy: student ↔ staff promotion (old PATCH endpoints) ────────────────
 export async function fetchAdminUsers() {
   const res = await api.get('/admin/users');

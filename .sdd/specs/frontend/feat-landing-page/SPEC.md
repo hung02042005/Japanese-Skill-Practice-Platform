@@ -59,15 +59,15 @@ Lấy từ `DESIGN.md` — chỉ ghi lại giá trị dùng trong landing page:
 
 ```css
 /* Màu */
---color-primary:      #E8637A;   /* sakura pink */
---color-primary-light:#F4A7B3;
+--color-primary:      #E89AAA;   /* sakura pink */
+--color-primary-light:#F7CBD4;
 --color-primary-bg:   #FFF0F3;
---color-secondary:    #4CAF50;   /* green — CTA chính */
---color-accent:       #F5C842;   /* gold */
+--color-secondary:    #5DBB69;   /* green — CTA chính */
+--color-accent:       #F7C948;   /* gold */
 --color-bg:           #FAF7F4;   /* washi canvas */
 --color-card:         #FFFFFF;
 --color-text:         #2D2D2D;
---color-text-sub:     #757575;
+--color-text-sub:     #6B625E;
 --color-border:       #E8E0DC;
 
 /* Landing-page only */
@@ -82,7 +82,7 @@ Lấy từ `DESIGN.md` — chỉ ghi lại giá trị dùng trong landing page:
 
 /* Shadow */
 --shadow-card: 0 4px 20px rgba(0,0,0,0.08);
---shadow-hero: 0 8px 40px rgba(232,99,122,0.12);
+--shadow-hero: 0 8px 40px rgba(232,154,170,0.12);
 ```
 
 ---
@@ -136,7 +136,7 @@ Transition: color 150ms ease
   border-radius: var(--radius-full)
   padding: 10px 22px
   font: Nunito 700 14px
-  shadow: 0 2px 8px rgba(76,175,80,0.30)
+  shadow: 0 2px 8px rgba(93,187,105,0.30)
   Hover: brightness(1.08)
   Arrow icon: "→" inline, margin-left: 4px
 ```
@@ -226,7 +226,7 @@ Layout: flex, flex-direction: column, gap: 12px, align-items: flex-start
   Font:           Nunito 800, 17px, uppercase, letter-spacing: 0.5px
   Border-radius:  var(--radius-full)
   Padding:        16px 48px
-  Shadow:         0 4px 16px rgba(76,175,80,0.35)
+  Shadow:         0 4px 16px rgba(93,187,105,0.35)
   Hover:          translateY(-2px) + shadow stronger
   Active:         scale(0.97)
   Icon:           → arrow right, margin-left: 8px
@@ -397,7 +397,7 @@ Height: 480px
   Label "Time to review":
     Font: Nunito 700, 12px
     Color: var(--color-accent)
-    Background: #FFFDE7
+    Background: #FFF7DD
     Border: 1px solid var(--color-accent)
     Border-radius: var(--radius-full)
     Padding: 4px 12px
@@ -647,14 +647,14 @@ Margin-top: 10px
   Nội dung SVG:
     Nền: hình tứ giác bo góc pastel hồng đào (#FFE4EE) làm backdrop
     Cuốn từ điển (book):
-      Bìa màu var(--color-primary) — #E8637A
-      Gáy sách nổi khối 3D nhẹ (màu #C44E62 darker)
+      Bìa màu var(--color-primary) — #E89AAA
+      Gáy sách nổi khối 3D nhẹ (màu #D84F68 darker)
       Trang mở, nội dung trang: các dòng chữ mờ (line placeholders)
         + 1 từ highlight màu vàng: 「桜」với furigana さくら
       Ribbon đánh dấu trang màu var(--color-accent)
     Kính lúp lớn:
-      Tay cầm kính: màu #F5C842 (gold), thanh tròn
-      Kính: trong suốt với border #E8637A, 2px
+      Tay cầm kính: màu #F7C948 (gold), thanh tròn
+      Kính: trong suốt với border #E89AAA, 2px
       Bên trong kính zoom vào chữ 「桜」phóng to
       Hiệu ứng: vòng tròn highlight màu #FFF0F3 bên trong kính
     Vài chữ kanji nhỏ lơ lửng xung quanh (「愛」「美」「心」) opacity 0.3
@@ -710,7 +710,7 @@ Border-bottom: 1px solid rgba(255,255,255,0.10)
 ```
 [Logo block]:
   Icon Saku-chan mini (28px) + Text "SakuJi"
-  "Saku" màu var(--color-primary-light) — #F4A7B3 (hồng nhạt trên nền tối)
+  "Saku" màu var(--color-primary-light) — #F7CBD4 (hồng nhạt trên nền tối)
   "Ji"   màu white
 
 [Tagline]:

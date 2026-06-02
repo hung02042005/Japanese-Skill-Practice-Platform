@@ -115,7 +115,7 @@
   position: relative;
   z-index: 2;
   animation: float 4s ease-in-out infinite;
-  filter: drop-shadow(0 12px 28px rgba(232, 99, 122, 0.20));
+  filter: drop-shadow(0 12px 28px rgba(232, 154, 170, 0.20));
 }
 
 /* ── Floating kanji cards ── */
@@ -207,13 +207,13 @@
   text-transform: uppercase;
   letter-spacing: 0.6px;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.40);
+  box-shadow: 0 4px 16px rgba(93, 187, 105, 0.40);
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
 .hero-btn-start:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(76, 175, 80, 0.48);
+  box-shadow: 0 8px 24px rgba(93, 187, 105, 0.48);
 }
 
 .hero-btn-start:active {

@@ -48,20 +48,20 @@ apps/frontend/src/
 
 ```css
 /* Màu */
---color-primary:      #E8637A;
---color-primary-light:#F4A7B3;
+--color-primary:      #E89AAA;
+--color-primary-light:#F7CBD4;
 --color-primary-bg:   #FFF0F3;
---color-primary-dark: #C44E62;
---color-secondary:    #4CAF50;
---color-secondary-bg: #F1F8E9;
+--color-primary-dark: #D84F68;
+--color-secondary:    #5DBB69;
+--color-secondary-bg: #F4FBF5;
 --color-bg:           #FAF7F4;
 --color-card:         #FFFFFF;
 --color-text:         #2D2D2D;
---color-text-sub:     #757575;
---color-text-disabled:#BDBDBD;
+--color-text-sub:     #6B625E;
+--color-text-disabled:#B7ABA5;
 --color-border:       #E8E0DC;
---color-error:        #E53935;
---color-warning:      #FB8C00;
+--color-error:        #E57373;
+--color-warning:      #F4A261;
 
 /* Radius */
 --radius-sm:   8px;
@@ -153,7 +153,7 @@ Text-decoration: none
 
 ```
 6 cánh hoa SVG nhỏ, vị trí random trong viewport:
-  Fill:      var(--color-primary-light) — #F4A7B3
+  Fill:      var(--color-primary-light) — #F7CBD4
   Opacity:   0.10 → 0.18 (mỗi cánh khác nhau)
   Size:      20px → 40px
   Position:  absolute, pointer-events: none, z-index: 0
@@ -260,14 +260,14 @@ Display:        flex, flex-direction: column, gap: 20px
 
   Focus:
     border-color: var(--color-primary)
-    box-shadow: 0 0 0 3px rgba(232,99,122,0.18)
+    box-shadow: 0 0 0 3px rgba(232,154,170,0.18)
     background: white
     outline: none
 
   Error (.has-error):
     border-color: var(--color-error)
     background:   #FEF2F2
-    box-shadow:   0 0 0 3px rgba(229,57,53,0.12)
+    box-shadow:   0 0 0 3px rgba(229,115,115,0.12)
 
 [Error message — .field-error]:
   Font:       Nunito 400, 12px
@@ -316,18 +316,18 @@ Display:        flex, flex-direction: column, gap: 20px
 Text:          "Đăng nhập"
 Width:         100%
 Height:        50px
-Background:    var(--color-secondary) — #4CAF50
+Background:    var(--color-secondary) — #5DBB69
 Color:         white
 Font:          Nunito 800, 15px, text-transform: uppercase, letter-spacing: 0.5px
 Border-radius: var(--radius-full) — pill
 Border:        none
 Cursor:        pointer
-Shadow:        0 4px 12px rgba(76,175,80,0.30)
+Shadow:        0 4px 12px rgba(93,187,105,0.30)
 Transition:    filter 150ms, transform 100ms, box-shadow 150ms
 
 Hover:
   filter: brightness(1.08)
-  box-shadow: 0 6px 16px rgba(76,175,80,0.38)
+  box-shadow: 0 6px 16px rgba(93,187,105,0.38)
 
 Active:
   transform: scale(0.97)
@@ -384,7 +384,7 @@ Shadow:        0 1px 4px rgba(0,0,0,0.06)
 
 Hover:
   border-color: var(--color-primary-light)
-  box-shadow: 0 2px 8px rgba(232,99,122,0.12)
+  box-shadow: 0 2px 8px rgba(232,154,170,0.12)
 
 Active:
   transform: scale(0.98)

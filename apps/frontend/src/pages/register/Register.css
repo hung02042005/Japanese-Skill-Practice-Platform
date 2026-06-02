@@ -155,7 +155,7 @@
 .form-input:focus {
   border-color: var(--color-primary);
   background: var(--color-card);
-  box-shadow: 0 0 0 3px rgba(232, 99, 122, 0.18);
+  box-shadow: 0 0 0 3px rgba(232, 154, 170, 0.18);
 }
 
 .has-error .form-input {
@@ -163,7 +163,7 @@
   background: #FEF2F2;
 }
 .has-error .form-input:focus {
-  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.12);
+  box-shadow: 0 0 0 3px rgba(229, 115, 115, 0.12);
 }
 
 /* right-padded for icon */
@@ -268,14 +268,14 @@
   border: none;
   border-radius: var(--radius-full);
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.30);
+  box-shadow: 0 4px 12px rgba(93, 187, 105, 0.30);
   text-decoration: none;
   transition: filter var(--transition), transform 100ms, box-shadow var(--transition);
 }
 
 .btn-submit:hover:not(:disabled) {
   filter: brightness(1.08);
-  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.38);
+  box-shadow: 0 6px 16px rgba(93, 187, 105, 0.38);
 }
 .btn-submit:active:not(:disabled) { transform: scale(0.97); }
 .btn-submit:disabled { opacity: 0.65; cursor: not-allowed; }
@@ -346,7 +346,7 @@
 
 .btn-google:hover {
   border-color: var(--color-primary-light);
-  box-shadow: 0 2px 8px rgba(232, 99, 122, 0.14);
+  box-shadow: 0 2px 8px rgba(232, 154, 170, 0.14);
 }
 .btn-google:active { transform: scale(0.98); }
 

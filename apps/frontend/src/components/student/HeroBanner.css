@@ -64,11 +64,11 @@
   border-radius: var(--radius-full);
   padding: 13px 32px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.30);
+  box-shadow: 0 4px 12px rgba(93, 187, 105, 0.30);
   transition: filter var(--transition), transform 100ms, box-shadow var(--transition);
 }
 
-.hero-cta:hover  { filter: brightness(1.08); box-shadow: 0 6px 16px rgba(76, 175, 80, 0.38); }
+.hero-cta:hover  { filter: brightness(1.08); box-shadow: 0 6px 16px rgba(93, 187, 105, 0.38); }
 .hero-cta:active { transform: scale(0.97); }
 
 /* Mascot */

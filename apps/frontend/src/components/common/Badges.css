@@ -21,7 +21,7 @@
 .badge--active    { background: var(--color-secondary-bg); color: #2E7D32; }
 .badge--suspended { background: #FEF2F2; color: #B71C1C; }
 .badge--pending   { background: #FFF8E1; color: #F57F17; }
-.badge--deleted   { background: #F5F5F5; color: #757575; }
+.badge--deleted   { background: #F5F5F5; color: #6B625E; }
 
 /* ── Status dot ── */
 .status-dot {
@@ -32,7 +32,7 @@
 }
 
 .status-dot--active {
-  background: #4CAF50;
+  background: #5DBB69;
   animation: statusPulse 2s ease-in-out infinite;
 }
 
@@ -43,11 +43,11 @@
   animation: statusPulse 2s ease-in-out infinite;
 }
 
-.status-dot--deleted { background: #BDBDBD; }
+.status-dot--deleted { background: #B7ABA5; }
 
 @keyframes statusPulse {
-  0%, 100% { box-shadow: 0 0 0 0   rgba(76, 175, 80, 0.40); }
-  50%       { box-shadow: 0 0 0 4px rgba(76, 175, 80, 0);    }
+  0%, 100% { box-shadow: 0 0 0 0   rgba(93, 187, 105, 0.40); }
+  50%       { box-shadow: 0 0 0 4px rgba(93, 187, 105, 0);    }
 }
 
 @media (prefers-reduced-motion: reduce) {

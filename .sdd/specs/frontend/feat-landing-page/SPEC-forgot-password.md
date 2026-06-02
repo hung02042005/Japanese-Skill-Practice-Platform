@@ -192,14 +192,14 @@ Display:        flex, flex-direction: column, gap: 20px
 
   Focus:
     border-color: var(--color-primary)
-    box-shadow:   0 0 0 3px rgba(232,99,122,0.18)
+    box-shadow:   0 0 0 3px rgba(232,154,170,0.18)
     background:   white
     outline:      none
 
   Error (.has-error):
     border-color: var(--color-error)
     background:   #FEF2F2
-    box-shadow:   0 0 0 3px rgba(229,57,53,0.12)
+    box-shadow:   0 0 0 3px rgba(229,115,115,0.12)
 
 [Error message — .field-error]:
   id:         "fp-email-error"
@@ -220,18 +220,18 @@ Display:        flex, flex-direction: column, gap: 20px
 Text:          "Gửi link đặt lại mật khẩu"
 Width:         100%
 Height:        50px
-Background:    var(--color-secondary) — #4CAF50
+Background:    var(--color-secondary) — #5DBB69
 Color:         white
 Font:          Nunito 800, 15px, text-transform: uppercase, letter-spacing: 0.5px
 Border-radius: var(--radius-full)
 Border:        none
 Cursor:        pointer
-Shadow:        0 4px 12px rgba(76,175,80,0.30)
+Shadow:        0 4px 12px rgba(93,187,105,0.30)
 Transition:    filter 150ms, transform 100ms, box-shadow 150ms
 
 Hover:
   filter:    brightness(1.08)
-  box-shadow: 0 6px 16px rgba(76,175,80,0.38)
+  box-shadow: 0 6px 16px rgba(93,187,105,0.38)
 
 Active:
   transform: scale(0.97)

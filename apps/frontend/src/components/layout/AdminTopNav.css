@@ -46,7 +46,7 @@
   letter-spacing: 0.6px;
   padding: 3px 8px;
   border-radius: var(--radius-full);
-  box-shadow: 0 2px 8px rgba(232, 99, 122, 0.38);
+  box-shadow: 0 2px 8px rgba(232, 154, 170, 0.38);
   font-family: var(--font-base);
 }
 
@@ -124,8 +124,8 @@
   transition: box-shadow var(--transition), transform var(--transition);
 }
 
-.atn-avatar:hover { box-shadow: 0 2px 10px rgba(232, 99, 122, 0.40); transform: scale(1.06); }
-.atn-avatar--open { box-shadow: 0 2px 10px rgba(232, 99, 122, 0.40); }
+.atn-avatar:hover { box-shadow: 0 2px 10px rgba(232, 154, 170, 0.40); transform: scale(1.06); }
+.atn-avatar--open { box-shadow: 0 2px 10px rgba(232, 154, 170, 0.40); }
 
 /* ── Dropdown ── */
 .atn-dropdown {

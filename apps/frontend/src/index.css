@@ -16,19 +16,19 @@
 /* ===== Design Tokens — SakuJi ===== */
 :root {
   /* Color Primary (Sakura Pink) */
-  --color-primary:        #E8637A;
-  --color-primary-light:  #F4A7B3;
-  --color-primary-dark:   #C44E62;
+  --color-primary:        #E89AAA;
+  --color-primary-light:  #F7CBD4;
+  --color-primary-dark:   #D84F68;
   --color-primary-bg:     #FFF0F3;
 
-  /* Color Secondary (Emerald Green) */
-  --color-secondary:      #4CAF50;
-  --color-secondary-light:#81C784;
-  --color-secondary-bg:   #F1F8E9;
+  /* Color Secondary (Learning Green) */
+  --color-secondary:      #5DBB69;
+  --color-secondary-light:#8DD494;
+  --color-secondary-bg:   #F4FBF5;
 
-  /* Color Accent (Soft Gold) */
-  --color-accent:         #F5C842;
-  --color-accent-bg:      #FFFDE7;
+  /* Color Accent (Achievement Gold) */
+  --color-accent:         #F7C948;
+  --color-accent-bg:      #FFF7DD;
 
   /* Surface */
   --color-bg:             #FAF7F4;
@@ -37,12 +37,12 @@
 
   /* Text */
   --color-text:           #2D2D2D;
-  --color-text-sub:       #757575;
-  --color-text-disabled:  #BDBDBD;
+  --color-text-sub:       #6B625E;
+  --color-text-disabled:  #B7ABA5;
 
   /* Semantic */
-  --color-error:          #E53935;
-  --color-warning:        #FB8C00;
+  --color-error:          #E57373;
+  --color-warning:        #F4A261;
 
   /* Landing-page only */
   --color-cream:          #F7F4E6;
@@ -60,7 +60,7 @@
   --shadow-md:   0 4px 12px rgba(0,0,0,0.10);
   --shadow-lg:   0 8px 24px rgba(0,0,0,0.12);
   --shadow-card: 0 4px 20px rgba(0,0,0,0.08);
-  --shadow-hero: 0 8px 40px rgba(232,99,122,0.12);
+  --shadow-hero: 0 8px 40px rgba(232,154,170,0.12);
 
   /* Font */
   --font-base: 'Nunito', 'Noto Sans JP', system-ui, sans-serif;
