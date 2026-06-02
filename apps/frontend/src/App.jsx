@@ -12,9 +12,11 @@ import Pricing from './pages/pricing/Pricing';
 import Blog from './pages/blog/Blog';
 import Dashboard from './pages/dashboard/Dashboard';
 import VerifyEmail from './pages/verify-email/VerifyEmail';
-import ManageUsers from './pages/admin/ManageUsers';
+import ManageUsers     from './pages/admin/ManageUsers';
+import AdminDashboard  from './pages/admin/AdminDashboard';
+import AdminSettings   from './pages/admin/AdminSettings';
 import PrivateRoute from './components/common/PrivateRoute';
-import AdminRoute from './components/common/AdminRoute';
+import AdminRoute   from './components/common/AdminRoute';
 
 function App() {
   return (
@@ -38,7 +40,9 @@ function App() {
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
 
         {/* Protected — Admin */}
-        <Route path="/admin/users" element={<AdminRoute><ManageUsers /></AdminRoute>} />
+        <Route path="/admin"          element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+        <Route path="/admin/users"    element={<AdminRoute><ManageUsers /></AdminRoute>} />
+        <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
       </Routes>
     </BrowserRouter>
   );
