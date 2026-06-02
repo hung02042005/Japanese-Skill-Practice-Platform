@@ -1,0 +1,146 @@
+/* ===== StaffTopNav — SakuJi Hanami Theme ===== */
+
+.stn-nav {
+  height: 64px;
+  background: var(--color-card);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  font-family: var(--font-base);
+}
+
+.stn-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.stn-wordmark {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.stn-saku {
+  color: var(--color-primary);
+}
+
+.stn-ji {
+  color: var(--color-text);
+}
+
+.stn-role-badge {
+  font-size: 10px;
+  font-weight: 800;
+  background: var(--color-primary-bg);
+  color: var(--color-primary-dark);
+  border-radius: var(--radius-full);
+  padding: 2px 8px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.stn-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  justify-content: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.stn-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.stn-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  text-decoration: none;
+  color: var(--color-text-sub);
+  font-size: 11px;
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition);
+  white-space: nowrap;
+  margin-bottom: -1px;
+  font-family: var(--font-base);
+}
+
+.stn-tab:hover {
+  background: var(--color-primary-bg);
+  color: var(--color-text);
+}
+
+.stn-tab--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.stn-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.stn-email {
+  font-size: 12px;
+  color: var(--color-text-sub);
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stn-avatar-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter var(--transition);
+  font-family: var(--font-base);
+}
+
+.stn-avatar-btn:hover {
+  filter: brightness(1.08);
+}
+
+@media (max-width: 1199px) {
+  .stn-tab {
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+
+  .stn-email {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .stn-tabs {
+    display: none;
+  }
+}

@@ -1,0 +1,112 @@
+/* ===== TicketDetail ===== */
+.tkt-detail-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.tkt-empty-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--color-text-sub);
+  font-size: 14px;
+  padding: 40px;
+}
+
+/* Detail header */
+.tkt-detail-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  background: var(--color-card);
+}
+.tkt-detail-subject { font-size: 18px; font-weight: 700; color: var(--color-text); margin: 0 0 10px; }
+.tkt-badge-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.tkt-priority-pill { font-size: 11px; font-weight: 700; border-radius: var(--radius-full); padding: 3px 10px; }
+.tkt-status-badge { font-size: 11px; font-weight: 700; border-radius: var(--radius-full); padding: 3px 10px; }
+.tkt-detail-meta { font-size: 13px; color: var(--color-text-sub); display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* Thread */
+.tkt-thread {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--color-bg);
+}
+
+.tkt-msg { display: flex; gap: 10px; max-width: 80%; }
+.tkt-msg--staff { flex-direction: row-reverse; align-self: flex-end; }
+.tkt-msg--student { align-self: flex-start; }
+
+.tkt-msg-bubble {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  max-width: 100%;
+}
+.tkt-msg--staff .tkt-msg-bubble {
+  background: var(--color-primary-bg);
+  border-color: var(--color-primary-light);
+}
+
+.tkt-msg-name { font-size: 12px; font-weight: 700; color: var(--color-text-sub); display: block; margin-bottom: 4px; }
+.tkt-msg-text { font-size: 14px; color: var(--color-text); margin: 0; line-height: 1.5; }
+.tkt-msg-time { font-size: 11px; color: var(--color-text-disabled); display: block; margin-top: 4px; }
+
+/* Avatar placeholder for thread */
+.tkt-msg-avatar {
+  width: 32px; height: 32px; border-radius: var(--radius-full);
+  background: var(--color-primary-bg); color: var(--color-primary);
+  font-size: 13px; font-weight: 700; font-family: var(--font-base);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Reply form */
+.tkt-reply-form {
+  padding: 16px 24px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-card);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tkt-reply-textarea {
+  width: 100%; min-height: 80px; padding: 10px 14px;
+  border: 1.5px solid var(--color-border); border-radius: var(--radius-md);
+  background: var(--color-bg); font-family: var(--font-base);
+  font-size: 14px; color: var(--color-text); resize: vertical;
+  box-sizing: border-box; transition: border-color var(--transition);
+}
+.tkt-reply-textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(232,154,170,0.15); }
+
+.tkt-reply-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.tkt-status-select { height: 40px; padding: 0 12px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); font-size: 13px; background: var(--color-bg); font-family: var(--font-base); color: var(--color-text); min-width: 200px; }
+.tkt-status-select:focus { outline: none; border-color: var(--color-primary); }
+.tkt-reply-btn {
+  height: 40px; padding: 0 24px; background: var(--color-secondary);
+  color: white; border: none; border-radius: var(--radius-full);
+  font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font-base);
+  transition: filter var(--transition); white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+}
+.tkt-reply-btn:hover:not(:disabled) { filter: brightness(1.07); }
+.tkt-reply-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.tkt-closed-banner {
+  padding: 12px 24px; background: #F0EDEB;
+  border-top: 1px solid var(--color-border);
+  font-size: 13px; color: var(--color-text-sub);
+  text-align: center; flex-shrink: 0;
+}

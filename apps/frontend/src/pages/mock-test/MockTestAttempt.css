@@ -1,0 +1,76 @@
+/* ===== Mock Test Attempt — Exam Mode (SakuJi Hanami Theme) ===== */
+
+.mxa-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); font-family: var(--font-base); }
+
+.mxa-progress-bar-wrap { height: 4px; background: var(--color-border); }
+.mxa-progress-fill { height: 100%; background: var(--color-primary); transition: width 0.3s ease; }
+
+.mxa-layout { flex: 1; display: flex; max-width: 1200px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+
+/* Question panel */
+.mxa-question-panel { flex: 1; padding: 28px 32px; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.mxa-q-meta { display: flex; align-items: center; gap: 10px; }
+.mxa-q-num  { font-size: 14px; font-weight: 700; color: var(--color-text-sub); }
+.mxa-q-skill { background: var(--color-primary-bg); color: var(--color-primary); border-radius: var(--radius-full); padding: 3px 10px; font-size: 12px; font-weight: 700; }
+.mxa-audio { width: 100%; }
+.mxa-q-text { font-size: 17px; font-weight: 600; color: var(--color-text); line-height: 1.6; margin: 0; }
+
+.mxa-options { display: flex; flex-direction: column; gap: 10px; }
+.mxa-option { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: var(--radius-md); border: 2px solid var(--color-border); background: var(--color-card); cursor: pointer; transition: border-color var(--transition), background var(--transition); }
+.mxa-option:hover { border-color: var(--color-primary-light); background: var(--color-primary-bg); }
+.mxa-option--selected { border-color: var(--color-primary); background: var(--color-primary-bg); }
+.mxa-opt-letter { width: 28px; height: 28px; border-radius: var(--radius-full); border: 2px solid var(--color-border); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; color: var(--color-text-sub); transition: border-color var(--transition), background var(--transition), color var(--transition); }
+.mxa-option--selected .mxa-opt-letter { border-color: var(--color-primary); background: var(--color-primary); color: white; }
+.mxa-opt-text { font-size: 15px; color: var(--color-text); }
+
+.mxa-q-nav { display: flex; justify-content: space-between; margin-top: 8px; }
+.mxa-nav-btn { height: 38px; padding: 0 18px; border-radius: var(--radius-full); border: 1.5px solid var(--color-border); background: var(--color-card); color: var(--color-text-sub); font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font-base); transition: color var(--transition), border-color var(--transition); }
+.mxa-nav-btn:hover:not(:disabled) { color: var(--color-primary); border-color: var(--color-primary-light); }
+.mxa-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Navigator panel */
+.mxa-navigator-panel { width: 280px; flex-shrink: 0; padding: 24px 20px; border-left: 1px solid var(--color-border); display: flex; flex-direction: column; gap: 16px; position: sticky; top: 68px; height: calc(100vh - 68px); overflow-y: auto; }
+.mxa-nav-title { font-size: 13px; font-weight: 700; color: var(--color-text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
+.mxa-nav-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+.mxa-nav-cell { width: 28px; height: 28px; border-radius: 6px; border: 1.5px solid var(--color-border); background: var(--color-bg); font-size: 11px; font-weight: 600; color: var(--color-text-sub); cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: var(--font-base); transition: border-color var(--transition), background var(--transition), color var(--transition); }
+.mxa-nav-cell--answered { background: var(--color-primary-bg); border-color: var(--color-primary); color: var(--color-primary); }
+.mxa-nav-cell--current  { border: 2.5px solid var(--color-primary); font-weight: 800; }
+.mxa-nav-summary { font-size: 13px; color: var(--color-text-sub); }
+.mxa-nav-submit-btn { height: 40px; background: var(--color-secondary); color: white; border: none; border-radius: var(--radius-full); font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font-base); transition: filter var(--transition); }
+.mxa-nav-submit-btn:hover { filter: brightness(1.07); }
+
+/* Error */
+.mxa-error-banner { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #FEF2F2; border: 1px solid var(--color-error); border-radius: var(--radius-md); padding: 12px 20px; font-size: 13px; color: var(--color-error); display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-lg); z-index: 200; }
+.mxa-error-banner button { background: transparent; border: none; cursor: pointer; color: var(--color-error); font-size: 16px; }
+
+/* Loading / Error page */
+.mxa-loading { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; color: var(--color-text-sub); font-size: 14px; background: var(--color-bg); }
+.mxa-spinner-lg { width: 48px; height: 48px; border: 4px solid var(--color-primary-light); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+.mxa-error-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--color-bg); }
+.mxa-error-card { background: var(--color-card); border-radius: var(--radius-xl); padding: 32px; max-width: 400px; text-align: center; display: flex; flex-direction: column; gap: 16px; box-shadow: var(--shadow-md); }
+.mxa-error-card button { height: 40px; padding: 0 20px; background: var(--color-secondary); color: white; border: none; border-radius: var(--radius-full); font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font-base); }
+
+/* Confirm modal */
+.mxa-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.40); backdrop-filter: blur(2px); z-index: 300; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.mxa-confirm-modal { background: var(--color-card); border-radius: var(--radius-xl); padding: 28px; width: 100%; max-width: 420px; animation: modalIn 0.22s ease; }
+@keyframes modalIn { from { opacity: 0; transform: scale(0.93) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.mxa-modal-title  { font-size: 20px; font-weight: 700; color: var(--color-text); margin: 0 0 12px; }
+.mxa-modal-body   { font-size: 14px; color: var(--color-text-sub); line-height: 1.6; margin: 0 0 20px; }
+.mxa-modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
+.mxa-modal-cancel { height: 40px; padding: 0 18px; border-radius: var(--radius-full); border: 1.5px solid var(--color-border); background: transparent; color: var(--color-text-sub); font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font-base); }
+.mxa-modal-submit { height: 40px; padding: 0 22px; border-radius: var(--radius-full); background: var(--color-secondary); color: white; border: none; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font-base); display: flex; align-items: center; gap: 7px; transition: filter var(--transition); }
+.mxa-modal-submit:hover:not(:disabled) { filter: brightness(1.07); }
+.mxa-modal-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.mxa-spinner { display: inline-block; width: 15px; height: 15px; border: 2.5px solid rgba(255,255,255,0.35); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+.mxa-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 1024px) { .mxa-navigator-panel { width: 220px; } .mxa-nav-grid { grid-template-columns: repeat(6, 1fr); } }
+@media (max-width: 767px) {
+  .mxa-layout { flex-direction: column; }
+  .mxa-navigator-panel { width: 100%; position: static; height: auto; border-left: none; border-top: 1px solid var(--color-border); order: 2; }
+  .mxa-question-panel { order: 1; padding: 20px 16px; }
+  .mxa-nav-grid { grid-template-columns: repeat(10, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { .mxa-page * { animation: none !important; transition-duration: 0ms !important; } }

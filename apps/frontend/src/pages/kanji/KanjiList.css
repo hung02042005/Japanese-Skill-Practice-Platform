@@ -1,0 +1,39 @@
+/* ===== Kanji List (SakuJi Hanami Theme) ===== */
+
+.knj-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); font-family: var(--font-base); }
+.knj-body { flex: 1; max-width: 1100px; width: 100%; margin: 0 auto; padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; }
+
+.knj-page-header { display: flex; flex-direction: column; gap: 4px; }
+.knj-title    { font-size: 26px; font-weight: 700; color: var(--color-text); margin: 0; }
+.knj-subtitle { font-size: 14px; color: var(--color-text-sub); margin: 0; }
+
+.knj-level-tabs { display: flex; border-bottom: 2px solid var(--color-border); }
+.knj-level-tab { padding: 10px 20px; font-size: 15px; font-weight: 700; color: var(--color-text-sub); background: transparent; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; transition: color var(--transition), border-color var(--transition); }
+.knj-level-tab:hover { color: var(--color-text); }
+.knj-level-tab--active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+
+.knj-stats-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.knj-stats-text { font-size: 14px; color: var(--color-text-sub); }
+.knj-stats-progress { flex: 1; min-width: 120px; max-width: 300px; }
+.knj-stats-pct { font-size: 14px; font-weight: 700; color: var(--color-text); }
+
+.knj-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #FFEAEA; border: 1px solid var(--color-error); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; color: var(--color-error); }
+.knj-retry-btn { background: transparent; border: 1.5px solid var(--color-error); border-radius: var(--radius-full); color: var(--color-error); font-size: 12px; font-weight: 700; padding: 4px 12px; cursor: pointer; }
+
+.knj-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+
+.knj-cell { position: relative; aspect-ratio: 1; background: var(--color-card); border: 2px solid var(--color-border); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color var(--transition), background var(--transition), transform var(--transition), box-shadow var(--transition); }
+.knj-cell:hover { border-color: var(--color-primary-light); background: var(--color-primary-bg); transform: scale(1.06); box-shadow: var(--shadow-sm); }
+.knj-cell:active { transform: scale(0.97); }
+.knj-cell--done { background: var(--color-primary-bg); border-color: var(--color-primary-light); }
+
+.knj-char { font-size: 26px; font-weight: 700; color: var(--color-text); line-height: 1; }
+.knj-cell--done .knj-char { color: var(--color-primary); }
+.knj-done-tick { position: absolute; bottom: 3px; right: 5px; font-size: 11px; color: var(--color-primary); font-weight: 700; }
+
+.knj-cell-skel { aspect-ratio: 1; border-radius: var(--radius-md); background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%); background-size: 200% 100%; animation: skelPulse 1.4s ease infinite; }
+@keyframes skelPulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+@media (max-width: 1199px) { .knj-grid { grid-template-columns: repeat(6, 1fr); } .knj-char { font-size: 22px; } }
+@media (max-width: 767px)  { .knj-body { padding: 16px 16px 32px; } .knj-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; } .knj-char { font-size: 20px; } }
+@media (prefers-reduced-motion: reduce) { .knj-page * { animation: none !important; transition-duration: 0ms !important; } }

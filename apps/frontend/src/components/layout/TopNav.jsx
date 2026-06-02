@@ -20,7 +20,7 @@ const NAV_TABS = [
   {
     id: 'learn',
     label: 'Học từ mới',
-    route: '/learn/new',
+    route: '/learn',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" stroke="currentColor" strokeWidth="2"/>

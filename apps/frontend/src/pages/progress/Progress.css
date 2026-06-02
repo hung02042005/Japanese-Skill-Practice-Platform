@@ -1,0 +1,66 @@
+/* ===== Progress (SakuJi Hanami Theme) ===== */
+
+.prg-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); font-family: var(--font-base); }
+.prg-body { flex: 1; max-width: 1100px; width: 100%; margin: 0 auto; padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 24px; box-sizing: border-box; }
+.prg-title { font-size: 26px; font-weight: 700; color: var(--color-text); margin: 0; }
+
+.prg-stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.prg-stat-card { background: var(--color-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 18px 20px; display: flex; align-items: flex-start; gap: 12px; }
+.prg-stat-icon  { font-size: 28px; flex-shrink: 0; }
+.prg-stat-body  { display: flex; flex-direction: column; gap: 2px; }
+.prg-stat-value { font-size: 28px; font-weight: 800; color: var(--color-text); line-height: 1; }
+.prg-stat-label { font-size: 13px; color: var(--color-text-sub); }
+.prg-stat-sub   { font-size: 11px; color: var(--color-text-disabled); }
+
+.prg-charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.prg-chart-card { background: var(--color-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 20px 24px; }
+.prg-card-title { font-size: 16px; font-weight: 700; color: var(--color-text); margin: 0 0 16px; }
+.prg-radar-wrap { display: flex; justify-content: center; }
+
+.prg-completions { display: flex; flex-direction: column; gap: 12px; }
+.prg-comp-row   { display: flex; align-items: center; gap: 10px; }
+.prg-comp-label { width: 70px; font-size: 13px; font-weight: 600; color: var(--color-text-sub); flex-shrink: 0; }
+.prg-comp-bar-wrap { flex: 1; }
+.prg-comp-bar  { height: 8px; background: var(--color-border); border-radius: var(--radius-full); overflow: hidden; }
+.prg-comp-fill { height: 100%; background: var(--color-primary); border-radius: var(--radius-full); transition: width 0.8s ease; }
+.prg-comp-count { font-size: 12px; color: var(--color-text-sub); white-space: nowrap; }
+.prg-comp-pct   { width: 36px; font-size: 13px; font-weight: 700; color: var(--color-text); text-align: right; }
+
+.prg-section-title { font-size: 18px; font-weight: 700; color: var(--color-text); margin: 0; }
+
+.prg-table-wrap { background: var(--color-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; overflow-x: auto; }
+.prg-table { width: 100%; border-collapse: collapse; }
+.prg-table thead { background: var(--color-bg); border-bottom: 1px solid var(--color-border); }
+.prg-table th { padding: 10px 16px; font-size: 11px; font-weight: 700; color: var(--color-text-sub); text-transform: uppercase; letter-spacing: 0.5px; text-align: left; }
+.prg-table td { padding: 12px 16px; font-size: 14px; color: var(--color-text); border-bottom: 1px solid var(--color-border); }
+.prg-tr:last-child td { border-bottom: none; }
+.prg-tr { transition: background var(--transition); animation: rowIn 0.25s ease both; animation-delay: calc(var(--row-i, 0) * 30ms); }
+.prg-tr:hover { background: var(--color-bg); }
+@keyframes rowIn { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: translateX(0); } }
+
+.prg-exam-cell { display: flex; align-items: center; gap: 8px; }
+.prg-td-score  { font-weight: 700; }
+.prg-result-badge { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: var(--radius-full); }
+.prg-result-badge--pass { background: var(--color-secondary-bg); color: var(--color-secondary); }
+.prg-result-badge--fail { background: #FEF2F2; color: var(--color-error); }
+.prg-detail-link { font-size: 13px; color: var(--color-primary); text-decoration: none; font-weight: 600; }
+.prg-detail-link:hover { text-decoration: underline; }
+
+.prg-cta-btn { display: inline-flex; align-items: center; height: 40px; padding: 0 20px; background: var(--color-secondary); color: white; border-radius: var(--radius-full); text-decoration: none; font-size: 14px; font-weight: 700; transition: filter var(--transition); }
+.prg-cta-btn:hover { filter: brightness(1.07); }
+
+.prg-skel { border-radius: var(--radius-lg); background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%); background-size: 200% 100%; animation: skelPulse 1.4s ease infinite; }
+.prg-skel--stat  { height: 88px; }
+.prg-skel--table { height: 250px; }
+@keyframes skelPulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+@media (max-width: 1199px) { .prg-stat-row { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 767px) {
+  .prg-body { padding: 16px 16px 32px; }
+  .prg-stat-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .prg-charts-row { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .prg-page * { animation: none !important; transition-duration: 0ms !important; }
+  .prg-comp-fill { transition: none; }
+}

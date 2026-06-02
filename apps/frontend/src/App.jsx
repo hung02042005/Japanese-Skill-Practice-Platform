@@ -12,11 +12,37 @@ import Pricing from './pages/pricing/Pricing';
 import Blog from './pages/blog/Blog';
 import Dashboard from './pages/dashboard/Dashboard';
 import VerifyEmail from './pages/verify-email/VerifyEmail';
+import Onboarding from './pages/onboarding/Onboarding';
+import Profile from './pages/profile/Profile';
+import ChangePassword from './pages/settings/ChangePassword';
+import LearnNew from './pages/learn/LearnNew';
+import Review from './pages/review/Review';
+import LessonDetail from './pages/lessons/LessonDetail';
+import Flashcard from './pages/flashcard/Flashcard';
+import MockTestList from './pages/mock-test/MockTestList';
+import MockTestAttempt from './pages/mock-test/MockTestAttempt';
+import MockTestResults from './pages/mock-test/MockTestResults';
+import Progress from './pages/progress/Progress';
+import Subscription from './pages/subscription/Subscription';
+import SubscriptionSuccess from './pages/subscription/SubscriptionSuccess';
+import KanjiList from './pages/kanji/KanjiList';
+import KanjiPractice from './pages/kanji/KanjiPractice';
+import Certificates from './pages/certificates/Certificates';
+import Grammar from './pages/grammar/Grammar';
+import Dictionary from './pages/dictionary/Dictionary';
+import Reading from './pages/reading/Reading';
+import Listening from './pages/listening/Listening';
+import NotFound from './pages/error/NotFound';
+import Forbidden from './pages/error/Forbidden';
 import ManageUsers     from './pages/admin/ManageUsers';
 import AdminDashboard  from './pages/admin/AdminDashboard';
 import AdminSettings   from './pages/admin/AdminSettings';
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute   from './components/common/AdminRoute';
+import StaffRoute   from './components/common/StaffRoute';
+import StaffDashboard  from './pages/staff/StaffDashboard';
+import StaffContent    from './pages/staff/StaffContent';
+import StaffQuestions  from './pages/staff/StaffQuestions';
 
 function App() {
   return (
@@ -35,14 +61,43 @@ function App() {
         <Route path="/staff/change-temp-password" element={<StaffChangeTempPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/403" element={<Forbidden />} />
 
         {/* Protected — Student */}
-        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/dashboard"    element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/onboarding"   element={<PrivateRoute><Onboarding /></PrivateRoute>} />
+        <Route path="/profile"      element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/settings/change-password" element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
+        <Route path="/learn"        element={<PrivateRoute><LearnNew /></PrivateRoute>} />
+        <Route path="/review"       element={<PrivateRoute><Review /></PrivateRoute>} />
+        <Route path="/lessons/:id"  element={<PrivateRoute><LessonDetail /></PrivateRoute>} />
+        <Route path="/flashcard"    element={<PrivateRoute><Flashcard /></PrivateRoute>} />
+        <Route path="/mock-tests"           element={<PrivateRoute><MockTestList /></PrivateRoute>} />
+        <Route path="/mock-tests/:id"       element={<PrivateRoute><MockTestAttempt /></PrivateRoute>} />
+        <Route path="/mock-tests/:id/results" element={<PrivateRoute><MockTestResults /></PrivateRoute>} />
+        <Route path="/progress"     element={<PrivateRoute><Progress /></PrivateRoute>} />
+        <Route path="/subscription"         element={<PrivateRoute><Subscription /></PrivateRoute>} />
+        <Route path="/subscription/success" element={<PrivateRoute><SubscriptionSuccess /></PrivateRoute>} />
+        <Route path="/kanji"        element={<PrivateRoute><KanjiList /></PrivateRoute>} />
+        <Route path="/kanji/:id"    element={<PrivateRoute><KanjiPractice /></PrivateRoute>} />
+        <Route path="/certificates" element={<PrivateRoute><Certificates /></PrivateRoute>} />
+        <Route path="/grammar"      element={<PrivateRoute><Grammar /></PrivateRoute>} />
+        <Route path="/dictionary"   element={<PrivateRoute><Dictionary /></PrivateRoute>} />
+        <Route path="/reading"      element={<PrivateRoute><Reading /></PrivateRoute>} />
+        <Route path="/listening"    element={<PrivateRoute><Listening /></PrivateRoute>} />
+
+        {/* Protected — Staff */}
+        <Route path="/staff"           element={<StaffRoute><StaffDashboard /></StaffRoute>} />
+        <Route path="/staff/content"   element={<StaffRoute><StaffContent /></StaffRoute>} />
+        <Route path="/staff/questions" element={<StaffRoute><StaffQuestions /></StaffRoute>} />
 
         {/* Protected — Admin */}
         <Route path="/admin"          element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/admin/users"    element={<AdminRoute><ManageUsers /></AdminRoute>} />
         <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+
+        {/* Catch-all */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
