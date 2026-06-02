@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchDashboardThunk } from '../../store/slices/studentSlice';
 import TopNav from '../../components/layout/TopNav';
-import SakuChan from '../../components/auth/SakuChan';
-import StreakCard from './StreakCard';
-import HeroBanner from './HeroBanner';
-import LessonList from './LessonList';
-import QuickActionCard from './QuickActionCard';
-import StatCard from './StatCard';
+import { EmptyState } from '../../components/common/EmptyState';
+import StreakCard from '../../components/student/StreakCard';
+import HeroBanner from '../../components/student/HeroBanner';
+import LessonList from '../../components/student/LessonList';
+import QuickActionCard from '../../components/student/QuickActionCard';
+import MiniStatCard from '../../components/student/MiniStatCard';
 import './Dashboard.css';
 
 function SkeletonBlock({ className }) {
@@ -21,7 +21,7 @@ function Dashboard() {
   const { streak, weekDays, course, lessons, wordCount, daysThisMonth, status } =
     useAppSelector((state) => state.student);
 
-  const isLoading = status === 'loading';
+  const isLoading  = status === 'loading';
   const hasLessons = Array.isArray(lessons) && lessons.length > 0;
 
   useEffect(() => {
@@ -43,38 +43,35 @@ function Dashboard() {
 
         {/* ── CENTER ── */}
         <main className="dashboard-center">
-          {/* Hero banner */}
           {isLoading
             ? <SkeletonBlock className="db-skeleton--hero" />
             : <HeroBanner course={course} />
           }
 
-          {/* Start Here label */}
           <div className="lesson-section-head">
             <span className="start-here-chip">▶ Start Here</span>
             <div className="lesson-divider" aria-hidden="true" />
           </div>
 
-          {/* Lesson list */}
           {isLoading
             ? [1, 2, 3].map((i) => <SkeletonBlock key={i} className="db-skeleton--lesson" />)
             : hasLessons
               ? <LessonList lessons={lessons} />
               : (
-                <div className="dashboard-empty" role="status" aria-live="polite">
-                  <SakuChan variant="thinking" size={120} />
-                  <p className="dashboard-empty-title">Chưa có bài học nào</p>
-                  <p className="dashboard-empty-desc">
-                    Bài học đang được cập nhật. Hãy quay lại sau nhé!
-                  </p>
+                <EmptyState
+                  title="Chưa có bài học nào"
+                  subtitle="Bài học đang được cập nhật. Hãy quay lại sau nhé!"
+                  mascotVariant="thinking"
+                  mascotSize={120}
+                >
                   <button
                     type="button"
-                    className="dashboard-empty-cta"
+                    className="db-empty-cta"
                     onClick={() => navigate('/courses')}
                   >
                     Xem khoá học khác
                   </button>
-                </div>
+                </EmptyState>
               )
           }
         </main>
@@ -92,8 +89,8 @@ function Dashboard() {
             {isLoading
               ? [1, 2].map((i) => <SkeletonBlock key={i} className="db-skeleton--stat" />)
               : <>
-                  <StatCard type="words" value={wordCount} />
-                  <StatCard type="days"  value={daysThisMonth} />
+                  <MiniStatCard type="words" value={wordCount} />
+                  <MiniStatCard type="days"  value={daysThisMonth} />
                 </>
             }
           </div>

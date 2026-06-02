@@ -39,7 +39,7 @@ when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 1. Gọi `studentService.getMyProfile(1L)`
 
 **Expected:**
-- Trả về `StudentProfileResponse` chứa: `studentId`, `fullName`, `email`, `phone`, `dateOfBirth`, `bio`, `avatarUrl`, `currentJlptLevel`, `targetJlptLevel`, `createdAt`
+- Trả về `StudentProfileResponse` chứa: `studentId`, `fullName`, `email`, `phone`, `avatarUrl`, `currentJlptLevel`, `targetJlptLevel`, `createdAt`
 - Response KHÔNG có field `passwordHash`
 - Response KHÔNG có field `loginAttempts`
 - Response KHÔNG có field `lockedUntil`
@@ -60,12 +60,11 @@ when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 ```java
 StudentUser user = aStudent()
     .withFullName("Nguyễn Văn A")
-    .withBio("Cũ bio")
     .withPhone("0901234567")
     .build();
 UpdateProfileRequest request = new UpdateProfileRequest();
 request.setFullName("Trần Thị B"); // chỉ cập nhật fullName
-// bio và phone KHÔNG có trong request
+// phone KHÔNG có trong request
 ```
 
 **Steps:**
@@ -73,7 +72,6 @@ request.setFullName("Trần Thị B"); // chỉ cập nhật fullName
 
 **Expected:**
 - `user.fullName` = `"Trần Thị B"`
-- `user.bio` = `"Cũ bio"` (KHÔNG thay đổi vì không có trong request)
 - `user.phone` = `"0901234567"` (KHÔNG thay đổi)
 - `userRepository.save()` được gọi với entity đã cập nhật
 
@@ -265,13 +263,12 @@ ArgumentCaptor<String> fileNameCaptor = ArgumentCaptor.forClass(String.class);
 | **Ưu tiên** | P1 |
 
 **Steps:**
-1. Seed user với `full_name="Cũ", bio="Bio cũ", phone="0901234567"`
+1. Seed user với `full_name="Cũ", phone="0901234567"`
 2. Gọi update với chỉ `fullName = "Mới"`
 3. Reload entity
 
 **Expected:**
 - `full_name = "Mới"`
-- `bio = "Bio cũ"` (giữ nguyên)
 - `phone = "0901234567"` (giữ nguyên)
 
 ---
@@ -338,7 +335,7 @@ HTTP 200
 
 **Request:**
 ```json
-{ "fullName": "Trần Thị B", "bio": "Đang học N3", "targetJlptLevel": "N3" }
+{ "fullName": "Trần Thị B", "targetJlptLevel": "N3" }
 ```
 
 **Mock:** `studentService.updateMyProfile()` thành công, trả về updated profile
@@ -373,73 +370,7 @@ HTTP 400
 
 ---
 
-### TC-A-04-05 — PUT /api/students/me — bio vượt 500 ký tự → HTTP 400
-
-| Thuộc tính | Nội dung |
-|:---|:---|
-| **ID** | TC-A-04-05 |
-| **Tham chiếu** | BR-04-07, UC-04 § 5 |
-| **Loại** | API — Validation |
-| **Ưu tiên** | P2 |
-
-**Request:**
-```json
-{ "bio": "<chuỗi 501 ký tự>" }
-```
-
-**Expected:**
-```
-HTTP 400
-{ "errorCode": "VALIDATION_FAILED", "errors": [{ "field": "bio", "message": "Tiểu sử không được vượt quá 500 ký tự" }] }
-```
-
----
-
-### TC-A-04-06 — PUT /api/students/me — dateOfBirth là ngày tương lai → HTTP 400
-
-| Thuộc tính | Nội dung |
-|:---|:---|
-| **ID** | TC-A-04-06 |
-| **Tham chiếu** | BR-04-09, UC-04 § 5 |
-| **Loại** | API — Validation |
-| **Ưu tiên** | P2 |
-
-**Request:**
-```json
-{ "dateOfBirth": "2030-01-01" }
-```
-
-**Expected:**
-```
-HTTP 400
-{ "errors": [{ "field": "dateOfBirth", "message": "Ngày sinh phải là ngày trong quá khứ" }] }
-```
-
----
-
-### TC-A-04-07 — PUT /api/students/me — dateOfBirth nhỏ hơn 13 năm trước → HTTP 400
-
-| Thuộc tính | Nội dung |
-|:---|:---|
-| **ID** | TC-A-04-07 |
-| **Tham chiếu** | BR-04-09 |
-| **Loại** | API — Validation |
-| **Ưu tiên** | P2 |
-
-**Request:**
-```json
-{ "dateOfBirth": "2020-01-01" }
-```
-
-**Expected:**
-```
-HTTP 400
-{ "errors": [{ "field": "dateOfBirth", "message": "Bạn phải đủ 13 tuổi để sử dụng dịch vụ" }] }
-```
-
----
-
-### TC-A-04-08 — POST /api/students/me/avatar — file hợp lệ → HTTP 200
+### TC-A-04-05 — POST /api/students/me/avatar — file hợp lệ → HTTP 200
 
 | Thuộc tính | Nội dung |
 |:---|:---|
@@ -528,11 +459,8 @@ HTTP 403
 | TC-A-04-V02 | fullName | 151 ký tự | 400 | VALIDATION_FAILED |
 | TC-A-04-V03 | phone | `"0123456"` (< 10 digits) | 400 | VALIDATION_FAILED |
 | TC-A-04-V04 | phone | `"01234567890123456"` (> 15 digits) | 400 | VALIDATION_FAILED |
-| TC-A-04-V05 | dateOfBirth | `"not-a-date"` | 400 | VALIDATION_FAILED |
-| TC-A-04-V06 | targetJlptLevel | `"N6"` | 400 | VALIDATION_FAILED |
-| TC-A-04-V07 | targetJlptLevel | `"N1"` (hợp lệ) | 200 | — |
-| TC-A-04-V08 | bio | 501 ký tự | 400 | VALIDATION_FAILED |
-| TC-A-04-V09 | bio | 500 ký tự (đúng max) | 200 | — |
+| TC-A-04-V05 | targetJlptLevel | `"N6"` | 400 | VALIDATION_FAILED |
+| TC-A-04-V06 | targetJlptLevel | `"N1"` (hợp lệ) | 200 | — |
 
 ---
 
@@ -634,8 +562,7 @@ HTTP 403
 | BR-04-03: currentJlptLevel không sửa được | TC-U-04-04 | ✅ |
 | BR-04-04: Avatar không lưu BLOB | TC-U-04-07 | ✅ |
 | BR-04-06: Partial update | TC-U-04-02, TC-I-04-02 | ✅ |
-| BR-04-07: bio max 500 chars | TC-A-04-05, TC-A-04-V08 | ✅ |
-| BR-04-09: dateOfBirth ≥ 13 năm trước | TC-A-04-06, TC-A-04-07 | ✅ |
-| BR-04-10: Sensitive fields không xuất hiện | TC-U-04-01, TC-S-04-01 | ✅ |
+| BR-04-07: phone format validation | TC-A-04-V04 | ✅ |
+| BR-04-08: Sensitive fields không xuất hiện | TC-U-04-01, TC-S-04-01 | ✅ |
 | File upload security (magic bytes) | TC-U-04-06 | ✅ |
 | File name không chứa original name (traversal) | TC-U-04-08 | ✅ |

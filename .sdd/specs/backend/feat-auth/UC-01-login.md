@@ -53,7 +53,7 @@ Bước 4 [Backend]:    Tìm tài khoản trong student_users theo email
 Bước 5 [Backend]:    Kiểm tra tài khoản không bị khóa (locked_until < NOW() hoặc NULL)
 Bước 6 [Backend]:    Kiểm tra trạng thái tài khoản (status = 'active')
 Bước 7 [Backend]:    So sánh mật khẩu với bcrypt (password_hash)
-Bước 8 [Backend]:    Đặt lại login_attempts = 0, cập nhật last_login_at và last_login_ip
+Bước 8 [Backend]:    Đặt lại login_attempts = 0, cập nhật last_login_at
 Bước 9 [Backend]:    Tạo JWT access token (15 phút) và refresh token (7 ngày)
 Bước 10 [Backend]:   Lưu refresh token vào auth_tokens (token_type = 'refresh')
 Bước 11 [Backend]:   Trả về HTTP 200 với accessToken, refreshToken, thông tin student cơ bản
@@ -137,7 +137,7 @@ Bước X  [Backend]:   Trả về HTTP 403 — EMAIL_NOT_VERIFIED
 | BR-01-07 | OAuth state parameter **bắt buộc** để chống CSRF | Phải xác minh state trước khi xử lý callback |
 | BR-01-08 | Liên kết OAuth với tài khoản email có sẵn **chỉ** khi email trùng khớp | Không liên kết tự động nếu email khác nhau |
 | BR-01-09 | Rate limit: tối đa **10 request/phút/IP** trên endpoint `/api/auth/login` | → FR-AUTH-08 (NFR) |
-| BR-01-10 | Log mọi lần đăng nhập (thành công & thất bại): `[INFO/WARN] [AuthService] {email, ip, result}` | → NFR-AUTH-06 |
+| BR-01-10 | Log mọi lần đăng nhập (thành công & thất bại): `[INFO/WARN] [AuthService] {email, ip, result}` — IP lấy từ request header, ghi vào application log và `auth_tokens.ip_address` | → NFR-AUTH-06 |
 
 ---
 
@@ -210,7 +210,7 @@ sequenceDiagram
                     AC-->>FE: HTTP 401 INVALID_CREDENTIALS
                     FE-->>Khach: "Email hoặc mật khẩu không đúng"
                 else Mật khẩu đúng
-                    AS->>UR: reset login_attempts=0, cập nhật last_login_at, last_login_ip
+                    AS->>UR: reset login_attempts=0, cập nhật last_login_at
                     AS->>JS: generateAccessToken(studentId, email, role)
                     JS-->>AS: accessToken (JWT, 15 phút)
                     AS->>JS: generateRefreshToken()
@@ -309,7 +309,7 @@ sequenceDiagram
   - Response chứa `refreshToken`
   - Response chứa thông tin student (studentId, fullName, email, currentJlptLevel, avatarUrl)
   - `login_attempts` trong DB được đặt về 0
-  - `last_login_at` và `last_login_ip` được cập nhật
+  - `last_login_at` được cập nhật
   - Bản ghi `auth_tokens` mới (type=`refresh`) được tạo trong DB
 
 ---

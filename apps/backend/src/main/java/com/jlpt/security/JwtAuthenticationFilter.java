@@ -23,6 +23,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final String LIMITED_SESSION_PATH = "/api/staff/auth/change-temp-password";
+
     private final JwtProvider jwtProvider;
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -33,6 +35,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String jwt = parseJwt(request);
             if (jwt != null && jwtProvider.validateJwtToken(jwt)) {
                 String role = jwtProvider.getRoleFromToken(jwt);
+                String tokenType = jwtProvider.getTokenTypeFromToken(jwt);
+                if ("limited_session".equals(tokenType) && !isChangeTempPasswordRequest(request)) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("application/json");
+                    response.getWriter()
+                            .write("{\"status\":403,\"message\":\"Token nay chi dung de doi mat khau tam thoi\",\"data\":null}");
+                    return;
+                }
 
                 if ("ADMIN".equals(role) || "STAFF".equals(role)) {
                     // Admin/Staff tokens carry the role claim directly — no DB lookup needed.
@@ -66,5 +76,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         return null;
+    }
+
+    private boolean isChangeTempPasswordRequest(HttpServletRequest request) {
+        return "POST".equalsIgnoreCase(request.getMethod()) && LIMITED_SESSION_PATH.equals(request.getServletPath());
     }
 }

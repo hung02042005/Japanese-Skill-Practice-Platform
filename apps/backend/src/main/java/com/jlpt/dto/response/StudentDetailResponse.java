@@ -2,7 +2,6 @@
 package com.jlpt.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Data;
@@ -16,8 +15,6 @@ public class StudentDetailResponse {
     private String fullName;
     private String email;
     private String phone;
-    private LocalDate dateOfBirth;
-    private String bio;
     private String avatarUrl;
     private String status;
     private String suspendReason;

@@ -50,12 +50,6 @@ public class StudentUser {
     @Column(length = 20)
     private String phone;
 
-    @Column(name = "date_of_birth")
-    private LocalDate dateOfBirth;
-
-    @Column(length = 500)
-    private String bio;
-
     @Convert(converter = OauthProviderConverter.class)
     @Column(name = "oauth_provider", length = 30)
     private OauthProvider oauthProvider;
@@ -97,12 +91,6 @@ public class StudentUser {
 
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
-
-    @Column(name = "last_login_ip", length = 45)
-    private String lastLoginIp;
-
-    @Column(name = "password_changed_at")
-    private LocalDateTime passwordChangedAt;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default

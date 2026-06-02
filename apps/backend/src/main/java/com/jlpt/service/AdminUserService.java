@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -31,6 +32,7 @@ public class AdminUserService {
     private final AuthTokenRepository authTokenRepository;
     private final AdminAuditLogRepository auditLogRepository;
     private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
 
     // ── UC-37-01: List users with filters ──────────────────────────────────
 
@@ -136,6 +138,44 @@ public class AdminUserService {
                 .build();
     }
 
+    // ── Staff invitation setup password ────────────────────────────────────
+
+    @Transactional
+    public void setupStaffPassword(StaffSetupPasswordRequest request) {
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new BusinessException(400, "PASSWORD_MISMATCH", "Mật khẩu xác nhận không khớp");
+        }
+
+        AuthToken token = authTokenRepository
+                .findByTokenValueAndTokenType(request.getToken(), AuthToken.TokenType.EMAIL_VERIFICATION)
+                .orElseThrow(() -> new BusinessException(400, "INVALID_TOKEN", "Link kích hoạt không hợp lệ hoặc đã được sử dụng"));
+
+        if (token.getActorType() != AuthToken.ActorType.STAFF) {
+            throw new BusinessException(400, "INVALID_TOKEN", "Link kích hoạt không hợp lệ");
+        }
+
+        if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new BusinessException(400, "TOKEN_EXPIRED", "Link kích hoạt đã hết hạn. Vui lòng liên hệ Admin để được cấp lại.");
+        }
+
+        StaffUser staff = staffUserRepository
+                .findById(token.getStaffId())
+                .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Tài khoản không tồn tại"));
+
+        if (staff.getStatus() != StaffUser.StaffStatus.PENDING) {
+            throw new BusinessException(400, "ALREADY_ACTIVATED", "Tài khoản đã được kích hoạt trước đó");
+        }
+
+        staff.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        staff.setStatus(StaffUser.StaffStatus.ACTIVE);
+        staffUserRepository.save(staff);
+
+        authTokenRepository.delete(token);
+
+        log.info("[AdminUserService] Staff id={} email={} completed setup-password and is now ACTIVE",
+                staff.getId(), staff.getEmail());
+    }
+
     // ── UC-37-04: Edit user info ────────────────────────────────────────────
 
     @Transactional
@@ -156,12 +196,6 @@ public class AdminUserService {
                 }
                 if (req.getPhone() != null) {
                     s.setPhone(req.getPhone().isBlank() ? null : req.getPhone().trim());
-                }
-                if (req.getDateOfBirth() != null) {
-                    s.setDateOfBirth(req.getDateOfBirth());
-                }
-                if (req.getBio() != null) {
-                    s.setBio(req.getBio().isBlank() ? null : req.getBio().trim());
                 }
                 if (StringUtils.hasText(req.getTargetJlptLevel())) {
                     s.setTargetJlptLevel(StudentUser.JlptLevel.valueOf(req.getTargetJlptLevel().toUpperCase()));
@@ -550,6 +584,7 @@ public class AdminUserService {
                 .email(s.getEmail())
                 .status(s.getStatus().getValue())
                 .currentJlptLevel(s.getCurrentJlptLevel() != null ? s.getCurrentJlptLevel().name() : null)
+                .currentStreak(s.getCurrentStreak())
                 .createdAt(s.getCreatedAt())
                 .build();
     }
@@ -561,6 +596,7 @@ public class AdminUserService {
                 .fullName(st.getFullName())
                 .email(st.getEmail())
                 .status(st.getStatus().getValue())
+                .staffRole(st.getStaffRole().getValue())
                 .createdAt(st.getCreatedAt())
                 .build();
     }
@@ -582,8 +618,6 @@ public class AdminUserService {
                 .fullName(s.getFullName())
                 .email(s.getEmail())
                 .phone(s.getPhone())
-                .dateOfBirth(s.getDateOfBirth())
-                .bio(s.getBio())
                 .avatarUrl(s.getAvatarUrl())
                 .status(s.getStatus().getValue())
                 .suspendReason(s.getSuspendReason())

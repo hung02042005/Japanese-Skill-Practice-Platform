@@ -33,7 +33,9 @@ public class SecurityConfig {
     @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173}")
     private List<String> allowedOrigins;
 
-    private static final String[] PUBLIC_URLS = {"/api/auth/**", "/h2-console/**", "/actuator/health"};
+    private static final String[] PUBLIC_URLS = {
+        "/api/auth/**", "/api/staff/auth/**", "/h2-console/**", "/actuator/health"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -45,6 +47,8 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/admin/**")
                         .hasRole("ADMIN")
+                        .requestMatchers("/api/staff/**")
+                        .hasRole("STAFF")
                         .anyRequest()
                         .authenticated());
 

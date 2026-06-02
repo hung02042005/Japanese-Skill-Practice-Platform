@@ -66,6 +66,16 @@ export async function changeStaffRole(staffId, staffRole) {
   return res.data.data;
 }
 
+export async function listStaffResetRequests(status = 'pending') {
+  const res = await api.get('/admin/staff/reset-requests', { params: { status } });
+  return res.data.data;
+}
+
+export async function issueTempPassword(staffId, requestId) {
+  const res = await api.post(`/admin/staff/${staffId}/issue-temp-password`, { requestId });
+  return res.data.data;
+}
+
 // ── Legacy: student ↔ staff promotion (old PATCH endpoints) ────────────────
 export async function fetchAdminUsers() {
   const res = await api.get('/admin/users');

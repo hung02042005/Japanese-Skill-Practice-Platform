@@ -3,6 +3,7 @@ package com.jlpt.repository;
 
 import com.jlpt.entity.AuthToken;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -35,6 +36,20 @@ public interface AuthTokenRepository extends JpaRepository<AuthToken, Long> {
     @Modifying
     @Query("UPDATE AuthToken t SET t.revokedAt = :now WHERE t.staffId = :id AND t.revokedAt IS NULL")
     void revokeAllActiveByStaffId(@Param("id") Long id, @Param("now") LocalDateTime now);
+
+    @Modifying
+    @Query(
+            """
+            UPDATE AuthToken t
+            SET t.revokedAt = :now
+            WHERE t.staffId = :id
+              AND t.tokenType IN :tokenTypes
+              AND t.revokedAt IS NULL
+            """)
+    void revokeActiveByStaffIdAndTokenTypes(
+            @Param("id") Long id,
+            @Param("tokenTypes") Collection<AuthToken.TokenType> tokenTypes,
+            @Param("now") LocalDateTime now);
 
     /** Revoke all active tokens for an admin — used on password reset. */
     @Modifying

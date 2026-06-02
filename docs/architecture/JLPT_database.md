@@ -2,7 +2,7 @@
 
 > **DBMS:** Microsoft SQL Server 2019+  
 > **Database:** `JLPT_LearningDB`  
-> **Phiên bản:** v2.4 — thêm bảng `courses`, cột `date_of_birth`/`bio` (ưu tiên cao)  
+> **Phiên bản:** v2.6 — xóa `bio`, `date_of_birth` khỏi `student_users`  
 > **File nguồn:** `jlpt_database_v2.sql`  
 > **Số bảng hiện tại:** 23
 
@@ -62,8 +62,7 @@ Ngoài thông tin học viên, bảng này giữ OAuth và thống kê streak:
 | `oauth_provider_id` | ID người dùng bên provider. |
 | `oauth_provider_email` | Email trả về từ OAuth provider. |
 | `oauth_linked_at` | Thời điểm liên kết OAuth. |
-| `date_of_birth` | Ngày sinh học viên (UC-04 User Profile). |
-| `bio` | Giới thiệu bản thân ngắn (UC-04 User Profile, tối đa 500 ký tự). |
+| `email_verified_at` | Thời điểm xác minh email — **chỉ có ở `student_users`**; Admin/Staff không qua self-registration nên không cần trường này. |
 | `current_jlpt_level` | Cấp độ JLPT hiện tại: N5–N1. |
 | `target_jlpt_level` | Cấp độ JLPT mục tiêu: N5–N1. |
 | `current_streak` | Số ngày học liên tiếp hiện tại. |
@@ -302,7 +301,9 @@ erDiagram
 | v2.0 | Schema khởi tạo, 28 bảng theo thiết kế gốc. |
 | v2.2 | Tối ưu gộp bảng: `quizzes`+`exams` → `assessments`; `question_options` inline; `flashcard_decks` inline; bỏ `learning_activity_logs`. |
 | v2.3 | **Thêm cột**: `student_users.oauth_provider_email`, `oauth_linked_at`; `student_submissions.target_type`, `final_score`; `flashcards.ease_factor`. **Đổi tên**: `ai_error_summary` → `ai_highlighted_errors`. |
-| **v2.4** | **Thêm bảng**: `courses` (UC-27 Staff, UC-33 StaffManager). **Thêm cột**: `lessons.course_id` FK; `student_users.date_of_birth`, `bio` (UC-04). **Đánh lại số UC**: Student UC-01–20, Staff UC-21–32, StaffManager UC-33–34, Admin UC-35–40. |
+| v2.4 | **Thêm bảng**: `courses` (UC-27 Staff, UC-33 StaffManager). **Thêm cột**: `lessons.course_id` FK. **Đánh lại số UC**: Student UC-01–20, Staff UC-21–32, StaffManager UC-33–34, Admin UC-35–40. |
+| v2.5 | **Xóa cột dư thừa** khỏi cả 3 bảng user: `last_login_ip` (trùng với `auth_tokens.ip_address`), `password_changed_at` (không có UC nào dùng). **Xóa thêm** `email_verified_at` khỏi `admin_users` và `staff_users`. Migration: `V5__remove_unused_columns.sql`. |
+| **v2.6** | **Xóa cột** `student_users.bio` và `student_users.date_of_birth` — không ảnh hưởng logic nghiệp vụ cốt lõi; profile giữ lại `full_name`, `email`, `phone`, `avatar_url`, `jlpt_level`. Migration: `V6__remove_bio_dob_from_student.sql`. |
 
 ## 8. Ghi Chú JSON
 

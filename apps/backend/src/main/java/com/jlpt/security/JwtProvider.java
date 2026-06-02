@@ -72,6 +72,22 @@ public class JwtProvider {
                 .compact();
     }
 
+    public String generateLimitedSessionToken(Long staffId, String email) {
+        return Jwts.builder()
+                .subject(email)
+                .claim("role", "STAFF")
+                .claim("staffId", staffId)
+                .claim("tokenType", "limited_session")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1_800_000))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public String generateStaffLimitedSessionToken(Long staffId, String email) {
+        return generateLimitedSessionToken(staffId, email);
+    }
+
     /** Returns the role claim value ("ADMIN", "STAFF") or null for legacy student tokens. */
     public String getRoleFromToken(String token) {
         Object role = Jwts.parser()
@@ -81,6 +97,32 @@ public class JwtProvider {
                 .getPayload()
                 .get("role");
         return role != null ? role.toString() : null;
+    }
+
+    public String getTokenTypeFromToken(String token) {
+        Object tokenType = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("tokenType");
+        return tokenType != null ? tokenType.toString() : null;
+    }
+
+    public Long getStaffIdFromToken(String token) {
+        Object staffId = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("staffId");
+        if (staffId == null) {
+            return null;
+        }
+        if (staffId instanceof Number number) {
+            return number.longValue();
+        }
+        return Long.valueOf(staffId.toString());
     }
 
     public String getUserNameFromJwtToken(String token) {

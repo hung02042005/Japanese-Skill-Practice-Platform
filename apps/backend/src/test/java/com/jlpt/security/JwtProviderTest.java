@@ -48,4 +48,16 @@ class JwtProviderTest {
     void testValidateInvalidToken() {
         assertFalse(jwtProvider.validateJwtToken("invalid.token.here"));
     }
+
+    @Test
+    void testGenerateLimitedSessionTokenContainsStaffClaims() {
+        String token = jwtProvider.generateLimitedSessionToken(7L, "staff@example.com");
+
+        assertNotNull(token);
+        assertTrue(jwtProvider.validateJwtToken(token));
+        assertEquals("staff@example.com", jwtProvider.getUserNameFromJwtToken(token));
+        assertEquals("STAFF", jwtProvider.getRoleFromToken(token));
+        assertEquals("limited_session", jwtProvider.getTokenTypeFromToken(token));
+        assertEquals(7L, jwtProvider.getStaffIdFromToken(token));
+    }
 }

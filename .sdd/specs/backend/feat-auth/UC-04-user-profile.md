@@ -52,7 +52,7 @@ Bước 4 [Backend]:    Tìm tài khoản trong student_users theo student_id
 Bước 5 [Backend]:    Map entity → StudentProfileResponse (loại bỏ password_hash, sensitive fields)
 Bước 6 [Backend]:    Trả về HTTP 200 với thông tin đầy đủ
 Bước 7 [Frontend]:   Hiển thị thông tin: ảnh đại diện, họ tên, email, số điện thoại,
-                      ngày sinh, tiểu sử, cấp độ JLPT hiện tại, cấp độ mục tiêu, ngày tham gia
+                      cấp độ JLPT hiện tại, cấp độ mục tiêu, ngày tham gia
 ```
 
 ### 3.2 Luồng Chính B — Cập Nhật Hồ Sơ
@@ -125,10 +125,8 @@ Bước X  [Backend]:   Trả về HTTP 400 — VALIDATION_FAILED
 | BR-04-04 | Avatar **KHÔNG** được lưu dưới dạng BLOB trong DB | Chỉ lưu URL → FR-AUTH-33 |
 | BR-04-05 | File avatar cũ **có thể** xóa sau khi upload thành công (để tiết kiệm storage) | Tùy chính sách storage |
 | BR-04-06 | Partial update: chỉ cập nhật các trường được gửi trong request body | Nếu trường không có trong body → giữ nguyên giá trị cũ |
-| BR-04-07 | `bio` tối đa **500 ký tự** | Theo schema DB `NVARCHAR(500)` |
-| BR-04-08 | `phone` phải theo định dạng số điện thoại Việt Nam (nếu có giá trị) | 10-11 chữ số, bắt đầu bằng 0 hoặc +84 |
-| BR-04-09 | `date_of_birth` phải là ngày trong quá khứ, tối thiểu 13 năm trước | Hạn chế độ tuổi tối thiểu |
-| BR-04-10 | Không trả `password_hash`, `oauth_provider_id`, `login_attempts`, `locked_until` trong response | Chỉ trả dữ liệu cần thiết |
+| BR-04-07 | `phone` phải theo định dạng số điện thoại hợp lệ (nếu có giá trị) | 10-15 ký tự, chỉ chứa chữ số, +, -, dấu cách |
+| BR-04-08 | Không trả `password_hash`, `oauth_provider_id`, `login_attempts`, `locked_until` trong response | Chỉ trả dữ liệu cần thiết |
 
 ---
 
@@ -142,10 +140,6 @@ Bước X  [Backend]:   Trả về HTTP 400 — VALIDATION_FAILED
 | `fullName` | Nếu có: tối đa 150 ký tự | "Họ tên không được vượt quá 150 ký tự" |
 | `phone` | Nếu có: chỉ chứa chữ số, +, -, dấu cách | "Số điện thoại không hợp lệ" |
 | `phone` | Nếu có: 10-15 ký tự | "Số điện thoại phải từ 10-15 ký tự" |
-| `dateOfBirth` | Nếu có: định dạng YYYY-MM-DD | "Ngày sinh không đúng định dạng (YYYY-MM-DD)" |
-| `dateOfBirth` | Nếu có: phải là ngày trong quá khứ | "Ngày sinh phải là ngày trong quá khứ" |
-| `dateOfBirth` | Nếu có: ≤ ngày hiện tại - 13 năm | "Bạn phải đủ 13 tuổi để sử dụng dịch vụ" |
-| `bio` | Nếu có: tối đa 500 ký tự | "Tiểu sử không được vượt quá 500 ký tự" |
 | `targetJlptLevel` | Nếu có: một trong các giá trị N5, N4, N3, N2, N1 | "Cấp độ JLPT không hợp lệ. Chỉ chấp nhận: N5, N4, N3, N2, N1" |
 | `avatarUrl` | Nếu có: phải là URL hợp lệ bắt đầu bằng https:// | "URL ảnh đại diện không hợp lệ" |
 
@@ -193,7 +187,7 @@ sequenceDiagram
         Note over HV,FE: Học viên chỉnh sửa thông tin...
 
         HV->>FE: Nhập thay đổi, nhấn "Lưu"
-        FE->>SC: PUT /api/students/me {fullName, phone, bio, targetJlptLevel, ...}
+        FE->>SC: PUT /api/students/me {fullName, phone, targetJlptLevel, avatarUrl}
         SC->>SS: updateMyProfile(studentId, updateRequest)
         SS->>SS: Validate từng trường
         SS->>SS: Lọc bỏ các trường bất biến (email, role, currentJlptLevel...)
@@ -270,7 +264,7 @@ sequenceDiagram
 - **Khi:** GET `/api/students/me`
 - **Thì:**
   - Nhận HTTP 200
-  - Response chứa: `studentId`, `fullName`, `email`, `phone`, `dateOfBirth`, `bio`, `avatarUrl`, `currentJlptLevel`, `targetJlptLevel`, `createdAt`
+  - Response chứa: `studentId`, `fullName`, `email`, `phone`, `avatarUrl`, `currentJlptLevel`, `targetJlptLevel`, `createdAt`
   - Response KHÔNG chứa: `passwordHash`, `loginAttempts`, `lockedUntil`, `oauthProviderId`
 
 ---
@@ -280,11 +274,10 @@ sequenceDiagram
 > **Tham chiếu:** FR-AUTH-31
 
 - **Cho trước:** Học viên đã đăng nhập
-- **Khi:** PUT `/api/students/me` với `{"fullName": "Trần Thị B", "bio": "Đang học N3", "targetJlptLevel": "N3"}`
+- **Khi:** PUT `/api/students/me` với `{"fullName": "Trần Thị B", "targetJlptLevel": "N3"}`
 - **Thì:**
   - Nhận HTTP 200
   - `student_users.full_name = "Trần Thị B"`
-  - `student_users.bio = "Đang học N3"`
   - `student_users.target_jlpt_level = "N3"`
   - `student_users.updated_at` được cập nhật
   - Response chứa dữ liệu mới nhất

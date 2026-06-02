@@ -60,7 +60,7 @@ Bước 4  [Backend]:  Tra cứu email theo thứ tự: admin_users → staff_us
 Bước 5  [Backend]:  Kiểm tra locked_until < NOW() hoặc NULL (chưa bị khóa)
 Bước 6  [Backend]:  Kiểm tra status = 'active'
 Bước 7  [Backend]:  So sánh mật khẩu với bcrypt (cost ≥ 12, theo CONSTITUTION §3.1)
-Bước 8  [Backend]:  Đặt login_attempts = 0, cập nhật last_login_at và last_login_ip
+Bước 8  [Backend]:  Đặt login_attempts = 0, cập nhật last_login_at
 Bước 9  [Backend]:  Tạo mfaToken ngẫu nhiên (≥ 32 bytes URL-safe), lưu vào auth_tokens
                        (token_type = '2fa_temp', actor_type = 'admin', expires_at = NOW() + 10 phút)
 Bước 10 [Backend]:  Trả về HTTP 200 { requiresTwoFactor: true, mfaToken, role: "ADMIN" }
@@ -220,7 +220,7 @@ sequenceDiagram
     AS->>AS: Kiểm tra status = 'active'
     AS->>AS: bcrypt.compare(password, password_hash, cost≥12)
 
-    AS->>AR: reset login_attempts=0, last_login_at, last_login_ip
+    AS->>AR: reset login_attempts=0, last_login_at
     AS->>TR: save(mfaToken, adminId, type='2fa_temp', expires=+10min)
     TR-->>AS: OK
 
@@ -429,7 +429,7 @@ sequenceDiagram
   - Response chứa `role = "ADMIN"`
   - Bản ghi `auth_tokens` mới (type=`2fa_temp`, actor_type=`admin`) được tạo trong DB
   - `login_attempts` trong DB được đặt về 0
-  - `last_login_at` và `last_login_ip` được cập nhật
+  - `last_login_at` được cập nhật
   - **Không có** `accessToken` hay `refreshToken` trong response này
 
 ---

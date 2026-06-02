@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { forgotPasswordThunk, clearError } from '../../store/slices/authSlice';
+import { checkAccountTypeThunk, forgotPasswordThunk, clearError } from '../../store/slices/authSlice';
 import AuthTopBar from '../../components/auth/AuthTopBar';
 import SakuChan from '../../components/auth/SakuChan';
 import AuthBanner from '../../components/auth/AuthBanner';
 import './ForgotPassword.css';
 
 function ForgotPassword() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { status, error } = useAppSelector((state) => state.auth);
 
@@ -19,6 +20,11 @@ function ForgotPassword() {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
+      const account = await dispatch(checkAccountTypeThunk({ email })).unwrap();
+      if (account.accountType === 'staff') {
+        navigate(`/staff/forgot-password?email=${encodeURIComponent(email.trim())}`);
+        return;
+      }
       await dispatch(forgotPasswordThunk({ email })).unwrap();
       setIsSent(true);
     } catch {

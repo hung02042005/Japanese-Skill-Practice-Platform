@@ -105,7 +105,6 @@ public class AdminAuthService {
         // Reset attempts + update login meta
         admin.setLoginAttempts(0);
         admin.setLastLoginAt(LocalDateTime.now());
-        admin.setLastLoginIp(ip);
         adminUserRepository.save(admin);
 
         // ALWAYS bypass 2FA for admin and issue JWT directly

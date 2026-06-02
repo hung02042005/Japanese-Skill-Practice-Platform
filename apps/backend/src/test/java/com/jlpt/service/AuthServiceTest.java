@@ -8,6 +8,7 @@ import static org.mockito.Mockito.*;
 import com.jlpt.dto.request.LoginRequest;
 import com.jlpt.dto.response.LoginApiResponse;
 import com.jlpt.entity.AuthToken;
+import com.jlpt.entity.StaffUser;
 import com.jlpt.entity.StudentUser;
 import com.jlpt.exception.BusinessException;
 import com.jlpt.repository.AdminUserRepository;
@@ -159,5 +160,33 @@ class AuthServiceTest {
         assertEquals(5, mockUser.getLoginAttempts());
         assertNotNull(mockUser.getLockedUntil());
         verify(studentUserRepository).save(mockUser);
+    }
+
+    @Test
+    void testStaffLogin_MustChangePassword_IssuesLimitedSession() {
+        StaffUser staff = StaffUser.builder()
+                .id(2L)
+                .email("staff@example.com")
+                .passwordHash("hash")
+                .fullName("Staff User")
+                .status(StaffUser.StaffStatus.ACTIVE)
+                .mustChangePassword(true)
+                .loginAttempts(0)
+                .build();
+        loginRequest.setEmail("staff@example.com");
+
+        when(staffUserRepository.findByEmail("staff@example.com")).thenReturn(Optional.of(staff));
+        when(passwordEncoder.matches("password123", "hash")).thenReturn(true);
+        when(jwtProvider.generateLimitedSessionToken(2L, "staff@example.com")).thenReturn("limited-token");
+        when(authTokenRepository.save(any(AuthToken.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        LoginApiResponse response = authService.login(loginRequest, "127.0.0.1");
+
+        assertEquals("limited-token", response.getAccessToken());
+        assertTrue(response.getRequirePasswordChange());
+        assertEquals("STAFF", response.getRole());
+        verify(authTokenRepository).save(argThat(token -> token.getTokenType() == AuthToken.TokenType.LIMITED_SESSION
+                && token.getStaffId().equals(2L)
+                && token.getExpiresAt() != null));
     }
 }

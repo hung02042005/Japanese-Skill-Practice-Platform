@@ -20,6 +20,13 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @PostMapping("/check-account-type")
+    public ResponseEntity<ApiResponse<AccountTypeResponse>> checkAccountType(
+            @Valid @RequestBody CheckAccountTypeRequest request, HttpServletRequest httpRequest) {
+        AccountTypeResponse response = authService.checkAccountType(request.getEmail(), httpRequest.getRemoteAddr());
+        return ResponseEntity.ok(ApiResponse.success("OK", response));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginApiResponse>> login(
             @Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
