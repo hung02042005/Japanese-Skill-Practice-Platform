@@ -9,6 +9,7 @@ import com.jlpt.dto.request.GoogleTokenRequest;
 import com.jlpt.dto.request.LoginRequest;
 import com.jlpt.dto.request.RegisterRequest;
 import com.jlpt.dto.request.VerifyMfaRequest;
+import com.jlpt.dto.response.AccountTypeResponse;
 import com.jlpt.dto.response.AdminVerifyMfaResponse;
 import com.jlpt.dto.response.AuthResponse;
 import com.jlpt.dto.response.LoginApiResponse;
@@ -23,9 +24,14 @@ import com.jlpt.repository.AuthTokenRepository;
 import com.jlpt.repository.StaffUserRepository;
 import com.jlpt.repository.StudentUserRepository;
 import com.jlpt.security.JwtProvider;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +49,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class AuthService {
 
+    private static final int CHECK_ACCOUNT_TYPE_LIMIT = 10;
+    private static final Duration CHECK_ACCOUNT_TYPE_WINDOW = Duration.ofMinutes(1);
+
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
     private final StudentUserRepository studentUserRepository;
@@ -52,6 +61,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final AdminAuthService adminAuthService;
+    private final Map<String, Deque<LocalDateTime>> checkAccountTypeAttempts = new ConcurrentHashMap<>();
 
     @Value("${google.client-id}")
     private String googleClientId;
@@ -61,6 +71,44 @@ public class AuthService {
 
     @Value("${jwt.refresh-expiration-ms:604800000}")
     private long refreshExpirationMs;
+
+    @Transactional(readOnly = true)
+    public AccountTypeResponse checkAccountType(String email) {
+        return resolveAccountType(email);
+    }
+
+    @Transactional(readOnly = true)
+    public AccountTypeResponse checkAccountType(String email, String ip) {
+        enforceCheckAccountTypeRateLimit(ip);
+        return resolveAccountType(email);
+    }
+
+    private AccountTypeResponse resolveAccountType(String email) {
+        String normalizedEmail = email.trim().toLowerCase();
+        String accountType = "unknown";
+        if (staffUserRepository.findByEmail(normalizedEmail).isPresent()) {
+            accountType = "staff";
+        } else if (studentUserRepository.findByEmail(normalizedEmail).isPresent()) {
+            accountType = "student";
+        }
+        return AccountTypeResponse.builder().accountType(accountType).build();
+    }
+
+    private void enforceCheckAccountTypeRateLimit(String ip) {
+        String key = ip == null || ip.isBlank() ? "unknown" : ip;
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime threshold = now.minus(CHECK_ACCOUNT_TYPE_WINDOW);
+        Deque<LocalDateTime> attempts = checkAccountTypeAttempts.computeIfAbsent(key, ignored -> new ArrayDeque<>());
+        synchronized (attempts) {
+            while (!attempts.isEmpty() && attempts.peekFirst().isBefore(threshold)) {
+                attempts.removeFirst();
+            }
+            if (attempts.size() >= CHECK_ACCOUNT_TYPE_LIMIT) {
+                throw new BusinessException(429, "TOO_MANY_REQUESTS", "Quá nhiều yêu cầu. Vui lòng thử lại sau.");
+            }
+            attempts.addLast(now);
+        }
+    }
 
     /**
      * Unified login endpoint for all roles (UC-35 §3.2).
@@ -94,6 +142,15 @@ public class AuthService {
         return adminAuthService.verifyMfa(request, ip);
     }
 
+    @Transactional
+    public LoginApiResponse loginStaff(LoginRequest request, String ip) {
+        StaffUser staff = staffUserRepository
+                .findByEmail(request.getEmail())
+                .orElseThrow(() ->
+                        new BusinessException(401, "INVALID_CREDENTIALS", "Email hoặc mật khẩu không đúng"));
+        return handleStaffLogin(staff, request.getPassword(), ip);
+    }
+
     private LoginApiResponse handleStaffLogin(StaffUser staff, String rawPassword, String ip) {
         if (staff.getLockedUntil() != null && staff.getLockedUntil().isAfter(LocalDateTime.now())) {
             throw new BusinessException(429, "TOO_MANY_REQUESTS", "Quá nhiều lần thử. Vui lòng thử lại sau.");
@@ -114,6 +171,26 @@ public class AuthService {
         staff.setLastLoginIp(ip);
         staffUserRepository.save(staff);
 
+        if (Boolean.TRUE.equals(staff.getMustChangePassword())) {
+            String limitedToken = jwtProvider.generateLimitedSessionToken(staff.getId(), staff.getEmail());
+            authTokenRepository.save(AuthToken.builder()
+                    .actorType(AuthToken.ActorType.STAFF)
+                    .staffId(staff.getId())
+                    .tokenType(AuthToken.TokenType.LIMITED_SESSION)
+                    .tokenValue(limitedToken)
+                    .ipAddress(ip)
+                    .expiresAt(LocalDateTime.now().plusMinutes(30))
+                    .build());
+
+            log.info("[AuthService] Staff temporary password login requires password change staffId={}", staff.getId());
+            return LoginApiResponse.builder()
+                    .requiresTwoFactor(false)
+                    .requirePasswordChange(true)
+                    .accessToken(limitedToken)
+                    .role("STAFF")
+                    .build();
+        }
+
         String accessToken = jwtProvider.generateStaffAccessToken(staff.getId(), staff.getEmail());
         String refreshToken = UUID.randomUUID().toString();
         authTokenRepository.save(AuthToken.builder()
@@ -127,6 +204,7 @@ public class AuthService {
         log.info("[AuthService] Staff login success email={}", staff.getEmail());
         return LoginApiResponse.builder()
                 .requiresTwoFactor(false)
+                .requirePasswordChange(false)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .role("STAFF")

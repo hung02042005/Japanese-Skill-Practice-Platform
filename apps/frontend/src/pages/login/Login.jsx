@@ -27,7 +27,9 @@ function Login() {
     try {
       const res = await dispatch(loginThunk({ email, password })).unwrap();
       if (!res.requiresTwoFactor) {
-        if (res.role === 'ADMIN' || res.user?.role === 'ADMIN') {
+        if (res.requirePasswordChange) {
+          navigate('/staff/change-temp-password');
+        } else if (res.role === 'ADMIN' || res.user?.role === 'ADMIN') {
           navigate('/admin/users');
         } else {
           navigate('/dashboard');

@@ -23,6 +23,9 @@ public class EmailService {
     @Value("${app.frontend-url:http://localhost:3000}")
     private String frontendUrl;
 
+    @Value("${app.admin-notify-email:${spring.mail.username}}")
+    private String adminNotifyEmail;
+
     @Async
     public void sendVerificationEmail(String toEmail, String token) {
         String verifyLink = frontendUrl + "/verify-email?token=" + token;
@@ -48,6 +51,41 @@ public class EmailService {
         String body = buildPasswordResetEmailBody(resetLink);
         sendHtmlEmail(toEmail, subject, body);
         log.info("[EmailService] Password reset email sent to: {}", toEmail);
+    }
+
+    @Async
+    public void notifyAdminPasswordReset(String staffName, String staffEmail) {
+        String subject = "[JLPT Platform] Staff password reset requested";
+        String body = """
+                <p>Staff <strong>%s</strong> (%s) requested a password reset.</p>
+                <p>Please open the Admin Panel to verify the request and issue a temporary password.</p>
+                """
+                .formatted(staffName, staffEmail);
+        sendHtmlEmail(adminNotifyEmail, subject, body);
+        log.info("[EmailService] Staff password reset notification sent for staff email={}", staffEmail);
+    }
+
+    @Async
+    public void notifyAdminsStaffPasswordResetRequested(String staffName, String staffEmail) {
+        notifyAdminPasswordReset(staffName, staffEmail);
+    }
+
+    @Async
+    public void sendStaffTempPassword(String toEmail, String tempPassword) {
+        String subject = "[JLPT Platform] Temporary password for Staff account";
+        String body = """
+                <p>Admin issued a temporary password for your Staff account.</p>
+                <p><strong>Temporary password:</strong> %s</p>
+                <p>Use it to sign in. The system will require you to set a new password immediately.</p>
+                """
+                .formatted(tempPassword);
+        sendHtmlEmail(toEmail, subject, body);
+        log.info("[EmailService] Temporary staff password email sent to: {}", toEmail);
+    }
+
+    @Async
+    public void sendStaffTempPasswordEmail(String toEmail, String tempPassword) {
+        sendStaffTempPassword(toEmail, tempPassword);
     }
 
     private void sendHtmlEmail(String to, String subject, String htmlBody) {

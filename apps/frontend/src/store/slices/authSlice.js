@@ -21,16 +21,36 @@ export const loginThunk = createAsyncThunk(
     try {
       const res = await authService.login(credentials);
       // Backend LoginApiResponse: field is `user` (not `student`), plus `role` at top level
-      const { requiresTwoFactor, mfaToken, role, accessToken, refreshToken, user } = res.data;
+      const {
+        requiresTwoFactor,
+        requirePasswordChange,
+        mfaToken,
+        role,
+        accessToken,
+        refreshToken,
+        user,
+      } = res.data;
       if (requiresTwoFactor) {
         // Admin: step-1 challenge — no tokens yet, just mfaToken + role
         return { requiresTwoFactor: true, mfaToken, role };
+      }
+      if (requirePasswordChange) {
+        const userData = { role, requirePasswordChange: true };
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.removeItem('refreshToken');
+        localStorage.setItem('jlpt-user', JSON.stringify(userData));
+        return {
+          requiresTwoFactor: false,
+          requirePasswordChange: true,
+          user: userData,
+          role,
+        };
       }
       // Direct login (Student / Staff / Admin without 2FA)
       // For ADMIN direct login, `user` is null — build a minimal object from role
       const userData = user ? { ...user, role } : { role };
       localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('jlpt-user', JSON.stringify(userData));
       return { requiresTwoFactor: false, user: userData, role };
     } catch (err) {
@@ -113,6 +133,57 @@ export const resetPasswordThunk = createAsyncThunk(
   },
 );
 
+export const checkAccountTypeThunk = createAsyncThunk(
+  'auth/checkAccountType',
+  async ({ email }, { rejectWithValue }) => {
+    try {
+      const res = await authService.checkAccountType(email);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message ?? 'Không thể kiểm tra tài khoản');
+    }
+  },
+);
+
+export const staffForgotPasswordThunk = createAsyncThunk(
+  'auth/staffForgotPassword',
+  async ({ email }, { rejectWithValue }) => {
+    try {
+      const res = await authService.staffForgotPassword(email);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message ?? 'Gửi yêu cầu thất bại');
+    }
+  },
+);
+
+export const setupStaffPasswordThunk = createAsyncThunk(
+  'auth/setupStaffPassword',
+  async ({ token, newPassword, confirmPassword }, { rejectWithValue }) => {
+    try {
+      const res = await authService.setupStaffPassword({ token, newPassword, confirmPassword });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message ?? 'Kích hoạt tài khoản thất bại');
+    }
+  },
+);
+
+export const changeTempPasswordThunk = createAsyncThunk(
+  'auth/changeTempPassword',
+  async ({ newPassword, confirmPassword }, { rejectWithValue }) => {
+    try {
+      const res = await authService.changeTempPassword({ newPassword, confirmPassword });
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('jlpt-user');
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message ?? 'Đổi mật khẩu tạm thất bại');
+    }
+  },
+);
+
 export const fetchProfileThunk = createAsyncThunk(
   'auth/fetchProfile',
   async (_, { rejectWithValue }) => {
@@ -165,7 +236,9 @@ function loadPersistedUser() {
     const raw = localStorage.getItem('jlpt-user');
     const token = localStorage.getItem('accessToken');
     if (raw && token) return JSON.parse(raw);
-  } catch {}
+  } catch {
+    return null;
+  }
   return null;
 }
 
@@ -291,6 +364,60 @@ const authSlice = createSlice({
         state.status = 'succeeded';
       })
       .addCase(resetPasswordThunk.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // setupStaffPassword
+      .addCase(setupStaffPasswordThunk.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(setupStaffPasswordThunk.fulfilled, (state) => {
+        state.status = 'succeeded';
+      })
+      .addCase(setupStaffPasswordThunk.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // checkAccountType
+      .addCase(checkAccountTypeThunk.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(checkAccountTypeThunk.fulfilled, (state) => {
+        state.status = 'succeeded';
+      })
+      .addCase(checkAccountTypeThunk.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // staffForgotPassword
+      .addCase(staffForgotPasswordThunk.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(staffForgotPasswordThunk.fulfilled, (state) => {
+        state.status = 'succeeded';
+      })
+      .addCase(staffForgotPasswordThunk.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // changeTempPassword
+      .addCase(changeTempPasswordThunk.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(changeTempPasswordThunk.fulfilled, (state) => {
+        state.status = 'succeeded';
+        state.user = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(changeTempPasswordThunk.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       })

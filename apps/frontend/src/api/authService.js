@@ -61,6 +61,33 @@ export async function login(credentials) {
   return response.data;
 }
 
+export async function checkAccountType(email) {
+  const response = await api.post('/auth/check-account-type', { email });
+  return response.data;
+}
+
+export async function staffForgotPassword(email) {
+  const response = await api.post('/staff/auth/forgot-password', { email });
+  return response.data;
+}
+
+export async function setupStaffPassword({ token, newPassword, confirmPassword }) {
+  const response = await api.post('/staff/auth/setup-password', {
+    token,
+    newPassword,
+    confirmPassword,
+  });
+  return response.data;
+}
+
+export async function changeTempPassword({ newPassword, confirmPassword }) {
+  const response = await api.post('/staff/auth/change-temp-password', {
+    newPassword,
+    confirmPassword,
+  });
+  return response.data;
+}
+
 export async function verifyMfa({ mfaToken, totpCode }) {
   const response = await api.post('/auth/verify-mfa', { mfaToken, totpCode });
   return response.data;

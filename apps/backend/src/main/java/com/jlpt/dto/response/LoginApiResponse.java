@@ -23,6 +23,8 @@ public class LoginApiResponse {
     /** Role of the authenticated principal: ADMIN | STAFF | STUDENT */
     private String role;
 
+    private Boolean requirePasswordChange;
+
     /** JWT access token — present only on direct login (student/staff) */
     private String accessToken;
 

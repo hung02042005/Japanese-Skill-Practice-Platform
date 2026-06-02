@@ -79,7 +79,8 @@ public class AuthToken {
         EMAIL_VERIFICATION("email_verification"),
         PASSWORD_RESET("password_reset"),
         TFA_TEMP("2fa_temp"),
-        REFRESH("refresh");
+        REFRESH("refresh"),
+        LIMITED_SESSION("limited_session");
         private final String v;
 
         TokenType(String v) {

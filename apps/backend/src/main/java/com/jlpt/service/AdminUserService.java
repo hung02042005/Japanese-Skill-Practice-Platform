@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -31,6 +32,7 @@ public class AdminUserService {
     private final AuthTokenRepository authTokenRepository;
     private final AdminAuditLogRepository auditLogRepository;
     private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
 
     // ── UC-37-01: List users with filters ──────────────────────────────────
 
@@ -134,6 +136,45 @@ public class AdminUserService {
                 .staffRole(staff.getStaffRole().getValue())
                 .status(staff.getStatus().getValue())
                 .build();
+    }
+
+    // ── Staff invitation setup password ────────────────────────────────────
+
+    @Transactional
+    public void setupStaffPassword(StaffSetupPasswordRequest request) {
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new BusinessException(400, "PASSWORD_MISMATCH", "Mật khẩu xác nhận không khớp");
+        }
+
+        AuthToken token = authTokenRepository
+                .findByTokenValueAndTokenType(request.getToken(), AuthToken.TokenType.EMAIL_VERIFICATION)
+                .orElseThrow(() -> new BusinessException(400, "INVALID_TOKEN", "Link kích hoạt không hợp lệ hoặc đã được sử dụng"));
+
+        if (token.getActorType() != AuthToken.ActorType.STAFF) {
+            throw new BusinessException(400, "INVALID_TOKEN", "Link kích hoạt không hợp lệ");
+        }
+
+        if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new BusinessException(400, "TOKEN_EXPIRED", "Link kích hoạt đã hết hạn. Vui lòng liên hệ Admin để được cấp lại.");
+        }
+
+        StaffUser staff = staffUserRepository
+                .findById(token.getStaffId())
+                .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Tài khoản không tồn tại"));
+
+        if (staff.getStatus() != StaffUser.StaffStatus.PENDING) {
+            throw new BusinessException(400, "ALREADY_ACTIVATED", "Tài khoản đã được kích hoạt trước đó");
+        }
+
+        staff.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        staff.setStatus(StaffUser.StaffStatus.ACTIVE);
+        staff.setEmailVerifiedAt(LocalDateTime.now());
+        staffUserRepository.save(staff);
+
+        authTokenRepository.delete(token);
+
+        log.info("[AdminUserService] Staff id={} email={} completed setup-password and is now ACTIVE",
+                staff.getId(), staff.getEmail());
     }
 
     // ── UC-37-04: Edit user info ────────────────────────────────────────────

@@ -17,6 +17,7 @@ import { SkeletonRow } from '../../components/admin/SkeletonRow';
 import {
   listUsers, createStaff, suspendUser, activateUser,
   resetPassword, softDeleteUser, changeStaffRole,
+  listStaffResetRequests, issueTempPassword,
 } from '../../api/adminService';
 import './ManageUsers.css';
 
@@ -59,6 +60,8 @@ function ManageUsers() {
   const [suspendModal, setSuspendModal]   = useState({ open: false, userId: null, userType: null, userName: '' });
   const [staffRoleModal, setStaffRoleMod] = useState({ open: false, userId: null, userName: '', currentStaffRole: 'staff' });
   const [createStaffOpen, setCreateStaff] = useState(false);
+  const [resetRequests, setResetRequests] = useState([]);
+  const [isLoadingResetRequests, setLoadingResetRequests] = useState(false);
 
   /* Debounce search */
   const debounceRef = useRef(null);
@@ -102,6 +105,22 @@ function ManageUsers() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeType, debouncedSearch, statusFilter, jlptFilter, staffRoleFilter, currentPage]);
 
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingResetRequests(true);
+    listStaffResetRequests('pending')
+      .then((data) => {
+        if (!cancelled) setResetRequests(data ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) addToast('error', 'Không thể tải yêu cầu đặt lại mật khẩu nhân viên');
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingResetRequests(false);
+      });
+    return () => { cancelled = true; };
+  }, [addToast]);
+
   /* Stats from current page data */
   const stats = useMemo(() => ({
     total:     totalElements,
@@ -117,6 +136,14 @@ function ManageUsers() {
       .then((data) => { setUsers(data.content ?? []); setTotalElements(data.totalElements ?? 0); setTotalPages(data.totalPages ?? 1); })
       .catch(() => addToast('error', 'Không thể làm mới danh sách'))
       .finally(() => setIsLoading(false));
+  }
+
+  function reloadResetRequests() {
+    setLoadingResetRequests(true);
+    listStaffResetRequests('pending')
+      .then((data) => setResetRequests(data ?? []))
+      .catch(() => addToast('error', 'Không thể làm mới yêu cầu đặt lại mật khẩu'))
+      .finally(() => setLoadingResetRequests(false));
   }
 
   /* ── Action openers ── */
@@ -178,6 +205,17 @@ function ManageUsers() {
     } finally { setSubmitting(false); }
   }
 
+  async function handleIssueTempPassword(request) {
+    setSubmitting(true);
+    try {
+      await issueTempPassword(request.staffId, request.requestId);
+      addToast('success', 'Đã gửi mật khẩu tạm thời đến email nhân viên!');
+      reloadResetRequests();
+    } catch (err) {
+      addToast('error', err?.response?.data?.message ?? 'Không thể cấp mật khẩu tạm thời');
+    } finally { setSubmitting(false); }
+  }
+
   /* ── Render ── */
   return (
     <div className="mu-page">
@@ -224,6 +262,59 @@ function ManageUsers() {
             </button>
           )}
         </div>
+
+        {activeType === 'staff' && (
+          <section className="mu-reset-panel" aria-label="Yêu cầu đặt lại mật khẩu nhân viên">
+            <div className="mu-reset-panel__head">
+              <div>
+                <h2 className="mu-reset-panel__title">Yêu cầu đặt lại mật khẩu nhân viên</h2>
+                <p className="mu-reset-panel__sub">
+                  Admin xác minh yêu cầu trước khi hệ thống gửi mật khẩu tạm thời qua email.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="mu-btn mu-btn--ghost mu-btn--compact"
+                onClick={reloadResetRequests}
+                disabled={isLoadingResetRequests}
+              >
+                Làm mới
+              </button>
+            </div>
+
+            {isLoadingResetRequests ? (
+              <div className="mu-reset-empty">Đang tải yêu cầu...</div>
+            ) : resetRequests.length === 0 ? (
+              <div className="mu-reset-empty">Không có yêu cầu đang chờ xử lý.</div>
+            ) : (
+              <div className="mu-reset-list">
+                {resetRequests.map((request) => (
+                  <div className="mu-reset-item" key={request.requestId}>
+                    <div className="mu-reset-main">
+                      <UserAvatar name={request.staffName || request.staffEmail} userType="staff" isActive />
+                      <div className="mu-reset-text">
+                        <span className="mu-reset-name">{request.staffName || 'Nhân viên'}</span>
+                        <span className="mu-reset-email">{request.staffEmail}</span>
+                        <span className="mu-reset-meta">
+                          Gửi lúc {new Date(request.requestedAt).toLocaleString('vi-VN')} · Hết hạn {new Date(request.expiresAt).toLocaleString('vi-VN')}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="mu-btn mu-btn--primary mu-btn--compact"
+                      onClick={() => handleIssueTempPassword(request)}
+                      disabled={isSubmitting}
+                    >
+                      <IcKey />
+                      Cấp mật khẩu tạm
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
 
         {/* Filter bar */}
         <div className="mu-filter-bar">

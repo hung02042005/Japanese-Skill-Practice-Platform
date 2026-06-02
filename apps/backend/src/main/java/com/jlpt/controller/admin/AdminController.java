@@ -5,7 +5,9 @@ import com.jlpt.common.ApiResponse;
 import com.jlpt.dto.request.*;
 import com.jlpt.dto.response.*;
 import com.jlpt.service.AdminUserService;
+import com.jlpt.service.StaffPasswordResetService;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final AdminUserService adminUserService;
+    private final StaffPasswordResetService staffPasswordResetService;
 
     // ── UC-37-01: List users ────────────────────────────────────────────────
 
@@ -124,6 +127,24 @@ public class AdminController {
     }
 
     // ── UC-37-08: Soft delete user ──────────────────────────────────────────
+
+    @GetMapping("/staff/reset-requests")
+    public ResponseEntity<ApiResponse<List<StaffResetRequestResponse>>> listStaffResetRequests(
+            @RequestParam(required = false, defaultValue = "pending") String status) {
+        List<StaffResetRequestResponse> response = staffPasswordResetService.listRequests(status);
+        return ResponseEntity.ok(ApiResponse.success("OK", response));
+    }
+
+    @PostMapping("/staff/{staffId}/issue-temp-password")
+    public ResponseEntity<ApiResponse<IssueTempPasswordResponse>> issueTempPassword(
+            Authentication auth,
+            @PathVariable Long staffId,
+            @Valid @RequestBody IssueTempPasswordRequest request) {
+        IssueTempPasswordResponse response =
+                staffPasswordResetService.issueTempPassword(auth.getName(), staffId, request);
+        return ResponseEntity.ok(
+                ApiResponse.success("Đã sinh và gửi mật khẩu tạm thời đến email của nhân viên.", response));
+    }
 
     @DeleteMapping("/users/{type}/{userId}")
     public ResponseEntity<ApiResponse<SoftDeleteUserResponse>> softDeleteUser(

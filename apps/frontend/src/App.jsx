@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './pages/login/Login';
 import ForgotPassword from './pages/forgot-password/ForgotPassword';
 import ResetPassword from './pages/forgot-password/ResetPassword';
+import StaffForgotPassword from './pages/forgot-password/StaffForgotPassword';
+import StaffChangeTempPassword from './pages/forgot-password/StaffChangeTempPassword';
+import StaffSetupPassword from './pages/forgot-password/StaffSetupPassword';
 import Register from './pages/register/Register';
 import Home from './pages/home/Home';
 import Dashboard from './pages/dashboard/Dashboard';
@@ -19,6 +22,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/staff/forgot-password" element={<StaffForgotPassword />} />
+        <Route path="/staff/setup-password" element={<StaffSetupPassword />} />
+        <Route path="/staff/change-temp-password" element={<StaffChangeTempPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
 
