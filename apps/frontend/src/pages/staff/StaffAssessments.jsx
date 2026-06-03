@@ -3,6 +3,7 @@ import StaffTopNav from '../../components/layout/StaffTopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { EmptyState } from '../../components/common/EmptyState';
 import { useToast, ToastContainer } from '../../components/common/Toast';
+import StaffPageHero from '../../components/staff/StaffPageHero';
 import './StaffAssessments.css';
 
 const MOCK_QUIZZES = [
@@ -64,6 +65,22 @@ export default function StaffAssessments() {
       <StaffTopNav activeTab="staff-assessments" />
 
       <main className="sfa-body">
+        <StaffPageHero
+          accent="pink"
+          title="Đề Thi & Quiz"
+          subtitle="Tạo và quản lý đề thi JLPT mock và quiz theo chủ đề cho học viên"
+          icon={
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              {/* Giấy thi với dấu tích */}
+              <path d="M10 6 h20 l8 8 v28 a2 2 0 0 1-2 2 H12 a2 2 0 0 1-2-2 V8 a2 2 0 0 1 2-2 z"/>
+              <polyline points="30,6 30,14 38,14"/>
+              <polyline points="15,26 21,32 33,20"/>
+              <line x1="15" y1="38" x2="28" y2="38"/>
+              <line x1="15" y1="43" x2="24" y2="43"/>
+            </svg>
+          }
+        />
+
         <div className="sfa-page-header">
           <h1 className="sfa-page-title">Đề Thi & Quiz</h1>
           <button className="sfa-btn-create" onClick={handleCreate}>

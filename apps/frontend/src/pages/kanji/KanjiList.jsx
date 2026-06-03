@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
@@ -14,9 +14,10 @@ const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
 export default function KanjiList() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAppSelector((s) => s.auth);
 
-  const [level,    setLevel]  = useState(user?.jlptLevel ?? 'N5');
+  const [level,    setLevel]  = useState(searchParams.get('level') ?? user?.jlptLevel ?? 'N5');
   const [kanji,    setKanji]  = useState([]);
   const [stats,    setStats]  = useState({ completed: 0, total: 0 });
   const [isLoading,setLoading]= useState(true);

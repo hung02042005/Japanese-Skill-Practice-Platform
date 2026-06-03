@@ -6,6 +6,7 @@ import { JlptBadge } from '../../components/common/Badges';
 import { useToast, ToastContainer } from '../../components/common/Toast';
 import QuestionFormModal from '../../components/staff/QuestionFormModal';
 import QuestionPreviewDrawer from '../../components/staff/QuestionPreviewDrawer';
+import StaffPageHero from '../../components/staff/StaffPageHero';
 import './StaffQuestions.css';
 
 /* ─── Mock data ──────────────────────────────────────────────────── */
@@ -233,6 +234,21 @@ export default function StaffQuestions() {
       <StaffTopNav activeTab="staff-questions" />
 
       <main className="sfq-body">
+        <StaffPageHero
+          accent="indigo"
+          title="Ngân Hàng Câu Hỏi"
+          subtitle="Tạo và quản lý câu hỏi trắc nghiệm, điền khuyết cho tất cả kỹ năng và cấp độ JLPT"
+          icon={
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              {/* Cổng Torii (鳥居) */}
+              <path d="M4 19 L10 15.5 L38 15.5 L44 19"/>
+              <line x1="10" y1="23" x2="38" y2="23"/>
+              <line x1="16" y1="19" x2="16" y2="44"/>
+              <line x1="32" y1="19" x2="32" y2="44"/>
+            </svg>
+          }
+        />
+
         {/* Page header */}
         <div className="sfq-page-header">
           <h1 className="sfq-page-title">Ngân Hàng Câu Hỏi</h1>

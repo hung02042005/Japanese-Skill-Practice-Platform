@@ -136,7 +136,7 @@ export default function Review() {
             <button className="rev-btn rev-btn--primary" onClick={() => navigate('/flashcard')}>
               Quản lý bộ thẻ
             </button>
-            <button className="rev-btn rev-btn--ghost" onClick={() => navigate('/learn/new')}>
+            <button className="rev-btn rev-btn--ghost" onClick={() => navigate('/learn')}>
               Học bài mới
             </button>
           </EmptyState>

@@ -1,4 +1,5 @@
 import SakuChan from '../auth/SakuChan';
+import { FlameIcon } from './StudentIcons';
 import './StreakCard.css';
 
 const DAY_LABELS = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
@@ -19,7 +20,7 @@ function StreakCard({ streak = 0, weekDays = [] }) {
           className={`streak-flame${hasStreak ? ' streak-flame--active' : ''}`}
           aria-hidden="true"
         >
-          🔥
+          <FlameIcon size={20} />
         </span>
         <span className="streak-label">Ngày Streak</span>
       </div>

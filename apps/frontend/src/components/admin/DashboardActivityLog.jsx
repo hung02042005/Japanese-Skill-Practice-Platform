@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import {
   IcAdminChip, IcAddStaff, IcBan, IcCheck,
   IcKey, IcSwap, IcTrash, IcEdit,
@@ -69,12 +70,9 @@ export function DashboardActivityLog({ logs, isLoading, onRetry }) {
     <section className="adb-card adb-activity" aria-label="Hoạt động gần đây">
       <div className="adb-card-header">
         <h2 className="adb-card-title">Hoạt Động Gần Đây</h2>
-        <span
-          className="adb-reports-link adb-reports-link--disabled"
-          title="Chức năng báo cáo đầy đủ sắp ra mắt"
-        >
+        <Link to="/admin/reports?tab=activity" className="adb-reports-link">
           Xem tất cả
-        </span>
+        </Link>
       </div>
 
       {isLoading ? (

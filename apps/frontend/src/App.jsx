@@ -8,7 +8,6 @@ import StaffSetupPassword from './pages/forgot-password/StaffSetupPassword';
 import Register from './pages/register/Register';
 import Home from './pages/home/Home';
 import Features from './pages/features/Features';
-import Pricing from './pages/pricing/Pricing';
 import Blog from './pages/blog/Blog';
 import Dashboard from './pages/dashboard/Dashboard';
 import VerifyEmail from './pages/verify-email/VerifyEmail';
@@ -23,8 +22,6 @@ import MockTestList from './pages/mock-test/MockTestList';
 import MockTestAttempt from './pages/mock-test/MockTestAttempt';
 import MockTestResults from './pages/mock-test/MockTestResults';
 import Progress from './pages/progress/Progress';
-import Subscription from './pages/subscription/Subscription';
-import SubscriptionSuccess from './pages/subscription/SubscriptionSuccess';
 import KanjiList from './pages/kanji/KanjiList';
 import KanjiPractice from './pages/kanji/KanjiPractice';
 import Certificates from './pages/certificates/Certificates';
@@ -37,6 +34,7 @@ import Forbidden from './pages/error/Forbidden';
 import ManageUsers     from './pages/admin/ManageUsers';
 import AdminDashboard  from './pages/admin/AdminDashboard';
 import AdminSettings   from './pages/admin/AdminSettings';
+import AdminReports    from './pages/admin/AdminReports';
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute   from './components/common/AdminRoute';
 import StaffRoute        from './components/common/StaffRoute';
@@ -61,7 +59,6 @@ function App() {
         {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/tinh-nang" element={<Features />} />
-        <Route path="/bang-gia" element={<Pricing />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -86,8 +83,6 @@ function App() {
         <Route path="/mock-test/:id/attempt"        element={<PrivateRoute><MockTestAttempt /></PrivateRoute>} />
         <Route path="/mock-test/:id/results"        element={<PrivateRoute><MockTestResults /></PrivateRoute>} />
         <Route path="/progress"     element={<PrivateRoute><Progress /></PrivateRoute>} />
-        <Route path="/subscription"         element={<PrivateRoute><Subscription /></PrivateRoute>} />
-        <Route path="/subscription/success" element={<PrivateRoute><SubscriptionSuccess /></PrivateRoute>} />
         <Route path="/kanji"        element={<PrivateRoute><KanjiList /></PrivateRoute>} />
         <Route path="/kanji/:id"    element={<PrivateRoute><KanjiPractice /></PrivateRoute>} />
         <Route path="/certificates" element={<PrivateRoute><Certificates /></PrivateRoute>} />
@@ -115,6 +110,7 @@ function App() {
         <Route path="/admin"          element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/admin/users"    element={<AdminRoute><ManageUsers /></AdminRoute>} />
         <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+        <Route path="/admin/reports"  element={<AdminRoute><AdminReports /></AdminRoute>} />
 
         {/* Catch-all */}
         <Route path="*" element={<NotFound />} />

@@ -22,9 +22,11 @@
 }
 
 .streak-flame {
-  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
   opacity: 0.30;
-  display: inline-block;
 }
 
 .streak-flame--active {

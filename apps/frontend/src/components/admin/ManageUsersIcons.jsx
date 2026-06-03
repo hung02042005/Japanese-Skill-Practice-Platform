@@ -104,11 +104,15 @@ export function IcTrash() {
 
 /* ── Header / toolbar icons ── */
 export function IcAdminChip() {
+  // Hoa anh đào đặc (桜紋) — crest chip nhỏ cho admin
   return (
-    <svg width="13" height="13" viewBox="0 0 22 18" fill="none" aria-hidden="true">
-      <path d="M2 14L5 5l4.5 4L11 2l1.5 7L17 5l3 9H2z" fill="currentColor" opacity="0.82" strokeLinejoin="round"/>
-      <rect x="2" y="14.5" width="18" height="2.5" rx="1.25" fill="currentColor" opacity="0.82"/>
-      <circle cx="11" cy="2" r="1.3" fill="currentColor"/>
+    <svg width="13" height="13" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+      <ellipse cx="11" cy="4.5" rx="2.2" ry="4" fill="currentColor" opacity="0.85" transform="rotate(0 11 11)"/>
+      <ellipse cx="11" cy="4.5" rx="2.2" ry="4" fill="currentColor" opacity="0.85" transform="rotate(72 11 11)"/>
+      <ellipse cx="11" cy="4.5" rx="2.2" ry="4" fill="currentColor" opacity="0.85" transform="rotate(144 11 11)"/>
+      <ellipse cx="11" cy="4.5" rx="2.2" ry="4" fill="currentColor" opacity="0.85" transform="rotate(216 11 11)"/>
+      <ellipse cx="11" cy="4.5" rx="2.2" ry="4" fill="currentColor" opacity="0.85" transform="rotate(288 11 11)"/>
+      <circle cx="11" cy="11" r="3" fill="currentColor"/>
     </svg>
   );
 }
@@ -260,14 +264,17 @@ export function IcWrench() {
 }
 
 export function IcBell() {
+  // Chuông gió Nhật (風鈴) — tab thông báo trong settings
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
-            fill="currentColor" opacity="0.10"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      <circle cx="12" cy="3" r="1.5" fill="currentColor" opacity="0.30"/>
-      <ellipse cx="20" cy="5" rx="1" ry="1.8" fill="currentColor" opacity="0.15" transform="rotate(15 20 5)"/>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="12" y1="2" x2="12" y2="4"/>
+      <path d="M9 10 C9 6.5 10.5 4 12 4 C13.5 4 15 6.5 15 10 L16 14 L8 14 Z" fill="currentColor" opacity="0.10"/>
+      <path d="M9 10 C9 6.5 10.5 4 12 4 C13.5 4 15 6.5 15 10 L16 14 L8 14 Z"/>
+      <path d="M8 14 Q12 16.5 16 14"/>
+      <line x1="12" y1="16.5" x2="12" y2="18.5"/>
+      <circle cx="12" cy="19.5" r="1.2" fill="currentColor" stroke="none"/>
+      <line x1="10.5" y1="20.7" x2="13.5" y2="20.7"/>
+      <line x1="12" y1="20.7" x2="12" y2="22"/>
     </svg>
   );
 }

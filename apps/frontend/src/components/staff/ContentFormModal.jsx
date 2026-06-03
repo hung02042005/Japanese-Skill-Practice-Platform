@@ -35,7 +35,6 @@ function buildInitialForm(contentType, editItem) {
         ...base,
         title: editItem?.title || '',
         description: editItem?.description || '',
-        isVipOnly: editItem?.isVipOnly || false,
       };
     case 'lesson':
       return {
@@ -169,18 +168,6 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
                   value={form.description}
                   onChange={(e) => set('description', e.target.value)}
                 />
-              </div>
-              <div className="sfc-field" style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                <input
-                  id="sfc-field-vip"
-                  type="checkbox"
-                  checked={form.isVipOnly}
-                  onChange={(e) => set('isVipOnly', e.target.checked)}
-                  style={{ width: 18, height: 18, accentColor: 'var(--color-primary)', cursor: 'pointer', flexShrink: 0 }}
-                />
-                <label className="sfc-field-label" htmlFor="sfc-field-vip" style={{ margin: 0, cursor: 'pointer' }}>
-                  Chỉ dành cho học viên VIP
-                </label>
               </div>
             </>
           )}

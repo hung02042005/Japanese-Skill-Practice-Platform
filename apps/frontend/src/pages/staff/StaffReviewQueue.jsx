@@ -3,6 +3,7 @@ import StaffTopNav from '../../components/layout/StaffTopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { EmptyState } from '../../components/common/EmptyState';
 import { useToast, ToastContainer } from '../../components/common/Toast';
+import StaffPageHero from '../../components/staff/StaffPageHero';
 import './StaffReviewQueue.css';
 
 const MOCK_REVIEW_ITEMS = [
@@ -58,6 +59,22 @@ export default function StaffReviewQueue() {
       <StaffTopNav activeTab="staff-review" />
 
       <main className="rqe-body">
+        <StaffPageHero
+          accent="indigo"
+          title="Hàng Đợi Duyệt"
+          subtitle="Xét duyệt và phê duyệt nội dung do staff soạn thảo trước khi xuất bản"
+          icon={
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              {/* Con dấu Hanko (判子) */}
+              <rect x="20" y="4" width="8" height="13" rx="3"/>
+              <rect x="20" y="17" width="8" height="5"/>
+              <rect x="14" y="22" width="20" height="18" rx="3"/>
+              <line x1="18" y1="31" x2="30" y2="31"/>
+              <line x1="24" y1="25" x2="24" y2="37"/>
+              <circle cx="24" cy="31" r="7" strokeWidth="0.8" opacity="0.4"/>
+            </svg>
+          }
+        />
         <div className="rqe-page-header">
           <div>
             <h1 className="rqe-page-title">Hàng Đợi Duyệt</h1>

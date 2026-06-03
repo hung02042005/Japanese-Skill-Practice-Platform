@@ -1,8 +1,9 @@
+import { StarIcon, CalendarIcon } from './StudentIcons';
 import './MiniStatCard.css';
 
 const CONFIGS = {
-  words: { label: 'Từ đã học',          icon: '⭐', mod: 'words' },
-  days:  { label: 'Ngày học tháng này', icon: '📅', mod: 'days'  },
+  words: { label: 'Từ đã học',          Icon: StarIcon,    mod: 'words' },
+  days:  { label: 'Ngày học tháng này', Icon: CalendarIcon, mod: 'days'  },
 };
 
 function MiniStatCard({ type, value = 0 }) {
@@ -11,7 +12,9 @@ function MiniStatCard({ type, value = 0 }) {
 
   return (
     <div className={`db-stat-card db-stat-card--${cfg.mod}`}>
-      <span className="db-stat-card__icon" aria-hidden="true">{cfg.icon}</span>
+      <span className="db-stat-card__icon" aria-hidden="true">
+        <cfg.Icon size={28} />
+      </span>
       <div className="db-stat-card__value">{value}</div>
       <div className="db-stat-card__label">{cfg.label}</div>
     </div>

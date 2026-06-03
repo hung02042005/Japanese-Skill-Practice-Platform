@@ -27,9 +27,17 @@
   position: absolute;
   right: 10px;
   top: 10px;
-  font-size: 28px;
-  opacity: 0.20;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.22;
 }
+
+/* SVG resolves currentColor from these */
+.db-stat-card--words .db-stat-card__icon { color: var(--color-accent); }
+.db-stat-card--days  .db-stat-card__icon { color: var(--color-secondary); }
 
 .db-stat-card__value {
   font-size: 24px;

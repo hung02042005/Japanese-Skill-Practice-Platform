@@ -9,7 +9,7 @@ import { ToastContainer, useToast } from '../../components/common/Toast';
 import LessonVocabCard from '../../components/student/LessonVocabCard';
 import LessonGrammarPoint from '../../components/student/LessonGrammarPoint';
 import { getLessonDetail, markProgress, addToFlashcard } from '../../api/studentService';
-import { DEMO_MODE, MOCK_LESSON_DETAIL } from '../../api/mockData';
+import { DEMO_MODE, MOCK_LESSON_DETAIL_MAP } from '../../api/mockData';
 import './LessonDetail.css';
 
 const TABS = [
@@ -33,8 +33,9 @@ export default function LessonDetail() {
 
   const fetchLesson = useCallback(async () => {
     if (DEMO_MODE) {
-      setLesson(MOCK_LESSON_DETAIL);
-      setCompleted(MOCK_LESSON_DETAIL.progressStatus === 'completed');
+      const mock = MOCK_LESSON_DETAIL_MAP[Number(id)] ?? MOCK_LESSON_DETAIL_MAP[1];
+      setLesson(mock);
+      setCompleted(mock.progressStatus === 'completed');
       setLoading(false);
       return;
     }
@@ -42,7 +43,6 @@ export default function LessonDetail() {
     setError('');
     try {
       const data = await getLessonDetail(id);
-      if (data.isVipOnly && !user?.isVip) { navigate('/subscription'); return; }
       if (data.isLocked) { navigate('/dashboard'); return; }
       setLesson(data);
       setCompleted(data.progressStatus === 'completed');

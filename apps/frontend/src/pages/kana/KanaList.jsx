@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import TopNav from '../../components/layout/TopNav';
 import { ProgressBar } from '../../components/common/ProgressBar';
 import KanaDetailModal from '../../components/student/KanaDetailModal';
@@ -11,7 +12,8 @@ const SCRIPTS = [
 ];
 
 export default function KanaList() {
-  const [script,    setScript]  = useState('hiragana');
+  const [searchParams] = useSearchParams();
+  const [script,    setScript]  = useState(searchParams.get('script') ?? 'hiragana');
   const [chars,     setChars]   = useState([]);
   const [stats,     setStats]   = useState({ completed: 0, total: 46 });
   const [isLoading, setLoading] = useState(true);

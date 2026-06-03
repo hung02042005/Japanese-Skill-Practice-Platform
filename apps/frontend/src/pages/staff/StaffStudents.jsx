@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import TopNav from '../../components/layout/TopNav';
+import StaffPageHero from '../../components/staff/StaffPageHero';
 import { JlptBadge } from '../../components/common/Badges';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
@@ -187,6 +188,35 @@ export default function StaffStudents() {
     <div className="sst-page">
       <TopNav activeTab="" />
       <main className="sst-body">
+        <StaffPageHero
+          accent="green"
+          title="Quản Lý Học Viên"
+          subtitle="Theo dõi tiến độ, quản lý tài khoản và hỗ trợ học viên trong quá trình học"
+          icon={
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              {/* Cây hoa anh đào với học viên */}
+              <line x1="24" y1="44" x2="24" y2="28"/>
+              <path d="M24 28 L12 18"/>
+              <path d="M24 28 L36 18"/>
+              <path d="M24 28 L24 16"/>
+              {/* Blossom 1 - đỉnh */}
+              <ellipse cx="24" cy="11" rx="2" ry="3" transform="rotate(0 24 16)"/>
+              <ellipse cx="24" cy="11" rx="2" ry="3" transform="rotate(72 24 16)"/>
+              <ellipse cx="24" cy="11" rx="2" ry="3" transform="rotate(144 24 16)"/>
+              <ellipse cx="24" cy="11" rx="2" ry="3" transform="rotate(216 24 16)"/>
+              <ellipse cx="24" cy="11" rx="2" ry="3" transform="rotate(288 24 16)"/>
+              {/* Học viên trái */}
+              <circle cx="12" cy="35" r="3.5"/>
+              <line x1="12" y1="38.5" x2="12" y2="44"/>
+              <line x1="8" y1="41.5" x2="16" y2="41.5"/>
+              {/* Học viên phải */}
+              <circle cx="36" cy="35" r="3.5"/>
+              <line x1="36" y1="38.5" x2="36" y2="44"/>
+              <line x1="32" y1="41.5" x2="40" y2="41.5"/>
+            </svg>
+          }
+        />
+
         <div className="sst-page-header">
           <h1 className="sst-page-title">Quản Lý Học Viên</h1>
           <span className="sst-total-count">{totalEl} học viên</span>

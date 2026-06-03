@@ -17,8 +17,8 @@ export default function StudentDetailPanel({ detail }) {
           <div className="sst-stat-label">Điểm quiz trung bình</div>
         </div>
         <div className="sst-stat-card">
-          <div className="sst-stat-value">{detail.subscriptionType}</div>
-          <div className="sst-stat-label">Gói đăng ký</div>
+          <div className="sst-stat-value">{detail.jlptLevel ?? '—'}</div>
+          <div className="sst-stat-label">Cấp độ JLPT</div>
         </div>
       </div>
 

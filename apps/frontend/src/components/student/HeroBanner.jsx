@@ -30,7 +30,7 @@ function HeroBanner({ course }) {
           <span className="hero-progress-label">{completedLessons} / {totalLessons} bài</span>
         </div>
 
-        <button className="hero-cta" type="button" onClick={() => navigate('/learn/new')}>
+        <button className="hero-cta" type="button" onClick={() => navigate('/learn')}>
           HỌC TỪ MỚI
         </button>
       </div>

@@ -130,7 +130,7 @@ export default function Flashcard() {
                 mascotVariant="thinking"
                 mascotSize={140}
               >
-                <a href="/learn/new" className="fls-cta">Học bài mới →</a>
+                <a href="/learn" className="fls-cta">Học bài mới →</a>
               </EmptyState>
             ) : (
               <div className="fls-deck-list">

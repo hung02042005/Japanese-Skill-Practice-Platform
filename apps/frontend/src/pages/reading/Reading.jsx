@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { EmptyState } from '../../components/common/EmptyState';
@@ -53,7 +54,8 @@ const MOCK_READINGS = [
 ];
 
 export default function Reading() {
-  const [level,   setLevel]   = useState('All');
+  const [searchParams] = useSearchParams();
+  const [level,   setLevel]   = useState(searchParams.get('level') ?? 'All');
   const [view,    setView]    = useState('list');
   const [lesson,  setLesson]  = useState(null);
   const [answers, setAnswers] = useState({});

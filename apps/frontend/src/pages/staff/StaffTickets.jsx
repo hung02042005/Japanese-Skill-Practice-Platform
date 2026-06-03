@@ -3,6 +3,7 @@ import StaffTopNav from '../../components/layout/StaffTopNav';
 import { useToast, ToastContainer } from '../../components/common/Toast';
 import TicketList from '../../components/staff/TicketList';
 import TicketDetail from '../../components/staff/TicketDetail';
+import StaffPageHero from '../../components/staff/StaffPageHero';
 import './StaffTickets.css';
 
 const MOCK_TICKETS = [
@@ -38,7 +39,7 @@ const MOCK_TICKETS = [
   },
   {
     id: 42,
-    subject: 'Câu hỏi về chính sách hoàn tiền gói VIP',
+    subject: 'Câu hỏi về chứng chỉ hoàn thành khóa học',
     priority: 'normal',
     status: 'resolved',
     studentName: 'Phạm Thị D',
@@ -128,7 +129,7 @@ const MOCK_REPLIES_MAP = {
       replyId: 7,
       senderType: 'student',
       senderName: 'Phạm Thị D',
-      message: 'Chào, tôi muốn hỏi về chính sách hoàn tiền nếu tôi huỷ gói VIP sau 1 tuần?',
+      message: 'Chào, tôi muốn hỏi về chứng chỉ sau khi hoàn thành khóa học N5. Tôi đã học xong nhưng chưa thấy chứng chỉ ở đâu?',
       createdAt: '2026-05-31T16:00:00',
     },
     {
@@ -136,7 +137,7 @@ const MOCK_REPLIES_MAP = {
       senderType: 'staff',
       senderName: 'Staff Minh',
       message:
-        'Chào bạn! Theo chính sách của SakuJi, bạn có thể hoàn tiền 100% trong vòng 7 ngày đầu nếu chưa sử dụng quá 30% nội dung VIP. Bạn muốn tiến hành hoàn tiền không?',
+        'Chào bạn! Chứng chỉ hoàn thành sẽ được cấp tự động sau khi bạn hoàn tất toàn bộ bài học và đạt điểm kiểm tra cuối khóa. Bạn có thể vào mục Chứng chỉ để xem. Nếu vẫn chưa thấy, hãy chờ hệ thống xử lý trong 24 giờ nhé!',
       createdAt: '2026-05-31T16:30:00',
     },
     {
@@ -213,6 +214,22 @@ export default function StaffTickets() {
     <div className="tkt-page">
       <StaffTopNav activeTab="staff-tickets" />
       <main className="tkt-body">
+        <StaffPageHero
+          accent="green"
+          title="Hỗ Trợ Học Viên"
+          subtitle="Xử lý và phản hồi các yêu cầu hỗ trợ, câu hỏi từ học viên"
+          icon={
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              {/* Hạc giấy origami (折り鶴) */}
+              <path d="M4 30 Q16 16 24 22 Q32 16 44 30"/>
+              <path d="M24 22 L22 32 L18 40"/>
+              <path d="M24 22 Q28 13 33 8"/>
+              <line x1="33" y1="8" x2="37" y2="5"/>
+              <path d="M4 30 L8 35"/>
+              <path d="M44 30 L40 35"/>
+            </svg>
+          }
+        />
         <TicketList
           tickets={filtered}
           selectedId={selectedId}

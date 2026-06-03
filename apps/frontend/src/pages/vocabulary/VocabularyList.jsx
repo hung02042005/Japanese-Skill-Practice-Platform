@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
@@ -17,8 +18,9 @@ import './VocabularyList.css';
 const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
 export default function VocabularyList() {
+  const [searchParams] = useSearchParams();
   const { user } = useAppSelector((s) => s.auth);
-  const [level,       setLevel]      = useState(user?.jlptLevel ?? 'N5');
+  const [level,       setLevel]      = useState(searchParams.get('level') ?? user?.jlptLevel ?? 'N5');
   const [topic,       setTopic]      = useState('');
   const [search,      setSearch]     = useState('');
   const [debounced,   setDebounced]  = useState('');

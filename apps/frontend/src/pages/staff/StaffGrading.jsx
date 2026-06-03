@@ -3,6 +3,7 @@ import StaffTopNav from '../../components/layout/StaffTopNav';
 import { useToast, ToastContainer } from '../../components/common/Toast';
 import SubmissionList from '../../components/staff/SubmissionList';
 import GradingPanel from '../../components/staff/GradingPanel';
+import StaffPageHero from '../../components/staff/StaffPageHero';
 import './StaffGrading.css';
 
 const MOCK_SUBMISSIONS = [
@@ -110,6 +111,25 @@ export default function StaffGrading() {
   return (
     <div className="grd-page">
       <StaffTopNav activeTab="staff-grading" />
+
+      <StaffPageHero
+        accent="gold"
+        title="Chấm Bài Nói"
+        subtitle="Xem xét và chấm điểm thủ công các bài luyện speaking đã được AI sơ chấm"
+        icon={
+          <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            {/* Quạt xếp (扇子) */}
+            <line x1="24" y1="38" x2="6" y2="16"/>
+            <line x1="24" y1="38" x2="13" y2="9"/>
+            <line x1="24" y1="38" x2="24" y2="7"/>
+            <line x1="24" y1="38" x2="35" y2="9"/>
+            <line x1="24" y1="38" x2="42" y2="16"/>
+            <path d="M6 16 Q15 7 24 7 Q33 7 42 16"/>
+            <circle cx="24" cy="38" r="2.5" fill="currentColor"/>
+            <line x1="24" y1="40.5" x2="24" y2="44"/>
+          </svg>
+        }
+      />
 
       <div className="grd-header-bar">
         <h1 className="grd-page-title">Chấm Bài Nói</h1>

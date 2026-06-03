@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import StaffTopNav from '../../components/layout/StaffTopNav';
 import { useToast, ToastContainer } from '../../components/common/Toast';
+import StaffPageHero from '../../components/staff/StaffPageHero';
 import './StaffNotifications.css';
 
 const MOCK_SENT = [
@@ -65,7 +66,24 @@ export default function StaffNotifications() {
       <StaffTopNav activeTab="staff-notifications" />
 
       <main className="nfs-body">
-        <h1 className="nfs-page-title">Gửi Thông Báo</h1>
+        <StaffPageHero
+          accent="pink"
+          title="Gửi Thông Báo"
+          subtitle="Soạn và gửi thông báo hệ thống đến học viên theo cấp độ và kênh truyền thông"
+          icon={
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              {/* Chuông gió Nhật (風鈴) */}
+              <line x1="24" y1="4" x2="24" y2="8"/>
+              <path d="M16 20 C16 13 20 8 24 8 C28 8 32 13 32 20 L34 28 L14 28 Z"/>
+              <path d="M14 28 Q24 33 34 28"/>
+              <line x1="24" y1="33" x2="24" y2="37"/>
+              <circle cx="24" cy="39" r="2.5" fill="currentColor"/>
+              <line x1="24" y1="41.5" x2="24" y2="44"/>
+              <line x1="21" y1="44" x2="27" y2="44"/>
+              <line x1="24" y1="44" x2="24" y2="47"/>
+            </svg>
+          }
+        />
 
         {/* Compose form */}
         <section className="nfs-card">

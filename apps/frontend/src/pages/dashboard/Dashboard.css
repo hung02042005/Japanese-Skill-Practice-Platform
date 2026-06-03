@@ -112,30 +112,39 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 14px 8px;
-  background: var(--color-surface, #fff);
-  border: 1.5px solid var(--color-border, #e5e7eb);
-  border-radius: var(--radius-lg, 12px);
+  background: var(--color-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+  color: var(--color-primary);
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition), color var(--transition);
   font-family: var(--font-base);
 }
 .db-feature-card:hover {
-  border-color: var(--color-primary, #7c3aed);
-  box-shadow: 0 2px 12px rgba(124, 58, 237, 0.12);
-  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 14px rgba(232, 154, 170, 0.22);
+  transform: translateY(-3px);
+  color: var(--color-primary-dark);
+}
+.db-feature-card:active {
+  transform: scale(0.96);
 }
 
 .db-feature-icon {
-  font-size: 22px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
 }
 
 .db-feature-label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--color-text, #111827);
+  color: var(--color-text);
   text-align: center;
   line-height: 1.3;
 }
