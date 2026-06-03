@@ -4,6 +4,7 @@ import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import { getKanjiDetail, submitOcr, getOcrResult, addToFlashcard, markProgress } from '../../api/studentService';
+import { DEMO_MODE, MOCK_KANJI_DETAIL_MAP, MOCK_KANJI_DETAIL_DEFAULT } from '../../api/mockData';
 import './KanjiPractice.css';
 
 function SimilarityGauge({ value }) {
@@ -46,6 +47,12 @@ export default function KanjiPractice() {
       setLoading(true);
       setError('');
       try {
+        if (DEMO_MODE) {
+          const data = MOCK_KANJI_DETAIL_MAP[Number(id)] ?? MOCK_KANJI_DETAIL_DEFAULT;
+          setKanji(data);
+          setLoading(false);
+          return;
+        }
         const data = await getKanjiDetail(id);
         setKanji(data);
       } catch (err) {
@@ -82,6 +89,14 @@ export default function KanjiPractice() {
     setAnalyzing(true);
     setOcrErr('');
     setOcrState('pending');
+    if (DEMO_MODE) {
+      setTimeout(() => {
+        setSim(75);
+        setOcrState('done');
+        setAnalyzing(false);
+      }, 1500);
+      return;
+    }
     try {
       const res = await submitOcr(kanji.kanjiId, file);
       startPolling(res.jobId);
@@ -123,7 +138,7 @@ export default function KanjiPractice() {
 
   async function handleAddFlashcard() {
     try {
-      await addToFlashcard('kanji', kanji.kanjiId);
+      if (!DEMO_MODE) await addToFlashcard('kanji', kanji.kanjiId);
       setAdded(true);
       addToast('success', `Đã thêm "${kanji.characterValue}" vào Flashcard!`);
     } catch (err) {

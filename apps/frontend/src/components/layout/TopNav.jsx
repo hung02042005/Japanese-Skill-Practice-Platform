@@ -206,7 +206,7 @@ function TopNav({ activeTab = '' }) {
   return (
     <header className="topnav" role="banner">
       {/* Logo */}
-      <Link to="/" className="topnav-logo" aria-label="SakuJi — về trang chủ">
+      <Link to="/dashboard" className="topnav-logo" aria-label="SakuJi — về trang Dashboard">
         <AppLogo size={32} />
         <span className="topnav-wordmark">
           <span className="topnav-saku">Saku</span>

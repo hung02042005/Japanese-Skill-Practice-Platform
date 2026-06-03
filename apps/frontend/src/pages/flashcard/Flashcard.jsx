@@ -4,6 +4,7 @@ import TopNav from '../../components/layout/TopNav';
 import { EmptyState } from '../../components/common/EmptyState';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import { getFlashcardDecks, getFlashcardsByDeck, createDeck, deleteDeck } from '../../api/studentService';
+import { DEMO_MODE, MOCK_FLASHCARD_DECKS, MOCK_DECK_CARDS } from '../../api/mockData';
 import './Flashcard.css';
 
 export default function Flashcard() {
@@ -24,6 +25,11 @@ export default function Flashcard() {
   async function loadDecks() {
     setLoading(true);
     try {
+      if (DEMO_MODE) {
+        setDecks(MOCK_FLASHCARD_DECKS);
+        setLoading(false);
+        return;
+      }
       const data = await getFlashcardDecks();
       setDecks(data ?? []);
     } catch {
@@ -39,6 +45,11 @@ export default function Flashcard() {
     setActive(deckName);
     setCardLoad(true);
     try {
+      if (DEMO_MODE) {
+        setCards(MOCK_DECK_CARDS);
+        setCardLoad(false);
+        return;
+      }
       const res = await getFlashcardsByDeck(deckName);
       setCards(res.content ?? []);
     } catch {
@@ -53,6 +64,14 @@ export default function Flashcard() {
     if (newName.length > 100) { addToast('error', 'Tên bộ thẻ tối đa 100 ký tự.'); return; }
     setCreating(true);
     try {
+      if (DEMO_MODE) {
+        setDecks((prev) => [...prev, { deckName: newName.trim(), isSystem: false, totalCards: 0, dueToday: 0, nextReviewDate: null }]);
+        addToast('success', 'Tạo bộ thẻ thành công!');
+        setCreate(false);
+        setNewName('');
+        setCreating(false);
+        return;
+      }
       await createDeck(newName.trim());
       addToast('success', 'Tạo bộ thẻ thành công!');
       setCreate(false);
@@ -68,6 +87,13 @@ export default function Flashcard() {
 
   async function handleDeleteDeck(deckName) {
     try {
+      if (DEMO_MODE) {
+        setDecks((prev) => prev.filter((d) => d.deckName !== deckName));
+        addToast('success', 'Đã xoá bộ thẻ!');
+        setConfirm(null);
+        if (activeDeck === deckName) setActive(null);
+        return;
+      }
       await deleteDeck(deckName);
       addToast('success', 'Đã xoá bộ thẻ!');
       setConfirm(null);

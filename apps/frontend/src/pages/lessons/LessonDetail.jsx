@@ -9,6 +9,7 @@ import { ToastContainer, useToast } from '../../components/common/Toast';
 import LessonVocabCard from '../../components/student/LessonVocabCard';
 import LessonGrammarPoint from '../../components/student/LessonGrammarPoint';
 import { getLessonDetail, markProgress, addToFlashcard } from '../../api/studentService';
+import { DEMO_MODE, MOCK_LESSON_DETAIL } from '../../api/mockData';
 import './LessonDetail.css';
 
 const TABS = [
@@ -31,6 +32,12 @@ export default function LessonDetail() {
   const [isCompleted,  setCompleted]= useState(false);
 
   const fetchLesson = useCallback(async () => {
+    if (DEMO_MODE) {
+      setLesson(MOCK_LESSON_DETAIL);
+      setCompleted(MOCK_LESSON_DETAIL.progressStatus === 'completed');
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
     try {
@@ -53,7 +60,7 @@ export default function LessonDetail() {
     if (isCompleted) return;
     setComplete(true);
     try {
-      await markProgress('lesson', id, 'completed');
+      if (!DEMO_MODE) await markProgress('lesson', id, 'completed');
       setCompleted(true);
       addToast('success', 'Đã đánh dấu hoàn thành! 🌸');
     } catch {
@@ -65,7 +72,7 @@ export default function LessonDetail() {
 
   async function handleAddFlashcard(vocabId) {
     try {
-      await addToFlashcard('vocabulary', vocabId);
+      if (!DEMO_MODE) await addToFlashcard('vocabulary', vocabId);
       addToast('success', 'Đã thêm vào Flashcard!');
     } catch (err) {
       if (err?.response?.status === 409) { addToast('info', 'Từ này đã có trong Flashcard.'); return; }

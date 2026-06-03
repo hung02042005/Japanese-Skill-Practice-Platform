@@ -12,7 +12,7 @@
 |:---|:---|
 | **Mã Use Case** | UC-37 |
 | **Tên** | Quản Lý Người Dùng (Admin Manage Users) |
-| **Tác nhân chính** | Admin — đã đăng nhập, đã xác thực 2FA |
+| **Tác nhân chính** | Admin — đã đăng nhập |
 | **Mô tả ngắn** | Admin quản lý toàn bộ tài khoản trong hệ thống: Student, Staff và Admin. Bao gồm xem danh sách, xem chi tiết, tạo Staff mới, chỉnh sửa thông tin, đình chỉ/kích hoạt, đặt lại mật khẩu, xóa mềm và chuyển đổi vai trò Staff. |
 | **Độ ưu tiên** | Cao (P1) — cần thiết để vận hành và kiểm soát người dùng toàn hệ thống |
 
@@ -29,7 +29,7 @@
 
 ### 2.2 Điều Kiện Tiền Quyết (Preconditions)
 
-- Admin đã đăng nhập thành công và đã xác thực 2FA (có JWT hợp lệ với role `ADMIN`)
+- Admin đã đăng nhập thành công (có JWT hợp lệ với role `ADMIN`)
 - Tài khoản Admin đang ở trạng thái `active`
 
 ### 2.3 Hậu Điều Kiện (Postconditions)
@@ -330,7 +330,7 @@ sequenceDiagram
 ## 8. Tham Chiếu API
 
 ### `GET /api/admin/users`
-**Actor:** Admin | **Auth:** Bearer JWT (2FA required)
+**Actor:** Admin | **Auth:** Bearer JWT
 
 **Query params:** `type`, `q`, `status`, `jlptLevel`, `staffRole`, `page`, `size`
 
@@ -360,7 +360,7 @@ sequenceDiagram
 ---
 
 ### `GET /api/admin/users/{type}/{userId}`
-**Actor:** Admin | **Auth:** Bearer JWT (2FA required)
+**Actor:** Admin | **Auth:** Bearer JWT
 
 **Path params:** `type` = `student` | `staff` | `admin`, `userId` = Long
 
@@ -390,7 +390,7 @@ sequenceDiagram
 ---
 
 ### `POST /api/admin/staff`
-**Actor:** Admin | **Auth:** Bearer JWT (2FA required)
+**Actor:** Admin | **Auth:** Bearer JWT
 
 **Request:**
 ```json
@@ -419,7 +419,7 @@ sequenceDiagram
 ---
 
 ### `PUT /api/admin/users/{type}/{userId}`
-**Actor:** Admin | **Auth:** Bearer JWT (2FA required)
+**Actor:** Admin | **Auth:** Bearer JWT
 
 **Request (Student):**
 ```json
@@ -442,7 +442,7 @@ sequenceDiagram
 ---
 
 ### `POST /api/admin/users/{type}/{userId}/suspend`
-**Actor:** Admin | **Auth:** Bearer JWT (2FA required)
+**Actor:** Admin | **Auth:** Bearer JWT
 
 **Request:**
 ```json
@@ -469,7 +469,7 @@ sequenceDiagram
 ---
 
 ### `POST /api/admin/users/{type}/{userId}/activate`
-**Actor:** Admin | **Auth:** Bearer JWT (2FA required)
+**Actor:** Admin | **Auth:** Bearer JWT
 
 **Response (200):**
 ```json
@@ -488,7 +488,7 @@ sequenceDiagram
 ---
 
 ### `POST /api/admin/users/{type}/{userId}/reset-password`
-**Actor:** Admin | **Auth:** Bearer JWT (2FA required)
+**Actor:** Admin | **Auth:** Bearer JWT
 
 **Response (200):**
 ```json
@@ -502,7 +502,7 @@ sequenceDiagram
 ---
 
 ### `DELETE /api/admin/users/{type}/{userId}`
-**Actor:** Admin | **Auth:** Bearer JWT (2FA required)
+**Actor:** Admin | **Auth:** Bearer JWT
 
 **Response (200):**
 ```json
@@ -521,7 +521,7 @@ sequenceDiagram
 ---
 
 ### `PUT /api/admin/staff/{staffId}/role`
-**Actor:** Admin | **Auth:** Bearer JWT (2FA required)
+**Actor:** Admin | **Auth:** Bearer JWT
 
 **Request:**
 ```json
@@ -555,7 +555,7 @@ sequenceDiagram
 | 400 | `INVALID_STAFF_ROLE` | "Vai trò Staff không hợp lệ" | `staffRole` ngoài `staff\|staff_manager` |
 | 401 | `UNAUTHORIZED` | "Yêu cầu đăng nhập" | JWT thiếu hoặc hết hạn |
 | 403 | `FORBIDDEN` | "Tài khoản không có quyền Admin" | Role ≠ ADMIN |
-| 403 | `MFA_REQUIRED` | "Yêu cầu xác thực 2FA" | Chưa hoàn thành 2FA |
+
 | 403 | `SELF_MODIFICATION_FORBIDDEN` | "Không thể thực hiện thao tác này lên tài khoản của chính mình" | Admin thao tác lên chính mình |
 | 404 | `USER_NOT_FOUND` | "Không tìm thấy người dùng" | `userId` không tồn tại hoặc đã xóa |
 | 409 | `EMAIL_EXISTS` | "Email đã được sử dụng trong hệ thống" | Tạo Staff với email trùng |
@@ -673,7 +673,7 @@ sequenceDiagram
 | ID | Category | Requirement |
 |:---|:---|:---|
 | NFR-37-01 | Performance | API danh sách phân trang phải phản hồi < 500ms (p95) với 100,000 users |
-| NFR-37-02 | Security | Mọi endpoint phải xác thực JWT + role ADMIN + 2FA đã hoàn thành |
+| NFR-37-02 | Security | Mọi endpoint phải xác thực JWT + role ADMIN |
 | NFR-37-03 | Security | `password_hash`, `two_factor_secret` không bao giờ được xuất hiện trong bất kỳ response nào |
 | NFR-37-04 | Security | Session revoke khi suspend/delete phải xảy ra trong cùng một transaction với thay đổi status |
 | NFR-37-05 | Logging | 100% thao tác thay đổi dữ liệu phải ghi vào `admin_audit_logs` với `admin_actor_id`, `action`, `target_table`, `target_id` |

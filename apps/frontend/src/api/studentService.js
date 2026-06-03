@@ -74,11 +74,27 @@ export async function getGrammarList({ level, page = 0, size = 20 } = {}) {
   return res.data.data;
 }
 
-export async function getVocabularyList({ level, topic, page = 0, size = 20 } = {}) {
+export async function getVocabularyList({ level, topic, search, page = 0, size = 20 } = {}) {
   const params = { page, size };
-  if (level) params.level = level;
-  if (topic) params.topic = topic;
+  if (level)  params.level  = level;
+  if (topic)  params.topic  = topic;
+  if (search) params.search = search;
   const res = await api.get('/vocabulary', { params });
+  return res.data.data;
+}
+
+export async function getVocabTopics(level) {
+  const res = await api.get('/vocabulary/topics', { params: { level } });
+  return res.data.data;
+}
+
+export async function markVocabComplete(vocabId) {
+  const res = await api.post(`/vocabulary/${vocabId}/complete`);
+  return res.data.data;
+}
+
+export async function addVocabToFlashcard(vocabId) {
+  const res = await api.post('/flashcard/add', { vocabId });
   return res.data.data;
 }
 
@@ -175,6 +191,60 @@ export async function checkoutSubscription(planId) {
 
 export async function verifySubscription(orderId) {
   const res = await api.get('/subscriptions/verify', { params: { orderId } });
+  return res.data.data;
+}
+
+// ─── Kana ────────────────────────────────────────────────────────────────────
+export async function getKanaList(script) {
+  const res = await api.get('/kana', { params: { script } });
+  return res.data.data;
+}
+
+export async function markKanaComplete(kanaId) {
+  const res = await api.post(`/kana/${kanaId}/complete`);
+  return res.data.data;
+}
+
+// ─── Quiz (Practice) ─────────────────────────────────────────────────────────
+export async function getQuizList({ level, skill, page = 0, size = 20 } = {}) {
+  const params = { level, page, size };
+  if (skill) params.skill = skill;
+  const res = await api.get('/quizzes', { params });
+  return res.data.data;
+}
+
+export async function getQuizQuestions(quizId) {
+  const res = await api.get(`/quizzes/${quizId}/questions`);
+  return res.data.data;
+}
+
+export async function submitPracticeQuiz(quizId, answers) {
+  const res = await api.post('/quiz-attempts', {
+    quizId,
+    answers: answers.map(([questionId, selectedOptionId]) => ({ questionId, selectedOptionId })),
+  });
+  return res.data.data;
+}
+
+// ─── Speaking (AI) ───────────────────────────────────────────────────────────
+export async function getSpeakingExercises(level) {
+  const res = await api.get('/speaking/exercises', { params: { level } });
+  return res.data.data;
+}
+
+export async function submitSpeakingAudio(exerciseId, audioBlob) {
+  const formData = new FormData();
+  formData.append('exerciseId', exerciseId);
+  formData.append('audio', audioBlob, 'recording.webm');
+  const res = await api.post('/speaking/submit', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 30000,
+  });
+  return res.data.data;
+}
+
+export async function getSpeakingResult(jobId) {
+  const res = await api.get(`/speaking/${jobId}`, { timeout: 10000 });
   return res.data.data;
 }
 

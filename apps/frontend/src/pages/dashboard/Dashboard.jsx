@@ -11,6 +11,17 @@ import QuickActionCard from '../../components/student/QuickActionCard';
 import MiniStatCard from '../../components/student/MiniStatCard';
 import './Dashboard.css';
 
+const FEATURE_SHORTCUTS = [
+  { icon: '🔤', label: 'Bảng chữ Kana',  route: '/kana' },
+  { icon: '📖', label: 'Từ vựng',         route: '/vocabulary' },
+  { icon: '✏️', label: 'Bài tập Quiz',    route: '/quiz' },
+  { icon: '🎤', label: 'Luyện nói',       route: '/speaking' },
+  { icon: '📚', label: 'Đọc hiểu',        route: '/reading' },
+  { icon: '🎧', label: 'Nghe hiểu',       route: '/listening' },
+  { icon: '🏆', label: 'Chứng chỉ',       route: '/certificates' },
+  { icon: '⭐', label: 'Nâng cấp VIP',    route: '/subscription' },
+];
+
 function SkeletonBlock({ className }) {
   return <div className={`db-skeleton ${className ?? ''}`} aria-hidden="true" />;
 }
@@ -67,13 +78,32 @@ function Dashboard() {
                   <button
                     type="button"
                     className="db-empty-cta"
-                    onClick={() => navigate('/courses')}
+                    onClick={() => navigate('/learn')}
                   >
-                    Xem khoá học khác
+                    Bắt đầu học ngay
                   </button>
                 </EmptyState>
               )
           }
+
+          {/* ── Feature shortcuts ── */}
+          <div className="db-features-head">
+            <span className="start-here-chip">Tính năng</span>
+            <div className="lesson-divider" aria-hidden="true" />
+          </div>
+          <div className="db-feature-grid">
+            {FEATURE_SHORTCUTS.map((f) => (
+              <button
+                key={f.route}
+                type="button"
+                className="db-feature-card"
+                onClick={() => navigate(f.route)}
+              >
+                <span className="db-feature-icon" aria-hidden="true">{f.icon}</span>
+                <span className="db-feature-label">{f.label}</span>
+              </button>
+            ))}
+          </div>
         </main>
 
         {/* ── RIGHT ── */}

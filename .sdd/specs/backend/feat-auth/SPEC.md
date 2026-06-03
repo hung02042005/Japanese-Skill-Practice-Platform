@@ -100,7 +100,7 @@ Không có xác thực → không thể cá nhân hóa lộ trình học, lưu t
 | NFR-AUTH-01 | Performance | Login API phải phản hồi < 500ms (p95) không tính OAuth redirect |
 | NFR-AUTH-02 | Security | Password phải bcrypt cost ≥ 10; không log plaintext password bao giờ |
 | NFR-AUTH-03 | Security | JWT phải ký bằng RS256 hoặc HS256 (secret ≥ 256 bit); không lưu JWT trong DB |
-| NFR-AUTH-04 | Security | Admin bắt buộc 2FA (TOTP) — không áp dụng cho Student trong feature này |
+| NFR-AUTH-04 | Security | Mật khẩu Admin dùng bcrypt cost ≥ 12 — cao hơn mức tối thiểu cho Student/Staff |
 | NFR-AUTH-05 | Security | Reset token và email verification token phải là random URL-safe string ≥ 32 bytes |
 | NFR-AUTH-06 | Logging | Mọi đăng nhập thành công/thất bại phải log với SLF4J: `[INFO/WARN] [AuthService] {email, ip, result}` |
 | NFR-AUTH-07 | Availability | Auth endpoints phải available 99.5% uptime |
@@ -212,7 +212,7 @@ CREATE TABLE auth_tokens (
     staff_id        BIGINT          NULL,
     student_id      BIGINT          NULL,
     token_type      NVARCHAR(30)    NOT NULL
-        CHECK (token_type IN ('session','email_verification','password_reset','2fa_temp','refresh')),
+        CHECK (token_type IN ('session','email_verification','password_reset','refresh')),
     token_value     NVARCHAR(500)   NOT NULL,
     ip_address      NVARCHAR(45)    NULL,
     expires_at      DATETIME2       NOT NULL,
@@ -530,7 +530,7 @@ erDiagram
 ## OUT OF SCOPE
 
 - ❌ Payment/Subscription/VIP logic — xem `feat-payment` (future)
-- ❌ 2FA (TOTP) cho Student — chỉ áp dụng cho Admin (xem `feat-system-admin`)
+- ❌ 2FA (TOTP) — không áp dụng
 - ❌ Social login ngoài Google (Facebook, Apple, GitHub) — Phase 2
 - ❌ Admin/Staff account creation — xem `feat-system-admin`
 - ❌ Logout tất cả thiết bị ("logout all sessions") — Phase 2

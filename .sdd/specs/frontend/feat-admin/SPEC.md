@@ -1,6 +1,6 @@
 # SPEC — Admin Panel (Frontend Overview)
 > **Feature ID:** `feat-admin`
-> **UC Coverage:** UC-35 (Login 2FA step), UC-36 (Dashboard), UC-37 (User Management), UC-39 (Settings), UC-40 (Notification Rules)
+> **UC Coverage:** UC-35 (Login), UC-36 (Dashboard), UC-37 (User Management), UC-39 (Settings), UC-40 (Notification Rules)
 > **Version:** 1.0 | **Status:** Draft
 > **Author:** Team | **Last Updated:** 2026-06-02
 > **Design ref:** `DESIGN.md` — SakuJi · Hanami E-learning
@@ -29,7 +29,7 @@ Admin Panel là bảng điều khiển trung tâm dành riêng cho role `ADMIN`.
 
 **Guard:** Mọi route admin đều bọc trong `<AdminRoute>` — kiểm tra JWT role `ADMIN`.
 
-**2FA flow:** Admin dùng chung `/login` với các role khác. Sau khi backend trả `mfaRequired: true`, login page hiển thị bước nhập TOTP ngay trong cùng AuthCard. Redirect sau 2FA thành công: `/admin`.
+**Login flow:** Admin dùng chung `/login` với các role khác. Sau khi backend trả token, redirect về `/admin`.
 
 ---
 

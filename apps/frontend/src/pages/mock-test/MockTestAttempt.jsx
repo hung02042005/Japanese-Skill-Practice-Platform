@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ExamTopBar from '../../components/student/ExamTopBar';
 import ExamNavigator from '../../components/student/ExamNavigator';
 import { getAssessmentDetail, submitQuizAttempt } from '../../api/studentService';
+import { DEMO_MODE, MOCK_ASSESSMENT_DETAIL } from '../../api/mockData';
 import './MockTestAttempt.css';
 
 export default function MockTestAttempt() {
@@ -28,7 +29,7 @@ export default function MockTestAttempt() {
     (async () => {
       setLoading(true);
       try {
-        const data = await getAssessmentDetail(id);
+        const data = DEMO_MODE ? MOCK_ASSESSMENT_DETAIL : await getAssessmentDetail(id);
         const allQs = data.sections?.flatMap((s) =>
           s.questions.map((q) => ({ ...q, sectionName: s.sectionName }))
         ) ?? data.questions ?? [];
@@ -76,6 +77,11 @@ export default function MockTestAttempt() {
     setSubmit(true);
     clearInterval(timerRef.current);
     try {
+      if (DEMO_MODE) {
+        localStorage.removeItem(DRAFT_KEY);
+        navigate(`/mock-test/${id}/results?attemptId=demo-1`);
+        return;
+      }
       const payload = questions.map((q) => ({
         questionId:     q.questionId,
         selectedOption: answers[q.questionId] ?? null,

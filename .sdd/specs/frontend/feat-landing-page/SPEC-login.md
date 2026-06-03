@@ -576,7 +576,7 @@ function LoginPage() {
 ## 13. OUT OF SCOPE
 
 - ❌ Đăng nhập cho Admin/Staff (trang riêng)
-- ❌ 2FA / TOTP (chỉ áp dụng Admin)
+
 - ❌ "Ghi nhớ đăng nhập" checkbox
 - ❌ OAuth Facebook / Apple
 - ❌ Dark mode

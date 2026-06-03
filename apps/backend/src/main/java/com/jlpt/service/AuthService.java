@@ -8,9 +8,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.jlpt.dto.request.GoogleTokenRequest;
 import com.jlpt.dto.request.LoginRequest;
 import com.jlpt.dto.request.RegisterRequest;
-import com.jlpt.dto.request.VerifyMfaRequest;
 import com.jlpt.dto.response.AccountTypeResponse;
-import com.jlpt.dto.response.AdminVerifyMfaResponse;
 import com.jlpt.dto.response.AuthResponse;
 import com.jlpt.dto.response.LoginApiResponse;
 import com.jlpt.dto.response.StudentResponse;
@@ -111,9 +109,8 @@ public class AuthService {
     }
 
     /**
-     * Unified login endpoint for all roles (UC-35 §3.2).
+     * Unified login endpoint for all roles.
      * Lookup order: admin_users → staff_users → student_users.
-     * Admin always receives a 2FA challenge; staff/student receive tokens directly.
      */
     @Transactional
     public LoginApiResponse login(LoginRequest request, String ip) {
@@ -134,12 +131,6 @@ public class AuthService {
 
         // BR-35-09: generic error regardless of which table was checked
         throw new BusinessException(401, "INVALID_CREDENTIALS", "Email hoặc mật khẩu không đúng");
-    }
-
-    /** Delegates admin 2FA verification to AdminAuthService. */
-    @Transactional
-    public AdminVerifyMfaResponse verifyMfa(VerifyMfaRequest request, String ip) {
-        return adminAuthService.verifyMfa(request, ip);
     }
 
     @Transactional
@@ -183,7 +174,6 @@ public class AuthService {
 
             log.info("[AuthService] Staff temporary password login requires password change staffId={}", staff.getId());
             return LoginApiResponse.builder()
-                    .requiresTwoFactor(false)
                     .requirePasswordChange(true)
                     .accessToken(limitedToken)
                     .role("STAFF")
@@ -202,7 +192,6 @@ public class AuthService {
 
         log.info("[AuthService] Staff login success email={}", staff.getEmail());
         return LoginApiResponse.builder()
-                .requiresTwoFactor(false)
                 .requirePasswordChange(false)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -240,7 +229,6 @@ public class AuthService {
 
             log.info("[AuthService] Student login success email={}", user.getEmail());
             return LoginApiResponse.builder()
-                    .requiresTwoFactor(false)
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .role("STUDENT")

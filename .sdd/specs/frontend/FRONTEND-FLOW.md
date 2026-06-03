@@ -349,35 +349,22 @@ Trigger: User hoàn thành toàn bộ bài trong một JLPT level
 ---
 
 
-### JOURNEY 9 — Quản trị hệ thống (Admin Login + 2FA)
+### JOURNEY 9 — Quản trị hệ thống (Admin Login)
 
-> **Domain rules applied (AGENTS.md §7.3):** Admin bắt buộc 2FA (TOTP) — không bypass. Thay đổi subscription phải có audit log.
+> **Domain rules applied (AGENTS.md §7.3):** Thay đổi subscription phải có audit log.
 
 ```
-[/admin/login] ← ⚠️ MISSING SPEC
+[/login] (dùng chung với Student/Staff)
   • Nhập: email + password
-  • POST /admin/auth/login
-  ↓ thành công
-[/admin/2fa/verify]
-  • Kiểm tra 2FA (TOTP code)
-  • POST /admin/2fa/verify
-  • 3 lần sai → lock account 15 phút
-  ↓ thành công
-[/admin/dashboard]
+  • POST /api/auth/login
+  ↓ thành công (role = ADMIN → nhận JWT trực tiếp)
+[/admin]
   • Quản lý người dùng, khóa học, nội dung
   • Audit log viewer
   • Hệ thống: thanh toán, cấu hình, báo cáo
-
-  Nếu chưa thiết lập 2FA:
-[/admin/2fa/setup]
-  • Quét QR code → nhập secret
-  • Nhập OTP code từ app → xác nhận
-  • POST /admin/2fa/setup
-  ↓ thành công
-[/admin/2fa/verify] (có sẵn backkup codes)
 ```
 
-**Gaps:** /admin/login, /admin/2fa/setup, /admin/2fa/verify
+**Gaps:** /admin/dashboard (spec ở SPEC-admin-dashboard.md)
 
 ## 4. FLOW TỔNG THỂ — TOÀN BỘ HỆ THỐNG
 
@@ -546,7 +533,7 @@ Sprint 5 — Administration
 | `/subscription` | `STUDENT role required` | `/login` |
 | `/lessons/:id` | `STUDENT role + lesson not locked` | `/dashboard` |
 | `/staff/*` | `STAFF role required` | `/403` |
-| `/admin/*` | `ADMIN role + 2FA verified` | `/403` |
+| `/admin/*` | `ADMIN role` | `/403` |
 
 ---
 
@@ -565,7 +552,7 @@ Sprint 5 — Administration
 | `is_vip_only` kiểm tra real-time | 7.3 | /dashboard, /lessons/:id, /kanji | Badge VIP trên card, CTA Nâng cấp khi FREE |
 | Subscription cache tối đa 5 phút | 7.3 | /dashboard, /lessons/:id | Luôn gọi API, không dựa vào cache của 5 phút |
 | Thay đổi subscription phải có audit log | 7.3 | /subscription, /subscription/success | Frontend hiển thị thông báo xác nhận |
-| Admin bắt buộc 2FA (TOTP) | 7.3 | /admin/*, /admin/2fa/* | Flow login 2 bước: login → 2FA verify → dashboard |
+| Admin đăng nhập trực tiếp bằng Email/Password | 7.3 | /admin/* | Login → nhận JWT trực tiếp → redirect /admin |
 | Kết quả AI phải validate trước khi lưu DB | 7.5 | /kanji, /kanji/:character | Hiển thị similarity % raw, chờ API validate |
 | AI score = `ai_score_suggestion`, Staff override | 7.5 | /kanji/:character | Chỉ Staff thấy override button |
 | AI async: timeout 30s, retry 3 lần | 7.5 | /kanji/:character | Polling spinner, fallbackk message khi timeout |
@@ -602,7 +589,7 @@ Sprint 5 — Administration
 | /settings/password | Button disabled | N/A | api-error | Đăng xuất sau đổi |
 | /lessons/:id | Loading lesson | N/A | Error toast | VIP locked → redirect /subscription |
 | /progress | Loading chart | EmptyState | Error toast | Không có data → chart rỗng |
-| /admin/* | Loading admin | N/A | Error toast | 2FA required, session 15 phút |
+| /admin/* | Loading admin | N/A | Error toast | Session 15 phút (access token) |
 | /403 | N/A | N/A | Static Forbidden | N/A |
 | /404 | N/A | N/A | Static Not Found | N/A |
 

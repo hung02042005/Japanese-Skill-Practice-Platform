@@ -33,7 +33,7 @@
 ### 2.2 Điều Kiện Tiền Quyết (Preconditions)
 
 - Staff có tài khoản `staff_users` với `status = 'active'`
-- Admin đã đăng nhập và vượt qua 2FA
+- Admin đã đăng nhập
 - Cấu hình SMTP hoạt động (`system_settings`)
 
 ### 2.3 Hậu Điều Kiện (Postconditions)
@@ -382,7 +382,7 @@ CREATE INDEX IX_reset_req_status_expires ON staff_password_reset_requests (statu
 ```sql
 -- auth_tokens.token_type cần thêm giá trị 'limited_session'
 -- Cập nhật CHECK constraint:
-CHECK (token_type IN ('session','email_verification','password_reset','2fa_temp','refresh','limited_session'))
+CHECK (token_type IN ('session','email_verification','password_reset','refresh','limited_session'))
 ```
 
 > `limited_session`: Token chỉ cho phép gọi `/api/staff/auth/change-temp-password`, hết hạn sau 30 phút.
@@ -465,7 +465,7 @@ erDiagram
 ---
 
 ### `GET /api/admin/staff/reset-requests`
-**Actor:** Admin | **Auth:** Bearer JWT (2FA required) | **Role:** ADMIN
+**Actor:** Admin | **Auth:** Bearer JWT | **Role:** ADMIN
 
 **Query Params:** `status=pending|completed|expired` (optional, default: `pending`)
 
@@ -491,7 +491,7 @@ erDiagram
 ---
 
 ### `POST /api/admin/staff/{staffId}/issue-temp-password`
-**Actor:** Admin | **Auth:** Bearer JWT (2FA required) | **Role:** ADMIN
+**Actor:** Admin | **Auth:** Bearer JWT | **Role:** ADMIN
 
 **Request:**
 ```json
@@ -597,7 +597,7 @@ erDiagram
 
 ### AC-06-03 — Admin cấp mật khẩu tạm thời thành công
 
-- **Cho trước:** Yêu cầu `pending` còn trong hạn, Admin đã đăng nhập + 2FA
+- **Cho trước:** Yêu cầu `pending` còn trong hạn, Admin đã đăng nhập
 - **Khi:** POST `/api/admin/staff/{staffId}/issue-temp-password`
 - **Thì:**
   - `staff_users.password_hash` được cập nhật (bcrypt hash của mật khẩu tạm)
@@ -673,7 +673,7 @@ erDiagram
 ## 11. Ngoài Phạm Vi (Out of Scope)
 
 - ❌ Staff tự reset mật khẩu qua link email (như Student UC-03) — Staff phải qua Admin
-- ❌ Reset mật khẩu cho Admin — Admin có 2FA, xử lý riêng (ngoài scope)
+- ❌ Reset mật khẩu cho Admin — ngoài scope
 - ❌ Admin tự nhập mật khẩu tạm thời thay vì để hệ thống sinh — hệ thống phải sinh để đảm bảo entropy
 - ❌ Lịch sử mật khẩu (không dùng lại N mật khẩu cũ) — Phase 2
 - ❌ Thông báo SMS cho Staff — Phase 2

@@ -49,13 +49,6 @@ public class AdminUser {
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 
-    @Column(name = "two_factor_enabled", nullable = false)
-    @Builder.Default
-    private Boolean twoFactorEnabled = false;
-
-    @Column(name = "two_factor_secret", length = 255)
-    private String twoFactorSecret;
-
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

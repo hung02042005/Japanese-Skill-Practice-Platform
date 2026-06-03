@@ -6,6 +6,7 @@ import { ProgressBar } from '../../components/common/ProgressBar';
 import { JlptBadge } from '../../components/common/Badges';
 import { EmptyState } from '../../components/common/EmptyState';
 import { getNextLesson } from '../../api/studentService';
+import { DEMO_MODE, MOCK_NEXT_LESSON, MOCK_SUGGESTED_LESSONS } from '../../api/mockData';
 import './LearnNew.css';
 
 export default function LearnNew() {
@@ -18,6 +19,12 @@ export default function LearnNew() {
   const [error,       setError]  = useState('');
 
   useEffect(() => {
+    if (DEMO_MODE) {
+      setNext(MOCK_NEXT_LESSON);
+      setSuggest(MOCK_SUGGESTED_LESSONS);
+      setLoading(false);
+      return;
+    }
     (async () => {
       setLoading(true);
       setError('');

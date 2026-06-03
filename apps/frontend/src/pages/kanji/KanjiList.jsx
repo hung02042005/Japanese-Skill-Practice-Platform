@@ -7,6 +7,7 @@ import { ProgressBar } from '../../components/common/ProgressBar';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
 import { getKanjiList } from '../../api/studentService';
+import { DEMO_MODE, MOCK_KANJI_LIST } from '../../api/mockData';
 import './KanjiList.css';
 
 const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
@@ -27,6 +28,14 @@ export default function KanjiList() {
     setLoading(true);
     setError('');
     try {
+      if (DEMO_MODE) {
+        const mock = MOCK_KANJI_LIST[level] ?? { kanji: [], completedCount: 0, totalElements: 0 };
+        setKanji(mock.kanji);
+        setTotal(1);
+        setStats({ completed: mock.completedCount, total: mock.totalElements });
+        setLoading(false);
+        return;
+      }
       const res = await getKanjiList({ level, page: page - 1, size: 50 });
       setKanji(res.content ?? []);
       setTotal(res.totalPages ?? 1);

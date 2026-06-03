@@ -38,5 +38,5 @@ EXEC sp_executesql N'
 GO
 
 ALTER TABLE auth_tokens ADD CONSTRAINT CK_auth_tokens_token_type
-CHECK (token_type IN ('session','email_verification','password_reset','2fa_temp','refresh','limited_session'));
+CHECK (token_type IN ('session','email_verification','password_reset','refresh','limited_session'));
 GO

@@ -127,12 +127,12 @@ Không có test → không có refactoring an toàn → technical debt tích lũ
 | FR-TEST-U-61 | THE TEST SHALL assert that `progress_percent` is NEVER decreased by an `upsertProgress()` call (monotonic increase invariant). |
 | FR-TEST-U-62 | WHEN a VIP-only content (`is_vip_only = 1`) is requested by a FREE tier student, THE TEST SHALL assert that `VipRequiredException` (HTTP 403) is thrown. |
 
-#### 3.1.8 feat-system-admin: AdminAuthService (2FA)
+#### 3.1.8 feat-system-admin: AdminAuthService
 
 | ID | EARS Requirement |
 |:---|:---|
-| FR-TEST-U-70 | WHEN `loginAdmin()` is called and `two_factor_enabled = 1`, THE TEST SHALL assert that ONLY a `2fa_temp` token is returned — NOT a full JWT session token. |
-| FR-TEST-U-71 | WHEN `verifyTotp()` is called with an invalid TOTP code, THE TEST SHALL assert that the `2fa_temp` token is invalidated after 3 failed attempts. |
+| FR-TEST-U-70 | WHEN `loginAdmin()` is called with valid credentials, THE TEST SHALL assert that a full JWT access token and refresh token are returned. |
+| FR-TEST-U-71 | WHEN `loginAdmin()` is called with invalid password, THE TEST SHALL assert that INVALID_CREDENTIALS error is returned and login_attempts is incremented. |
 | FR-TEST-U-72 | THE TEST SHALL assert that Admin cannot modify their own account via `updateAdminUser()` when the target ID matches the caller's ID. |
 
 ---
@@ -251,7 +251,7 @@ Không có test → không có refactoring an toàn → technical debt tích lũ
 | FR-TEST-S-02 | **[INVARIANT: Server-Side Scoring]** THE TEST SHALL assert that modifying the `score` field in a quiz submission request body has NO effect on the stored score in `test_attempts`. |
 | FR-TEST-S-03 | **[INVARIANT: Password Never Exposed]** THE TEST SHALL assert that no API response (including admin endpoints) ever contains a `password`, `passwordHash`, or `two_factor_secret` field. |
 | FR-TEST-S-04 | **[INVARIANT: No Hard Delete]** THE TEST SHALL assert that no `DELETE FROM` statement is executed against any primary data table — only soft-delete updates (`is_deleted = 1` or `status = 'deleted'`). |
-| FR-TEST-S-05 | **[INVARIANT: 2FA Required for Admin]** THE TEST SHALL assert that a valid Admin password alone (without TOTP) returns a `2fa_temp` token and NOT a session JWT. |
+| FR-TEST-S-05 | **[INVARIANT: Admin Login]** THE TEST SHALL assert that a valid Admin password returns a JWT access token directly. |
 
 ---
 
@@ -318,9 +318,9 @@ VALUES (1, 'student@test.com', '$2a$10$...bcrypt_hash...', N'Test Student', 'act
 INSERT INTO staff_users (staff_id, email, password_hash, full_name, staff_role, status)
 VALUES (1, 'staff@test.com', '$2a$10$...bcrypt_hash...', N'Test Staff', 'staff', 'active');
 
--- Seed: 1 Admin active với 2FA disabled (để test non-2FA path)
-INSERT INTO admin_users (admin_id, email, password_hash, full_name, status, two_factor_enabled)
-VALUES (1, 'admin@test.com', '$2a$10$...bcrypt_hash...', N'Test Admin', 'active', 0);
+-- Seed: 1 Admin active
+INSERT INTO admin_users (admin_id, email, password_hash, full_name, status)
+VALUES (1, 'admin@test.com', '$2a$12$...bcrypt_hash...', N'Test Admin', 'active');
 
 -- Seed: 1 Published quiz N3 với 3 câu hỏi
 INSERT INTO assessments (assessment_id, assessment_type, title, jlpt_level, duration_min, pass_score, total_score, status)

@@ -12,7 +12,7 @@
 |---|---|
 | Giữ phân quyền | `admin_users`, `staff_users`, `student_users` vẫn tách riêng; StaffManager là `staff_users.staff_role = 'staff_manager'`. |
 | Giảm bảng nhưng không dùng JSON để thay quan hệ | Các quan hệ nhiều bản ghi quan trọng như đáp án, ticket replies vẫn là bảng riêng. |
-| Token tập trung | Tất cả session, reset password, verify email, 2FA, refresh token dùng chung `auth_tokens` với `actor_type` và đúng một FK actor. |
+| Token tập trung | Tất cả session, reset password, verify email, refresh token dùng chung `auth_tokens` với `actor_type` và đúng một FK actor. |
 | Duyệt nội dung gọn hơn | Không dùng bảng approval riêng; mỗi bảng nội dung có `status`, `created_by`, `approved_by`, `published_at`; lịch sử quyết định ghi ở `admin_audit_logs`. |
 | Quiz + Exam gộp chung | Không tách `quizzes` và `exams` thành 2 bảng; dùng 1 bảng `assessments` với `assessment_type = 'quiz'/'exam'`. |
 | question_options gộp vào questions | Đáp án A/B/C/D là cột inline `option_a`, `option_b`, `option_c`, `option_d`, `correct_option` trong `questions`. |
@@ -101,7 +101,7 @@ Một bảng token dùng chung cho cả 3 nhóm người dùng. Ràng buộc `CK
 - `actor_type = 'staff'` → chỉ có `staff_id`.
 - `actor_type = 'student'` → chỉ có `student_id`.
 
-`token_type` gồm: `session`, `email_verification`, `password_reset`, `2fa_temp`, `refresh`.
+`token_type` gồm: `session`, `email_verification`, `password_reset`, `refresh`.
 
 ---
 

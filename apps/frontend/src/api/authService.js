@@ -88,11 +88,6 @@ export async function changeTempPassword({ newPassword, confirmPassword }) {
   return response.data;
 }
 
-export async function verifyMfa({ mfaToken, totpCode }) {
-  const response = await api.post('/auth/verify-mfa', { mfaToken, totpCode });
-  return response.data;
-}
-
 export async function register(data) {
   const response = await api.post('/auth/register', data);
   return response.data;

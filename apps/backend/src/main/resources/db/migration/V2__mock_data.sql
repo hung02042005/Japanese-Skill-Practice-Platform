@@ -8,7 +8,7 @@
      staff@sakuji.com   → Staff@123456
      student1@sakuji.com → Student@123456
      student2@sakuji.com → Student@123456
-   Lưu ý    : two_factor_enabled = 0 cho môi trường DEV (bật lại khi lên PROD)
+   Lưu ý    : Seed data cho môi trường DEV
    ============================================================================ */
 
 USE JLPT_LearningDB;
@@ -29,14 +29,12 @@ IF NOT EXISTS (SELECT 1 FROM admin_users WHERE email = 'admin@sakuji.com')
     INSERT INTO admin_users (
         email, password_hash, full_name,
         status,
-        two_factor_enabled,
         login_attempts, created_at, updated_at
     ) VALUES (
         'admin@sakuji.com',
         '$2b$12$kJcYAwbtPEqtu8tZUWv4fetUeoydXgfwS4ckmsiHW3oLU3Hhtig/G',   -- Admin@123456
         N'Quản Trị Viên',
         'active',
-        0,   -- tắt 2FA cho môi trường DEV
         0, SYSUTCDATETIME(), SYSUTCDATETIME()
     );
 SELECT @admin_id = admin_id FROM admin_users WHERE email = 'admin@sakuji.com';

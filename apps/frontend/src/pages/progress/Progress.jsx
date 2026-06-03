@@ -7,6 +7,7 @@ import { JlptBadge } from '../../components/common/Badges';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import SkillRadarChart from '../../components/student/SkillRadarChart';
 import { getMyStats, getMyExamHistory } from '../../api/studentService';
+import { DEMO_MODE, MOCK_STATS, MOCK_EXAM_HISTORY } from '../../api/mockData';
 import './Progress.css';
 
 const COMPLETION_LABELS = { kanji: 'Kanji', vocabulary: 'Từ vựng', grammar: 'Ngữ pháp', kana: 'Kana' };
@@ -22,6 +23,11 @@ export default function Progress() {
   const [totalPages,setTotal]    = useState(1);
 
   useEffect(() => {
+    if (DEMO_MODE) {
+      setStats(MOCK_STATS);
+      setLoading(false);
+      return;
+    }
     (async () => {
       setLoading(true);
       try {
@@ -36,6 +42,12 @@ export default function Progress() {
   }, []);
 
   useEffect(() => {
+    if (DEMO_MODE) {
+      setHistory(MOCK_EXAM_HISTORY.content);
+      setTotal(MOCK_EXAM_HISTORY.totalPages);
+      setHistLoad(false);
+      return;
+    }
     (async () => {
       setHistLoad(true);
       try {
