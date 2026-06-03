@@ -6,7 +6,7 @@ spring:
     url: jdbc:sqlserver://127.0.0.1:1433;databaseName=JLPT_LearningDB;encrypt=true;trustServerCertificate=true
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     username: sa
-    password: 123
+    password: sa
 
     
   jpa:
