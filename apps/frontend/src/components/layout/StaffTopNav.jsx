@@ -112,6 +112,20 @@ const NAV_TABS = [
       </svg>
     ),
   },
+  {
+    id: 'staff-students',
+    label: 'Học viên',
+    route: '/staff/students',
+    icon: (
+      // Cây anh đào với học viên (学生) — theo dõi và quản lý học viên
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="9" cy="6" r="2.5"/>
+        <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+        <circle cx="18" cy="9" r="2"/>
+        <path d="M15 21v-1.5a3 3 0 0 1 6 0V21"/>
+      </svg>
+    ),
+  },
 ];
 
 const MANAGER_TAB = {

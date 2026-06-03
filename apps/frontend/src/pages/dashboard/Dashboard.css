@@ -124,7 +124,7 @@
 }
 .db-feature-card:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 4px 14px rgba(232, 154, 170, 0.22);
+  box-shadow: var(--shadow-petal);
   transform: translateY(-3px);
   color: var(--color-primary-dark);
 }
@@ -142,7 +142,7 @@
 }
 
 .db-feature-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--color-text);
   text-align: center;
@@ -165,7 +165,7 @@
   .db-feature-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .db-feature-card { padding: 10px 4px; }
   .db-feature-icon { font-size: 18px; }
-  .db-feature-label { font-size: 10px; }
+  .db-feature-label { font-size: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -28,7 +28,7 @@
 /* Error */
 .kna-error {
   display: flex; align-items: center; justify-content: space-between;
-  background: #FFEAEA; border: 1px solid var(--color-error);
+  background: var(--color-error-tint); border: 1px solid var(--color-error);
   border-radius: var(--radius-md); padding: 12px 16px;
   font-size: 13px; color: var(--color-error);
 }
@@ -46,7 +46,7 @@
 }
 .kna-row:last-child { border-bottom: none; }
 .kna-row-label {
-  font-size: 11px; font-weight: 700; color: var(--color-text-sub);
+  font-size: 12px; font-weight: 700; color: var(--color-text-sub);
   width: 36px; text-align: right; flex-shrink: 0;
 }
 .kna-row-cells { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -64,14 +64,14 @@
 .kna-cell--done { background: var(--color-primary-bg); border-color: var(--color-primary-light); }
 .kna-char  { font-size: 22px; font-weight: 700; color: var(--color-text); line-height: 1; }
 .kna-cell--done .kna-char { color: var(--color-primary); }
-.kna-romaji { font-size: 11px; color: var(--color-text-sub); }
-.kna-tick   { position: absolute; bottom: 3px; right: 5px; font-size: 10px; color: var(--color-primary); font-weight: 700; }
+.kna-romaji { font-size: 12px; color: var(--color-text-sub); }
+.kna-tick   { position: absolute; bottom: 3px; right: 5px; font-size: 12px; color: var(--color-primary); font-weight: 700; }
 
 /* Skeleton */
 .kna-skel     { display: flex; flex-direction: column; gap: 10px; }
 .kna-skel-row {
   height: 76px; border-radius: var(--radius-md);
-  background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%);
+  background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%);
   background-size: 200% 100%; animation: knaSkelPulse 1.4s ease infinite;
 }
 @keyframes knaSkelPulse {

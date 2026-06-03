@@ -21,7 +21,7 @@
 
 /* Error */
 .spk-error {
-  background: #FFEAEA; border: 1px solid var(--color-error);
+  background: var(--color-error-tint); border: 1px solid var(--color-error);
   border-radius: var(--radius-md); padding: 12px 16px;
   font-size: 13px; color: var(--color-error);
 }
@@ -30,7 +30,7 @@
 .spk-list     { display: flex; flex-direction: column; gap: 12px; }
 .spk-card-skel {
   height: 96px; border-radius: var(--radius-lg);
-  background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%);
+  background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%);
   background-size: 200% 100%; animation: spkSkelPulse 1.4s ease infinite;
 }
 @keyframes spkSkelPulse {
@@ -88,7 +88,6 @@
 }
 .spk-step-label {
   font-size: 12px; font-weight: 700; color: var(--color-text-sub);
-  text-transform: uppercase; letter-spacing: 0.05em;
 }
 .spk-target-text { font-size: 18px; color: var(--color-text); line-height: 1.8; margin: 0; }
 .spk-btn-sample {
@@ -151,7 +150,7 @@
   border: 1px solid var(--color-primary-light);
 }
 .spk-status--error {
-  background: #FFEAEA; color: var(--color-error);
+  background: var(--color-error-tint); color: var(--color-error);
   border: 1px solid var(--color-error); flex-wrap: wrap; gap: 8px;
 }
 .spk-btn-retry {
@@ -179,7 +178,6 @@
 .spk-result-section { display: flex; flex-direction: column; gap: 6px; }
 .spk-result-section-label {
   font-size: 12px; font-weight: 700; color: var(--color-text-sub);
-  text-transform: uppercase; letter-spacing: 0.05em;
 }
 .spk-transcript     { font-size: 16px; color: var(--color-text); line-height: 1.7; margin: 0; }
 .spk-word-results   { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -188,7 +186,7 @@
   padding: 5px 12px; border-radius: var(--radius-full); font-size: 14px;
 }
 .spk-word-chip--ok  { background: var(--color-secondary-bg); color: var(--color-secondary); }
-.spk-word-chip--bad { background: #FFEAEA; color: var(--color-error); }
+.spk-word-chip--bad { background: var(--color-error-tint); color: var(--color-error); }
 
 @keyframes spkBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 @keyframes spkSpin  { to { transform: rotate(360deg); } }

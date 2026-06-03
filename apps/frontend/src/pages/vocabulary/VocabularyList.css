@@ -40,12 +40,12 @@
   font-size: 14px; background: var(--color-bg); box-sizing: border-box;
   font-family: var(--font-base);
 }
-.voc-search:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(232,154,170,0.15); background: var(--color-card); }
+.voc-search:focus { outline: none; border-color: var(--color-primary); box-shadow: var(--focus-ring); background: var(--color-card); }
 
 /* Error */
 .voc-error {
   display: flex; align-items: center; justify-content: space-between;
-  background: #FFEAEA; border: 1px solid var(--color-error);
+  background: var(--color-error-tint); border: 1px solid var(--color-error);
   border-radius: var(--radius-md); padding: 12px 16px;
   font-size: 13px; color: var(--color-error);
 }
@@ -83,11 +83,11 @@
 
 .voc-card-info { display: flex; align-items: center; gap: 8px; }
 .voc-pos       {
-  font-size: 11px; font-weight: 700; color: var(--color-text-sub);
+  font-size: 12px; font-weight: 700; color: var(--color-text-sub);
   background: var(--color-bg); border: 1px solid var(--color-border);
   border-radius: var(--radius-sm); padding: 2px 8px;
 }
-.voc-meaning   { font-size: 15px; color: var(--color-text); font-weight: 500; }
+.voc-meaning   { font-size: 15px; color: var(--color-text); font-weight: 400; }
 
 .voc-example       { font-size: 13px; color: var(--color-text-sub); line-height: 1.5; }
 .voc-example-trans { font-style: italic; }
@@ -107,7 +107,7 @@
 .voc-btn-fc:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .voc-btn-done {
-  width: 28px; height: 28px; border-radius: 50%;
+  width: 28px; height: 28px; border-radius: var(--radius-full);
   border: 2px solid var(--color-border); background: transparent;
   font-size: 14px; cursor: pointer; color: var(--color-text-sub);
   transition: all var(--transition);
@@ -118,7 +118,7 @@
 /* Skeleton */
 .voc-card-skel {
   height: 100px; border-radius: var(--radius-lg);
-  background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%);
+  background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%);
   background-size: 200% 100%; animation: vocSkelPulse 1.4s ease infinite;
 }
 @keyframes vocSkelPulse {

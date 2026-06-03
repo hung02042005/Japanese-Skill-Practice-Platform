@@ -30,9 +30,9 @@
 
 /* Navigator panel */
 .mxa-navigator-panel { width: 280px; flex-shrink: 0; padding: 24px 20px; border-left: 1px solid var(--color-border); display: flex; flex-direction: column; gap: 16px; position: sticky; top: 68px; height: calc(100vh - 68px); overflow-y: auto; }
-.mxa-nav-title { font-size: 13px; font-weight: 700; color: var(--color-text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
+.mxa-nav-title { font-size: 13px; font-weight: 700; color: var(--color-text-sub); }
 .mxa-nav-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
-.mxa-nav-cell { width: 28px; height: 28px; border-radius: 6px; border: 1.5px solid var(--color-border); background: var(--color-bg); font-size: 11px; font-weight: 600; color: var(--color-text-sub); cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: var(--font-base); transition: border-color var(--transition), background var(--transition), color var(--transition); }
+.mxa-nav-cell { width: 28px; height: 28px; border-radius: 6px; border: 1.5px solid var(--color-border); background: var(--color-bg); font-size: 12px; font-weight: 600; color: var(--color-text-sub); cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: var(--font-base); transition: border-color var(--transition), background var(--transition), color var(--transition); }
 .mxa-nav-cell--answered { background: var(--color-primary-bg); border-color: var(--color-primary); color: var(--color-primary); }
 .mxa-nav-cell--current  { border: 2.5px solid var(--color-primary); font-weight: 800; }
 .mxa-nav-summary { font-size: 13px; color: var(--color-text-sub); }
@@ -40,7 +40,7 @@
 .mxa-nav-submit-btn:hover { filter: brightness(1.07); }
 
 /* Error */
-.mxa-error-banner { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #FEF2F2; border: 1px solid var(--color-error); border-radius: var(--radius-md); padding: 12px 20px; font-size: 13px; color: var(--color-error); display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-lg); z-index: 200; }
+.mxa-error-banner { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--color-error-bg); border: 1px solid var(--color-error); border-radius: var(--radius-md); padding: 12px 20px; font-size: 13px; color: var(--color-error); display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-lg); z-index: 200; }
 .mxa-error-banner button { background: transparent; border: none; cursor: pointer; color: var(--color-error); font-size: 16px; }
 
 /* Loading / Error page */

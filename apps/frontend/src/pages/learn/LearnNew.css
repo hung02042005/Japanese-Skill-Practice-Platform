@@ -9,7 +9,7 @@
 
 .lnw-error {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  background: #FFEAEA; border: 1px solid var(--color-error);
+  background: var(--color-error-tint); border: 1px solid var(--color-error);
   border-radius: var(--radius-md); padding: 12px 16px;
   font-size: 13px; color: var(--color-error);
 }
@@ -24,7 +24,7 @@
   box-shadow: var(--shadow-md); padding: 28px 32px;
   display: flex; flex-direction: column; gap: 16px;
 }
-.lnw-next-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-sub); }
+.lnw-next-label { font-size: 12px; font-weight: 700; color: var(--color-text-sub); }
 .lnw-next-header { display: flex; flex-direction: column; gap: 6px; }
 .lnw-next-title  { font-size: 22px; font-weight: 700; color: var(--color-text); margin: 0; }
 .lnw-next-meta   { font-size: 13px; color: var(--color-text-sub); }
@@ -39,7 +39,7 @@
   background: var(--color-secondary); color: white; border: none;
   border-radius: var(--radius-full); font-family: var(--font-base);
   font-size: 15px; font-weight: 700; cursor: pointer; align-self: flex-start;
-  box-shadow: 0 2px 8px rgba(93,187,105,0.25);
+  box-shadow: var(--shadow-secondary);
   transition: filter var(--transition), transform var(--transition);
 }
 .lnw-start-btn:hover { filter: brightness(1.07); }
@@ -57,7 +57,7 @@
 }
 .lnw-suggest-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
 .lnw-sug-header { display: flex; align-items: center; gap: 8px; }
-.lnw-sug-type   { font-size: 11px; font-weight: 700; color: var(--color-text-sub); text-transform: uppercase; }
+.lnw-sug-type   { font-size: 12px; font-weight: 700; color: var(--color-text-sub); }
 .lnw-sug-title  { font-size: 14px; font-weight: 700; color: var(--color-text); }
 .lnw-sug-meta   { font-size: 12px; color: var(--color-text-sub); }
 
@@ -76,7 +76,7 @@
 
 .lnw-skel {
   border-radius: var(--radius-xl);
-  background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%);
+  background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%);
   background-size: 200% 100%; animation: skelPulse 1.4s ease infinite;
 }
 .lnw-skel--hero { height: 200px; }
