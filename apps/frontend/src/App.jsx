@@ -38,6 +38,12 @@ import AdminReports    from './pages/admin/AdminReports';
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute   from './components/common/AdminRoute';
 import StaffRoute        from './components/common/StaffRoute';
+import ManagerRoute      from './components/common/ManagerRoute';
+import ManagerDashboard      from './pages/manager/ManagerDashboard';
+import ManagerReviewQueue    from './pages/manager/ManagerReviewQueue';
+import ManagerStaffPerformance from './pages/manager/ManagerStaffPerformance';
+import ManagerContentPipeline  from './pages/manager/ManagerContentPipeline';
+import ManagerReports          from './pages/manager/ManagerReports';
 import StaffDashboard    from './pages/staff/StaffDashboard';
 import StaffContent      from './pages/staff/StaffContent';
 import StaffQuestions    from './pages/staff/StaffQuestions';
@@ -105,6 +111,13 @@ function App() {
         <Route path="/staff/notifications"   element={<StaffRoute><StaffNotifications /></StaffRoute>} />
         <Route path="/staff/review-queue"    element={<StaffRoute><StaffReviewQueue /></StaffRoute>} />
         <Route path="/staff/students"        element={<StaffRoute><StaffStudents /></StaffRoute>} />
+
+        {/* Protected — Manager (staff_manager role) */}
+        <Route path="/manager"                    element={<ManagerRoute><ManagerDashboard /></ManagerRoute>} />
+        <Route path="/manager/review-queue"       element={<ManagerRoute><ManagerReviewQueue /></ManagerRoute>} />
+        <Route path="/manager/staff-performance"  element={<ManagerRoute><ManagerStaffPerformance /></ManagerRoute>} />
+        <Route path="/manager/content-pipeline"   element={<ManagerRoute><ManagerContentPipeline /></ManagerRoute>} />
+        <Route path="/manager/reports"            element={<ManagerRoute><ManagerReports /></ManagerRoute>} />
 
         {/* Protected — Admin */}
         <Route path="/admin"          element={<AdminRoute><AdminDashboard /></AdminRoute>} />

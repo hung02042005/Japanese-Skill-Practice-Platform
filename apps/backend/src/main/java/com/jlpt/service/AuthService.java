@@ -177,6 +177,7 @@ public class AuthService {
                     .requirePasswordChange(true)
                     .accessToken(limitedToken)
                     .role("STAFF")
+                    .staffRole(staff.getStaffRole().getValue())
                     .build();
         }
 
@@ -196,6 +197,7 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .role("STAFF")
+                .staffRole(staff.getStaffRole().getValue())
                 .build();
     }
 

@@ -128,32 +128,12 @@ const NAV_TABS = [
   },
 ];
 
-const MANAGER_TAB = {
-  id: 'staff-review',
-  label: 'Hàng đợi duyệt',
-  route: '/staff/review-queue',
-  icon: (
-    // Con dấu Hanko (判子) — phê duyệt chính thức
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="10" y="2" width="4" height="6" rx="1.5"/>
-      <rect x="7" y="13" width="10" height="8" rx="2"/>
-      <line x1="10" y1="8" x2="10" y2="13"/>
-      <line x1="14" y1="8" x2="14" y2="13"/>
-      <line x1="9.5" y1="17" x2="14.5" y2="17"/>
-      <line x1="12" y1="14.5" x2="12" y2="19.5"/>
-    </svg>
-  ),
-};
-
 function StaffTopNav({ activeTab }) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
 
-  const visibleTabs = [
-    ...NAV_TABS,
-    ...(user?.staffRole === 'staff_manager' ? [MANAGER_TAB] : []),
-  ];
+  const visibleTabs = NAV_TABS;
 
   const handleLogout = async () => {
     await dispatch(logoutThunk());

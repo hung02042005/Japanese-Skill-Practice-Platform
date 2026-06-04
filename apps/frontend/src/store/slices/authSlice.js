@@ -27,9 +27,10 @@ export const loginThunk = createAsyncThunk(
         accessToken,
         refreshToken,
         user,
+        staffRole,
       } = res.data;
       if (requirePasswordChange) {
-        const userData = { role, requirePasswordChange: true };
+        const userData = { role, staffRole, requirePasswordChange: true };
         localStorage.setItem('accessToken', accessToken);
         localStorage.removeItem('refreshToken');
         localStorage.setItem('jlpt-user', JSON.stringify(userData));
@@ -42,6 +43,7 @@ export const loginThunk = createAsyncThunk(
       }
       // For ADMIN direct login, `user` is null — build a minimal object from role
       const userData = user ? { ...user, role } : { role };
+      if (staffRole) userData.staffRole = staffRole;
       localStorage.setItem('accessToken', accessToken);
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('jlpt-user', JSON.stringify(userData));

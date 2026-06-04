@@ -30,7 +30,11 @@ function Login() {
       } else if (res.role === 'ADMIN' || res.user?.role === 'ADMIN') {
         navigate('/admin/users');
       } else if (res.role === 'STAFF' || res.user?.role === 'STAFF') {
-        navigate('/staff');
+        if (res.user?.staffRole === 'staff_manager') {
+          navigate('/manager');
+        } else {
+          navigate('/staff');
+        }
       } else {
         navigate('/dashboard');
       }

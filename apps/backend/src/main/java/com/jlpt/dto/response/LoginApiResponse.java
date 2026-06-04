@@ -27,4 +27,7 @@ public class LoginApiResponse {
 
     /** Logged-in user info — present only on direct login (student/staff) */
     private StudentResponse user;
+
+    /** Staff sub-role: "staff" | "staff_manager" — present only for STAFF role */
+    private String staffRole;
 }
