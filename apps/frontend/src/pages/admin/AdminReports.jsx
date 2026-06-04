@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { getDashboardSummary, getAuditLog } from '../../api/adminService';
 import AdminTopNav from '../../components/layout/AdminTopNav';
 import { AdminPageHeader } from '../../components/admin/AdminPageHeader';
 import { JlptBadge, StatusBadge } from '../../components/common/Badges';
@@ -32,40 +33,6 @@ const MOCK_CONTENT_LOG = [
   { id: 19, type: 'kanji',       title: '山 — Núi',                        jlptLevel: 'N5', uploadedBy: 'Lê Thị Hoa',        email: 'hoa.le@sakuji.vn',     status: 'published',     createdAt: '2026-06-01' },
   { id: 20, type: 'lesson',      title: 'Bài 2 — Số đếm và thời gian',     jlptLevel: 'N5', uploadedBy: 'Nguyễn Thị Mai',    email: 'mai.nguyen@sakuji.vn', status: 'pending_review',createdAt: '2026-06-02' },
 ];
-
-const MOCK_AUDIT_LOG = [
-  { logId: 1,  actionType: 'create_staff',             targetEmail: 'hung.tran@sakuji.vn',   adminEmail: 'admin@sakuji.vn', createdAt: '2026-06-03T08:12:00Z' },
-  { logId: 2,  actionType: 'suspend_user',             targetEmail: 'student01@gmail.com',   adminEmail: 'admin@sakuji.vn', createdAt: '2026-06-03T08:45:00Z' },
-  { logId: 3,  actionType: 'activate_user',            targetEmail: 'student02@gmail.com',   adminEmail: 'admin@sakuji.vn', createdAt: '2026-06-03T09:10:00Z' },
-  { logId: 4,  actionType: 'reset_password_initiated', targetEmail: 'mai.nguyen@sakuji.vn',  adminEmail: 'admin@sakuji.vn', createdAt: '2026-06-03T09:30:00Z' },
-  { logId: 5,  actionType: 'change_staff_role',        targetEmail: 'duc.pham@sakuji.vn',    adminEmail: 'admin@sakuji.vn', createdAt: '2026-06-03T10:05:00Z' },
-  { logId: 6,  actionType: 'update_setting',           targetEmail: null,                     adminEmail: 'admin@sakuji.vn', createdAt: '2026-06-03T10:22:00Z' },
-  { logId: 7,  actionType: 'soft_delete_user',         targetEmail: 'olduser@gmail.com',     adminEmail: 'admin@sakuji.vn', createdAt: '2026-06-02T14:00:00Z' },
-  { logId: 8,  actionType: 'create_staff',             targetEmail: 'hoa.le@sakuji.vn',      adminEmail: 'admin@sakuji.vn', createdAt: '2026-06-02T11:30:00Z' },
-  { logId: 9,  actionType: 'suspend_user',             targetEmail: 'student03@gmail.com',   adminEmail: 'admin@sakuji.vn', createdAt: '2026-06-02T09:15:00Z' },
-  { logId: 10, actionType: 'update_setting',           targetEmail: null,                     adminEmail: 'admin@sakuji.vn', createdAt: '2026-06-01T16:40:00Z' },
-  { logId: 11, actionType: 'activate_user',            targetEmail: 'student04@gmail.com',   adminEmail: 'admin@sakuji.vn', createdAt: '2026-06-01T14:20:00Z' },
-  { logId: 12, actionType: 'reset_password_initiated', targetEmail: 'hoa.le@sakuji.vn',      adminEmail: 'admin@sakuji.vn', createdAt: '2026-06-01T11:05:00Z' },
-  { logId: 13, actionType: 'change_staff_role',        targetEmail: 'mai.nguyen@sakuji.vn',  adminEmail: 'admin@sakuji.vn', createdAt: '2026-05-31T15:50:00Z' },
-  { logId: 14, actionType: 'create_staff',             targetEmail: 'duc.pham@sakuji.vn',    adminEmail: 'admin@sakuji.vn', createdAt: '2026-05-30T10:00:00Z' },
-  { logId: 15, actionType: 'soft_delete_user',         targetEmail: 'spam@gmail.com',        adminEmail: 'admin@sakuji.vn', createdAt: '2026-05-30T08:30:00Z' },
-];
-
-const MOCK_OVERVIEW = {
-  totalUsers:    312,
-  totalStudents: 289,
-  totalStaff:    21,
-  totalAdmin:    2,
-  totalContent:  84,
-  byCourse:      3,
-  byLesson:      18,
-  byVocab:       31,
-  byGrammar:     17,
-  byKanji:       15,
-  pendingReview: 7,
-  examAttempts:  1248,
-  avgScore:      72,
-};
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -159,37 +126,57 @@ function ActionChip({ actionType }) {
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
 
 function OverviewTab() {
-  const s = MOCK_OVERVIEW;
+  const [summary,   setSummary]   = useState(null);
+  const [isLoading, setLoading]   = useState(true);
+  const [hasError,  setHasError]  = useState(false);
+
+  const fetch = useCallback(() => {
+    setLoading(true);
+    setHasError(false);
+    getDashboardSummary()
+      .then((data) => setSummary(data))
+      .catch(() => setHasError(true))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => { fetch(); }, [fetch]);
+
+  if (isLoading) {
+    return (
+      <div className="rp-overview">
+        <section className="rp-section">
+          <div className="rp-stat-grid">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="rp-stat-card rp-stat-card--skel" aria-hidden="true" />
+            ))}
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="rp-error-state" role="alert">
+        <p>Không thể tải số liệu tổng quan.</p>
+        <button type="button" className="rp-retry-btn" onClick={fetch}>Thử lại</button>
+      </div>
+    );
+  }
+
   return (
     <div className="rp-overview">
       <section className="rp-section">
-        <h2 className="rp-section-title">Người dùng</h2>
-        <div className="rp-stat-grid">
-          <StatCard value={s.totalUsers}    label="Tổng người dùng"  color="var(--color-primary)" />
-          <StatCard value={s.totalStudents} label="Học viên"          sub={`${Math.round(s.totalStudents/s.totalUsers*100)}% tổng số`} color="#2E7D32" />
-          <StatCard value={s.totalStaff}    label="Nhân viên"         color="#1565C0" />
-          <StatCard value={s.totalAdmin}    label="Quản trị viên"     color="#6A1B9A" />
-        </div>
-      </section>
-
-      <section className="rp-section">
-        <h2 className="rp-section-title">Nội dung học liệu</h2>
-        <div className="rp-stat-grid">
-          <StatCard value={s.totalContent}  label="Tổng nội dung"    color="var(--color-primary)" />
-          <StatCard value={s.byCourse}      label="Khóa học"          color="#4527A0" />
-          <StatCard value={s.byLesson}      label="Bài học"           color="var(--color-primary)" />
-          <StatCard value={s.byVocab}       label="Từ vựng"           color="#2E7D32" />
-          <StatCard value={s.byGrammar}     label="Ngữ pháp"          color="#1565C0" />
-          <StatCard value={s.byKanji}       label="Kanji"             color="#E65100" />
-          <StatCard value={s.pendingReview} label="Chờ duyệt"         color="#F57C00" />
-        </div>
-      </section>
-
-      <section className="rp-section">
-        <h2 className="rp-section-title">Luyện tập & kiểm tra</h2>
-        <div className="rp-stat-grid rp-stat-grid--2">
-          <StatCard value={s.examAttempts.toLocaleString()} label="Lượt làm bài thi / quiz" color="var(--color-primary)" />
-          <StatCard value={`${s.avgScore}%`}                label="Điểm trung bình"          color="#2E7D32" />
+        <h2 className="rp-section-title">Tổng quan hệ thống</h2>
+        <div className="rp-stat-grid rp-stat-grid--4">
+          <StatCard value={summary?.totalUsers ?? 0}        label="Tổng người dùng"        color="var(--color-primary)" />
+          <StatCard value={summary?.activeToday ?? 0}       label="Hoạt động hôm nay"      color="#2E7D32" />
+          <StatCard value={summary?.quizAttemptsToday ?? 0} label="Lượt thi / quiz hôm nay" color="#1565C0" />
+          <StatCard
+            value={summary?.systemStatus ?? 'OK'}
+            label="Trạng thái hệ thống"
+            color={summary?.systemStatus === 'OK' ? '#2E7D32' : summary?.systemStatus === 'MAINTENANCE' ? '#F57C00' : '#C62828'}
+          />
         </div>
       </section>
     </div>
@@ -268,21 +255,44 @@ function ContentTab() {
 }
 
 function ActivityTab() {
+  const [logs,         setLogs]        = useState([]);
+  const [totalPages,   setTotalPages]  = useState(1);
+  const [page,         setPage]        = useState(1);
+  const [isLoading,    setLoading]     = useState(true);
+  const [hasError,     setHasError]    = useState(false);
   const [actionFilter, setActionFilter] = useState('Tất cả');
-  const [page, setPage] = useState(1);
+
+  const fetchPage = useCallback((p) => {
+    setLoading(true);
+    setHasError(false);
+    getAuditLog({ page: p - 1, size: PAGE_SIZE })
+      .then((data) => {
+        setLogs(data?.content ?? []);
+        setTotalPages(data?.totalPages ?? 1);
+      })
+      .catch(() => setHasError(true))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => { fetchPage(page); }, [fetchPage, page]);
 
   function handleAction(val) {
     setActionFilter(val);
-    setPage(1);
   }
 
-  const filtered = useMemo(() => MOCK_AUDIT_LOG.filter((log) => {
-    if (actionFilter !== 'Tất cả' && log.actionType !== actionFilter) return false;
-    return true;
-  }), [actionFilter]);
+  const visibleLogs = useMemo(
+    () => (actionFilter === 'Tất cả' ? logs : logs.filter((l) => l.actionType === actionFilter)),
+    [logs, actionFilter],
+  );
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const pageItems  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  if (hasError) {
+    return (
+      <div className="rp-error-state" role="alert">
+        <p>Không thể tải lịch sử hoạt động.</p>
+        <button type="button" className="rp-retry-btn" onClick={() => fetchPage(page)}>Thử lại</button>
+      </div>
+    );
+  }
 
   return (
     <div className="rp-tab-body">
@@ -294,10 +304,12 @@ function ActivityTab() {
             ))}
           </select>
         </div>
-        <span className="rp-count">{filtered.length} bản ghi</span>
+        <span className="rp-count">{isLoading ? '...' : `${visibleLogs.length} bản ghi (trang này)`}</span>
       </div>
 
-      {pageItems.length === 0 ? (
+      {isLoading ? (
+        <div className="rp-loading" aria-live="polite">Đang tải lịch sử hoạt động...</div>
+      ) : visibleLogs.length === 0 ? (
         <EmptyState title="Không có kết quả" subtitle="Thử thay đổi bộ lọc." mascotVariant="thinking" mascotSize={90} />
       ) : (
         <>
@@ -313,7 +325,7 @@ function ActivityTab() {
                 </tr>
               </thead>
               <tbody>
-                {pageItems.map((log, idx) => (
+                {visibleLogs.map((log, idx) => (
                   <tr key={log.logId}>
                     <td className="rp-td-num">{(page - 1) * PAGE_SIZE + idx + 1}</td>
                     <td><ActionChip actionType={log.actionType} /></td>

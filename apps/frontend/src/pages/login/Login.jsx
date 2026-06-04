@@ -28,7 +28,7 @@ function Login() {
       if (res.requirePasswordChange) {
         navigate('/staff/change-temp-password');
       } else if (res.role === 'ADMIN' || res.user?.role === 'ADMIN') {
-        navigate('/admin/users');
+        navigate('/admin');
       } else if (res.role === 'STAFF' || res.user?.role === 'STAFF') {
         if (res.user?.staffRole === 'staff_manager') {
           navigate('/manager');

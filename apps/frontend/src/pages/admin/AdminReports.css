@@ -201,9 +201,64 @@
 
 .rp-none { color: var(--color-text-disabled); }
 
+/* ── Stat grid variants ── */
+.rp-stat-grid--4 { grid-template-columns: repeat(4, 1fr); }
+
+/* ── Skeleton loading card ── */
+.rp-stat-card--skel {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: rp-shimmer 1.4s infinite;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  height: 80px;
+}
+@keyframes rp-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Loading text ── */
+.rp-loading {
+  padding: 32px;
+  text-align: center;
+  color: var(--color-text-sub);
+  font-size: 14px;
+}
+
+/* ── Error state ── */
+.rp-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px;
+  text-align: center;
+  color: var(--color-text-sub);
+  font-size: 14px;
+}
+
+.rp-retry-btn {
+  padding: 7px 18px;
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.rp-retry-btn:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .rp-body { padding: 20px 16px 40px; }
   .rp-panel { padding: 18px 12px; }
   .rp-stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .rp-stat-grid--4 { grid-template-columns: repeat(2, 1fr); }
 }
