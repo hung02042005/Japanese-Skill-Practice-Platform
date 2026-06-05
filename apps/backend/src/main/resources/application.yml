@@ -31,7 +31,7 @@ spring:
     host: ${SMTP_HOST:smtp.gmail.com}
     port: ${SMTP_PORT:587}
     username: ${SMTP_USERNAME:jlptelearningplatform@gmail.com}
-    password: ${SMTP_PASSWORD:changeme}
+    password: ${SMTP_PASSWORD:tqap zdsq fsdj afyu}
     properties:
       mail:
         smtp:
@@ -55,7 +55,7 @@ app:
 
 google:
   client-id: ${GOOGLE_CLIENT_ID:48921393888-djjm8a1qg8ugukaokb7575ti0prbk346.apps.googleusercontent.com}
-  client-secret: ${GOOGLE_CLIENT_SECRET:changeme}
+  client-secret: ${GOOGLE_CLIENT_SECRET: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}
 
 
 logging:
