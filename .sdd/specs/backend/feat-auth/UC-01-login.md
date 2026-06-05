@@ -412,7 +412,7 @@ sequenceDiagram
 ## 9. Ngoài Phạm Vi (Out of Scope)
 
 - ❌ Đăng nhập cho Admin/Staff — xem `feat-system-admin`
-- ❌ 2FA (TOTP) cho Student — chỉ áp dụng cho Admin
+
 - ❌ OAuth qua Facebook, Apple, GitHub — Phase 2
 - ❌ Đăng nhập bằng số điện thoại/OTP — Phase 2
 - ❌ "Ghi nhớ đăng nhập" (Remember me) ngoài refresh token 7 ngày — Phase 2

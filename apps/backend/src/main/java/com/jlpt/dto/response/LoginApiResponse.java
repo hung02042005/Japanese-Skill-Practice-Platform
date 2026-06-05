@@ -7,18 +7,12 @@ import lombok.Data;
 
 /**
  * Unified response for POST /api/auth/login across all roles.
- * Null fields are omitted so admin (MFA step-1) and student/staff (direct) shapes differ cleanly.
+ * Null fields are omitted via @JsonInclude(NON_NULL).
  */
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LoginApiResponse {
-
-    /** true = admin 2FA challenge; false / absent = direct login (student/staff) */
-    private Boolean requiresTwoFactor;
-
-    /** Short-lived MFA temp token — only present when requiresTwoFactor = true */
-    private String mfaToken;
 
     /** Role of the authenticated principal: ADMIN | STAFF | STUDENT */
     private String role;
@@ -33,4 +27,7 @@ public class LoginApiResponse {
 
     /** Logged-in user info — present only on direct login (student/staff) */
     private StudentResponse user;
+
+    /** Staff sub-role: "staff" | "staff_manager" — present only for STAFF role */
+    private String staffRole;
 }

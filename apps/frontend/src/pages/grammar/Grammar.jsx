@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { EmptyState } from '../../components/common/EmptyState';
@@ -25,7 +26,8 @@ const MOCK_GRAMMAR = [
 ];
 
 export default function Grammar() {
-  const [level,    setLevel]    = useState('All');
+  const [searchParams] = useSearchParams();
+  const [level,    setLevel]    = useState(searchParams.get('level') ?? 'All');
   const [search,   setSearch]   = useState('');
   const [expanded, setExpanded] = useState(null);
 

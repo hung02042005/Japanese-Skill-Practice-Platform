@@ -1,32 +1,46 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { ProgressBar } from '../../components/common/ProgressBar';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
-import { getKanjiList } from '../../api/studentService';
+import { getKanjiList, getKanjiDetail } from '../../api/studentService';
+import { DEMO_MODE, MOCK_KANJI_LIST, MOCK_KANJI_DETAIL_MAP } from '../../api/mockData';
 import './KanjiList.css';
 
 const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
 export default function KanjiList() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAppSelector((s) => s.auth);
 
-  const [level,    setLevel]  = useState(user?.jlptLevel ?? 'N5');
+  const [level,    setLevel]  = useState(searchParams.get('level') ?? user?.jlptLevel ?? 'N5');
   const [kanji,    setKanji]  = useState([]);
   const [stats,    setStats]  = useState({ completed: 0, total: 0 });
   const [isLoading,setLoading]= useState(true);
   const [error,    setError]  = useState('');
   const [page,     setPage]   = useState(1);
   const [totalPages,setTotal] = useState(1);
+  const [selected, setSelected] = useState(null);
+  const [detail,   setDetail]   = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const modalRef = useRef(null);
 
   const fetchKanji = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
+      if (DEMO_MODE) {
+        const mock = MOCK_KANJI_LIST[level] ?? { kanji: [], completedCount: 0, totalElements: 0 };
+        setKanji(mock.kanji);
+        setTotal(1);
+        setStats({ completed: mock.completedCount, total: mock.totalElements });
+        setLoading(false);
+        return;
+      }
       const res = await getKanjiList({ level, page: page - 1, size: 50 });
       setKanji(res.content ?? []);
       setTotal(res.totalPages ?? 1);
@@ -40,6 +54,38 @@ export default function KanjiList() {
 
   useEffect(() => { fetchKanji(); }, [fetchKanji]);
   useEffect(() => { setPage(1); }, [level]);
+
+  const openKanji = useCallback(async (k) => {
+    setSelected(k);
+    setDetail(null);
+    setDetailLoading(true);
+    try {
+      if (DEMO_MODE) {
+        const d = MOCK_KANJI_DETAIL_MAP[k.kanjiId] ?? null;
+        setDetail(d);
+      } else {
+        const d = await getKanjiDetail(k.kanjiId);
+        setDetail(d);
+      }
+    } catch {
+      setDetail(null);
+    } finally {
+      setDetailLoading(false);
+    }
+  }, []);
+
+  const closeModal = useCallback(() => { setSelected(null); setDetail(null); }, []);
+
+  useEffect(() => {
+    if (!selected) return;
+    const onKey = (e) => { if (e.key === 'Escape') closeModal(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [selected, closeModal]);
+
+  useEffect(() => {
+    if (selected) modalRef.current?.focus();
+  }, [selected]);
 
   const progressPct = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
@@ -106,7 +152,7 @@ export default function KanjiList() {
                 key={k.kanjiId}
                 role="listitem"
                 className={`knj-cell${k.isCompleted ? ' knj-cell--done' : ''}`}
-                onClick={() => navigate(`/kanji/${k.kanjiId}`)}
+                onClick={() => openKanji(k)}
                 aria-label={`${k.characterValue} — ${k.meaning}${k.isCompleted ? ' (đã học)' : ''}`}
                 title={k.meaning}
               >
@@ -121,6 +167,53 @@ export default function KanjiList() {
           <Pagination currentPage={page} totalPages={totalPages} onChange={setPage} />
         )}
       </main>
+
+      {selected && (
+        <div className="knj-overlay" role="dialog" aria-modal="true" aria-label={`Chi tiết kanji ${selected.characterValue}`} onClick={closeModal}>
+          <div
+            className="knj-modal"
+            ref={modalRef}
+            tabIndex={-1}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button className="knj-modal-close" onClick={closeModal} aria-label="Đóng">×</button>
+
+            <div className="knj-modal-char" lang="ja">{selected.characterValue}</div>
+            <div className="knj-modal-meaning">{selected.meaning}</div>
+
+            {detailLoading ? (
+              <div className="knj-modal-loading">Đang tải...</div>
+            ) : detail ? (
+              <div className="knj-modal-detail">
+                <div className="knj-modal-row">
+                  <span className="knj-modal-label">On'yomi</span>
+                  <span className="knj-modal-val" lang="ja">{detail.onyomi || '—'}</span>
+                </div>
+                <div className="knj-modal-row">
+                  <span className="knj-modal-label">Kun'yomi</span>
+                  <span className="knj-modal-val" lang="ja">{detail.kunyomi || '—'}</span>
+                </div>
+                <div className="knj-modal-row">
+                  <span className="knj-modal-label">Số nét</span>
+                  <span className="knj-modal-val">{detail.strokeCount}</span>
+                </div>
+                {detail.exampleWord && (
+                  <div className="knj-modal-example">
+                    <span className="knj-modal-label">Ví dụ</span>
+                    <span className="knj-modal-val" lang="ja">{detail.exampleWord}</span>
+                    <span className="knj-modal-reading" lang="ja">（{detail.exampleReading}）</span>
+                    <span className="knj-modal-exmeaning">{detail.exampleMeaning}</span>
+                  </div>
+                )}
+              </div>
+            ) : null}
+
+            <button className="knj-modal-practice-btn" onClick={() => navigate(`/kanji/${selected.kanjiId}`)}>
+              Luyện tập
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

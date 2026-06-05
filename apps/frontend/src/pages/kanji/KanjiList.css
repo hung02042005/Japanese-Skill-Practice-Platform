@@ -17,7 +17,7 @@
 .knj-stats-progress { flex: 1; min-width: 120px; max-width: 300px; }
 .knj-stats-pct { font-size: 14px; font-weight: 700; color: var(--color-text); }
 
-.knj-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #FFEAEA; border: 1px solid var(--color-error); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; color: var(--color-error); }
+.knj-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--color-error-tint); border: 1px solid var(--color-error); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; color: var(--color-error); }
 .knj-retry-btn { background: transparent; border: 1.5px solid var(--color-error); border-radius: var(--radius-full); color: var(--color-error); font-size: 12px; font-weight: 700; padding: 4px 12px; cursor: pointer; }
 
 .knj-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
@@ -29,11 +29,86 @@
 
 .knj-char { font-size: 26px; font-weight: 700; color: var(--color-text); line-height: 1; }
 .knj-cell--done .knj-char { color: var(--color-primary); }
-.knj-done-tick { position: absolute; bottom: 3px; right: 5px; font-size: 11px; color: var(--color-primary); font-weight: 700; }
+.knj-done-tick { position: absolute; bottom: 3px; right: 5px; font-size: 12px; color: var(--color-primary); font-weight: 700; }
 
-.knj-cell-skel { aspect-ratio: 1; border-radius: var(--radius-md); background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%); background-size: 200% 100%; animation: skelPulse 1.4s ease infinite; }
+.knj-cell-skel { aspect-ratio: 1; border-radius: var(--radius-md); background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%); background-size: 200% 100%; animation: skelPulse 1.4s ease infinite; }
 @keyframes skelPulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
 @media (max-width: 1199px) { .knj-grid { grid-template-columns: repeat(6, 1fr); } .knj-char { font-size: 22px; } }
 @media (max-width: 767px)  { .knj-body { padding: 16px 16px 32px; } .knj-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; } .knj-char { font-size: 20px; } }
 @media (prefers-reduced-motion: reduce) { .knj-page * { animation: none !important; transition-duration: 0ms !important; } }
+
+/* ===== Kanji Detail Modal ===== */
+.knj-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  animation: overlayIn 0.18s ease;
+}
+@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+.knj-modal {
+  position: relative;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.22);
+  padding: 36px 40px 28px;
+  min-width: 300px; max-width: 400px; width: 90%;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  animation: modalIn 0.2s cubic-bezier(.34,1.26,.64,1);
+  outline: none;
+}
+@keyframes modalIn { from { opacity: 0; transform: scale(0.88) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+.knj-modal-close {
+  position: absolute; top: 12px; right: 14px;
+  background: transparent; border: none; font-size: 22px; line-height: 1;
+  color: var(--color-text-sub); cursor: pointer; padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition), background var(--transition);
+}
+.knj-modal-close:hover { color: var(--color-text); background: var(--color-border); }
+
+.knj-modal-char {
+  font-size: 96px; font-weight: 700; line-height: 1;
+  color: var(--color-primary);
+  text-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+
+.knj-modal-meaning {
+  font-size: 18px; font-weight: 600; color: var(--color-text);
+  text-align: center;
+}
+
+.knj-modal-loading { font-size: 13px; color: var(--color-text-sub); }
+
+.knj-modal-detail {
+  width: 100%; display: flex; flex-direction: column; gap: 8px;
+  background: var(--color-bg); border-radius: var(--radius-md);
+  padding: 14px 16px; margin-top: 4px;
+}
+
+.knj-modal-row, .knj-modal-example {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+}
+
+.knj-modal-label {
+  font-size: 12px; font-weight: 700; color: var(--color-text-sub);
+  text-transform: uppercase; letter-spacing: 0.04em;
+  min-width: 72px;
+}
+
+.knj-modal-val { font-size: 15px; font-weight: 600; color: var(--color-text); }
+
+.knj-modal-reading { font-size: 13px; color: var(--color-text-sub); }
+.knj-modal-exmeaning { font-size: 13px; color: var(--color-text-sub); }
+
+.knj-modal-practice-btn {
+  margin-top: 8px; padding: 10px 28px;
+  background: var(--color-primary); color: #fff;
+  border: none; border-radius: var(--radius-full);
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+}
+.knj-modal-practice-btn:hover { background: var(--color-primary-dark, var(--color-primary)); transform: scale(1.04); }
+.knj-modal-practice-btn:active { transform: scale(0.97); }

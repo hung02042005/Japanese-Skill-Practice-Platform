@@ -53,8 +53,6 @@ public class DevDataSeeder implements CommandLineRunner {
                 .passwordHash(passwordEncoder.encode("Admin@123456"))
                 .fullName("Quản Trị Viên")
                 .status(AdminUser.AdminStatus.ACTIVE)
-                .twoFactorEnabled(false)
-                .twoFactorSecret(null)
                 .loginAttempts(0)
                 .build();
 

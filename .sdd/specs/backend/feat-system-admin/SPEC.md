@@ -12,14 +12,14 @@
 Để vận hành hệ thống ổn định và an toàn, Quản trị viên cấp cao (Admin) cần một bảng điều khiển trung tâm (Admin Panel) để quản lý cấu hình hệ thống, theo dõi sức khỏe ứng dụng, quản lý phân quyền nhân viên và thiết lập các kịch bản tương tác tự động. Do nắm giữ quyền lực tuyệt đối, tài khoản Admin yêu cầu các hàng rào bảo mật nghiêm ngặt nhất.
 
 ### 1.2 Mục tiêu
-- **Đăng nhập bảo mật 2FA (UC-35):** Triển khai cơ chế đăng nhập Admin Panel bắt buộc đi qua xác thực 2 bước (TOTP - Google Authenticator/Authy).
+- **Đăng nhập bảo mật (UC-35):** Admin đăng nhập bằng Email/Password, nhận JWT trực tiếp.
 - **Dashboard Tổng quan (UC-36):** Hiển thị số liệu thời gian thực về đăng ký người dùng mới, lượng bài thi/quiz thực hiện hàng ngày và trạng thái tài nguyên.
 - **Quản lý phân quyền người dùng (UC-37):** Cấp quyền Admin tạo mới, chỉnh sửa thông tin, đặt lại mật khẩu và chuyển đổi phân quyền giữa các vai trò tài khoản (`admin_users`, `staff_users`, `student_users`).
 - **Cấu hình hệ thống (UC-39):** Lưu trữ các cài đặt kỹ thuật (SMTP, khóa đăng nhập, bảo trì) vào cặp Key-Value lưu trữ trong bảng `system_settings`.
 - **Quản lý quy tắc thông báo tự động (UC-40):** Thiết lập các template thông báo và quy tắc kích hoạt tự động (Notification Rules) khi người dùng đạt mốc streak học tập hoặc thi cử.
 
 ### 1.3 Tại sao cần?
-Không có 2FA cho Admin $\rightarrow$ hệ thống đối mặt với nguy cơ bị hacker brute-force chiếm quyền điều khiển cao nhất, dẫn đến rò rỉ toàn bộ cơ sở dữ liệu. Không có cấu hình cài đặt `system_settings` $\rightarrow$ không thể linh hoạt chuyển đổi chế độ bảo trì hoặc thay đổi máy chủ gửi mail mà không cần phải compile lại mã nguồn backend.
+Không có cấu hình cài đặt `system_settings` $\rightarrow$ không thể linh hoạt chuyển đổi chế độ bảo trì hoặc thay đổi máy chủ gửi mail mà không cần phải compile lại mã nguồn backend.
 
 ---
 
@@ -27,18 +27,18 @@ Không có 2FA cho Admin $\rightarrow$ hệ thống đối mặt với nguy cơ 
 
 | Actor | Role | Điều kiện tiền quyết |
 |:---|:---|:---|
-| **Admin** | Quản trị toàn bộ tài khoản người dùng, cấu hình SMTP/Cài đặt và thiết lập quy tắc tự động | Đã đăng nhập vai trò Admin, trạng thái hoạt động (`status = 'active'`), vượt qua xác thực 2FA |
+| **Admin** | Quản trị toàn bộ tài khoản người dùng, cấu hình SMTP/Cài đặt và thiết lập quy tắc tự động | Đã đăng nhập thành công với vai trò Admin, trạng thái hoạt động (`status = 'active'`) |
 
 ---
 
 ## 3. FUNCTIONAL REQUIREMENTS (EARS)
 
-### 3.1 UC-35 — Đăng nhập xác thực 2 yếu tố (2FA Login)
+### 3.1 UC-35 — Đăng nhập Admin
 
 | ID | EARS Requirement |
 |:---|:---|
-| FR-ADMIN-01 | WHEN an Admin submits valid credentials, IF `two_factor_enabled = 1`, THEN THE SYSTEM SHALL issue a temporary token `2fa_temp` and prompt for the 6-digit TOTP code. |
-| FR-ADMIN-02 | WHEN an Admin submits a valid TOTP code corresponding to the stored `two_factor_secret`, THE SYSTEM SHALL transition the session to active and return a JWT bearer token. |
+| FR-ADMIN-01 | WHEN an Admin submits valid credentials, THE SYSTEM SHALL immediately issue a JWT access token and refresh token with `role = ADMIN`. |
+| FR-ADMIN-02 | WHEN an Admin submits credentials, THE SYSTEM SHALL look up the email in `admin_users` first, then `staff_users`, then `student_users`, and apply the corresponding login flow. |
 | FR-ADMIN-03 | THE SYSTEM SHALL block Admin logins after 5 failed attempts, setting `locked_until = SYSUTCDATETIME() + 15 minutes` to mitigate brute-force attacks. |
 
 ### 3.2 UC-37 — Quản trị phân quyền (User Management)
@@ -63,9 +63,8 @@ Không có 2FA cho Admin $\rightarrow$ hệ thống đối mặt với nguy cơ 
 
 | ID | Category | Requirement |
 |:---|:---|:---|
-| NFR-ADMIN-01 | Security (2FA) | TOTP 2FA phải tuân thủ chuẩn RFC 6238 sử dụng thuật toán HMAC-SHA1 và độ dài mã khóa 6 số tự động thay đổi sau mỗi 30 giây. |
-| NFR-ADMIN-02 | Security | Secret key của 2FA (`two_factor_secret`) phải được mã hóa đối xứng (AES-256) trước khi lưu vào cơ sở dữ liệu. |
-| NFR-ADMIN-03 | Security | Cấu hình mật khẩu SMTP, mã khóa API dịch vụ AI phải được ẩn hoàn toàn trên giao diện cấu hình Admin Panel (chỉ hiển thị dưới dạng dấu sao `*****`). |
+| NFR-ADMIN-01 | Security | Mật khẩu Admin phải dùng bcrypt cost ≥ 12; login endpoint giới hạn 5 request/phút/IP. |
+| NFR-ADMIN-02 | Security | Cấu hình mật khẩu SMTP, mã khóa API dịch vụ AI phải được ẩn hoàn toàn trên giao diện cấu hình Admin Panel (chỉ hiển thị dưới dạng dấu sao `*****`). |
 | NFR-ADMIN-04 | Performance | Dashboard Admin phải tải và hiển thị các số liệu tổng hợp thời gian thực dưới 1.5 giây thông qua việc lập chỉ mục (indexing) tối ưu trên các bảng giao dịch chính. |
 | NFR-ADMIN-05 | Logging | Log mọi hành vi cấu hình và phân quyền của Admin bằng SLF4J gửi tới `admin_audit_logs`. |
 
@@ -127,8 +126,10 @@ erDiagram
 
 ## 6. API SPEC
 
-### `POST /api/admin/login`
+### `POST /api/auth/login`
 **Actor:** Admin | **Auth:** None (Anonymous)
+
+> Dùng chung endpoint với Student/Staff — xem chi tiết tại [UC-35-admin-login.md](./UC-35-admin-login.md).
 
 **Request:**
 ```json
@@ -138,38 +139,20 @@ erDiagram
 }
 ```
 
-**Response (200 OK - 2FA Required):**
-```json
-{
-  "status": 200,
-  "message": "Thông tin tài khoản chính xác. Yêu cầu nhập mã xác thực 2 yếu tố.",
-  "data": {
-    "mfaToken": "temp_mfa_token_abc123",
-    "twoFactorEnabled": true
-  }
-}
-```
-
----
-
-### `POST /api/admin/login/verify-mfa`
-**Actor:** Admin | **Auth:** Bearer JWT (temp_mfa_token)
-
-**Request:**
-```json
-{
-  "totpCode": "562914"
-}
-```
-
 **Response (200 OK):**
 ```json
 {
   "status": 200,
-  "message": "Xác thực 2 yếu tố thành công",
+  "message": "Đăng nhập thành công",
   "data": {
-    "accessToken": "jwt_token_here",
-    "expiresIn": 900
+    "accessToken": "jwt_token (15 phút, role=ADMIN)",
+    "refreshToken": "refresh_token (7 ngày)",
+    "role": "ADMIN",
+    "admin": {
+      "adminId": 1,
+      "fullName": "Admin JLPT",
+      "email": "admin@jlpt.com"
+    }
   }
 }
 ```
@@ -177,7 +160,7 @@ erDiagram
 ---
 
 ### `PUT /api/admin/settings/{settingGroup}/{settingKey}`
-**Actor:** Admin | **Auth:** Bearer JWT (2FA required)
+**Actor:** Admin | **Auth:** Bearer JWT
 
 **Request:**
 ```json
@@ -202,7 +185,7 @@ erDiagram
 ---
 
 ### `POST /api/admin/notification-rules`
-**Actor:** Admin | **Auth:** Bearer JWT (2FA required)
+**Actor:** Admin | **Auth:** Bearer JWT
 
 **Request:**
 ```json
@@ -232,11 +215,12 @@ erDiagram
 
 | HTTP Code | Error Code | Message | Trigger |
 |:---:|:---|:---|:---|
-| 400 | `INVALID_MFA` | "Mã xác thực 2 yếu tố không chính xác" | Nhập sai mã TOTP |
+| 401 | `INVALID_CREDENTIALS` | "Email hoặc mật khẩu không đúng" | Sai mật khẩu hoặc email không tồn tại |
 | 401 | `UNAUTHORIZED` | "Yêu cầu đăng nhập" | JWT token thiếu hoặc hết hạn |
 | 403 | `FORBIDDEN` | "Tài khoản không có quyền quản trị tối cao" | Staff / Student cố tiếp cận API Admin |
-| 403 | `MFA_REQUIRED` | "Yêu cầu xác thực 2 yếu tố" | Chưa qua xác thực 2FA nhưng cố gọi API cấu hình |
+| 403 | `ACCOUNT_SUSPENDED` | "Tài khoản bị đình chỉ. Lý do: {suspend_reason}" | status = 'suspended' |
 | 404 | `SETTING_NOT_FOUND` | "Không tìm thấy cấu hình này" | settingKey sai lệch |
+| 429 | `TOO_MANY_REQUESTS` | "Tài khoản tạm thời bị khóa. Vui lòng thử lại sau {X} phút" | login_attempts ≥ 5 |
 | 500 | `INTERNAL_ERROR` | "Internal server error" | Lỗi hệ thống |
 
 ---
@@ -245,10 +229,9 @@ erDiagram
 
 | ID | Scenario | Given | When | Then |
 |:---|:---|:---|:---|:---|
-| AC-ADMIN-01 | Đăng nhập Admin Panel yêu cầu 2FA | Email/Password chính xác, 2FA enabled | POST /api/admin/login | Trả về status 200 kèm `temp_mfa_token` |
-| AC-ADMIN-02 | Chặn truy cập cấu hình khi chưa xác thực 2FA | Có tài khoản Admin nhưng chưa verify OTP | PUT /settings | Trả về lỗi 403 `MFA_REQUIRED` |
-| AC-ADMIN-03 | Cập nhật cấu hình SMTP thành công | Admin đã xác thực 2FA | PUT /settings/smtp/host | Cập nhật setting_value và ghi log audit |
-| AC-ADMIN-04 | Kích hoạt bảo trì chặn Student | Cấu hình bảo trì = true | Đăng nhập Student | Chặn đăng nhập với thông điệp bảo trì |
+| AC-ADMIN-01 | Đăng nhập Admin thành công | Email/Password chính xác, status = active | POST /api/auth/login | Trả về status 200 kèm `accessToken` và `refreshToken` với role = ADMIN |
+| AC-ADMIN-02 | Cập nhật cấu hình SMTP thành công | Admin đã đăng nhập | PUT /settings/smtp/host | Cập nhật setting_value và ghi log audit |
+| AC-ADMIN-03 | Kích hoạt bảo trì chặn Student | Cấu hình bảo trì = true | Đăng nhập Student | Chặn đăng nhập với thông điệp bảo trì |
 
 ---
 

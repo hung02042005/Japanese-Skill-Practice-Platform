@@ -7,14 +7,15 @@ import { JlptBadge } from '../../components/common/Badges';
 import { useToast, ToastContainer } from '../../components/common/Toast';
 import ContentStatusActions from '../../components/staff/ContentStatusActions';
 import ContentFormModal from '../../components/staff/ContentFormModal';
+import StaffPageHero from '../../components/staff/StaffPageHero';
 import './StaffContent.css';
 
 // ─── Mock Data ──────────────────────────────────────────────────────────────
 
 const MOCK_COURSES = [
-  { id: 1, title: 'Tiếng Nhật N5 Cơ Bản', jlptLevel: 'N5', isVipOnly: false, status: 'published', updatedAt: '01/06/2026', description: 'Khóa học cơ bản cho người mới bắt đầu' },
-  { id: 2, title: 'Tiếng Nhật N4 Tiếp Nối', jlptLevel: 'N4', isVipOnly: false, status: 'pending_review', updatedAt: '02/06/2026', description: 'Nâng cao từ N5 lên N4' },
-  { id: 3, title: 'Tiếng Nhật N3 Trung Cấp', jlptLevel: 'N3', isVipOnly: true, status: 'draft', updatedAt: '03/06/2026', description: 'Dành cho học viên VIP' },
+  { id: 1, title: 'Tiếng Nhật N5 Cơ Bản', jlptLevel: 'N5', status: 'published', updatedAt: '01/06/2026', description: 'Khóa học cơ bản cho người mới bắt đầu' },
+  { id: 2, title: 'Tiếng Nhật N4 Tiếp Nối', jlptLevel: 'N4', status: 'pending_review', updatedAt: '02/06/2026', description: 'Nâng cao từ N5 lên N4' },
+  { id: 3, title: 'Tiếng Nhật N3 Trung Cấp', jlptLevel: 'N3', status: 'draft', updatedAt: '03/06/2026', description: 'Khoá học trình độ trung cấp' },
 ];
 
 const MOCK_LESSONS = [
@@ -209,7 +210,6 @@ export default function StaffContent() {
         <tr>
           <th>Tên khóa học</th>
           <th>Cấp độ</th>
-          <th>VIP</th>
           <th>Trạng thái</th>
           <th>Cập nhật</th>
           <th>Thao tác</th>
@@ -220,7 +220,6 @@ export default function StaffContent() {
           <tr key={item.id}>
             <td>{item.title}</td>
             <td><JlptBadge level={item.jlptLevel} /></td>
-            <td>{item.isVipOnly ? '⭐' : <span style={{ color: 'var(--color-text-disabled)' }}>—</span>}</td>
             <td><StatusBadge status={item.status} /></td>
             <td style={{ color: 'var(--color-text-sub)', fontSize: 13 }}>{item.updatedAt}</td>
             <td>
@@ -408,6 +407,23 @@ export default function StaffContent() {
 
       <main className="sfc-body">
         <h1 className="sfc-visually-hidden">Quản Lý Học Liệu</h1>
+
+        <StaffPageHero
+          accent="gold"
+          title="Quản Lý Học Liệu"
+          subtitle="Soạn thảo khóa học, bài học, từ vựng, ngữ pháp và Kanji theo từng cấp độ JLPT"
+          icon={
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              {/* Cuộn giấy Nhật (巻物) */}
+              <rect x="10" y="14" width="28" height="20" rx="1.5"/>
+              <ellipse cx="10" cy="24" rx="3.5" ry="10"/>
+              <ellipse cx="38" cy="24" rx="3.5" ry="10"/>
+              <line x1="16" y1="20" x2="32" y2="20"/>
+              <line x1="16" y1="25" x2="28" y2="25"/>
+              <line x1="16" y1="30" x2="24" y2="30"/>
+            </svg>
+          }
+        />
 
         {/* Page header */}
         <div className="sfc-page-header">

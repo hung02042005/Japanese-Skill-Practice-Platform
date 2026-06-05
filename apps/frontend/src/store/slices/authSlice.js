@@ -22,20 +22,15 @@ export const loginThunk = createAsyncThunk(
       const res = await authService.login(credentials);
       // Backend LoginApiResponse: field is `user` (not `student`), plus `role` at top level
       const {
-        requiresTwoFactor,
         requirePasswordChange,
-        mfaToken,
         role,
         accessToken,
         refreshToken,
         user,
+        staffRole,
       } = res.data;
-      if (requiresTwoFactor) {
-        // Admin: step-1 challenge — no tokens yet, just mfaToken + role
-        return { requiresTwoFactor: true, mfaToken, role };
-      }
       if (requirePasswordChange) {
-        const userData = { role, requirePasswordChange: true };
+        const userData = { role, staffRole, requirePasswordChange: true };
         localStorage.setItem('accessToken', accessToken);
         localStorage.removeItem('refreshToken');
         localStorage.setItem('jlpt-user', JSON.stringify(userData));
@@ -46,40 +41,18 @@ export const loginThunk = createAsyncThunk(
           role,
         };
       }
-      // Direct login (Student / Staff / Admin without 2FA)
       // For ADMIN direct login, `user` is null — build a minimal object from role
       const userData = user ? { ...user, role } : { role };
+      if (staffRole) userData.staffRole = staffRole;
       localStorage.setItem('accessToken', accessToken);
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('jlpt-user', JSON.stringify(userData));
-      return { requiresTwoFactor: false, user: userData, role };
+      return { user: userData, role };
     } catch (err) {
       if (!err.response) {
         return rejectWithValue('Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối và thử lại.');
       }
       return rejectWithValue(err.response.data?.message ?? 'Đăng nhập thất bại');
-    }
-  },
-);
-
-export const verifyMfaThunk = createAsyncThunk(
-  'auth/verifyMfa',
-  async ({ mfaToken, totpCode }, { rejectWithValue }) => {
-    try {
-      const res = await authService.verifyMfa({ mfaToken, totpCode });
-      // AdminVerifyMfaResponse: { accessToken, refreshToken, admin: { adminId, fullName, email } }
-      const { accessToken, refreshToken, admin } = res.data;
-      // Tag the admin object with role so AdminRoute / AdminTopNav can identify it
-      const adminWithRole = { ...admin, role: 'ADMIN' };
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      localStorage.setItem('jlpt-user', JSON.stringify(adminWithRole));
-      return adminWithRole;
-    } catch (err) {
-      if (!err.response) {
-        return rejectWithValue('Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối và thử lại.');
-      }
-      return rejectWithValue(err.response.data?.message ?? 'Xác thực 2 yếu tố thất bại');
     }
   },
 );
@@ -253,25 +226,16 @@ const authSlice = createSlice({
     isAuthenticated: persistedUser !== null,
     status: 'idle',   // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
-    requiresTwoFactor: false,
-    mfaToken: null,
-    tempRole: null,
   },
   reducers: {
     clearError(state) {
       state.error = null;
-      state.requiresTwoFactor = false;
-      state.mfaToken = null;
-      state.tempRole = null;
     },
     logout(state) {
       state.user = null;
       state.isAuthenticated = false;
       state.status = 'idle';
       state.error = null;
-      state.requiresTwoFactor = false;
-      state.mfaToken = null;
-      state.tempRole = null;
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('jlpt-user');
@@ -286,41 +250,13 @@ const authSlice = createSlice({
       })
       .addCase(loginThunk.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        if (action.payload.requiresTwoFactor) {
-          state.requiresTwoFactor = true;
-          state.mfaToken = action.payload.mfaToken;
-          state.tempRole = action.payload.role;
-          state.isAuthenticated = false;
-        } else {
-          state.user = action.payload.user;
-          state.isAuthenticated = true;
-          state.requiresTwoFactor = false;
-          state.mfaToken = null;
-          state.tempRole = null;
-        }
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
       })
       .addCase(loginThunk.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       })
-      // verifyMfa
-      .addCase(verifyMfaThunk.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(verifyMfaThunk.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.user = action.payload;
-        state.isAuthenticated = true;
-        state.requiresTwoFactor = false;
-        state.mfaToken = null;
-        state.tempRole = null;
-      })
-      .addCase(verifyMfaThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
-      })
-
       // register
       .addCase(registerThunk.pending, (state) => {
         state.status = 'loading';

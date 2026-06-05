@@ -16,16 +16,31 @@ const ChevronRight = () => (
   </svg>
 );
 
+const TYPE_ROUTES = {
+  KANJI:     (level) => `/kanji?level=${level}`,
+  VOCAB:     (level) => `/vocabulary?level=${level}`,
+  GRAMMAR:   (level) => `/grammar?level=${level}`,
+  READING:   (level) => `/reading?level=${level}`,
+  LISTENING: (level) => `/listening?level=${level}`,
+  KANA:      (_,     title) => title?.toLowerCase().includes('katakana') ? '/kana?script=katakana' : '/kana?script=hiragana',
+};
+
 function LessonCard({ lesson }) {
   const navigate = useNavigate();
-  const { id, title, description, jlptLevel, status, progress, thumbnail } = lesson;
+  const { id, title, description, jlptLevel, lessonType, status, progress, thumbnail } = lesson;
 
   const isLocked    = status === 'locked';
   const isActive    = status === 'active';
   const progressPct = Math.round((progress ?? 0) * 100);
 
   function handleClick() {
-    if (!isLocked) navigate(`/learn/${id}`);
+    if (isLocked) return;
+    const routeFn = TYPE_ROUTES[lessonType];
+    if (routeFn) {
+      navigate(routeFn(jlptLevel, title));
+    } else {
+      navigate(`/lessons/${id}`);
+    }
   }
 
   const Tag = isLocked ? 'div' : 'button';

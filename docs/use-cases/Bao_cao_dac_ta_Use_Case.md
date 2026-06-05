@@ -762,15 +762,14 @@ Phần này đặc tả 6 Use Case cốt lõi của Quản trị viên - ngườ
 | **Mã Use Case** | UC-35 |
 | **Tên Use Case** | Login System (Đăng nhập Admin Panel) |
 | **Tác nhân** | Admin |
-| **Mô tả** | Admin đăng nhập vào bảng điều khiển quản trị hệ thống (Admin Panel) bằng Email/Password, tích hợp xác thực 2 bước (2FA). |
+| **Mô tả** | Admin đăng nhập vào bảng điều khiển quản trị hệ thống (Admin Panel) bằng Email/Password, nhận JWT trực tiếp sau khi xác thực thành công. |
 | **Tiền điều kiện** | Tài khoản Admin đã được kích hoạt trên hệ thống. |
 
 - **Luồng cơ bản:**
-  1. Admin truy cập trang đăng nhập dành riêng cho Admin, nhập Email và Mật khẩu.
+  1. Admin truy cập trang đăng nhập chung, nhập Email và Mật khẩu.
   2. Hệ thống kiểm tra thông tin tài khoản.
-  3. Nếu thông tin chính xác và bật 2FA $\rightarrow$ yêu cầu nhập mã OTP từ ứng dụng xác thực di động (Google Authenticator).
-  4. Nhập mã OTP hợp lệ $\rightarrow$ Đăng nhập thành công và chuyển hướng đến Admin Dashboard.
-- **Bảng dữ liệu liên quan:** `admin_users` (two_factor_enabled, two_factor_secret), `auth_tokens` (token_type='session')
+  3. Thông tin chính xác $\rightarrow$ Cấp JWT access token và refresh token, chuyển hướng đến Admin Dashboard.
+- **Bảng dữ liệu liên quan:** `admin_users`, `auth_tokens` (token_type='refresh')
 
 ---
 

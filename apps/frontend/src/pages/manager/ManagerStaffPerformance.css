@@ -1,0 +1,261 @@
+/* ===== ManagerStaffPerformance ===== */
+
+.msp-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  font-family: var(--font-base);
+}
+
+.msp-body {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+}
+
+/* Summary row */
+
+.msp-summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.msp-summary-card {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  border-left: 4px solid var(--color-border);
+}
+
+.msp-summary-card--green  { border-left-color: var(--color-secondary); }
+.msp-summary-card--amber  { border-left-color: var(--color-accent); }
+.msp-summary-card--pink   { border-left-color: var(--color-primary); }
+
+.msp-summary-value {
+  display: block;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.msp-summary-label {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-sub);
+  font-weight: 600;
+}
+
+/* Toolbar */
+
+.msp-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.msp-search {
+  height: 38px;
+  padding: 0 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-card);
+  color: var(--color-text);
+  font-size: 13px;
+  font-family: var(--font-base);
+  width: 280px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.msp-search:focus {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(93,187,105,0.15);
+}
+
+/* Table */
+
+.msp-table-wrap {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+
+.msp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.msp-table thead tr {
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.msp-table th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.msp-th-sort {
+  cursor: pointer;
+  user-select: none;
+}
+
+.msp-th-sort:hover {
+  color: var(--color-text);
+}
+
+.msp-sort-icon {
+  margin-left: 4px;
+  color: var(--color-secondary);
+}
+
+.msp-sort-icon--inactive {
+  color: var(--color-text-disabled);
+}
+
+.msp-table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background var(--transition);
+}
+
+.msp-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.msp-table tbody tr:hover {
+  background: var(--color-bg);
+}
+
+.msp-table td {
+  padding: 14px 16px;
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+/* Staff cell */
+
+.msp-staff-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.msp-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--color-secondary-bg);
+  color: var(--color-secondary);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.msp-staff-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 2px 0;
+}
+
+.msp-staff-email {
+  font-size: 11px;
+  color: var(--color-text-sub);
+  margin: 0;
+}
+
+/* Number cells */
+
+.msp-td-num {
+  font-weight: 700;
+  font-size: 15px;
+  text-align: center;
+}
+
+.msp-td-green { color: var(--color-secondary); }
+.msp-td-red   { color: var(--color-error); }
+
+.msp-td-date {
+  font-size: 12px;
+  color: var(--color-text-sub);
+  white-space: nowrap;
+}
+
+/* Approval bar */
+
+.msp-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.msp-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.msp-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+}
+
+.msp-bar-pct {
+  font-size: 12px;
+  font-weight: 700;
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Badges */
+
+.msp-badge-pending {
+  background: var(--color-accent-bg);
+  color: var(--color-text);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+.msp-badge-clear {
+  color: var(--color-text-disabled);
+  font-size: 13px;
+}
+
+/* Responsive */
+
+@media (max-width: 1024px) {
+  .msp-summary-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .msp-body { padding: 20px 16px 40px; }
+  .msp-table-wrap { overflow-x: auto; }
+  .msp-table { min-width: 700px; }
+  .msp-search { width: 100%; }
+  .msp-summary-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .msp-summary-row { grid-template-columns: 1fr; }
+}

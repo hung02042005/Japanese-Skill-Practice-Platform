@@ -325,9 +325,8 @@ th:
 |:---|:---|:---|
 | 1 | Người dùng | Avatar + Tên + Email |
 | 2 | Trạng thái | `StatusBadge` |
-| 3 | 2FA | `Bật` (green chip) / `Tắt` (gray chip) |
-| 4 | Đăng nhập lần cuối | Relative time |
-| 5 | Ngày tạo | DD/MM/YYYY |
+| 3 | Đăng nhập lần cuối | Relative time |
+| 4 | Ngày tạo | DD/MM/YYYY |
 | — | Thao tác | **Không có** (Admin không chỉnh sửa Admin khác) |
 
 ### 8.2 Table rows — `.mu-tr`
@@ -374,12 +373,6 @@ hover: background: var(--color-bg)
 staff:         chip background: var(--color-primary-bg), color: --color-primary-dark
 staff_manager: chip background: #FFF3E0, color: #E65100
 padding: 3px 10px, border-radius: full, font: 11px/700
-```
-
-**Ô "2FA" (Admin):**
-```
-Bật:  background: var(--color-secondary-bg), color: --color-secondary,  font: 11px/700, border-radius: full, padding: 3px 8px
-Tắt:  background: var(--color-bg),           color: --color-text-disabled, border: 1px solid --color-border
 ```
 
 ### 8.3 Action buttons — `.mu-actions`

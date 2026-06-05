@@ -11,7 +11,7 @@
 .lsn-header-meta { display: flex; flex-direction: column; gap: 8px; }
 .lsn-title { font-size: 22px; font-weight: 700; color: var(--color-text); margin: 0; }
 .lsn-meta-row { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; color: var(--color-text-sub); }
-.lsn-meta-chip { background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-full); padding: 2px 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.lsn-meta-chip { background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-full); padding: 2px 10px; font-size: 12px; font-weight: 700; }
 .lsn-meta-dot  { color: var(--color-border); }
 .lsn-progress-row { display: flex; align-items: center; gap: 10px; }
 .lsn-progress-label { font-size: 12px; font-weight: 600; color: var(--color-text-sub); white-space: nowrap; }
@@ -74,7 +74,7 @@
   display: inline-flex; align-items: center; gap: 7px; height: 44px; padding: 0 28px;
   border-radius: var(--radius-full); font-size: 14px; font-weight: 700; cursor: pointer;
   border: none; background: var(--color-secondary); color: white;
-  box-shadow: 0 2px 8px rgba(93,187,105,0.25);
+  box-shadow: var(--shadow-secondary);
   transition: filter var(--transition), transform var(--transition), background var(--transition);
 }
 .lsn-complete-btn:hover:not(:disabled) { filter: brightness(1.07); }
@@ -82,10 +82,10 @@
 .lsn-complete-btn:disabled { cursor: not-allowed; }
 .lsn-complete-btn--done { background: var(--color-primary-bg); color: var(--color-primary); box-shadow: none; border: 1.5px solid var(--color-primary-light); }
 
-.lsn-error-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #FFEAEA; border: 1px solid var(--color-error); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; color: var(--color-error); }
+.lsn-error-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--color-error-tint); border: 1px solid var(--color-error); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; color: var(--color-error); }
 .lsn-retry-btn { background: transparent; border: 1.5px solid var(--color-error); border-radius: var(--radius-full); color: var(--color-error); font-size: 12px; font-weight: 700; padding: 4px 12px; cursor: pointer; }
 
-.lsn-skel { border-radius: var(--radius-lg); background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%); background-size: 200% 100%; animation: skelPulse 1.4s ease infinite; }
+.lsn-skel { border-radius: var(--radius-lg); background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%); background-size: 200% 100%; animation: skelPulse 1.4s ease infinite; }
 .lsn-skel--header  { height: 120px; }
 .lsn-skel--content { height: 300px; }
 @keyframes skelPulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }

@@ -11,11 +11,14 @@ const NAV_TABS = [
     label: 'Tổng quan',
     route: '/staff',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-        <rect x="14" y="14" width="7" height="7" rx="1" />
+      // Hoa anh đào 5 cánh — biểu tượng thương hiệu SakuJi
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <ellipse cx="12" cy="6.5" rx="2" ry="3.5" transform="rotate(0 12 12)"/>
+        <ellipse cx="12" cy="6.5" rx="2" ry="3.5" transform="rotate(72 12 12)"/>
+        <ellipse cx="12" cy="6.5" rx="2" ry="3.5" transform="rotate(144 12 12)"/>
+        <ellipse cx="12" cy="6.5" rx="2" ry="3.5" transform="rotate(216 12 12)"/>
+        <ellipse cx="12" cy="6.5" rx="2" ry="3.5" transform="rotate(288 12 12)"/>
+        <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
       </svg>
     ),
   },
@@ -24,9 +27,13 @@ const NAV_TABS = [
     label: 'Học liệu',
     route: '/staff/content',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      // Cuộn giấy Nhật (巻物) — tài liệu / học liệu
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="6" y="7" width="12" height="10" rx="1"/>
+        <ellipse cx="6" cy="12" rx="1.5" ry="5"/>
+        <ellipse cx="18" cy="12" rx="1.5" ry="5"/>
+        <line x1="9" y1="10.5" x2="15" y2="10.5"/>
+        <line x1="9" y1="13.5" x2="13" y2="13.5"/>
       </svg>
     ),
   },
@@ -35,11 +42,12 @@ const NAV_TABS = [
     label: 'Ngân hàng câu hỏi',
     route: '/staff/questions',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
-        <rect x="9" y="3" width="6" height="4" rx="1" />
-        <line x1="9" y1="12" x2="15" y2="12" />
-        <line x1="9" y1="16" x2="13" y2="16" />
+      // Cổng Torii (鳥居) — cửa vào kho câu hỏi
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M2 9 L5 7.5 L19 7.5 L22 9"/>
+        <line x1="5" y1="11.5" x2="19" y2="11.5"/>
+        <line x1="8" y1="9" x2="8" y2="21"/>
+        <line x1="16" y1="9" x2="16" y2="21"/>
       </svg>
     ),
   },
@@ -48,10 +56,12 @@ const NAV_TABS = [
     label: 'Đề thi & Quiz',
     route: '/staff/assessments',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
-        <rect x="9" y="3" width="6" height="4" rx="1" />
-        <polyline points="9 12 11 14 15 10" />
+      // Tờ giấy thi với dấu tích — kết quả & đề thi
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M5 3h9l5 5v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/>
+        <polyline points="14 3 14 8 19 8"/>
+        <polyline points="8 13 11 16 16 11"/>
+        <circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/>
       </svg>
     ),
   },
@@ -60,8 +70,11 @@ const NAV_TABS = [
     label: 'Hỗ trợ',
     route: '/staff/tickets',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      // Hạc giấy origami (折り鶴) — nhẹ nhàng, hỗ trợ
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M2 15 Q7 8 12 11 Q17 8 22 15"/>
+        <path d="M12 11 L11 16 L9 20"/>
+        <path d="M12 11 Q14 7 16 5"/>
       </svg>
     ),
   },
@@ -70,11 +83,15 @@ const NAV_TABS = [
     label: 'Chấm bài nói',
     route: '/staff/grading',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-        <line x1="12" y1="19" x2="12" y2="23" />
-        <line x1="8" y1="23" x2="16" y2="23" />
+      // Quạt xếp (扇子) — âm thanh / bài nói
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <line x1="12" y1="18" x2="4" y2="8"/>
+        <line x1="12" y1="18" x2="8" y2="5"/>
+        <line x1="12" y1="18" x2="12" y2="4"/>
+        <line x1="12" y1="18" x2="16" y2="5"/>
+        <line x1="12" y1="18" x2="20" y2="8"/>
+        <path d="M4 8 Q8 3.5 12 4 Q16 3.5 20 8"/>
+        <circle cx="12" cy="18" r="1.5" fill="currentColor" stroke="none"/>
       </svg>
     ),
   },
@@ -83,35 +100,40 @@ const NAV_TABS = [
     label: 'Thông báo',
     route: '/staff/notifications',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+      // Chuông gió (風鈴) — thông báo rung nhẹ
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <line x1="12" y1="2" x2="12" y2="4"/>
+        <path d="M9 10 C9 6.5 10.5 4 12 4 C13.5 4 15 6.5 15 10 L16 14 L8 14 Z"/>
+        <path d="M8 14 Q12 16.5 16 14"/>
+        <line x1="12" y1="16.5" x2="12" y2="18.5"/>
+        <circle cx="12" cy="19.5" r="1" fill="currentColor" stroke="none"/>
+        <line x1="10.5" y1="20.5" x2="13.5" y2="20.5"/>
+        <line x1="12" y1="20.5" x2="12" y2="22"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'staff-students',
+    label: 'Học viên',
+    route: '/staff/students',
+    icon: (
+      // Cây anh đào với học viên (学生) — theo dõi và quản lý học viên
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="9" cy="6" r="2.5"/>
+        <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+        <circle cx="18" cy="9" r="2"/>
+        <path d="M15 21v-1.5a3 3 0 0 1 6 0V21"/>
       </svg>
     ),
   },
 ];
-
-const MANAGER_TAB = {
-  id: 'staff-review',
-  label: 'Hàng đợi duyệt',
-  route: '/staff/review-queue',
-  icon: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polyline points="9 11 12 14 22 4" />
-      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-    </svg>
-  ),
-};
 
 function StaffTopNav({ activeTab }) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
 
-  const visibleTabs = [
-    ...NAV_TABS,
-    ...(user?.staffRole === 'staff_manager' ? [MANAGER_TAB] : []),
-  ];
+  const visibleTabs = NAV_TABS;
 
   const handleLogout = async () => {
     await dispatch(logoutThunk());

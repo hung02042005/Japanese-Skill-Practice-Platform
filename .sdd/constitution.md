@@ -15,7 +15,7 @@
 | Database | SQL Server | KHÔNG dùng NoSQL |
 | ORM | Spring Data JPA + Hibernate | |
 | Migration | Flyway / Liquibase | Mọi thay đổi schema BẮT BUỘC có migration |
-| Auth | JWT + bcrypt (cost >= 12) + 2FA (Admin) | |
+| Auth | JWT + bcrypt (cost >= 12) | |
 | Testing | JUnit 5 + Mockito / Jest | |
 | Styling | Tailwind CSS | KHÔNG dùng CSS-in-JS |
 
@@ -81,7 +81,7 @@
 |------|---------------|-----------|
 | Password hashing | `bcrypt` cost >= **12** | **NEVER** dưới 10 |
 | JWT tokens | Short expiry + Refresh token | Blacklist khi logout |
-| Admin 2FA | Bắt buộc TOTP | Không được bypass |
+| Admin audit log | Bắt buộc ghi log mọi thao tác | Không được bỏ qua |
 
 ### 3.2. Data Protection
 
@@ -130,7 +130,7 @@ Types: feat | fix | docs | style | refactor | test | chore
 Max: 72 ký tự
 
 Ví dụ:
-feat(auth): add JWT login with 2FA for admin
+feat(auth): add JWT login for admin
 fix(quiz): prevent duplicate attempt on submit
 test(quiz): add unit test for score calculation
 ```

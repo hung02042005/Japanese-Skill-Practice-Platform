@@ -8,7 +8,6 @@ import StaffSetupPassword from './pages/forgot-password/StaffSetupPassword';
 import Register from './pages/register/Register';
 import Home from './pages/home/Home';
 import Features from './pages/features/Features';
-import Pricing from './pages/pricing/Pricing';
 import Blog from './pages/blog/Blog';
 import Dashboard from './pages/dashboard/Dashboard';
 import VerifyEmail from './pages/verify-email/VerifyEmail';
@@ -23,8 +22,6 @@ import MockTestList from './pages/mock-test/MockTestList';
 import MockTestAttempt from './pages/mock-test/MockTestAttempt';
 import MockTestResults from './pages/mock-test/MockTestResults';
 import Progress from './pages/progress/Progress';
-import Subscription from './pages/subscription/Subscription';
-import SubscriptionSuccess from './pages/subscription/SubscriptionSuccess';
 import KanjiList from './pages/kanji/KanjiList';
 import KanjiPractice from './pages/kanji/KanjiPractice';
 import Certificates from './pages/certificates/Certificates';
@@ -37,12 +34,30 @@ import Forbidden from './pages/error/Forbidden';
 import ManageUsers     from './pages/admin/ManageUsers';
 import AdminDashboard  from './pages/admin/AdminDashboard';
 import AdminSettings   from './pages/admin/AdminSettings';
+import AdminReports    from './pages/admin/AdminReports';
+import AdminContent    from './pages/admin/AdminContent';
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute   from './components/common/AdminRoute';
-import StaffRoute   from './components/common/StaffRoute';
-import StaffDashboard  from './pages/staff/StaffDashboard';
-import StaffContent    from './pages/staff/StaffContent';
-import StaffQuestions  from './pages/staff/StaffQuestions';
+import StaffRoute        from './components/common/StaffRoute';
+import ManagerRoute      from './components/common/ManagerRoute';
+import ManagerDashboard      from './pages/manager/ManagerDashboard';
+import ManagerReviewQueue    from './pages/manager/ManagerReviewQueue';
+import ManagerStaffPerformance from './pages/manager/ManagerStaffPerformance';
+import ManagerContentPipeline  from './pages/manager/ManagerContentPipeline';
+import ManagerReports          from './pages/manager/ManagerReports';
+import StaffDashboard    from './pages/staff/StaffDashboard';
+import StaffContent      from './pages/staff/StaffContent';
+import StaffQuestions    from './pages/staff/StaffQuestions';
+import StaffAssessments  from './pages/staff/StaffAssessments';
+import StaffTickets      from './pages/staff/StaffTickets';
+import StaffGrading      from './pages/staff/StaffGrading';
+import StaffNotifications from './pages/staff/StaffNotifications';
+import StaffReviewQueue  from './pages/staff/StaffReviewQueue';
+import StaffStudents    from './pages/staff/StaffStudents';
+import KanaList         from './pages/kana/KanaList';
+import VocabularyList   from './pages/vocabulary/VocabularyList';
+import QuizPage         from './pages/quiz/QuizPage';
+import SpeakingPage     from './pages/speaking/SpeakingPage';
 
 function App() {
   return (
@@ -51,7 +66,6 @@ function App() {
         {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/tinh-nang" element={<Features />} />
-        <Route path="/bang-gia" element={<Pricing />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -72,12 +86,10 @@ function App() {
         <Route path="/review"       element={<PrivateRoute><Review /></PrivateRoute>} />
         <Route path="/lessons/:id"  element={<PrivateRoute><LessonDetail /></PrivateRoute>} />
         <Route path="/flashcard"    element={<PrivateRoute><Flashcard /></PrivateRoute>} />
-        <Route path="/mock-tests"           element={<PrivateRoute><MockTestList /></PrivateRoute>} />
-        <Route path="/mock-tests/:id"       element={<PrivateRoute><MockTestAttempt /></PrivateRoute>} />
-        <Route path="/mock-tests/:id/results" element={<PrivateRoute><MockTestResults /></PrivateRoute>} />
+        <Route path="/mock-test"                    element={<PrivateRoute><MockTestList /></PrivateRoute>} />
+        <Route path="/mock-test/:id/attempt"        element={<PrivateRoute><MockTestAttempt /></PrivateRoute>} />
+        <Route path="/mock-test/:id/results"        element={<PrivateRoute><MockTestResults /></PrivateRoute>} />
         <Route path="/progress"     element={<PrivateRoute><Progress /></PrivateRoute>} />
-        <Route path="/subscription"         element={<PrivateRoute><Subscription /></PrivateRoute>} />
-        <Route path="/subscription/success" element={<PrivateRoute><SubscriptionSuccess /></PrivateRoute>} />
         <Route path="/kanji"        element={<PrivateRoute><KanjiList /></PrivateRoute>} />
         <Route path="/kanji/:id"    element={<PrivateRoute><KanjiPractice /></PrivateRoute>} />
         <Route path="/certificates" element={<PrivateRoute><Certificates /></PrivateRoute>} />
@@ -85,16 +97,35 @@ function App() {
         <Route path="/dictionary"   element={<PrivateRoute><Dictionary /></PrivateRoute>} />
         <Route path="/reading"      element={<PrivateRoute><Reading /></PrivateRoute>} />
         <Route path="/listening"    element={<PrivateRoute><Listening /></PrivateRoute>} />
+        <Route path="/kana"         element={<PrivateRoute><KanaList /></PrivateRoute>} />
+        <Route path="/vocabulary"   element={<PrivateRoute><VocabularyList /></PrivateRoute>} />
+        <Route path="/quiz"         element={<PrivateRoute><QuizPage /></PrivateRoute>} />
+        <Route path="/speaking"     element={<PrivateRoute><SpeakingPage /></PrivateRoute>} />
 
         {/* Protected — Staff */}
-        <Route path="/staff"           element={<StaffRoute><StaffDashboard /></StaffRoute>} />
-        <Route path="/staff/content"   element={<StaffRoute><StaffContent /></StaffRoute>} />
-        <Route path="/staff/questions" element={<StaffRoute><StaffQuestions /></StaffRoute>} />
+        <Route path="/staff"                 element={<StaffRoute><StaffDashboard /></StaffRoute>} />
+        <Route path="/staff/content"         element={<StaffRoute><StaffContent /></StaffRoute>} />
+        <Route path="/staff/questions"       element={<StaffRoute><StaffQuestions /></StaffRoute>} />
+        <Route path="/staff/assessments"     element={<StaffRoute><StaffAssessments /></StaffRoute>} />
+        <Route path="/staff/tickets"         element={<StaffRoute><StaffTickets /></StaffRoute>} />
+        <Route path="/staff/grading"         element={<StaffRoute><StaffGrading /></StaffRoute>} />
+        <Route path="/staff/notifications"   element={<StaffRoute><StaffNotifications /></StaffRoute>} />
+        <Route path="/staff/review-queue"    element={<StaffRoute><StaffReviewQueue /></StaffRoute>} />
+        <Route path="/staff/students"        element={<StaffRoute><StaffStudents /></StaffRoute>} />
+
+        {/* Protected — Manager (staff_manager role) */}
+        <Route path="/manager"                    element={<ManagerRoute><ManagerDashboard /></ManagerRoute>} />
+        <Route path="/manager/review-queue"       element={<ManagerRoute><ManagerReviewQueue /></ManagerRoute>} />
+        <Route path="/manager/staff-performance"  element={<ManagerRoute><ManagerStaffPerformance /></ManagerRoute>} />
+        <Route path="/manager/content-pipeline"   element={<ManagerRoute><ManagerContentPipeline /></ManagerRoute>} />
+        <Route path="/manager/reports"            element={<ManagerRoute><ManagerReports /></ManagerRoute>} />
 
         {/* Protected — Admin */}
-        <Route path="/admin"          element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-        <Route path="/admin/users"    element={<AdminRoute><ManageUsers /></AdminRoute>} />
-        <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+        <Route path="/admin"           element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+        <Route path="/admin/users"     element={<AdminRoute><ManageUsers /></AdminRoute>} />
+        <Route path="/admin/content"   element={<AdminRoute><AdminContent /></AdminRoute>} />
+        <Route path="/admin/settings"  element={<AdminRoute><AdminSettings /></AdminRoute>} />
+        <Route path="/admin/reports"   element={<AdminRoute><AdminReports /></AdminRoute>} />
 
         {/* Catch-all */}
         <Route path="*" element={<NotFound />} />

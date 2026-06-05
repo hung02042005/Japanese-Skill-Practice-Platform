@@ -134,7 +134,7 @@ export default function Certificates() {
                 mascotVariant="idle"
                 mascotSize={160}
               >
-                <Link to="/learn/new" className="crt-cta-btn">Học bài ngay →</Link>
+                <Link to="/learn" className="crt-cta-btn">Học bài ngay →</Link>
               </EmptyState>
             )}
           </>

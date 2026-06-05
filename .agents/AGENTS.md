@@ -192,7 +192,7 @@ Entity (JPA)  ──mapping──►  DTO (Request/Response)  ──►  API
 | 3 | Subscription hết hạn check **real-time** — cache tối đa **5 phút** |
 | 4 | Thay đổi subscription phải có audit log + `payment_reference` |
 | 5 | Webhook thanh toán phải implement **idempotency key** |
-| 6 | Admin bắt buộc **2FA (TOTP)** — không bypass |
+| 6 | Admin phải có audit log cho mọi thao tác quan trọng |
 
 ### 7.4. Luật Soft Delete
 

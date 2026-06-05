@@ -41,8 +41,6 @@ CREATE TABLE admin_users (
     login_attempts       INT             NOT NULL DEFAULT 0,
     locked_until         DATETIME2       NULL,
     last_login_at        DATETIME2       NULL,
-    two_factor_enabled   BIT             NOT NULL DEFAULT 0,
-    two_factor_secret    NVARCHAR(255)   NULL,
 
     created_at           DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME(),
     updated_at           DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME()
@@ -130,7 +128,7 @@ CREATE TABLE auth_tokens (
     staff_id        BIGINT          NULL,
     student_id      BIGINT          NULL,
     token_type      NVARCHAR(30)    NOT NULL
-        CHECK (token_type IN ('session','email_verification','password_reset','2fa_temp','refresh')),
+        CHECK (token_type IN ('session','email_verification','password_reset','refresh')),
     token_value     NVARCHAR(500)   NOT NULL,
     ip_address      NVARCHAR(45)    NULL,
     expires_at      DATETIME2       NOT NULL,

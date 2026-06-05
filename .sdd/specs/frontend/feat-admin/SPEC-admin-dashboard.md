@@ -1,6 +1,6 @@
 # SPEC — Admin Dashboard (Tổng quan)
 > **Feature ID:** `feat-admin` | **Page:** `AdminDashboard`
-> **Route:** `/admin` (redirect về đây sau login 2FA thành công)
+> **Route:** `/admin` (redirect về đây sau login thành công)
 > **Version:** 1.0 | **Status:** Draft
 > **Author:** Team | **Last Updated:** 2026-06-02
 > **Design ref:** `DESIGN.md` — SakuJi · Hanami E-learning
@@ -323,7 +323,7 @@ hover:
 ## 8. API
 
 ### `GET /api/admin/dashboard/summary`
-**Auth:** Bearer JWT (2FA required)
+**Auth:** Bearer JWT
 
 **Response (200):**
 ```json
@@ -343,7 +343,7 @@ hover:
 ---
 
 ### `GET /api/admin/audit-log?page=0&size=10`
-**Auth:** Bearer JWT (2FA required)
+**Auth:** Bearer JWT
 
 **Response (200):**
 ```json

@@ -21,7 +21,6 @@ function TopBar() {
 
         <nav className="topbar-nav" aria-label="Điều hướng chính">
           <Link to="/tinh-nang" className="topbar-nav-link">Tính năng</Link>
-          <Link to="/bang-gia" className="topbar-nav-link">Bảng giá</Link>
           <Link to="/blog" className="topbar-nav-link">Blog</Link>
         </nav>
 
@@ -51,7 +50,6 @@ function TopBar() {
       {menuOpen && (
         <nav className="topbar-drawer" aria-label="Menu điều hướng di động">
           <Link to="/tinh-nang" className="topbar-drawer-link" onClick={closeMenu}>Tính năng</Link>
-          <Link to="/bang-gia" className="topbar-drawer-link" onClick={closeMenu}>Bảng giá</Link>
           <Link to="/blog" className="topbar-drawer-link" onClick={closeMenu}>Blog</Link>
           <div className="topbar-drawer-actions">
             <button className="topbar-btn-login" onClick={() => { navigate('/login'); closeMenu(); }}>

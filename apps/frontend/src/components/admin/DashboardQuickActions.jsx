@@ -3,6 +3,18 @@ import { IcMail, IcShield, IcWrench, IcBell, TAB_ICONS } from './ManageUsersIcon
 
 const QUICK_ITEMS = [
   {
+    to:       '/admin/reports',
+    iconBg:   '#E8F5E9',
+    iconColor:'#2E7D32',
+    icon:     (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <line x1="3" y1="20" x2="21" y2="20"/><rect x="4" y="13" width="4" height="7" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="10" width="4" height="10" rx="1"/>
+      </svg>
+    ),
+    label:    'Báo cáo',
+    desc:     'Dữ liệu hệ thống & nội dung',
+  },
+  {
     to:       '/admin/users',
     iconBg:   'var(--color-primary-bg)',
     iconColor:'var(--color-primary)',

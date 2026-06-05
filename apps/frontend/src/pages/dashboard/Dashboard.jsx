@@ -5,11 +5,25 @@ import { fetchDashboardThunk } from '../../store/slices/studentSlice';
 import TopNav from '../../components/layout/TopNav';
 import { EmptyState } from '../../components/common/EmptyState';
 import StreakCard from '../../components/student/StreakCard';
-import HeroBanner from '../../components/student/HeroBanner';
+import CoursePickerBanner from '../../components/student/CoursePickerBanner';
 import LessonList from '../../components/student/LessonList';
 import QuickActionCard from '../../components/student/QuickActionCard';
 import MiniStatCard from '../../components/student/MiniStatCard';
+import {
+  KanaIcon, VocabIcon, QuizIcon, MicIcon,
+  ReadingIcon, HeadphonesIcon, CertificateIcon,
+} from '../../components/student/StudentIcons';
 import './Dashboard.css';
+
+const FEATURE_SHORTCUTS = [
+  { Icon: KanaIcon,        label: 'Bảng chữ Kana', route: '/kana' },
+  { Icon: VocabIcon,       label: 'Từ vựng',        route: '/vocabulary' },
+  { Icon: QuizIcon,        label: 'Bài tập Quiz',   route: '/quiz' },
+  { Icon: MicIcon,         label: 'Luyện nói',      route: '/speaking' },
+  { Icon: ReadingIcon,     label: 'Đọc hiểu',       route: '/reading' },
+  { Icon: HeadphonesIcon,  label: 'Nghe hiểu',      route: '/listening' },
+  { Icon: CertificateIcon, label: 'Chứng chỉ',      route: '/certificates' },
+];
 
 function SkeletonBlock({ className }) {
   return <div className={`db-skeleton ${className ?? ''}`} aria-hidden="true" />;
@@ -18,11 +32,14 @@ function SkeletonBlock({ className }) {
 function Dashboard() {
   const dispatch  = useAppDispatch();
   const navigate  = useNavigate();
-  const { streak, weekDays, course, lessons, wordCount, daysThisMonth, status } =
+  const { streak, weekDays, lessons, wordCount, daysThisMonth, status, selectedLevel } =
     useAppSelector((state) => state.student);
 
-  const isLoading  = status === 'loading';
-  const hasLessons = Array.isArray(lessons) && lessons.length > 0;
+  const isLoading      = status === 'loading';
+  const filteredLessons = Array.isArray(lessons)
+    ? lessons.filter((l) => l.jlptLevel === selectedLevel)
+    : [];
+  const hasLessons = filteredLessons.length > 0;
 
   useEffect(() => {
     dispatch(fetchDashboardThunk());
@@ -45,7 +62,7 @@ function Dashboard() {
         <main className="dashboard-center">
           {isLoading
             ? <SkeletonBlock className="db-skeleton--hero" />
-            : <HeroBanner course={course} />
+            : <CoursePickerBanner />
           }
 
           <div className="lesson-section-head">
@@ -56,7 +73,7 @@ function Dashboard() {
           {isLoading
             ? [1, 2, 3].map((i) => <SkeletonBlock key={i} className="db-skeleton--lesson" />)
             : hasLessons
-              ? <LessonList lessons={lessons} />
+              ? <LessonList lessons={filteredLessons} />
               : (
                 <EmptyState
                   title="Chưa có bài học nào"
@@ -67,21 +84,40 @@ function Dashboard() {
                   <button
                     type="button"
                     className="db-empty-cta"
-                    onClick={() => navigate('/courses')}
+                    onClick={() => navigate('/learn')}
                   >
-                    Xem khoá học khác
+                    Bắt đầu học ngay
                   </button>
                 </EmptyState>
               )
           }
+
+          {/* ── Feature shortcuts ── */}
+          <div className="db-features-head">
+            <span className="start-here-chip">Tính năng</span>
+            <div className="lesson-divider" aria-hidden="true" />
+          </div>
+          <div className="db-feature-grid">
+            {FEATURE_SHORTCUTS.map((f) => (
+              <button
+                key={f.route}
+                type="button"
+                className="db-feature-card"
+                onClick={() => navigate(f.route)}
+              >
+                <span className="db-feature-icon" aria-hidden="true">
+                  <f.Icon size={22} />
+                </span>
+                <span className="db-feature-label">{f.label}</span>
+              </button>
+            ))}
+          </div>
         </main>
 
         {/* ── RIGHT ── */}
         <aside className="dashboard-right" aria-label="Chức năng nhanh">
           <div className="qa-list">
             <QuickActionCard type="flashcard" />
-            <QuickActionCard type="exam" />
-            <QuickActionCard type="dictionary" />
             <QuickActionCard type="progress" />
           </div>
 

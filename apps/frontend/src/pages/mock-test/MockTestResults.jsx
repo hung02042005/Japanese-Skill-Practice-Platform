@@ -3,6 +3,7 @@ import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom'
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { getQuizAttemptResult } from '../../api/studentService';
+import { DEMO_MODE, MOCK_QUIZ_RESULT } from '../../api/mockData';
 import './MockTestResults.css';
 
 const SKILL_LABELS = {
@@ -25,6 +26,11 @@ export default function MockTestResults() {
 
   useEffect(() => {
     if (!attemptId) { navigate('/mock-test'); return; }
+    if (DEMO_MODE) {
+      setResult(MOCK_QUIZ_RESULT);
+      setLoading(false);
+      return;
+    }
     (async () => {
       setLoading(true);
       try {
@@ -152,7 +158,7 @@ export default function MockTestResults() {
                 Thi lại
               </button>
               <Link to="/dashboard" className="mxr-btn mxr-btn--ghost">Về Dashboard</Link>
-              <Link to="/learn/new"  className="mxr-btn mxr-btn--primary">Học bài liên quan</Link>
+              <Link to="/learn"      className="mxr-btn mxr-btn--primary">Học bài liên quan</Link>
             </div>
           </>
         )}

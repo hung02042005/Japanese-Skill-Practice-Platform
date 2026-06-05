@@ -217,7 +217,7 @@ Entity (JPA)  ──mapping──►  DTO (Request/Response)  ──►  API
 | 2 | Authorization check **CẢ Role VÀ subscription/level** |
 | 3 | Subscription hết hạn check **real-time** — cache tối đa **5 phút** |
 | 4 | Thay đổi subscription phải có audit log |
-| 5 | Admin bắt buộc **2FA (TOTP)** — không bypass |
+| 5 | Admin phải có audit log cho mọi thao tác quan trọng |
 
 ### 7.4. Luật Soft Delete
 

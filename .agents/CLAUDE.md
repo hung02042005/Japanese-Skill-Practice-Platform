@@ -98,7 +98,6 @@
 ```
 ├── Login/Register (Student, Staff, Admin)
 ├── JWT + Refresh Token
-├── 2FA cho Admin (TOTP)
 ├── Role-based access (STUDENT / STAFF / ADMIN)
 └── Session management
 ```
@@ -186,11 +185,9 @@ Student → Select package
 
 ---
 
-### ADR-003: JWT + bcrypt (cost 12) + 2FA Admin
-**Decision**: Stateless JWT + bcrypt + TOTP
-**Bắt buộc**: 
-- bcrypt cost **không dưới 10**
-- Admin bắt buộc 2FA
+### ADR-003: JWT + bcrypt (cost 12)
+**Decision**: Stateless JWT + bcrypt
+**Bắt buộc**: bcrypt cost **không dưới 10**
 **Status**: ✅ Active
 
 ---
@@ -477,7 +474,7 @@ Payment (user_id, amount, status, idempotency_key)
 |-----|-------|--------|----------------|
 | ADR-001 | Spring Boot + Java 21 | ✅ Active | 2026-05-27 |
 | ADR-002 | Monolithic Architecture | ✅ Active | 2026-05-27 |
-| ADR-003 | JWT + bcrypt + 2FA | ✅ Active | 2026-05-27 |
+| ADR-003 | JWT + bcrypt | ✅ Active | 2026-06-03 |
 | ADR-004 | Soft Delete | ✅ Active | 2026-05-27 |
 | ADR-005 | DTO Pattern | ✅ Active | 2026-05-27 |
 | ADR-006 | File Media Storage | ✅ Active | 2026-05-27 |

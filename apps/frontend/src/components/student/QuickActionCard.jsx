@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { FlashcardIcon, ExamIcon, DictionaryIcon, ChartIcon } from './StudentIcons';
 import './QuickActionCard.css';
 
 const ACTIONS = {
@@ -6,28 +7,28 @@ const ACTIONS = {
     label: 'Ôn Flashcard',
     desc:  'Spaced repetition',
     route: '/flashcard',
-    emoji: '🃏',
+    Icon:  FlashcardIcon,
     mod:   'flashcard',
   },
   exam: {
     label: 'Thi Thử JLPT',
     desc:  'Mock exam đầy đủ',
     route: '/mock-test',
-    emoji: '📋',
+    Icon:  ExamIcon,
     mod:   'exam',
   },
   dictionary: {
     label: 'Từ Điển',
     desc:  'Tra từ nhanh',
     route: '/dictionary',
-    emoji: '🔍',
+    Icon:  DictionaryIcon,
     mod:   'dictionary',
   },
   progress: {
     label: 'Tiến Độ',
     desc:  'Xem kết quả học',
     route: '/progress',
-    emoji: '📊',
+    Icon:  ChartIcon,
     mod:   'progress',
   },
 };
@@ -52,7 +53,7 @@ function QuickActionCard({ type }) {
       aria-label={action.label}
     >
       <div className={`qa-icon qa-icon--${action.mod}`} aria-hidden="true">
-        <span>{action.emoji}</span>
+        <action.Icon size={20} />
       </div>
       <div className="qa-content">
         <div className="qa-title">{action.label}</div>

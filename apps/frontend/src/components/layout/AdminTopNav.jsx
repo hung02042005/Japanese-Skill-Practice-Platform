@@ -11,11 +11,14 @@ const ADMIN_TABS = [
     label: 'Tổng quan',
     route: '/admin',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2"/>
-        <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2"/>
-        <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2"/>
-        <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2"/>
+      // Hoa anh đào 5 cánh — biểu tượng thương hiệu, tổng quan
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <ellipse cx="12" cy="6.5" rx="2" ry="3.5" transform="rotate(0 12 12)"/>
+        <ellipse cx="12" cy="6.5" rx="2" ry="3.5" transform="rotate(72 12 12)"/>
+        <ellipse cx="12" cy="6.5" rx="2" ry="3.5" transform="rotate(144 12 12)"/>
+        <ellipse cx="12" cy="6.5" rx="2" ry="3.5" transform="rotate(216 12 12)"/>
+        <ellipse cx="12" cy="6.5" rx="2" ry="3.5" transform="rotate(288 12 12)"/>
+        <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
       </svg>
     ),
   },
@@ -24,10 +27,16 @@ const ADMIN_TABS = [
     label: 'Người dùng',
     route: '/admin/users',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      // Người dùng + cánh hoa — quản lý học viên / nhân sự
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="9" cy="7" r="3.5"/>
+        <path d="M3 21v-2a5.5 5.5 0 0 1 11 0v2"/>
+        <ellipse cx="19.5" cy="5" rx="1.2" ry="2.1" fill="currentColor" opacity="0.38" stroke="none" transform="rotate(0 19.5 7.5)"/>
+        <ellipse cx="19.5" cy="5" rx="1.2" ry="2.1" fill="currentColor" opacity="0.38" stroke="none" transform="rotate(72 19.5 7.5)"/>
+        <ellipse cx="19.5" cy="5" rx="1.2" ry="2.1" fill="currentColor" opacity="0.38" stroke="none" transform="rotate(144 19.5 7.5)"/>
+        <ellipse cx="19.5" cy="5" rx="1.2" ry="2.1" fill="currentColor" opacity="0.38" stroke="none" transform="rotate(216 19.5 7.5)"/>
+        <ellipse cx="19.5" cy="5" rx="1.2" ry="2.1" fill="currentColor" opacity="0.38" stroke="none" transform="rotate(288 19.5 7.5)"/>
+        <circle cx="19.5" cy="7.5" r="1.1" fill="currentColor" stroke="none"/>
       </svg>
     ),
   },
@@ -36,10 +45,13 @@ const ADMIN_TABS = [
     label: 'Nội dung',
     route: '/admin/content',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-        <polyline points="14 2 14 8 20 8" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-        <path d="M9 12h6M9 16h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      // Cuộn giấy Nhật (巻物) — quản lý nội dung học liệu
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="6" y="7" width="12" height="10" rx="1"/>
+        <ellipse cx="6" cy="12" rx="1.5" ry="5"/>
+        <ellipse cx="18" cy="12" rx="1.5" ry="5"/>
+        <line x1="9" y1="10.5" x2="15" y2="10.5"/>
+        <line x1="9" y1="13.5" x2="13" y2="13.5"/>
       </svg>
     ),
   },
@@ -48,10 +60,15 @@ const ADMIN_TABS = [
     label: 'Báo cáo',
     route: '/admin/reports',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        <line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        <line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      // Biểu đồ cột + cánh hoa trang trí — phân tích dữ liệu
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <line x1="3" y1="20" x2="21" y2="20"/>
+        <rect x="4" y="13" width="4" height="7" rx="1"/>
+        <rect x="10" y="7" width="4" height="13" rx="1"/>
+        <rect x="16" y="10" width="4" height="10" rx="1"/>
+        <ellipse cx="3.5" cy="4.5" rx="1.1" ry="1.9" fill="currentColor" opacity="0.28" stroke="none" transform="rotate(-18 3.5 4.5)"/>
+        <ellipse cx="3.5" cy="4.5" rx="1.1" ry="1.9" fill="currentColor" opacity="0.28" stroke="none" transform="rotate(54 3.5 4.5)"/>
+        <circle cx="3.5" cy="4.5" r="0.9" fill="currentColor" opacity="0.4" stroke="none"/>
       </svg>
     ),
   },
@@ -60,9 +77,11 @@ const ADMIN_TABS = [
     label: 'Cài đặt',
     route: '/admin/settings',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" strokeWidth="2"/>
+      // Bánh răng với trung tâm cánh hoa — cài đặt hệ thống
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="2.8"/>
+        <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77"/>
+        <ellipse cx="21" cy="3.5" rx="1" ry="1.7" fill="currentColor" opacity="0.22" stroke="none" transform="rotate(-20 21 3.5)"/>
       </svg>
     ),
   },

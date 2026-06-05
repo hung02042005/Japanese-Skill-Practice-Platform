@@ -1,7 +1,7 @@
 import './FooterSection.css';
 
 const FOOTER_LINKS = {
-  'Sản phẩm': ['Flashcard', 'Kanji', 'Từ điển', 'Bảng giá'],
+  'Sản phẩm': ['Flashcard', 'Kanji', 'Từ điển'],
   'Tài nguyên': ['Blog', 'Tài liệu', 'API docs'],
   'Công ty': ['Về chúng tôi', 'Tuyển dụng', 'Liên hệ'],
 };

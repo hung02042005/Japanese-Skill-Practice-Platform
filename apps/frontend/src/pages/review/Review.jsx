@@ -6,6 +6,7 @@ import { EmptyState } from '../../components/common/EmptyState';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import FlashcardCard from '../../components/student/FlashcardCard';
 import { getFlashcardsDue, revealFlashcard, rateFlashcard } from '../../api/studentService';
+import { DEMO_MODE, MOCK_FLASHCARDS_DUE, MOCK_BACK_CONTENT_MAP } from '../../api/mockData';
 import './Review.css';
 
 export default function Review() {
@@ -28,6 +29,12 @@ export default function Review() {
     (async () => {
       setLoading(true);
       try {
+        if (DEMO_MODE) {
+          setQueue(MOCK_FLASHCARDS_DUE);
+          setTotal(MOCK_FLASHCARDS_DUE.length);
+          setLoading(false);
+          return;
+        }
         const res   = await getFlashcardsDue(50);
         const cards = res.content ?? [];
         setQueue(cards);
@@ -46,6 +53,13 @@ export default function Review() {
     setFetch(true);
     try {
       const card = queue[currentIdx];
+      if (DEMO_MODE) {
+        const back = MOCK_BACK_CONTENT_MAP[card.flashcardId] ?? { reading: '', meaning: card.frontText, exampleSentence: '' };
+        setBack(back);
+        setFlipped(true);
+        setFetch(false);
+        return;
+      }
       const back = await revealFlashcard(card.flashcardId);
       setBack(back.backContent);
       setFlipped(true);
@@ -60,16 +74,27 @@ export default function Review() {
     if (isRating) return;
     setRating(true);
     try {
-      const card = queue[currentIdx];
-      const res  = await rateFlashcard(card.flashcardId, rating);
       const nextIdx = currentIdx + 1;
-      if (nextIdx >= queue.length) {
-        setDone(true);
-        setNext(res.nextReviewDate ?? null);
+      if (!DEMO_MODE) {
+        const card = queue[currentIdx];
+        const res  = await rateFlashcard(card.flashcardId, rating);
+        if (nextIdx >= queue.length) {
+          setDone(true);
+          setNext(res.nextReviewDate ?? null);
+        } else {
+          setIdx(nextIdx);
+          setFlipped(false);
+          setBack(null);
+        }
       } else {
-        setIdx(nextIdx);
-        setFlipped(false);
-        setBack(null);
+        if (nextIdx >= queue.length) {
+          setDone(true);
+          setNext('2026-06-05');
+        } else {
+          setIdx(nextIdx);
+          setFlipped(false);
+          setBack(null);
+        }
       }
     } catch {
       addToast('error', 'Không thể lưu đánh giá. Thử lại.');
@@ -111,7 +136,7 @@ export default function Review() {
             <button className="rev-btn rev-btn--primary" onClick={() => navigate('/flashcard')}>
               Quản lý bộ thẻ
             </button>
-            <button className="rev-btn rev-btn--ghost" onClick={() => navigate('/learn/new')}>
+            <button className="rev-btn rev-btn--ghost" onClick={() => navigate('/learn')}>
               Học bài mới
             </button>
           </EmptyState>
