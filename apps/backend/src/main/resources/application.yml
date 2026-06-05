@@ -54,7 +54,7 @@ app:
     allowed-origins: http://localhost:3000,http://localhost:5173
 
 google:
-  client-id: ${GOOGLE_CLIENT_ID:551958940696-9iq0q2u3d64t7533fdr46q4155ta3t81.apps.googleusercontent.com}
+  client-id: ${GOOGLE_CLIENT_ID:48921393888-djjm8a1qg8ugukaokb7575ti0prbk346.apps.googleusercontent.com}
   client-secret: ${GOOGLE_CLIENT_SECRET:changeme}
 
 
