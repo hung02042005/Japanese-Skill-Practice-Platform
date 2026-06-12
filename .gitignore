@@ -8,3 +8,7 @@ dist/
 *.log
 apps/backend/data/
 .env
+
+temp_repo/
+
+Japanese-Skill-Practice-Platform-branch_tienDat/
