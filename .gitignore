@@ -1,4 +1,4 @@
-target/
+﻿target/
 node_modules/
 .vite/
 *.class
@@ -7,3 +7,4 @@ node_modules/
 dist/
 *.log
 apps/backend/data/
+.env
