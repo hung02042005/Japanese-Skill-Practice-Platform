@@ -686,3 +686,30 @@ export const MOCK_QUIZ_RESULT = {
     { questionNumber: 10, skill: 'reading',    selectedOption: null, correctOption: 'B', isCorrect: false },
   ],
 };
+
+// ─── Vocab Learning Path (UC-09 — hub lộ trình từ vựng) ───────────────────────
+// `status` do BACKEND quyết định (Role + subscription/level). Dữ liệu demo dưới đây
+// chỉ để dựng UI: đúng 1 card 'active' mỗi level (card "START HERE").
+export const MOCK_VOCAB_PATH = {
+  N5: [
+    { topicId: 1, slug: 'greetings', titleJa: 'あいさつ', titleVi: 'Chào hỏi',                order: 1, level: 'N5', totalWords: 18, completedWords: 18, status: 'completed' },
+    { topicId: 2, slug: 'food',      titleJa: '食べ物',   titleVi: 'Đồ ăn & động từ ăn uống', order: 2, level: 'N5', totalWords: 24, completedWords: 7,  status: 'active'    },
+    { topicId: 3, slug: 'school',    titleJa: '学校',     titleVi: 'Trường học',              order: 3, level: 'N5', totalWords: 18, completedWords: 0,  status: 'available' },
+    { topicId: 4, slug: 'family',    titleJa: '家族',     titleVi: 'Gia đình',                order: 4, level: 'N5', totalWords: 16, completedWords: 0,  status: 'available' },
+    { topicId: 5, slug: 'time',      titleJa: '時間',     titleVi: 'Thời gian & ngày tháng',  order: 5, level: 'N5', totalWords: 20, completedWords: 0,  status: 'locked'    },
+    { topicId: 6, slug: 'transport', titleJa: '交通',     titleVi: 'Giao thông',              order: 6, level: 'N5', totalWords: 15, completedWords: 0,  status: 'locked'    },
+  ],
+  N4: [
+    { topicId: 11, slug: 'work',   titleJa: '仕事', titleVi: 'Công việc', order: 1, level: 'N4', totalWords: 28, completedWords: 5, status: 'active'    },
+    { topicId: 12, slug: 'health', titleJa: '健康', titleVi: 'Sức khỏe',  order: 2, level: 'N4', totalWords: 22, completedWords: 0, status: 'available' },
+    { topicId: 13, slug: 'travel', titleJa: '旅行', titleVi: 'Du lịch',   order: 3, level: 'N4', totalWords: 24, completedWords: 0, status: 'locked'    },
+  ],
+  N3: [
+    { topicId: 21, slug: 'society', titleJa: '社会', titleVi: 'Xã hội',  order: 1, level: 'N3', totalWords: 30, completedWords: 0, status: 'active' },
+    { topicId: 22, slug: 'economy', titleJa: '経済', titleVi: 'Kinh tế', order: 2, level: 'N3', totalWords: 26, completedWords: 0, status: 'locked' },
+  ],
+  N2: [
+    { topicId: 31, slug: 'opinion', titleJa: '意見', titleVi: 'Quan điểm & lập luận', order: 1, level: 'N2', totalWords: 34, completedWords: 0, status: 'active' },
+  ],
+  N1: [], // dữ liệu rỗng — để demo EmptyState
+};

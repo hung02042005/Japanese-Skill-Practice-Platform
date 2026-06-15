@@ -21,19 +21,19 @@ public interface AdminUserRepository extends JpaRepository<AdminUser, Long> {
      * Admin-only: paginated filter that bypasses @SQLRestriction.
      * Wildcard pattern (%term%) must be passed from the caller for :q.
      */
-    @Query(value = """
+    @Query(
+            value =
+                    """
             SELECT * FROM admin_users
             WHERE (:q IS NULL OR full_name LIKE :q OR email LIKE :q)
               AND (:status IS NULL OR LOWER(status) = LOWER(:status))
             """,
-            countQuery = """
+            countQuery =
+                    """
             SELECT COUNT(*) FROM admin_users
             WHERE (:q IS NULL OR full_name LIKE :q OR email LIKE :q)
               AND (:status IS NULL OR LOWER(status) = LOWER(:status))
             """,
             nativeQuery = true)
-    Page<AdminUser> findAllAdminFiltered(
-            @Param("q") String q,
-            @Param("status") String status,
-            Pageable pageable);
+    Page<AdminUser> findAllAdminFiltered(@Param("q") String q, @Param("status") String status, Pageable pageable);
 }

@@ -1,6 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
+import com.jlpt.converter.ContentStatusConverter;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -38,6 +39,10 @@ public class Vocabulary {
     @Column(length = 100)
     private String topic;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "topic_id")
+    private VocabularyTopic topicRef;
+
     @Column(name = "audio_url", length = 500)
     private String audioUrl;
 
@@ -51,7 +56,7 @@ public class Vocabulary {
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ContentStatusConverter.class)
     @Column(nullable = false, length = 20)
     @Builder.Default
     private Kanji.ContentStatus status = Kanji.ContentStatus.DRAFT;

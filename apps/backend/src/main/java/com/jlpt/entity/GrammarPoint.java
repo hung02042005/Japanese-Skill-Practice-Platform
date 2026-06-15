@@ -1,6 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
+import com.jlpt.converter.ContentStatusConverter;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -45,7 +46,7 @@ public class GrammarPoint {
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ContentStatusConverter.class)
     @Column(nullable = false, length = 20)
     @Builder.Default
     private Kanji.ContentStatus status = Kanji.ContentStatus.DRAFT;

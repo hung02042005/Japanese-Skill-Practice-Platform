@@ -1,0 +1,986 @@
+{
+  "info": {
+    "name": "JLPT Auth API Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Bộ test đầy đủ cho Authentication API\n\nEndpoints:\n  /api/auth/**          — Student + Admin (unified login)\n  /api/staff/auth/**    — Staff login / setup / change-temp-password\n  /api/admin/**         — Admin operations (tạo staff, reset password)\n\nCách dùng:\n  1. Import collection này\n  2. Import JLPT_Local_Environment.postman_environment.json\n  3. Chọn environment 'JLPT Local'\n  4. Chạy tuần tự folder 1 → 12\n\nLưu ý:\n  - accessToken / staffAccessToken / adminAccessToken tự động lưu sau login thành công\n  - verifyEmailToken / resetPasswordToken / staffSetupToken phải SET THỦ CÔNG từ email"
+  },
+  "item": [
+
+    {
+      "name": "1. Check Account Type",
+      "item": [
+        {
+          "name": "CAT-01 Email student → student",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/check-account-type",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{studentEmail}}\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "const b = pm.response.json();",
+            "pm.test('accountType = student', () => pm.expect(b.data.accountType).to.eql('student'));",
+            "pm.test('status field = 200', () => pm.expect(b.status).to.eql(200));"
+          ]}}]
+        },
+        {
+          "name": "CAT-02 Email staff → staff",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/check-account-type",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{staffEmail}}\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "const b = pm.response.json();",
+            "pm.test('accountType = staff', () => pm.expect(b.data.accountType).to.eql('staff'));"
+          ]}}]
+        },
+        {
+          "name": "CAT-03 Email không tồn tại → unknown",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/check-account-type",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"nobody_xyz_12345@notexist.com\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "const b = pm.response.json();",
+            "pm.test('accountType = unknown', () => pm.expect(b.data.accountType).to.eql('unknown'));"
+          ]}}]
+        },
+        {
+          "name": "CAT-04 Thiếu email → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/check-account-type",
+            "body": { "mode": "raw", "raw": "{}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));",
+            "pm.test('status field = 400', () => pm.expect(pm.response.json().status).to.eql(400));"
+          ]}}]
+        },
+        {
+          "name": "CAT-05 Email sai format → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/check-account-type",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"not-an-email\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        },
+        {
+          "name": "CAT-06 Email rỗng → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/check-account-type",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        }
+      ]
+    },
+
+    {
+      "name": "2. Login",
+      "item": [
+        {
+          "name": "LGN-01 Student login thành công (lưu accessToken)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{studentEmail}}\",\n  \"password\": \"{{studentPassword}}\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "const b = pm.response.json();",
+            "pm.test('role = STUDENT', () => pm.expect(b.data.role).to.eql('STUDENT'));",
+            "pm.test('accessToken tồn tại', () => pm.expect(b.data.accessToken).to.be.a('string').and.not.empty);",
+            "pm.test('refreshToken tồn tại', () => pm.expect(b.data.refreshToken).to.be.a('string').and.not.empty);",
+            "pm.test('KHÔNG có passwordHash trong response', () => pm.expect(JSON.stringify(b)).to.not.include('passwordHash'));",
+            "pm.environment.set('accessToken', b.data.accessToken);",
+            "pm.environment.set('refreshToken', b.data.refreshToken);"
+          ]}}]
+        },
+        {
+          "name": "LGN-02 Staff login thành công (lưu staffAccessToken)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{staffEmail}}\",\n  \"password\": \"{{staffPassword}}\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "const b = pm.response.json();",
+            "pm.test('role = STAFF', () => pm.expect(b.data.role).to.eql('STAFF'));",
+            "pm.test('staffRole tồn tại', () => pm.expect(b.data.staffRole).to.be.a('string').and.not.empty);",
+            "pm.test('requirePasswordChange = false', () => pm.expect(b.data.requirePasswordChange).to.not.eql(true));",
+            "pm.environment.set('staffAccessToken', b.data.accessToken);",
+            "pm.environment.set('staffRefreshToken', b.data.refreshToken);"
+          ]}}]
+        },
+        {
+          "name": "LGN-03 Admin login thành công (lưu adminAccessToken)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "const b = pm.response.json();",
+            "pm.test('role = ADMIN', () => pm.expect(b.data.role).to.eql('ADMIN'));",
+            "pm.test('accessToken tồn tại', () => pm.expect(b.data.accessToken).to.be.a('string').and.not.empty);",
+            "pm.test('KHÔNG có passwordHash', () => pm.expect(JSON.stringify(b)).to.not.include('passwordHash'));",
+            "pm.environment.set('adminAccessToken', b.data.accessToken);",
+            "pm.environment.set('adminRefreshToken', b.data.refreshToken);"
+          ]}}]
+        },
+        {
+          "name": "LGN-04 Sai mật khẩu → 401",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{studentEmail}}\",\n  \"password\": \"WrongPass@999\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 401', () => pm.response.to.have.status(401));",
+            "const b = pm.response.json();",
+            "pm.test('status field = 401', () => pm.expect(b.status).to.eql(401));",
+            "pm.test('data = null (không leak token)', () => pm.expect(b.data).to.be.null);"
+          ]}}]
+        },
+        {
+          "name": "LGN-05 Email không tồn tại → 401",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"nobody@notexist.com\",\n  \"password\": \"Any@123456\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 401', () => pm.response.to.have.status(401));",
+            "pm.test('status field = 401', () => pm.expect(pm.response.json().status).to.eql(401));"
+          ]}}]
+        },
+        {
+          "name": "LGN-06 Thiếu password → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{studentEmail}}\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        },
+        {
+          "name": "LGN-07 Thiếu email → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"password\": \"Student@123\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        },
+        {
+          "name": "LGN-08 Body rỗng → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": { "mode": "raw", "raw": "{}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        }
+      ]
+    },
+
+    {
+      "name": "3. Register",
+      "item": [
+        {
+          "name": "REG-01 Đăng ký hợp lệ → 201",
+          "event": [
+            { "listen": "prerequest", "script": { "exec": [
+              "pm.environment.set('newEmail', `testuser_${Date.now()}@register.com`);"
+            ]}},
+            { "listen": "test", "script": { "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "const b = pm.response.json();",
+              "pm.test('studentId tồn tại', () => pm.expect(b.data.studentId).to.be.a('number'));",
+              "pm.test('email khớp', () => pm.expect(b.data.email).to.eql(pm.environment.get('newEmail')));",
+              "pm.test('KHÔNG có passwordHash', () => pm.expect(JSON.stringify(b)).to.not.include('passwordHash'));"
+            ]}}
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Test User\",\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"Test@12345\",\n  \"confirmPassword\": \"Test@12345\"\n}" }
+          }
+        },
+        {
+          "name": "REG-02 Email đã tồn tại → 409",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Dup User\",\n  \"email\": \"{{studentEmail}}\",\n  \"password\": \"Test@12345\",\n  \"confirmPassword\": \"Test@12345\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 409', () => pm.response.to.have.status(409));",
+            "pm.test('status field = 409', () => pm.expect(pm.response.json().status).to.eql(409));"
+          ]}}]
+        },
+        {
+          "name": "REG-03 Password không có chữ HOA → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Test User\",\n  \"email\": \"new@test.com\",\n  \"password\": \"abc12345\",\n  \"confirmPassword\": \"abc12345\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Password thiếu chữ HOA → 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        },
+        {
+          "name": "REG-04 Password < 8 ký tự → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Test User\",\n  \"email\": \"new@test.com\",\n  \"password\": \"Ab1\",\n  \"confirmPassword\": \"Ab1\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Password quá ngắn → 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        },
+        {
+          "name": "REG-05 confirmPassword không khớp → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Test User\",\n  \"email\": \"new@test.com\",\n  \"password\": \"Test@12345\",\n  \"confirmPassword\": \"Different@99\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Passwords không khớp → 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        },
+        {
+          "name": "REG-06 fullName quá ngắn (1 ký tự) → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"A\",\n  \"email\": \"new@test.com\",\n  \"password\": \"Test@12345\",\n  \"confirmPassword\": \"Test@12345\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('fullName quá ngắn → 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        }
+      ]
+    },
+
+    {
+      "name": "4. Email Verification",
+      "description": "⚠️ EV-01 và EV-04 cần set 'verifyEmailToken' thủ công từ email xác thực trước khi chạy.",
+      "item": [
+        {
+          "name": "EV-01 Verify email hợp lệ → 200  [cần set verifyEmailToken]",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/verify-email",
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{verifyEmailToken}}\"\n}" }
+          },
+          "event": [
+            { "listen": "prerequest", "script": { "exec": [
+              "const tok = pm.environment.get('verifyEmailToken');",
+              "if (!tok) console.warn('⚠️  verifyEmailToken chưa set — copy từ email xác thực vào environment');"
+            ]}},
+            { "listen": "test", "script": { "exec": [
+              "const tok = pm.environment.get('verifyEmailToken');",
+              "if (!tok) { pm.test('SKIP — verifyEmailToken chưa set', () => true); return; }",
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('status field = 200', () => pm.expect(pm.response.json().status).to.eql(200));"
+            ]}}
+          ]
+        },
+        {
+          "name": "EV-02 Verify email token giả → 400/401",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/verify-email",
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"fake-token-abc123xyz\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Token giả → 4xx', () => pm.expect(pm.response.code).to.be.oneOf([400, 401]));"
+          ]}}]
+        },
+        {
+          "name": "EV-03 Verify token rỗng → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/verify-email",
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Token rỗng → 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        },
+        {
+          "name": "EV-04 Resend verification → 200",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/resend-verification",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{newEmail}}\"\n}" }
+          },
+          "event": [
+            { "listen": "prerequest", "script": { "exec": [
+              "if (!pm.environment.get('newEmail')) pm.environment.set('newEmail', 'testuser@register.com');"
+            ]}},
+            { "listen": "test", "script": { "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));"
+            ]}}
+          ]
+        },
+        {
+          "name": "EV-05 Resend email sai format → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/resend-verification",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"not-an-email\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Email sai format → 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        }
+      ]
+    },
+
+    {
+      "name": "5. Refresh Token",
+      "item": [
+        {
+          "name": "RFR-01 Refresh hợp lệ → token mới",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/refresh",
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "const b = pm.response.json();",
+            "pm.test('accessToken mới tồn tại', () => pm.expect(b.data.accessToken).to.be.a('string').and.not.empty);",
+            "pm.test('refreshToken mới tồn tại', () => pm.expect(b.data.refreshToken).to.be.a('string').and.not.empty);",
+            "pm.test('accessToken mới khác cũ', () => pm.expect(b.data.accessToken).to.not.eql(pm.environment.get('accessToken')));",
+            "pm.environment.set('accessToken', b.data.accessToken);",
+            "pm.environment.set('refreshToken', b.data.refreshToken);"
+          ]}}]
+        },
+        {
+          "name": "RFR-02 refreshToken sai → 401",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/refresh",
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"invalid-token-xyz-fake\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Token sai → 401', () => pm.response.to.have.status(401));"
+          ]}}]
+        },
+        {
+          "name": "RFR-03 Thiếu refreshToken → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/refresh",
+            "body": { "mode": "raw", "raw": "{}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Thiếu refreshToken → 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        }
+      ]
+    },
+
+    {
+      "name": "6. Forgot Password",
+      "item": [
+        {
+          "name": "FPW-01 Email student tồn tại → 200",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/forgot-password",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{studentEmail}}\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('status field = 200', () => pm.expect(pm.response.json().status).to.eql(200));"
+          ]}}]
+        },
+        {
+          "name": "FPW-02 Email không tồn tại → 200 (generic, không tiết lộ)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/forgot-password",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"nobody@notexist.com\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200 — không tiết lộ email không tồn tại', () => pm.response.to.have.status(200));"
+          ]}}]
+        },
+        {
+          "name": "FPW-03 Email sai format → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/forgot-password",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"not-email\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Email sai format → 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        }
+      ]
+    },
+
+    {
+      "name": "7. Reset Password",
+      "description": "⚠️ RPW-01 cần set 'resetPasswordToken' thủ công từ email reset password (nhận sau FPW-01).",
+      "item": [
+        {
+          "name": "RPW-01 Reset password hợp lệ → 200  [cần set resetPasswordToken]",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/reset-password",
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{resetPasswordToken}}\",\n  \"newPassword\": \"NewPass@12345\",\n  \"confirmPassword\": \"NewPass@12345\"\n}" }
+          },
+          "event": [
+            { "listen": "prerequest", "script": { "exec": [
+              "const tok = pm.environment.get('resetPasswordToken');",
+              "if (!tok) console.warn('⚠️  resetPasswordToken chưa set — copy từ email reset password vào environment');"
+            ]}},
+            { "listen": "test", "script": { "exec": [
+              "const tok = pm.environment.get('resetPasswordToken');",
+              "if (!tok) { pm.test('SKIP — resetPasswordToken chưa set', () => true); return; }",
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('status field = 200', () => pm.expect(pm.response.json().status).to.eql(200));"
+            ]}}
+          ]
+        },
+        {
+          "name": "RPW-02 Token giả → 400/401",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/reset-password",
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"fake-reset-token-xyz\",\n  \"newPassword\": \"NewPass@12345\",\n  \"confirmPassword\": \"NewPass@12345\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Token giả → 4xx', () => pm.expect(pm.response.code).to.be.oneOf([400, 401]));"
+          ]}}]
+        },
+        {
+          "name": "RPW-03 Password không đủ mạnh → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/reset-password",
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{resetPasswordToken}}\",\n  \"newPassword\": \"weakpass\",\n  \"confirmPassword\": \"weakpass\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Password yếu → 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        },
+        {
+          "name": "RPW-04 confirmPassword không khớp → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/reset-password",
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{resetPasswordToken}}\",\n  \"newPassword\": \"NewPass@12345\",\n  \"confirmPassword\": \"DiffPass@999\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Passwords không khớp → 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        },
+        {
+          "name": "RPW-05 Thiếu token → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/reset-password",
+            "body": { "mode": "raw", "raw": "{\n  \"newPassword\": \"NewPass@12345\",\n  \"confirmPassword\": \"NewPass@12345\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Thiếu token → 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        }
+      ]
+    },
+
+    {
+      "name": "8. Logout",
+      "item": [
+        {
+          "name": "LGT-01 Logout hợp lệ → 200",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/auth/logout",
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ]}}]
+        },
+        {
+          "name": "LGT-02 Sau logout, dùng refreshToken cũ → 401 (token đã revoke)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/refresh",
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Token đã revoke sau logout → 401', () => pm.response.to.have.status(401));"
+          ]}}]
+        }
+      ]
+    },
+
+    {
+      "name": "9. Google OAuth",
+      "description": "GOA-01 cần idToken thực từ Google Sign-In. Lấy bằng cách: mở Google OAuth flow → copy id_token từ response.",
+      "item": [
+        {
+          "name": "GOA-01 Login với Google idToken thực  [cần id_token từ Google]",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/google",
+            "body": { "mode": "raw", "raw": "{\n  \"idToken\": \"PASTE_REAL_GOOGLE_ID_TOKEN_HERE\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "if (pm.request.body.raw.includes('PASTE_REAL')) {",
+            "  pm.test('SKIP — thay PASTE_REAL_GOOGLE_ID_TOKEN_HERE bằng token thực', () => true);",
+            "  return;",
+            "}",
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "const b = pm.response.json();",
+            "pm.test('accessToken tồn tại', () => pm.expect(b.data.accessToken).to.be.a('string').and.not.empty);",
+            "pm.test('role = STUDENT', () => pm.expect(b.data.role).to.eql('STUDENT'));",
+            "pm.environment.set('accessToken', b.data.accessToken);",
+            "pm.environment.set('refreshToken', b.data.refreshToken);"
+          ]}}]
+        },
+        {
+          "name": "GOA-02 idToken giả → 401",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/google",
+            "body": { "mode": "raw", "raw": "{\n  \"idToken\": \"fake.google.id.token.xyz\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('idToken giả → 401', () => pm.response.to.have.status(401));"
+          ]}}]
+        },
+        {
+          "name": "GOA-03 Thiếu idToken → 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/google",
+            "body": { "mode": "raw", "raw": "{}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Thiếu idToken → 400', () => pm.response.to.have.status(400));"
+          ]}}]
+        }
+      ]
+    },
+
+    {
+      "name": "10. Staff Auth",
+      "item": [
+
+        {
+          "name": "Staff Login",
+          "item": [
+            {
+              "name": "SLG-01 Staff login qua /api/staff/auth/login (lưu staffAccessToken)",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": "{{baseUrl}}/api/staff/auth/login",
+                "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{staffEmail}}\",\n  \"password\": \"{{staffPassword}}\"\n}" }
+              },
+              "event": [{ "listen": "test", "script": { "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const b = pm.response.json();",
+                "pm.test('role = STAFF', () => pm.expect(b.data.role).to.eql('STAFF'));",
+                "pm.test('staffRole tồn tại', () => pm.expect(b.data.staffRole).to.be.a('string').and.not.empty);",
+                "pm.test('accessToken tồn tại', () => pm.expect(b.data.accessToken).to.be.a('string').and.not.empty);",
+                "if (b.data.requirePasswordChange) {",
+                "  pm.test('requirePasswordChange=true → limitedSessionToken', () => true);",
+                "  pm.environment.set('limitedSessionToken', b.data.accessToken);",
+                "} else {",
+                "  pm.environment.set('staffAccessToken', b.data.accessToken);",
+                "  pm.environment.set('staffRefreshToken', b.data.refreshToken);",
+                "}"
+              ]}}]
+            },
+            {
+              "name": "SLG-02 Staff sai mật khẩu → 401",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": "{{baseUrl}}/api/staff/auth/login",
+                "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{staffEmail}}\",\n  \"password\": \"WrongPass@999\"\n}" }
+              },
+              "event": [{ "listen": "test", "script": { "exec": [
+                "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                "pm.test('data = null', () => pm.expect(pm.response.json().data).to.be.null);"
+              ]}}]
+            },
+            {
+              "name": "SLG-03 Student email dùng staff endpoint → 401",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": "{{baseUrl}}/api/staff/auth/login",
+                "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{studentEmail}}\",\n  \"password\": \"{{studentPassword}}\"\n}" }
+              },
+              "event": [{ "listen": "test", "script": { "exec": [
+                "pm.test('Student không thể dùng staff endpoint → 401', () => pm.response.to.have.status(401));"
+              ]}}]
+            },
+            {
+              "name": "SLG-04 Staff forgot-password → 200",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": "{{baseUrl}}/api/staff/auth/forgot-password",
+                "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{staffEmail}}\"\n}" }
+              },
+              "event": [{ "listen": "test", "script": { "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));"
+              ]}}]
+            }
+          ]
+        },
+
+        {
+          "name": "Staff Setup Password",
+          "description": "⚠️ SSP-01 cần set 'staffSetupToken' thủ công từ email mời staff (admin tạo staff account).",
+          "item": [
+            {
+              "name": "SSP-01 Setup password hợp lệ → 200  [cần set staffSetupToken]",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": "{{baseUrl}}/api/staff/auth/setup-password",
+                "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{staffSetupToken}}\",\n  \"newPassword\": \"StaffNew@123\",\n  \"confirmPassword\": \"StaffNew@123\"\n}" }
+              },
+              "event": [
+                { "listen": "prerequest", "script": { "exec": [
+                  "const tok = pm.environment.get('staffSetupToken');",
+                  "if (!tok) console.warn('⚠️  staffSetupToken chưa set — copy từ email mời staff vào environment');"
+                ]}},
+                { "listen": "test", "script": { "exec": [
+                  "const tok = pm.environment.get('staffSetupToken');",
+                  "if (!tok) { pm.test('SKIP — staffSetupToken chưa set', () => true); return; }",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]}}
+              ]
+            },
+            {
+              "name": "SSP-02 Token giả → 400/401",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": "{{baseUrl}}/api/staff/auth/setup-password",
+                "body": { "mode": "raw", "raw": "{\n  \"token\": \"fake-setup-token-xyz\",\n  \"newPassword\": \"StaffNew@123\",\n  \"confirmPassword\": \"StaffNew@123\"\n}" }
+              },
+              "event": [{ "listen": "test", "script": { "exec": [
+                "pm.test('Token giả → 4xx', () => pm.expect(pm.response.code).to.be.oneOf([400, 401]));"
+              ]}}]
+            },
+            {
+              "name": "SSP-03 Password không đủ mạnh → 400",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": "{{baseUrl}}/api/staff/auth/setup-password",
+                "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{staffSetupToken}}\",\n  \"newPassword\": \"weakpass\",\n  \"confirmPassword\": \"weakpass\"\n}" }
+              },
+              "event": [{ "listen": "test", "script": { "exec": [
+                "pm.test('Password yếu → 400', () => pm.response.to.have.status(400));"
+              ]}}]
+            },
+            {
+              "name": "SSP-04 Passwords không khớp → 400",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": "{{baseUrl}}/api/staff/auth/setup-password",
+                "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{staffSetupToken}}\",\n  \"newPassword\": \"StaffNew@123\",\n  \"confirmPassword\": \"DiffPass@999\"\n}" }
+              },
+              "event": [{ "listen": "test", "script": { "exec": [
+                "pm.test('Passwords không khớp → 400', () => pm.response.to.have.status(400));"
+              ]}}]
+            }
+          ]
+        },
+
+        {
+          "name": "Staff Change Temp Password",
+          "description": "Endpoint này YÊU CẦU limited_session token (không phải access token thường).\nlimitedSessionToken được tạo khi staff login với temp password (requirePasswordChange=true).",
+          "item": [
+            {
+              "name": "SCP-01 Change temp password hợp lệ (limitedSessionToken) → 200",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{limitedSessionToken}}" }
+                ],
+                "url": "{{baseUrl}}/api/staff/auth/change-temp-password",
+                "body": { "mode": "raw", "raw": "{\n  \"newPassword\": \"StaffPerm@456\",\n  \"confirmPassword\": \"StaffPerm@456\"\n}" }
+              },
+              "event": [
+                { "listen": "prerequest", "script": { "exec": [
+                  "const tok = pm.environment.get('limitedSessionToken');",
+                  "if (!tok) console.warn('⚠️  limitedSessionToken chưa set — staff phải login với temp password để nhận token này');"
+                ]}},
+                { "listen": "test", "script": { "exec": [
+                  "const tok = pm.environment.get('limitedSessionToken');",
+                  "if (!tok) { pm.test('SKIP — limitedSessionToken chưa set', () => true); return; }",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]}}
+              ]
+            },
+            {
+              "name": "SCP-02 Dùng accessToken thường (không phải limited_session) → 403",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{staffAccessToken}}" }
+                ],
+                "url": "{{baseUrl}}/api/staff/auth/change-temp-password",
+                "body": { "mode": "raw", "raw": "{\n  \"newPassword\": \"StaffPerm@456\",\n  \"confirmPassword\": \"StaffPerm@456\"\n}" }
+              },
+              "event": [{ "listen": "test", "script": { "exec": [
+                "pm.test('Access token thường không dùng được endpoint này → 403', () => pm.response.to.have.status(403));"
+              ]}}]
+            },
+            {
+              "name": "SCP-03 Password không đủ mạnh → 400",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{limitedSessionToken}}" }
+                ],
+                "url": "{{baseUrl}}/api/staff/auth/change-temp-password",
+                "body": { "mode": "raw", "raw": "{\n  \"newPassword\": \"weak\",\n  \"confirmPassword\": \"weak\"\n}" }
+              },
+              "event": [{ "listen": "test", "script": { "exec": [
+                "pm.test('Password yếu → 400', () => pm.response.to.have.status(400));"
+              ]}}]
+            }
+          ]
+        }
+
+      ]
+    },
+
+    {
+      "name": "11. Admin Operations",
+      "description": "Tất cả request trong folder này yêu cầu adminAccessToken (set bởi LGN-03).",
+      "item": [
+        {
+          "name": "ADM-01 Tạo tài khoản staff mới → 201 (lưu newStaffId)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminAccessToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/admin/staff",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"newstaff_{{$timestamp}}@jlpt.com\",\n  \"fullName\": \"New Staff Member\",\n  \"staffRole\": \"TEACHER\"\n}" }
+          },
+          "event": [
+            { "listen": "prerequest", "script": { "exec": [
+              "if (!pm.environment.get('adminAccessToken')) console.warn('⚠️  adminAccessToken chưa set — chạy LGN-03 trước');"
+            ]}},
+            { "listen": "test", "script": { "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "const b = pm.response.json();",
+              "if (b.data && b.data.staffId) pm.environment.set('newStaffId', b.data.staffId);",
+              "pm.test('email tồn tại trong response', () => pm.expect(b.data.email).to.be.a('string'));",
+              "pm.test('KHÔNG có passwordHash', () => pm.expect(JSON.stringify(b)).to.not.include('passwordHash'));"
+            ]}}
+          ]
+        },
+        {
+          "name": "ADM-02 Issue temp password cho staff → 200",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminAccessToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/admin/staff/{{testStaffId}}/issue-temp-password",
+            "body": { "mode": "raw", "raw": "" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ]}}]
+        },
+        {
+          "name": "ADM-03 Admin reset password student → 200",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminAccessToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/admin/users/student/{{testStudentId}}/reset-password",
+            "body": { "mode": "raw", "raw": "{\n  \"newPassword\": \"Reset@12345\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ]}}]
+        },
+        {
+          "name": "ADM-04 Admin reset password staff → 200",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminAccessToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/admin/users/staff/{{testStaffId}}/reset-password",
+            "body": { "mode": "raw", "raw": "{\n  \"newPassword\": \"Reset@12345\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));"
+          ]}}]
+        },
+        {
+          "name": "ADM-05 Không có adminToken khi gọi admin API → 401/403",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/admin/users"
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Không có token → 401 hoặc 403', () => pm.expect(pm.response.code).to.be.oneOf([401, 403]));"
+          ]}}]
+        }
+      ]
+    },
+
+    {
+      "name": "12. Security — JWT",
+      "item": [
+        {
+          "name": "JWT-01 Không có token → 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/student/profile"
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Không có token → 401', () => pm.response.to.have.status(401));"
+          ]}}]
+        },
+        {
+          "name": "JWT-02 Token giả mạo (signature sai) → 401",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIn0.FAKESIGNATURE" }],
+            "url": "{{baseUrl}}/api/student/profile"
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Token giả mạo → 401', () => pm.response.to.have.status(401));"
+          ]}}]
+        },
+        {
+          "name": "JWT-03 Student token truy cập /api/admin → 403",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/admin/users"
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Student token → /api/admin → 403', () => pm.response.to.have.status(403));"
+          ]}}]
+        },
+        {
+          "name": "JWT-04 Staff token truy cập /api/admin → 403",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{staffAccessToken}}" }],
+            "url": "{{baseUrl}}/api/admin/users"
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Staff token → /api/admin → 403', () => pm.response.to.have.status(403));"
+          ]}}]
+        },
+        {
+          "name": "JWT-05 Format sai (Token xxx thay vì Bearer xxx) → 401",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Token {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/student/profile"
+          },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Sai Bearer format → 401', () => pm.response.to.have.status(401));"
+          ]}}]
+        }
+      ]
+    }
+
+  ]
+}

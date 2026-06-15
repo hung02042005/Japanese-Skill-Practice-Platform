@@ -1,51 +1,19 @@
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { EmptyState } from '../../components/common/EmptyState';
+import { ToastContainer, useToast } from '../../components/common/Toast';
+import { searchDictionaryThunk, setQuery, clearResults } from '../../store/slices/dictionarySlice';
+import { fetchBookmarksThunk, addBookmarkThunk, removeBookmarkThunk } from '../../store/slices/bookmarkSlice';
+import { useEffect } from 'react';
 import './Dictionary.css';
 
-const MOCK_VOCAB = [
-  { id: 1, word: '食べる',   furigana: 'たべる',       meaning: 'Ăn',              jlptLevel: 'N5' },
-  { id: 2, word: '飲む',    furigana: 'のむ',         meaning: 'Uống',            jlptLevel: 'N5' },
-  { id: 3, word: '勉強する', furigana: 'べんきょうする', meaning: 'Học bài',         jlptLevel: 'N5' },
-  { id: 4, word: '電話する', furigana: 'でんわする',   meaning: 'Gọi điện thoại',   jlptLevel: 'N5' },
-  { id: 5, word: '旅行',    furigana: 'りょこう',      meaning: 'Du lịch',         jlptLevel: 'N4' },
-  { id: 6, word: '経験',    furigana: 'けいけん',      meaning: 'Kinh nghiệm',     jlptLevel: 'N3' },
-  { id: 7, word: '努力',    furigana: 'どりょく',      meaning: 'Nỗ lực, cố gắng', jlptLevel: 'N3' },
-];
-
-const MOCK_KANJI = [
-  { id: 1, characterValue: '食', meaning: 'Thực (ăn)',  onyomi: 'ショク・ジキ', kunyomi: 'た.べる',   jlptLevel: 'N5' },
-  { id: 2, characterValue: '水', meaning: 'Thủy (nước)', onyomi: 'スイ',       kunyomi: 'みず',      jlptLevel: 'N5' },
-  { id: 3, characterValue: '山', meaning: 'Sơn (núi)',  onyomi: 'サン',        kunyomi: 'やま',      jlptLevel: 'N5' },
-  { id: 4, characterValue: '電', meaning: 'Điện',       onyomi: 'デン',        kunyomi: 'いなずま',   jlptLevel: 'N4' },
-  { id: 5, characterValue: '旅', meaning: 'Lữ (du lịch)', onyomi: 'リョ',      kunyomi: 'たび',      jlptLevel: 'N4' },
-];
-
-const MOCK_GRAMMAR = [
-  { id: 1, structure: '〜たい',        meaning: 'Muốn làm gì',                   jlptLevel: 'N5' },
-  { id: 2, structure: '〜ている',      meaning: 'Đang làm / trạng thái',          jlptLevel: 'N4' },
-  { id: 3, structure: '〜に違いない',   meaning: 'Chắc chắn là...',               jlptLevel: 'N2' },
-];
-
-const MOCK_LESSONS = [
-  { id: 1, title: 'Bài 1: Giới thiệu bản thân',   jlptLevel: 'N5' },
-  { id: 2, title: 'Bài 2: Đặt đồ ăn tại nhà hàng', jlptLevel: 'N5' },
-  { id: 3, title: 'Bài 3: Mua sắm và hỏi giá',    jlptLevel: 'N4' },
-];
-
 const BK_TYPES = [
-  { key: 'all',     label: 'Tất cả' },
-  { key: 'vocab',   label: 'Từ vựng' },
-  { key: 'kanji',   label: 'Kanji' },
-  { key: 'grammar', label: 'Ngữ pháp' },
-  { key: 'lesson',  label: 'Bài học' },
-];
-
-const INIT_BOOKMARKS = [
-  { bkId: 'v-2', type: 'vocab',   word: '飲む',         furigana: 'のむ',    meaning: 'Uống',            jlptLevel: 'N5', note: 'Động từ nhóm 1' },
-  { bkId: 'k-1', type: 'kanji',   characterValue: '食', meaning: 'Thực (ăn)',                            jlptLevel: 'N5', note: '' },
-  { bkId: 'g-1', type: 'grammar', structure: '〜たい',   meaning: 'Muốn làm gì',                          jlptLevel: 'N5', note: 'Hay dùng trong hội thoại' },
+  { key: 'all',        label: 'Tất cả' },
+  { key: 'VOCABULARY', label: 'Từ vựng' },
+  { key: 'KANJI',      label: 'Kanji' },
+  { key: 'GRAMMAR',    label: 'Ngữ pháp' },
 ];
 
 function BookmarkIcon({ filled }) {
@@ -57,54 +25,54 @@ function BookmarkIcon({ filled }) {
 }
 
 export default function Dictionary() {
-  const [tab,       setTab]       = useState('search');
-  const [query,     setQuery]     = useState('');
-  const [debounced, setDebounced] = useState('');
-  const [bookmarks, setBookmarks] = useState(INIT_BOOKMARKS);
-  const [bkFilter,  setBkFilter]  = useState('all');
+  const dispatch = useDispatch();
+  const { toasts, addToast, removeToast } = useToast();
+
+  const { results, query, status: searchStatus } = useSelector((s) => s.dictionary);
+  const { items: bookmarks, status: bkStatus, addStatus, removeStatus } = useSelector((s) => s.bookmark);
+
+  const [tab,      setTab]      = useState('search');
+  const [bkFilter, setBkFilter] = useState('all');
+  const [inputVal, setInputVal] = useState('');
   const timerRef = useRef(null);
 
-  const handleQueryChange = useCallback((val) => {
-    setQuery(val);
-    clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setDebounced(val.trim().toLowerCase()), 350);
-  }, []);
+  // Load bookmarks on mount
+  useEffect(() => {
+    if (bkStatus === 'idle') dispatch(fetchBookmarksThunk({}));
+  }, [dispatch, bkStatus]);
 
-  const results = useMemo(() => {
-    if (!debounced) return null;
-    const q = debounced;
-    return {
-      vocab:   MOCK_VOCAB.filter((v) => v.word.includes(q) || v.furigana.includes(q) || v.meaning.toLowerCase().includes(q)),
-      kanji:   MOCK_KANJI.filter((k) => k.characterValue.includes(q) || k.meaning.toLowerCase().includes(q) || k.onyomi.toLowerCase().includes(q) || k.kunyomi.includes(q)),
-      grammar: MOCK_GRAMMAR.filter((g) => g.structure.includes(q) || g.meaning.toLowerCase().includes(q)),
-      lessons: MOCK_LESSONS.filter((l) => l.title.toLowerCase().includes(q)),
-    };
-  }, [debounced]);
+  const handleQueryChange = useCallback((val) => {
+    setInputVal(val);
+    dispatch(setQuery(val));
+    clearTimeout(timerRef.current);
+    if (!val.trim()) { dispatch(clearResults()); return; }
+    timerRef.current = setTimeout(() => {
+      dispatch(searchDictionaryThunk({ q: val.trim() }));
+    }, 350);
+  }, [dispatch]);
+
+  function isBookmarked(contentType, id) {
+    return bookmarks.some((b) => b.contentType === contentType && b.contentId === id);
+  }
+
+  async function toggleBookmark(contentType, contentId) {
+    if (isBookmarked(contentType, contentId)) {
+      const res = await dispatch(removeBookmarkThunk({ contentType, contentId }));
+      if (removeBookmarkThunk.rejected.match(res)) addToast('error', res.payload);
+      else addToast('success', 'Đã gỡ bookmark.');
+    } else {
+      const res = await dispatch(addBookmarkThunk({ contentType, contentId }));
+      if (addBookmarkThunk.rejected.match(res)) addToast('error', res.payload);
+      else addToast('success', 'Đã lưu bookmark!');
+    }
+  }
+
+  const filteredBookmarks =
+    bkFilter === 'all' ? bookmarks : bookmarks.filter((b) => b.contentType === bkFilter);
 
   const totalResults = results
-    ? results.vocab.length + results.kanji.length + results.grammar.length + results.lessons.length
+    ? (results.vocabulary?.length ?? 0) + (results.kanji?.length ?? 0) + (results.grammar?.length ?? 0) + (results.lessons?.length ?? 0)
     : 0;
-
-  const filteredBookmarks = useMemo(
-    () => bkFilter === 'all' ? bookmarks : bookmarks.filter((b) => b.type === bkFilter),
-    [bookmarks, bkFilter]
-  );
-
-  function isBk(type, id) {
-    return bookmarks.some((b) => b.bkId === `${type[0]}-${id}`);
-  }
-
-  function toggleBk(item, type) {
-    const bkId = `${type[0]}-${item.id}`;
-    setBookmarks((prev) => {
-      if (prev.some((b) => b.bkId === bkId)) return prev.filter((b) => b.bkId !== bkId);
-      const base = { bkId, type, jlptLevel: item.jlptLevel, note: '' };
-      if (type === 'vocab')   return [...prev, { ...base, word: item.word, furigana: item.furigana, meaning: item.meaning }];
-      if (type === 'kanji')   return [...prev, { ...base, characterValue: item.characterValue, meaning: item.meaning }];
-      if (type === 'grammar') return [...prev, { ...base, structure: item.structure, meaning: item.meaning }];
-      return [...prev, { ...base, title: item.title }];
-    });
-  }
 
   return (
     <div className="dct-page">
@@ -154,15 +122,15 @@ export default function Dictionary() {
                 className="dct-search-input"
                 type="search"
                 placeholder="Nhập từ vựng, Kanji, ngữ pháp… (JP / Romaji / tiếng Việt)"
-                value={query}
+                value={inputVal}
                 onChange={(e) => handleQueryChange(e.target.value)}
                 autoFocus
                 aria-label="Tìm kiếm từ điển"
               />
-              {query && (
+              {inputVal && (
                 <button
                   className="dct-clear-btn"
-                  onClick={() => { setQuery(''); setDebounced(''); }}
+                  onClick={() => { setInputVal(''); dispatch(clearResults()); }}
                   aria-label="Xóa tìm kiếm"
                 >
                   ✕
@@ -170,7 +138,7 @@ export default function Dictionary() {
               )}
             </div>
 
-            {!debounced && (
+            {!query && (
               <div className="dct-empty-prompt" aria-hidden="true">
                 <svg width="52" height="52" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--color-primary-light)' }}>
                   <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.5" />
@@ -181,23 +149,34 @@ export default function Dictionary() {
               </div>
             )}
 
-            {debounced && totalResults === 0 && (
+            {searchStatus === 'loading' && query && (
+              <div className="dct-empty-prompt" aria-live="polite">
+                <div className="fls-spinner" aria-hidden="true" />
+                <p className="dct-ep-text">Đang tìm kiếm...</p>
+              </div>
+            )}
+
+            {searchStatus === 'failed' && (
+              <div className="fls-error" role="alert">Không thể tìm kiếm. Thử lại sau.</div>
+            )}
+
+            {searchStatus === 'succeeded' && totalResults === 0 && (
               <EmptyState
-                title={`Không tìm thấy kết quả cho "${debounced}"`}
+                title={`Không tìm thấy kết quả cho "${results?.keyword ?? query}"`}
                 subtitle="Thử từ khóa khác hoặc kiểm tra lại chính tả."
                 mascotVariant="thinking"
                 mascotSize={100}
               />
             )}
 
-            {debounced && totalResults > 0 && (
+            {searchStatus === 'succeeded' && totalResults > 0 && (
               <div className="dct-results">
-                {results.vocab.length > 0 && (
+                {results.vocabulary?.length > 0 && (
                   <section className="dct-section">
                     <h2 className="dct-section-title">
-                      Từ vựng <span className="dct-cnt">{results.vocab.length}</span>
+                      Từ vựng <span className="dct-cnt">{results.vocabulary.length}</span>
                     </h2>
-                    {results.vocab.map((v) => (
+                    {results.vocabulary.map((v) => (
                       <div key={v.id} className="dct-result-row">
                         <div className="dct-result-info">
                           <JlptBadge level={v.jlptLevel} />
@@ -206,18 +185,19 @@ export default function Dictionary() {
                           <span className="dct-result-meaning">{v.meaning}</span>
                         </div>
                         <button
-                          className={`dct-bk-btn${isBk('vocab', v.id) ? ' dct-bk-btn--on' : ''}`}
-                          onClick={() => toggleBk(v, 'vocab')}
-                          aria-label={isBk('vocab', v.id) ? 'Gỡ bookmark' : 'Lưu bookmark'}
+                          className={`dct-bk-btn${isBookmarked('VOCABULARY', v.id) ? ' dct-bk-btn--on' : ''}`}
+                          onClick={() => toggleBookmark('VOCABULARY', v.id)}
+                          disabled={addStatus === 'loading' || removeStatus === 'loading'}
+                          aria-label={isBookmarked('VOCABULARY', v.id) ? 'Gỡ bookmark' : 'Lưu bookmark'}
                         >
-                          <BookmarkIcon filled={isBk('vocab', v.id)} />
+                          <BookmarkIcon filled={isBookmarked('VOCABULARY', v.id)} />
                         </button>
                       </div>
                     ))}
                   </section>
                 )}
 
-                {results.kanji.length > 0 && (
+                {results.kanji?.length > 0 && (
                   <section className="dct-section">
                     <h2 className="dct-section-title">
                       Kanji <span className="dct-cnt">{results.kanji.length}</span>
@@ -226,25 +206,26 @@ export default function Dictionary() {
                       <div key={k.id} className="dct-result-row">
                         <div className="dct-result-info">
                           <JlptBadge level={k.jlptLevel} />
-                          <span className="dct-result-kanji">{k.characterValue}</span>
+                          <span className="dct-result-kanji">{k.character}</span>
                           <div className="dct-result-kanji-detail">
                             <span className="dct-result-meaning">{k.meaning}</span>
                             <span className="dct-result-readings">音: {k.onyomi} · 訓: {k.kunyomi}</span>
                           </div>
                         </div>
                         <button
-                          className={`dct-bk-btn${isBk('kanji', k.id) ? ' dct-bk-btn--on' : ''}`}
-                          onClick={() => toggleBk(k, 'kanji')}
-                          aria-label={isBk('kanji', k.id) ? 'Gỡ bookmark' : 'Lưu bookmark'}
+                          className={`dct-bk-btn${isBookmarked('KANJI', k.id) ? ' dct-bk-btn--on' : ''}`}
+                          onClick={() => toggleBookmark('KANJI', k.id)}
+                          disabled={addStatus === 'loading' || removeStatus === 'loading'}
+                          aria-label={isBookmarked('KANJI', k.id) ? 'Gỡ bookmark' : 'Lưu bookmark'}
                         >
-                          <BookmarkIcon filled={isBk('kanji', k.id)} />
+                          <BookmarkIcon filled={isBookmarked('KANJI', k.id)} />
                         </button>
                       </div>
                     ))}
                   </section>
                 )}
 
-                {results.grammar.length > 0 && (
+                {results.grammar?.length > 0 && (
                   <section className="dct-section">
                     <h2 className="dct-section-title">
                       Ngữ pháp <span className="dct-cnt">{results.grammar.length}</span>
@@ -257,18 +238,19 @@ export default function Dictionary() {
                           <span className="dct-result-meaning">{g.meaning}</span>
                         </div>
                         <button
-                          className={`dct-bk-btn${isBk('grammar', g.id) ? ' dct-bk-btn--on' : ''}`}
-                          onClick={() => toggleBk(g, 'grammar')}
-                          aria-label={isBk('grammar', g.id) ? 'Gỡ bookmark' : 'Lưu bookmark'}
+                          className={`dct-bk-btn${isBookmarked('GRAMMAR', g.id) ? ' dct-bk-btn--on' : ''}`}
+                          onClick={() => toggleBookmark('GRAMMAR', g.id)}
+                          disabled={addStatus === 'loading' || removeStatus === 'loading'}
+                          aria-label={isBookmarked('GRAMMAR', g.id) ? 'Gỡ bookmark' : 'Lưu bookmark'}
                         >
-                          <BookmarkIcon filled={isBk('grammar', g.id)} />
+                          <BookmarkIcon filled={isBookmarked('GRAMMAR', g.id)} />
                         </button>
                       </div>
                     ))}
                   </section>
                 )}
 
-                {results.lessons.length > 0 && (
+                {results.lessons?.length > 0 && (
                   <section className="dct-section">
                     <h2 className="dct-section-title">
                       Bài học <span className="dct-cnt">{results.lessons.length}</span>
@@ -278,14 +260,8 @@ export default function Dictionary() {
                         <div className="dct-result-info">
                           <JlptBadge level={l.jlptLevel} />
                           <span className="dct-result-word">{l.title}</span>
+                          <span className="dct-result-furi">{l.lessonType}</span>
                         </div>
-                        <button
-                          className={`dct-bk-btn${isBk('lesson', l.id) ? ' dct-bk-btn--on' : ''}`}
-                          onClick={() => toggleBk(l, 'lesson')}
-                          aria-label={isBk('lesson', l.id) ? 'Gỡ bookmark' : 'Lưu bookmark'}
-                        >
-                          <BookmarkIcon filled={isBk('lesson', l.id)} />
-                        </button>
                       </div>
                     ))}
                   </section>
@@ -300,7 +276,9 @@ export default function Dictionary() {
           <div className="dct-bk-panel">
             <div className="dct-bk-filters">
               {BK_TYPES.map((t) => {
-                const count = t.key === 'all' ? bookmarks.length : bookmarks.filter((b) => b.type === t.key).length;
+                const count = t.key === 'all'
+                  ? bookmarks.length
+                  : bookmarks.filter((b) => b.contentType === t.key).length;
                 return (
                   <button
                     key={t.key}
@@ -314,7 +292,14 @@ export default function Dictionary() {
               })}
             </div>
 
-            {filteredBookmarks.length === 0 ? (
+            {bkStatus === 'loading' && (
+              <div className="dct-empty-prompt" aria-live="polite">
+                <div className="fls-spinner" aria-hidden="true" />
+                <p className="dct-ep-text">Đang tải bookmark...</p>
+              </div>
+            )}
+
+            {bkStatus !== 'loading' && filteredBookmarks.length === 0 ? (
               <EmptyState
                 title="Chưa có bookmark nào"
                 subtitle="Tra từ điển và nhấn 🔖 để lưu những từ cần nhớ."
@@ -324,20 +309,25 @@ export default function Dictionary() {
             ) : (
               <div className="dct-bk-list">
                 {filteredBookmarks.map((b) => (
-                  <div key={b.bkId} className="dct-bk-item">
+                  <div key={`${b.contentType}-${b.contentId}`} className="dct-bk-item">
                     <div className="dct-bk-item-info">
-                      <JlptBadge level={b.jlptLevel} />
+                      {b.jlptLevel && <JlptBadge level={b.jlptLevel} />}
                       <div>
-                        <p className="dct-bk-item-title">
-                          {b.word || b.characterValue || b.structure || b.title}
-                        </p>
-                        <p className="dct-bk-item-sub">
-                          {b.furigana || b.meaning || ''}
-                        </p>
+                        <p className="dct-bk-item-title">{b.displayText}</p>
                         {b.note && <p className="dct-bk-item-note">📝 {b.note}</p>}
                       </div>
                     </div>
-                    <span className="dct-bk-type">{b.type}</span>
+                    <div className="dct-bk-item-actions">
+                      <span className="dct-bk-type">{b.contentType}</span>
+                      <button
+                        className="dct-bk-btn dct-bk-btn--on"
+                        onClick={() => toggleBookmark(b.contentType, b.contentId)}
+                        disabled={removeStatus === 'loading'}
+                        aria-label="Gỡ bookmark"
+                      >
+                        <BookmarkIcon filled />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -345,6 +335,7 @@ export default function Dictionary() {
           </div>
         )}
       </main>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

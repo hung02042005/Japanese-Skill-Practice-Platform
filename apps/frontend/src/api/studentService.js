@@ -88,13 +88,36 @@ export async function getVocabTopics(level) {
   return res.data.data;
 }
 
+// Lộ trình từ vựng (hub) — danh sách chủ đề/bài theo level. `status` do backend tính.
+export async function getVocabPath(level) {
+  const res = await api.get('/vocabulary/path', { params: { level } });
+  return res.data.data; // bóc envelope { status, message, data }
+}
+
 export async function markVocabComplete(vocabId) {
   const res = await api.post(`/vocabulary/${vocabId}/complete`);
   return res.data.data;
 }
 
-export async function addVocabToFlashcard(vocabId) {
-  const res = await api.post('/flashcard/add', { vocabId });
+function normalizeFlashcardContentType(contentType) {
+  return String(contentType ?? '').toUpperCase();
+}
+
+function appendDeckTarget(payload, deckTarget) {
+  if (deckTarget == null) return payload;
+  if (typeof deckTarget === 'number') return { ...payload, deckId: deckTarget };
+  if (typeof deckTarget === 'string' && deckTarget.trim()) return { ...payload, deckName: deckTarget.trim() };
+  if (typeof deckTarget === 'object') {
+    const { deckId, deckName } = deckTarget;
+    if (deckId != null) return { ...payload, deckId };
+    if (deckName?.trim()) return { ...payload, deckName: deckName.trim() };
+  }
+  return payload;
+}
+
+export async function addVocabToFlashcard(vocabId, deckName = 'Mặc định') {
+  const payload = appendDeckTarget({ contentType: 'VOCABULARY', contentId: vocabId }, deckName);
+  const res = await api.post('/flashcards', payload);
   return res.data.data;
 }
 
@@ -109,8 +132,8 @@ export async function getFlashcardsDue(size = 50) {
   return res.data.data;
 }
 
-export async function getFlashcardsByDeck(deckName, page = 0, size = 50) {
-  const res = await api.get('/flashcards', { params: { deckName, page, size } });
+export async function getFlashcardsByDeck(deckId, page = 0, size = 50) {
+  const res = await api.get('/flashcards', { params: { deckId, page, size } });
   return res.data.data;
 }
 
@@ -119,8 +142,34 @@ export async function revealFlashcard(flashcardId) {
   return res.data.data;
 }
 
-export async function rateFlashcard(flashcardId, rating) {
-  const res = await api.post(`/flashcards/${flashcardId}/review`, { rating });
+export async function rateFlashcard(flashcardId, rating, isLastCardInSession = false) {
+  const res = await api.post(`/flashcards/${flashcardId}/review`, { rating, isLastCardInSession });
+  return res.data.data;
+}
+
+// Phiên học trộn NEW + REVIEW theo chủ đề (§3.6/§3.7). `topic` = slug/chủ đề như trang topic.
+export async function getVocabFlashcardSession({ level, topic, deckId, newLimit } = {}) {
+  const params = {};
+  if (level)          params.level    = level;
+  if (topic)          params.topic    = topic;
+  if (deckId != null) params.deckId   = deckId;
+  if (newLimit != null) params.newLimit = newLimit;
+  const res = await api.get('/flashcards/session', { params });
+  return res.data.data;
+}
+
+// Đánh giá thẻ. Vocab → gửi selectedOptionId (server tự chấm); thẻ lật → gửi rating.
+export async function submitFlashcardReview(flashcardId, { selectedOptionId, rating, isLastCardInSession = false } = {}) {
+  const body = { isLastCardInSession };
+  if (selectedOptionId != null) body.selectedOptionId = selectedOptionId;
+  if (rating)                   body.rating           = rating;
+  const res = await api.post(`/flashcards/${flashcardId}/review`, body);
+  return res.data.data;
+}
+
+// Thêm các từ trả lời sai trong phiên vào sổ "Từ cần ôn lại" (§3.5).
+export async function addWrongWordsToReviewDeck(items) {
+  const res = await api.post('/flashcards/review-deck/add', { items });
   return res.data.data;
 }
 
@@ -129,13 +178,17 @@ export async function createDeck(deckName) {
   return res.data.data;
 }
 
-export async function deleteDeck(deckName) {
-  const res = await api.delete(`/flashcard-decks/${encodeURIComponent(deckName)}`);
+export async function deleteDeck(deckId) {
+  const res = await api.delete(`/flashcard-decks/${deckId}`);
   return res.data;
 }
 
 export async function addToFlashcard(contentType, contentId, deckName = 'Mặc định') {
-  const res = await api.post('/flashcards', { contentType, contentId, deckName });
+  const payload = appendDeckTarget(
+    { contentType: normalizeFlashcardContentType(contentType), contentId },
+    deckName,
+  );
+  const res = await api.post('/flashcards', payload);
   return res.data.data;
 }
 
@@ -262,6 +315,33 @@ export async function submitOcr(kanjiId, imageFile) {
 export async function getOcrResult(jobId) {
   const res = await api.get(`/ai/ocr/${jobId}`);
   return res.data.data;
+}
+
+// ─── Dictionary ──────────────────────────────────────────────────────────────
+export async function searchDictionary(q, jlptLevel, type) {
+  const params = { q };
+  if (jlptLevel) params.jlptLevel = jlptLevel;
+  if (type)      params.type      = type;
+  const res = await api.get('/dictionary/search', { params });
+  return res.data.data;
+}
+
+// ─── Bookmarks ────────────────────────────────────────────────────────────────
+export async function getBookmarks(type, page = 0, size = 50) {
+  const params = { page, size };
+  if (type) params.type = type;
+  const res = await api.get('/bookmarks', { params });
+  return res.data.data;
+}
+
+export async function addBookmark(contentType, contentId, note = '') {
+  const res = await api.post('/bookmarks', { contentType, contentId, note });
+  return res.data.data;
+}
+
+export async function removeBookmark(contentType, contentId) {
+  const res = await api.delete('/bookmarks', { params: { contentType, contentId } });
+  return res.data;
 }
 
 // ─── Certificates ────────────────────────────────────────────────────────────

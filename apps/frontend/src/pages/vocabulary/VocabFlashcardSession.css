@@ -1,0 +1,134 @@
+/* ===== Vocab Flashcard Session (SakuJi Hanami Theme) ===== */
+
+.vfs-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); font-family: var(--font-base); }
+.vfs-body { flex: 1; max-width: 640px; width: 100%; margin: 0 auto; padding: 24px 20px 48px; display: flex; flex-direction: column; gap: 18px; box-sizing: border-box; }
+
+.vfs-back {
+  align-self: flex-start; background: transparent; border: none; cursor: pointer;
+  font-family: var(--font-base); font-size: 14px; font-weight: 600; color: var(--color-text-sub);
+  padding: 4px 0;
+}
+.vfs-back:hover { color: var(--color-text); }
+
+.vfs-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.vfs-title { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 700; color: var(--color-text); margin: 0; }
+.vfs-listlink { font-size: 13px; font-weight: 600; color: var(--color-primary); text-decoration: none; }
+.vfs-listlink:hover { text-decoration: underline; }
+
+/* Loading / error */
+.vfs-loading { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; color: var(--color-text-sub); font-size: 14px; padding: 48px 0; }
+.vfs-spinner-lg { width: 46px; height: 46px; border: 4px solid var(--color-primary-light); border-top-color: var(--color-primary); border-radius: 50%; animation: vfs-spin 0.8s linear infinite; }
+.vfs-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #FFEAEA; border: 1px solid var(--color-error); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; color: var(--color-error); }
+.vfs-retry { background: transparent; border: 1.5px solid var(--color-error); border-radius: var(--radius-full); color: var(--color-error); font-size: 12px; font-weight: 700; padding: 4px 12px; cursor: pointer; }
+
+/* Progress */
+.vfs-progress { display: flex; flex-direction: column; gap: 6px; }
+.vfs-progress-meta { display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--color-text-sub); }
+.vfs-stage { padding: 2px 10px; border-radius: var(--radius-full); font-size: 12px; }
+.vfs-stage--new    { background: var(--color-secondary-bg); color: var(--color-secondary); }
+.vfs-stage--review { background: var(--color-accent-bg); color: #B7670A; }
+
+/* Card */
+.vfs-card {
+  background: var(--color-surface, #fff); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); padding: 28px 24px;
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.05));
+}
+.vfs-front { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.vfs-word { font-size: 40px; font-weight: 800; color: var(--color-text); line-height: 1.2; }
+.vfs-furigana { font-size: 18px; color: var(--color-text-sub); }
+
+/* Thẻ từ — lật 3D kiểu Quizlet */
+.vfs-scene { width: 100%; perspective: 1400px; }
+.vfs-flip {
+  position: relative; display: grid; width: 100%; min-height: 220px;
+  transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+  border: none; background: transparent; padding: 0; cursor: pointer; font-family: var(--font-base);
+}
+.vfs-flip--flipped { transform: rotateY(180deg); }
+.vfs-face {
+  grid-area: 1 / 1; width: 100%;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  box-sizing: border-box; padding: 28px 24px; text-align: center;
+  background: var(--color-surface, #fff); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.05));
+}
+.vfs-face--back { transform: rotateY(180deg); }
+.vfs-fliphint { margin-top: 8px; font-size: 12px; font-weight: 600; color: var(--color-text-sub); opacity: 0.8; }
+
+/* Nội dung mặt sau (nghĩa / ví dụ / audio) */
+.vfs-meaning { font-size: 18px; font-weight: 700; color: var(--color-primary); margin: 0; text-align: center; }
+.vfs-example { background: var(--color-bg); border-radius: var(--radius-md); padding: 10px 14px; width: 100%; box-sizing: border-box; text-align: center; }
+.vfs-example p { margin: 0; font-size: 15px; color: var(--color-text); }
+.vfs-example-vi { color: var(--color-text-sub) !important; font-size: 13px !important; margin-top: 4px !important; }
+.vfs-audio { background: transparent; border: 1.5px solid var(--color-border); border-radius: var(--radius-full); padding: 6px 14px; font-size: 13px; font-weight: 600; color: var(--color-text-sub); cursor: pointer; }
+.vfs-audio:hover { color: var(--color-text); }
+
+/* Quiz */
+.vfs-quiz { width: 100%; display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed var(--color-border); padding-top: 16px; }
+.vfs-quiz-prompt { margin: 0 0 2px; font-size: 14px; font-weight: 700; color: var(--color-text); text-align: center; }
+.vfs-option {
+  width: 100%; padding: 14px 16px; border-radius: var(--radius-md);
+  border: 2px solid var(--color-border); background: var(--color-surface, #fff);
+  font-family: var(--font-base); font-size: 15px; font-weight: 600; color: var(--color-text);
+  cursor: pointer; text-align: left; transition: filter var(--transition), border-color var(--transition);
+}
+.vfs-option:hover:not(:disabled) { border-color: var(--color-primary); }
+.vfs-option:disabled { cursor: default; }
+.vfs-option--correct { border-color: var(--color-secondary); background: var(--color-secondary-bg); color: var(--color-secondary); }
+.vfs-option--wrong   { border-color: var(--color-error); background: #FEF2F2; color: var(--color-error); }
+.vfs-mark { font-weight: 800; }
+
+/* Self-rating (thẻ lật) */
+.vfs-rating { width: 100%; display: flex; flex-direction: column; gap: 12px; border-top: 1px dashed var(--color-border); padding-top: 16px; }
+.vfs-rating-prompt { margin: 0; font-size: 14px; font-weight: 700; color: var(--color-text); text-align: center; }
+.vfs-rating-row { display: flex; gap: 10px; }
+.vfs-rate {
+  flex: 1; display: inline-flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 12px 8px; border-radius: var(--radius-md); border: 2px solid var(--color-border);
+  background: var(--color-surface, #fff); font-family: var(--font-base); font-size: 13px; font-weight: 700;
+  color: var(--color-text); cursor: pointer; transition: filter var(--transition), border-color var(--transition);
+}
+.vfs-rate:hover:not(:disabled) { filter: brightness(0.98); }
+.vfs-rate:disabled { opacity: 0.6; cursor: not-allowed; }
+.vfs-rate-icon { font-size: 18px; font-weight: 800; }
+.vfs-rate--wrong { border-color: var(--color-error); color: var(--color-error); }
+.vfs-rate--hard  { border-color: var(--color-accent); color: #B7670A; }
+.vfs-rate--easy  { border-color: var(--color-secondary); color: var(--color-secondary); }
+
+/* Feedback */
+.vfs-feedback { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px; border-top: 1px dashed var(--color-border); padding-top: 16px; }
+.vfs-feedback-text { font-size: 15px; font-weight: 700; text-align: center; }
+.vfs-feedback--ok .vfs-feedback-text { color: var(--color-secondary); }
+.vfs-feedback--no .vfs-feedback-text { color: var(--color-error); }
+
+/* Summary */
+.vfs-summary { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.vfs-wrong-box { width: 100%; background: var(--color-accent-bg); border: 1px solid var(--color-accent); border-radius: var(--radius-lg); padding: 16px; display: flex; flex-direction: column; gap: 10px; align-items: center; box-sizing: border-box; }
+.vfs-wrong-title { margin: 0; font-size: 14px; font-weight: 700; color: #B7670A; text-align: center; }
+.vfs-wrong-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.vfs-wrong-chip { background: var(--color-surface, #fff); border: 1px solid var(--color-accent); border-radius: var(--radius-full); padding: 4px 12px; font-size: 14px; color: var(--color-text); }
+.vfs-summary-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+/* Buttons */
+.vfs-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 44px; padding: 0 24px; border-radius: var(--radius-full); font-family: var(--font-base); font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: filter var(--transition); }
+.vfs-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.vfs-btn--primary { background: var(--color-primary); color: #fff; }
+.vfs-btn--primary:hover:not(:disabled) { filter: brightness(1.07); }
+.vfs-btn--accent { background: var(--color-accent); color: #6B3E02; }
+.vfs-btn--accent:hover:not(:disabled) { filter: brightness(1.05); }
+.vfs-btn--ghost { background: transparent; border: 1.5px solid var(--color-border); color: var(--color-text-sub); }
+.vfs-btn--ghost:hover { color: var(--color-text); background: var(--color-bg); }
+
+@keyframes vfs-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 767px) {
+  .vfs-body { padding: 16px 14px 32px; gap: 14px; }
+  .vfs-card { padding: 22px 16px; }
+  .vfs-word { font-size: 34px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vfs-page * { animation: none !important; transition-duration: 0ms !important; }
+}

@@ -88,10 +88,7 @@ public class StaffPasswordResetService {
 
         authTokenRepository.revokeActiveByStaffIdAndTokenTypes(
                 staffId,
-                List.of(
-                        AuthToken.TokenType.SESSION,
-                        AuthToken.TokenType.REFRESH,
-                        AuthToken.TokenType.LIMITED_SESSION),
+                List.of(AuthToken.TokenType.SESSION, AuthToken.TokenType.REFRESH, AuthToken.TokenType.LIMITED_SESSION),
                 now);
         emailService.sendStaffTempPassword(staff.getEmail(), tempPassword);
 
@@ -129,8 +126,7 @@ public class StaffPasswordResetService {
             throw new BusinessException(400, "PASSWORD_CHANGE_NOT_REQUIRED", "Tài khoản không cần đổi mật khẩu tạm");
         }
         if (passwordEncoder.matches(request.getNewPassword(), staff.getPasswordHash())) {
-            throw new BusinessException(
-                    422, "SAME_PASSWORD", "Mật khẩu mới không được giống mật khẩu tạm thời.");
+            throw new BusinessException(422, "SAME_PASSWORD", "Mật khẩu mới không được giống mật khẩu tạm thời.");
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -148,11 +144,10 @@ public class StaffPasswordResetService {
             return;
         }
         LocalDateTime now = LocalDateTime.now();
-        long recentRequests = resetRequestRepository.countByStaffIdAndRequestedAtAfter(
-                staff.getId(), now.minusHours(1));
+        long recentRequests =
+                resetRequestRepository.countByStaffIdAndRequestedAtAfter(staff.getId(), now.minusHours(1));
         if (recentRequests >= MAX_REQUESTS_PER_HOUR) {
-            throw new BusinessException(
-                    429, "TOO_MANY_REQUESTS", "Quá nhiều yêu cầu. Vui lòng thử lại sau.");
+            throw new BusinessException(429, "TOO_MANY_REQUESTS", "Quá nhiều yêu cầu. Vui lòng thử lại sau.");
         }
 
         StaffPasswordResetRequest resetRequest = StaffPasswordResetRequest.builder()
@@ -177,9 +172,7 @@ public class StaffPasswordResetService {
             resetRequest.setStatus(StaffPasswordResetRequest.ResetStatus.EXPIRED);
             resetRequestRepository.save(resetRequest);
             throw new BusinessException(
-                    400,
-                    "RESET_REQUEST_EXPIRED",
-                    "Yêu cầu đặt lại mật khẩu đã hết hạn. Staff cần gửi yêu cầu mới.");
+                    400, "RESET_REQUEST_EXPIRED", "Yêu cầu đặt lại mật khẩu đã hết hạn. Staff cần gửi yêu cầu mới.");
         }
     }
 
@@ -193,8 +186,7 @@ public class StaffPasswordResetService {
         boolean hasUpper = password.chars().anyMatch(Character::isUpperCase);
         boolean hasDigit = password.chars().anyMatch(Character::isDigit);
         if (password.length() < 8 || !hasUpper || !hasDigit) {
-            throw new BusinessException(
-                    422, "WEAK_PASSWORD", "Mật khẩu quá yếu: cần >= 8 ký tự, 1 hoa, 1 số");
+            throw new BusinessException(422, "WEAK_PASSWORD", "Mật khẩu quá yếu: cần >= 8 ký tự, 1 hoa, 1 số");
         }
     }
 
@@ -230,7 +222,8 @@ public class StaffPasswordResetService {
     }
 
     private StaffResetRequestResponse toResponse(StaffPasswordResetRequest resetRequest) {
-        StaffUser staff = staffUserRepository.findById(resetRequest.getStaffId()).orElse(null);
+        StaffUser staff =
+                staffUserRepository.findById(resetRequest.getStaffId()).orElse(null);
         return StaffResetRequestResponse.builder()
                 .requestId(resetRequest.getId())
                 .staffId(resetRequest.getStaffId())

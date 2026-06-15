@@ -56,11 +56,12 @@ public class EmailService {
     @Async
     public void notifyAdminPasswordReset(String staffName, String staffEmail) {
         String subject = "[JLPT Platform] Staff password reset requested";
-        String body = """
+        String body =
+                """
                 <p>Staff <strong>%s</strong> (%s) requested a password reset.</p>
                 <p>Please open the Admin Panel to verify the request and issue a temporary password.</p>
                 """
-                .formatted(staffName, staffEmail);
+                        .formatted(staffName, staffEmail);
         sendHtmlEmail(adminNotifyEmail, subject, body);
         log.info("[EmailService] Staff password reset notification sent for staff email={}", staffEmail);
     }
@@ -73,12 +74,13 @@ public class EmailService {
     @Async
     public void sendStaffTempPassword(String toEmail, String tempPassword) {
         String subject = "[JLPT Platform] Temporary password for Staff account";
-        String body = """
+        String body =
+                """
                 <p>Admin issued a temporary password for your Staff account.</p>
                 <p><strong>Temporary password:</strong> %s</p>
                 <p>Use it to sign in. The system will require you to set a new password immediately.</p>
                 """
-                .formatted(tempPassword);
+                        .formatted(tempPassword);
         sendHtmlEmail(toEmail, subject, body);
         log.info("[EmailService] Temporary staff password email sent to: {}", toEmail);
     }

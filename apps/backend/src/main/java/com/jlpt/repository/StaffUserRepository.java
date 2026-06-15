@@ -21,13 +21,16 @@ public interface StaffUserRepository extends JpaRepository<StaffUser, Long> {
      * Admin-only: paginated filter that bypasses @SQLRestriction to include deleted users.
      * Wildcard pattern (%term%) must be passed from the caller for :q.
      */
-    @Query(value = """
+    @Query(
+            value =
+                    """
             SELECT * FROM staff_users
             WHERE (:q IS NULL OR full_name LIKE :q OR email LIKE :q)
               AND (:status IS NULL OR LOWER(status) = LOWER(:status))
               AND (:staffRole IS NULL OR LOWER(staff_role) = LOWER(:staffRole))
             """,
-            countQuery = """
+            countQuery =
+                    """
             SELECT COUNT(*) FROM staff_users
             WHERE (:q IS NULL OR full_name LIKE :q OR email LIKE :q)
               AND (:status IS NULL OR LOWER(status) = LOWER(:status))

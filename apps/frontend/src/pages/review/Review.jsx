@@ -1,111 +1,64 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import TopNav from '../../components/layout/TopNav';
 import { ProgressBar } from '../../components/common/ProgressBar';
 import { EmptyState } from '../../components/common/EmptyState';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import FlashcardCard from '../../components/student/FlashcardCard';
-import { getFlashcardsDue, revealFlashcard, rateFlashcard } from '../../api/studentService';
-import { DEMO_MODE, MOCK_FLASHCARDS_DUE, MOCK_BACK_CONTENT_MAP } from '../../api/mockData';
+import {
+  fetchDueCardsThunk,
+  revealCardThunk,
+  rateCardThunk,
+  resetSession,
+} from '../../store/slices/flashcardSlice';
 import './Review.css';
 
 export default function Review() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { toasts, addToast, removeToast } = useToast();
 
-  const [queue,      setQueue]    = useState([]);
-  const [currentIdx, setIdx]      = useState(0);
-  const [isFlipped,  setFlipped]  = useState(false);
-  const [backContent,setBack]     = useState(null);
-  const [isLoading,  setLoading]  = useState(true);
-  const [isFetching, setFetch]    = useState(false);
-  const [isRating,   setRating]   = useState(false);
-  const [isDone,     setDone]     = useState(false);
-  const [nextReview, setNext]     = useState(null);
-  const [error,      setError]    = useState('');
-  const [totalStart, setTotal]    = useState(0);
+  const {
+    reviewQueue,
+    reviewStatus,
+    currentReviewIdx,
+    isFlipped,
+    backContent,
+    revealStatus,
+    rateStatus,
+    isSessionDone,
+    nextReviewDate,
+    error,
+  } = useSelector((s) => s.flashcard);
 
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        if (DEMO_MODE) {
-          setQueue(MOCK_FLASHCARDS_DUE);
-          setTotal(MOCK_FLASHCARDS_DUE.length);
-          setLoading(false);
-          return;
-        }
-        const res   = await getFlashcardsDue(50);
-        const cards = res.content ?? [];
-        setQueue(cards);
-        setTotal(cards.length);
-        if (cards.length === 0) setDone(true);
-      } catch {
-        setError('Không thể tải bộ thẻ. Thử lại sau.');
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    dispatch(resetSession());
+    dispatch(fetchDueCardsThunk(50));
+  }, [dispatch]);
 
   async function handleFlip() {
     if (isFlipped) return;
-    setFetch(true);
-    try {
-      const card = queue[currentIdx];
-      if (DEMO_MODE) {
-        const back = MOCK_BACK_CONTENT_MAP[card.flashcardId] ?? { reading: '', meaning: card.frontText, exampleSentence: '' };
-        setBack(back);
-        setFlipped(true);
-        setFetch(false);
-        return;
-      }
-      const back = await revealFlashcard(card.flashcardId);
-      setBack(back.backContent);
-      setFlipped(true);
-    } catch {
-      addToast('error', 'Không thể tải nội dung thẻ. Thử lại.');
-    } finally {
-      setFetch(false);
-    }
+    const card = reviewQueue[currentReviewIdx];
+    const res = await dispatch(revealCardThunk(card.flashcardId));
+    if (revealCardThunk.rejected.match(res)) addToast('error', res.payload);
   }
 
   async function handleRate(rating) {
-    if (isRating) return;
-    setRating(true);
-    try {
-      const nextIdx = currentIdx + 1;
-      if (!DEMO_MODE) {
-        const card = queue[currentIdx];
-        const res  = await rateFlashcard(card.flashcardId, rating);
-        if (nextIdx >= queue.length) {
-          setDone(true);
-          setNext(res.nextReviewDate ?? null);
-        } else {
-          setIdx(nextIdx);
-          setFlipped(false);
-          setBack(null);
-        }
-      } else {
-        if (nextIdx >= queue.length) {
-          setDone(true);
-          setNext('2026-06-05');
-        } else {
-          setIdx(nextIdx);
-          setFlipped(false);
-          setBack(null);
-        }
-      }
-    } catch {
-      addToast('error', 'Không thể lưu đánh giá. Thử lại.');
-    } finally {
-      setRating(false);
-    }
+    if (rateStatus === 'loading') return;
+    const card = reviewQueue[currentReviewIdx];
+    const isLastCardInSession = currentReviewIdx === reviewQueue.length - 1;
+    const res = await dispatch(rateCardThunk({ flashcardId: card.flashcardId, rating, isLastCardInSession }));
+    if (rateCardThunk.rejected.match(res)) addToast('error', res.payload);
   }
 
-  const progress    = totalStart > 0 ? Math.round((currentIdx / totalStart) * 100) : 0;
-  const remaining   = queue.length - currentIdx;
-  const currentCard = queue[currentIdx];
+  const totalStart  = reviewQueue.length;
+  const progress    = totalStart > 0 ? Math.round((currentReviewIdx / totalStart) * 100) : 0;
+  const remaining   = totalStart - currentReviewIdx;
+  const currentCard = reviewQueue[currentReviewIdx];
+  const isLoading   = reviewStatus === 'loading';
+  const isFetching  = revealStatus === 'loading';
+  const isRating    = rateStatus === 'loading';
 
   return (
     <div className="rev-page">
@@ -119,14 +72,16 @@ export default function Review() {
           </div>
         )}
 
-        {!isLoading && error && (
+        {!isLoading && error && reviewStatus === 'failed' && (
           <div className="rev-error-banner" role="alert">
             <span>{error}</span>
-            <button className="rev-retry-btn" onClick={() => window.location.reload()}>Thử lại</button>
+            <button className="rev-retry-btn" onClick={() => dispatch(fetchDueCardsThunk(50))}>
+              Thử lại
+            </button>
           </div>
         )}
 
-        {!isLoading && !error && !isDone && queue.length === 0 && (
+        {!isLoading && !error && !isSessionDone && reviewQueue.length === 0 && (
           <EmptyState
             title="Chưa có thẻ nào để ôn tập"
             subtitle="Thêm từ vựng hoặc Kanji vào Flashcard từ bài học để bắt đầu ôn tập."
@@ -142,12 +97,12 @@ export default function Review() {
           </EmptyState>
         )}
 
-        {!isLoading && isDone && totalStart > 0 && (
+        {!isLoading && isSessionDone && totalStart > 0 && (
           <EmptyState
             title="Tuyệt vời! Hết thẻ hôm nay rồi 🎉"
             subtitle={
-              nextReview
-                ? `Lần ôn tập tiếp theo: ${new Date(nextReview).toLocaleDateString('vi-VN')}`
+              nextReviewDate
+                ? `Lần ôn tập tiếp theo: ${new Date(nextReviewDate).toLocaleDateString('vi-VN')}`
                 : 'Bạn đã ôn tập xong bộ thẻ hôm nay!'
             }
             mascotVariant="celebrate"
@@ -162,7 +117,7 @@ export default function Review() {
           </EmptyState>
         )}
 
-        {!isLoading && !isDone && !error && currentCard && (
+        {!isLoading && !isSessionDone && !error && currentCard && (
           <>
             <div className="rev-header">
               <span className="rev-title">Ôn tập hôm nay</span>
@@ -183,7 +138,7 @@ export default function Review() {
               <div className="rev-rating-row" aria-label="Đánh giá mức nhớ">
                 <button
                   className="rev-rate-btn rev-rate-btn--wrong"
-                  onClick={() => handleRate('wrong')}
+                  onClick={() => handleRate('WRONG')}
                   disabled={isRating}
                   aria-label="Không nhớ"
                 >
@@ -192,7 +147,7 @@ export default function Review() {
                 </button>
                 <button
                   className="rev-rate-btn rev-rate-btn--hard"
-                  onClick={() => handleRate('hard')}
+                  onClick={() => handleRate('HARD')}
                   disabled={isRating}
                   aria-label="Khó, nhớ mờ"
                 >
@@ -201,7 +156,7 @@ export default function Review() {
                 </button>
                 <button
                   className="rev-rate-btn rev-rate-btn--easy"
-                  onClick={() => handleRate('easy')}
+                  onClick={() => handleRate('EASY')}
                   disabled={isRating}
                   aria-label="Dễ, nhớ rõ"
                 >

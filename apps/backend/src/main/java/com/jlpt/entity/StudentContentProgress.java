@@ -1,6 +1,8 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
+import com.jlpt.converter.StudentProgressContentTypeConverter;
+import com.jlpt.converter.StudentProgressStatusConverter;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,14 +26,14 @@ public class StudentContentProgress {
     @JoinColumn(name = "student_id", nullable = false)
     private StudentUser student;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = StudentProgressContentTypeConverter.class)
     @Column(name = "content_type", nullable = false, length = 30)
     private ContentType contentType;
 
     @Column(name = "content_id", nullable = false)
     private Long contentId;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = StudentProgressStatusConverter.class)
     @Column(nullable = false, length = 20)
     @Builder.Default
     private ProgressStatus status = ProgressStatus.LEARNING;

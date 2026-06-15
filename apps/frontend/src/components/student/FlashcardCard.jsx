@@ -33,13 +33,13 @@ export default function FlashcardCard({ card, isFlipped, backContent, isFetching
         {isFlipped && backContent && (
           <div className="fcc-face fcc-face--back">
             <div className="fcc-back-content">
-              {backContent.reading && (
-                <p className="fcc-reading" lang="ja">{backContent.reading}</p>
+              {(backContent.furigana || backContent.reading) && (
+                <p className="fcc-reading" lang="ja">{backContent.furigana || backContent.reading}</p>
               )}
-              <p className="fcc-meaning">{backContent.meaning}</p>
-              {backContent.exampleSentence && (
+              <p className="fcc-meaning">{backContent.backText || backContent.meaning}</p>
+              {(backContent.exampleSentenceJp || backContent.exampleSentence) && (
                 <div className="fcc-example">
-                  <p className="fcc-ex-jp" lang="ja">{backContent.exampleSentence}</p>
+                  <p className="fcc-ex-jp" lang="ja">{backContent.exampleSentenceJp || backContent.exampleSentence}</p>
                 </div>
               )}
               {backContent.audioUrl && (

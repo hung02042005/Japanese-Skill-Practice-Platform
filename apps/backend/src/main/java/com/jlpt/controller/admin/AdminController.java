@@ -52,8 +52,7 @@ public class AdminController {
     // ── UC-37-02: Get user detail ───────────────────────────────────────────
 
     @GetMapping("/users/{type}/{userId}")
-    public ResponseEntity<ApiResponse<Object>> getUserDetail(
-            @PathVariable String type, @PathVariable Long userId) {
+    public ResponseEntity<ApiResponse<Object>> getUserDetail(@PathVariable String type, @PathVariable Long userId) {
         Object detail = adminUserService.getUserDetail(type, userId);
         return ResponseEntity.ok(ApiResponse.success(detail));
     }
@@ -76,18 +75,14 @@ public class AdminController {
 
     @PutMapping("/users/student/{userId}")
     public ResponseEntity<ApiResponse<Object>> updateStudent(
-            Authentication auth,
-            @PathVariable Long userId,
-            @Valid @RequestBody UpdateStudentRequest request) {
+            Authentication auth, @PathVariable Long userId, @Valid @RequestBody UpdateStudentRequest request) {
         Object updated = adminUserService.updateUser(auth.getName(), "student", userId, request);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thông tin người dùng thành công", updated));
     }
 
     @PutMapping("/users/staff/{userId}")
     public ResponseEntity<ApiResponse<Object>> updateStaff(
-            Authentication auth,
-            @PathVariable Long userId,
-            @Valid @RequestBody UpdateStaffInfoRequest request) {
+            Authentication auth, @PathVariable Long userId, @Valid @RequestBody UpdateStaffInfoRequest request) {
         Object updated = adminUserService.updateUser(auth.getName(), "staff", userId, request);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thông tin người dùng thành công", updated));
     }
@@ -108,9 +103,7 @@ public class AdminController {
 
     @PostMapping("/users/{type}/{userId}/activate")
     public ResponseEntity<ApiResponse<ActivateUserResponse>> activateUser(
-            Authentication auth,
-            @PathVariable String type,
-            @PathVariable Long userId) {
+            Authentication auth, @PathVariable String type, @PathVariable Long userId) {
         ActivateUserResponse response = adminUserService.activateUser(auth.getName(), type, userId);
         return ResponseEntity.ok(ApiResponse.success("Đã kích hoạt lại tài khoản thành công", response));
     }
@@ -119,9 +112,7 @@ public class AdminController {
 
     @PostMapping("/users/{type}/{userId}/reset-password")
     public ResponseEntity<ApiResponse<Void>> resetPassword(
-            Authentication auth,
-            @PathVariable String type,
-            @PathVariable Long userId) {
+            Authentication auth, @PathVariable String type, @PathVariable Long userId) {
         adminUserService.resetPassword(auth.getName(), type, userId);
         return ResponseEntity.ok(ApiResponse.success("Email đặt lại mật khẩu đã được gửi đến người dùng", null));
     }
@@ -137,9 +128,7 @@ public class AdminController {
 
     @PostMapping("/staff/{staffId}/issue-temp-password")
     public ResponseEntity<ApiResponse<IssueTempPasswordResponse>> issueTempPassword(
-            Authentication auth,
-            @PathVariable Long staffId,
-            @Valid @RequestBody IssueTempPasswordRequest request) {
+            Authentication auth, @PathVariable Long staffId, @Valid @RequestBody IssueTempPasswordRequest request) {
         IssueTempPasswordResponse response =
                 staffPasswordResetService.issueTempPassword(auth.getName(), staffId, request);
         return ResponseEntity.ok(
@@ -148,9 +137,7 @@ public class AdminController {
 
     @DeleteMapping("/users/{type}/{userId}")
     public ResponseEntity<ApiResponse<SoftDeleteUserResponse>> softDeleteUser(
-            Authentication auth,
-            @PathVariable String type,
-            @PathVariable Long userId) {
+            Authentication auth, @PathVariable String type, @PathVariable Long userId) {
         SoftDeleteUserResponse response = adminUserService.softDeleteUser(auth.getName(), type, userId);
         return ResponseEntity.ok(ApiResponse.success("Đã xóa tài khoản thành công (soft delete)", response));
     }
@@ -159,9 +146,7 @@ public class AdminController {
 
     @PutMapping("/staff/{staffId}/role")
     public ResponseEntity<ApiResponse<ChangeStaffRoleResponse>> changeStaffRole(
-            Authentication auth,
-            @PathVariable Long staffId,
-            @Valid @RequestBody ChangeStaffRoleRequest request) {
+            Authentication auth, @PathVariable Long staffId, @Valid @RequestBody ChangeStaffRoleRequest request) {
         ChangeStaffRoleResponse response = adminUserService.changeStaffRole(auth.getName(), staffId, request);
         return ResponseEntity.ok(ApiResponse.success("Đã cập nhật vai trò Staff thành công", response));
     }
@@ -170,9 +155,7 @@ public class AdminController {
 
     @PatchMapping("/users/{userType}/{id}/status")
     public ResponseEntity<ApiResponse<AdminUserResponse>> updateStatus(
-            @PathVariable String userType,
-            @PathVariable Long id,
-            @Valid @RequestBody UpdateUserStatusRequest request) {
+            @PathVariable String userType, @PathVariable Long id, @Valid @RequestBody UpdateUserStatusRequest request) {
         AdminUserResponse updated = adminUserService.updateUserStatus(userType, id, request);
         String msg = "BAN".equals(request.getAction()) ? "Đã khóa tài khoản" : "Đã mở khóa tài khoản";
         return ResponseEntity.ok(ApiResponse.success(msg, updated));
@@ -180,9 +163,7 @@ public class AdminController {
 
     @PatchMapping("/users/{userType}/{id}/role")
     public ResponseEntity<ApiResponse<AdminUserResponse>> updateRole(
-            @PathVariable String userType,
-            @PathVariable Long id,
-            @Valid @RequestBody UpdateUserRoleRequest request) {
+            @PathVariable String userType, @PathVariable Long id, @Valid @RequestBody UpdateUserRoleRequest request) {
         AdminUserResponse updated = adminUserService.updateUserRole(userType, id, request);
         return ResponseEntity.ok(ApiResponse.success("Đã cập nhật vai trò thành " + request.getNewRole(), updated));
     }

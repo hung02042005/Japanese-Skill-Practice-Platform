@@ -185,8 +185,9 @@ class AuthServiceTest {
         assertEquals("limited-token", response.getAccessToken());
         assertTrue(response.getRequirePasswordChange());
         assertEquals("STAFF", response.getRole());
-        verify(authTokenRepository).save(argThat(token -> token.getTokenType() == AuthToken.TokenType.LIMITED_SESSION
-                && token.getStaffId().equals(2L)
-                && token.getExpiresAt() != null));
+        verify(authTokenRepository)
+                .save(argThat(token -> token.getTokenType() == AuthToken.TokenType.LIMITED_SESSION
+                        && token.getStaffId().equals(2L)
+                        && token.getExpiresAt() != null));
     }
 }

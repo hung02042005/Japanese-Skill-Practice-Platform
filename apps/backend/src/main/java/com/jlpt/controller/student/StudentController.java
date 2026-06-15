@@ -4,9 +4,11 @@ package com.jlpt.controller.student;
 import com.jlpt.common.ApiResponse;
 import com.jlpt.dto.request.ChangePasswordRequest;
 import com.jlpt.dto.request.UpdateProfileRequest;
+import com.jlpt.dto.response.DashboardResponse;
 import com.jlpt.dto.response.StudentResponse;
 import com.jlpt.security.UserDetailsImpl;
 import com.jlpt.service.AuthService;
+import com.jlpt.service.DashboardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,15 @@ import org.springframework.web.bind.annotation.*;
 public class StudentController {
 
     private final AuthService authService;
+    private final DashboardService dashboardService;
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<ApiResponse<DashboardResponse>> getDashboard(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        DashboardResponse response =
+                dashboardService.getDashboard(userDetails.getStudentUser().getId());
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<StudentResponse>> getProfile(

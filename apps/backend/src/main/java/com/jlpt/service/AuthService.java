@@ -29,8 +29,8 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -137,8 +137,7 @@ public class AuthService {
     public LoginApiResponse loginStaff(LoginRequest request, String ip) {
         StaffUser staff = staffUserRepository
                 .findByEmail(request.getEmail())
-                .orElseThrow(() ->
-                        new BusinessException(401, "INVALID_CREDENTIALS", "Email hoặc mật khẩu không đúng"));
+                .orElseThrow(() -> new BusinessException(401, "INVALID_CREDENTIALS", "Email hoặc mật khẩu không đúng"));
         return handleStaffLogin(staff, request.getPassword(), ip);
     }
 

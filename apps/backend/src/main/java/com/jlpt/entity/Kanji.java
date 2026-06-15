@@ -1,6 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.entity;
 
+import com.jlpt.converter.ContentStatusConverter;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -50,7 +51,7 @@ public class Kanji {
     @Column(name = "example_meaning", length = 500)
     private String exampleMeaning;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ContentStatusConverter.class)
     @Column(nullable = false, length = 20)
     @Builder.Default
     private ContentStatus status = ContentStatus.DRAFT;

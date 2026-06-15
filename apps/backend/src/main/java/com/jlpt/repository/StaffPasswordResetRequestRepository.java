@@ -12,6 +12,5 @@ public interface StaffPasswordResetRequestRepository extends JpaRepository<Staff
 
     long countByStaffIdAndRequestedAtAfter(Long staffId, LocalDateTime requestedAfter);
 
-    List<StaffPasswordResetRequest> findByStatusOrderByRequestedAtDesc(
-            StaffPasswordResetRequest.ResetStatus status);
+    List<StaffPasswordResetRequest> findByStatusOrderByRequestedAtDesc(StaffPasswordResetRequest.ResetStatus status);
 }

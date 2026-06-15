@@ -1,62 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import TopNav from '../../components/layout/TopNav';
 import { EmptyState } from '../../components/common/EmptyState';
 import { ToastContainer, useToast } from '../../components/common/Toast';
-import { getFlashcardDecks, getFlashcardsByDeck, createDeck, deleteDeck } from '../../api/studentService';
-import { DEMO_MODE, MOCK_FLASHCARD_DECKS, MOCK_DECK_CARDS } from '../../api/mockData';
+import {
+  fetchDecksThunk,
+  fetchCardsByDeckThunk,
+  clearActiveDeck,
+} from '../../store/slices/flashcardSlice';
+import { createDeck, deleteDeck } from '../../api/studentService';
 import './Flashcard.css';
 
 export default function Flashcard() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { toasts, addToast, removeToast } = useToast();
 
-  const [decks,      setDecks]    = useState([]);
-  const [activeDeck, setActive]   = useState(null);
-  const [deckCards,  setCards]    = useState([]);
-  const [isLoading,  setLoading]  = useState(true);
-  const [isCardLoad, setCardLoad] = useState(false);
+  const { decks, decksStatus, activeDeck, deckCards, deckCardsStatus, error } =
+    useSelector((s) => s.flashcard);
+
   const [showCreate, setCreate]   = useState(false);
   const [newName,    setNewName]  = useState('');
   const [isCreating, setCreating] = useState(false);
   const [confirmDel, setConfirm]  = useState(null);
-  const [error,      setError]    = useState('');
 
-  async function loadDecks() {
-    setLoading(true);
-    try {
-      if (DEMO_MODE) {
-        setDecks(MOCK_FLASHCARD_DECKS);
-        setLoading(false);
-        return;
-      }
-      const data = await getFlashcardDecks();
-      setDecks(data ?? []);
-    } catch {
-      setError('Không thể tải bộ thẻ. Thử lại sau.');
-    } finally {
-      setLoading(false);
-    }
-  }
+  useEffect(() => {
+    if (decksStatus === 'idle') dispatch(fetchDecksThunk());
+  }, [dispatch, decksStatus]);
 
-  useEffect(() => { loadDecks(); }, []);
-
-  async function handleViewDeck(deckName) {
-    setActive(deckName);
-    setCardLoad(true);
-    try {
-      if (DEMO_MODE) {
-        setCards(MOCK_DECK_CARDS);
-        setCardLoad(false);
-        return;
-      }
-      const res = await getFlashcardsByDeck(deckName);
-      setCards(res.content ?? []);
-    } catch {
-      addToast('error', 'Không thể tải thẻ trong bộ này.');
-    } finally {
-      setCardLoad(false);
-    }
+  async function handleViewDeck(deck) {
+    const res = await dispatch(fetchCardsByDeckThunk(deck));
+    if (fetchCardsByDeckThunk.rejected.match(res)) addToast('error', res.payload);
   }
 
   async function handleCreateDeck() {
@@ -64,19 +39,11 @@ export default function Flashcard() {
     if (newName.length > 100) { addToast('error', 'Tên bộ thẻ tối đa 100 ký tự.'); return; }
     setCreating(true);
     try {
-      if (DEMO_MODE) {
-        setDecks((prev) => [...prev, { deckName: newName.trim(), isSystem: false, totalCards: 0, dueToday: 0, nextReviewDate: null }]);
-        addToast('success', 'Tạo bộ thẻ thành công!');
-        setCreate(false);
-        setNewName('');
-        setCreating(false);
-        return;
-      }
       await createDeck(newName.trim());
       addToast('success', 'Tạo bộ thẻ thành công!');
       setCreate(false);
       setNewName('');
-      await loadDecks();
+      dispatch(fetchDecksThunk());
     } catch (err) {
       if (err?.response?.status === 409) { addToast('error', 'Tên bộ thẻ đã tồn tại.'); return; }
       addToast('error', 'Không thể tạo bộ thẻ.');
@@ -85,24 +52,20 @@ export default function Flashcard() {
     }
   }
 
-  async function handleDeleteDeck(deckName) {
+  async function handleDeleteDeck(deck) {
     try {
-      if (DEMO_MODE) {
-        setDecks((prev) => prev.filter((d) => d.deckName !== deckName));
-        addToast('success', 'Đã xoá bộ thẻ!');
-        setConfirm(null);
-        if (activeDeck === deckName) setActive(null);
-        return;
-      }
-      await deleteDeck(deckName);
+      await deleteDeck(deck.deckId);
       addToast('success', 'Đã xoá bộ thẻ!');
       setConfirm(null);
-      if (activeDeck === deckName) setActive(null);
-      await loadDecks();
+      if (activeDeck?.deckId === deck.deckId) dispatch(clearActiveDeck());
+      dispatch(fetchDecksThunk());
     } catch {
       addToast('error', 'Không thể xoá bộ thẻ.');
     }
   }
+
+  const isLoading   = decksStatus === 'loading';
+  const isCardLoad  = deckCardsStatus === 'loading';
 
   return (
     <div className="fls-page">
@@ -117,7 +80,9 @@ export default function Flashcard() {
               </button>
             </div>
 
-            {error && <div className="fls-error" role="alert">{error}</div>}
+            {error && decksStatus === 'failed' && (
+              <div className="fls-error" role="alert">{error}</div>
+            )}
 
             {isLoading ? (
               <div className="fls-deck-list">
@@ -135,19 +100,17 @@ export default function Flashcard() {
             ) : (
               <div className="fls-deck-list">
                 {decks.map((deck) => (
-                  <div key={deck.deckName} className="fls-deck-card">
+                  <div key={deck.deckId ?? deck.deckName} className="fls-deck-card">
                     <div className="fls-deck-left">
                       <span className="fls-deck-icon" aria-hidden="true">
                         {deck.isSystem ? '⭐' : '👤'}
                       </span>
                       <div>
-                        <div className="fls-deck-name">{deck.deckName}</div>
+                        <div className="fls-deck-name">{deck.displayName ?? deck.deckName}</div>
                         <div className="fls-deck-meta">
                           {deck.totalCards} thẻ
-                          {deck.nextReviewDate && (
-                            <span>
-                              {' '}· Ôn tiếp: {new Date(deck.nextReviewDate).toLocaleDateString('vi-VN')}
-                            </span>
+                          {deck.dueToday > 0 && (
+                            <span> · {deck.dueToday} thẻ cần ôn hôm nay</span>
                           )}
                         </div>
                       </div>
@@ -167,7 +130,7 @@ export default function Flashcard() {
                       </button>
                       <button
                         className="fls-view-btn"
-                        onClick={() => handleViewDeck(deck.deckName)}
+                        onClick={() => handleViewDeck(deck)}
                         aria-label={`Xem thẻ trong bộ ${deck.deckName}`}
                       >
                         Xem thẻ
@@ -175,7 +138,7 @@ export default function Flashcard() {
                       {!deck.isSystem && (
                         <button
                           className="fls-del-btn"
-                          onClick={() => setConfirm(deck.deckName)}
+                          onClick={() => setConfirm(deck)}
                           aria-label={`Xoá bộ ${deck.deckName}`}
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -194,11 +157,11 @@ export default function Flashcard() {
             <div className="fls-deck-header">
               <button
                 className="fls-back-btn"
-                onClick={() => { setActive(null); setCards([]); }}
+                onClick={() => dispatch(clearActiveDeck())}
               >
                 ← Quay lại bộ thẻ
               </button>
-              <h1 className="fls-title">{activeDeck}</h1>
+              <h1 className="fls-title">{activeDeck.displayName ?? activeDeck.deckName}</h1>
             </div>
 
             {isCardLoad ? (
@@ -284,7 +247,7 @@ export default function Flashcard() {
             <div className="fls-modal">
               <h2 className="fls-modal-title">Xoá bộ thẻ</h2>
               <p className="fls-modal-body">
-                Xoá bộ thẻ <strong>"{confirmDel}"</strong>? Tất cả thẻ trong bộ này sẽ bị xoá. Không thể khôi phục.
+                Xoá bộ thẻ <strong>"{confirmDel.deckName}"</strong>? Tất cả thẻ trong bộ này sẽ bị xoá. Không thể khôi phục.
               </p>
               <div className="fls-modal-footer">
                 <button className="fls-modal-cancel" onClick={() => setConfirm(null)}>Hủy</button>

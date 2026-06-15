@@ -1,464 +1,794 @@
-# SPEC — Học Từ Vựng (`/vocabulary`)
+# SPEC — Từ Vựng / Learning Path (`/vocabulary`)
 > **UC:** UC-09 — Học Từ vựng theo Level/Topic
 > **Sprint:** 3 — Core Content
 > **Prefix:** `voc-` | **activeTab:** `'vocabulary'` | **Guard:** PrivateRoute (STUDENT)
-> **Phụ thuộc:** `USER-SPEC.md §9.1` | **Backend ref:** `feat-core-learning/SPEC.md UC-09`
-> **Master ref:** `MASTERFrontend-Student-Staff-SPEC.md`
+> **Version:** 2.0 | **Status:** Draft | **Last Updated:** 2026-06-14
+> **Design ref:** `DESIGN.md` — SakuJi · Hanami E-learning
+> **Layout ref:** `feat-dashboard/SPEC-dashboard.md` (cùng khung 3 cột + TopNav + StreakCard)
+> **Convention ref:** `CONSTITUTION.md` (ĐIỀU 1, §2.2, §2.5) · `AGENTS.md` (§2.4, §3.2, §6, NEVER #11–12) · `CLAUDE.md` (React Anti-patterns)
+> **Backend ref:** `feat-core-learning/SPEC.md UC-09`
 
 ---
 
-## 1. MÔ TẢ TRANG
+## 0. THAY ĐỔI SO VỚI v1.0
 
-Danh sách từ vựng lọc theo JLPT level và chủ đề (topic). Mỗi thẻ từ hiển thị từ, cách đọc, nghĩa, loại từ, nút phát âm. Click "Thêm Flashcard" → thêm từ vào bộ Flashcard cá nhân. Đánh dấu đã học để cập nhật tiến độ.
-
----
-
-## 2. MOCKUP
-
-```
-┌──────────────────────────────────────────────────────────────────┐
-│  TopNav (activeTab="vocabulary")                                 │
-├──────────────────────────────────────────────────────────────────┤
-│  語彙 Từ Vựng                                                   │
-│  Học từ vựng JLPT theo cấp độ và chủ đề.                        │
-│                                                                  │
-│  [N5]  [N4]  [N3]  [N2]  [N1]                                   │
-│                                                                  │
-│  N5: đã học 124 / 800 từ  [██░░░░░] 16%                        │
-│                                                                  │
-│  Chủ đề: [Tất cả▼]   🔍 [Tìm từ vựng...]                       │
-│                                                                  │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  食べる  たべる    [▶]                          [+FC] [✓] │   │
-│  │  Động từ · ăn                                            │   │
-│  │  Ví dụ: 毎日ご飯を食べる。(Tôi ăn cơm mỗi ngày.)        │   │
-│  └──────────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  学校  がっこう   [▶]                           [+FC] [✓]│   │
-│  │  Danh từ · trường học                                    │   │
-│  └──────────────────────────────────────────────────────────┘   │
-│                                                                  │
-│  [← 1  2  3  →]   Hiển thị 1–20 / 800 từ                       │
-└──────────────────────────────────────────────────────────────────┘
-```
+> v1.0 là một **danh sách phẳng 1 cột** (level tabs → filter → list thẻ từ → pagination).
+> v2.0 chuyển sang **"Vocab Learning Hub" 3 cột** theo prompt layout + DESIGN.md:
+>
+> | | v1.0 | v2.0 |
+> |:---|:---|:---|
+> | Khung trang | 1 cột, max-width 900px | 3 cột: Streak \| Path \| Course List (giống Dashboard) |
+> | Đơn vị hiển thị ở trung tâm | từng **từ** (word card) | từng **chủ đề / bài** (path card) |
+> | Tiêu đề | `<h1>` text thường | **Title pill** bo tròn lớn + 2 khối màu trang trí |
+> | Định hướng | filter + search | **learning path** dọc, card đầu = "START HERE" (active) |
+> | Màn từng từ (reading/audio/+FC) | chính là trang này | tách xuống **topic detail** (`?topic=`), xem § 11.2 — out of scope ở đây |
+>
+> Lý do: prompt yêu cầu khung học theo lộ trình (streak ở trái, danh sách bài ở giữa, điều hướng khóa học ở phải) — đồng bộ với Dashboard để học sinh nhận diện cùng một mental model.
 
 ---
 
-## 3. FILE CẦN TẠO
+## ACTOR
 
-```
-pages/vocabulary/
-├── VocabularyList.jsx
-└── VocabularyList.css
-
-components/student/
-└── VocabCard.jsx   ← card từng từ vựng
-```
+| Actor | Role | Điều kiện tiền quyết |
+|:---|:---|:---|
+| **Student** | Học viên đã đăng nhập | `isAuthenticated = true`, `role = STUDENT`, token hợp lệ |
 
 ---
 
-## 4. STATE
+## FUNCTIONAL REQUIREMENTS (EARS)
 
-```js
-const [level,       setLevel]   = useState(user?.jlptLevel ?? 'N5');
-const [topic,       setTopic]   = useState('');           // '' = tất cả
-const [search,      setSearch]  = useState('');
-const [debounced,   setDebounced] = useState('');
-const [words,       setWords]   = useState([]);
-const [stats,       setStats]   = useState({ completed: 0, total: 0 });
-const [topics,      setTopics]  = useState([]);           // danh sách topic
-const [isLoading,   setLoading] = useState(true);
-const [error,       setError]   = useState('');
-const [page,        setPage]    = useState(1);
-const [totalPages,  setTotal]   = useState(1);
-const [totalElements, setTotalEl] = useState(0);
-const [actionState, setAction] = useState({});  // { [vocabId]: 'adding' | 'added' | 'completing' | 'done' }
-const timerRef = useRef(null);
-const PAGE_SIZE = 20;
-```
+| ID | EARS Requirement |
+|:---|:---|
+| FR-VOC-01 | WHEN một Student đã đăng nhập điều hướng tới `/vocabulary`, THE SYSTEM SHALL gọi `GET /api/vocabulary/path?level={level}` để tải danh sách chủ đề (path cards) của cấp độ. |
+| FR-VOC-02 | THE SYSTEM SHALL khởi tạo `level` theo thứ tự ưu tiên: query param `?level=` → `user.jlptLevel` → `'N5'`. |
+| FR-VOC-03 | WHILE đang tải (`isLoading`), THE SYSTEM SHALL render skeleton cho StreakCard, Title pill, và ≥3 path card; KHÔNG để vùng trắng. |
+| FR-VOC-04 | WHEN dữ liệu path trả về, THE SYSTEM SHALL render đúng thứ tự `order`, đánh dấu **một** card `status='active'` là card "START HERE" (style nổi bật), các card còn lại đồng nhất. |
+| FR-VOC-05 | WHEN Student đổi cấp độ ở level selector, THE SYSTEM SHALL nạp lại path của cấp độ mới và cập nhật text Title pill thành `"{level} Kanji & Vocab"`. |
+| FR-VOC-06 | WHEN Student click một path card có `status ∈ {active, available, completed}`, THE SYSTEM SHALL điều hướng tới topic detail `?topic={slug}` (xem § 11.2). |
+| FR-VOC-07 | WHEN Student click một path card `status='locked'`, THE SYSTEM SHALL KHÔNG điều hướng và set `aria-disabled="true"`. |
+| FR-VOC-08 | WHEN Student click "Course List Card" ở sidebar phải, THE SYSTEM SHALL điều hướng tới `/courses`. |
+| FR-VOC-09 | IF mảng path rỗng, THE SYSTEM SHALL render `<EmptyState>` (Saku-chan `thinking`) ở vùng center thay cho danh sách. |
+| FR-VOC-10 | WHEN API rejected, THE SYSTEM SHALL hiển thị error inline ở vùng center kèm nút "Thử lại". |
 
-Debounce search 400ms. Reset `page → 1` khi `level`, `topic`, `debounced` thay đổi.
+## NON-FUNCTIONAL REQUIREMENTS
+
+| ID | Category | Requirement |
+|:---|:---|:---|
+| NFR-VOC-01 | Reuse | TopNav, StreakCard, JlptBadge, EmptyState **dùng lại** component sẵn có — không sao chép. (CLAUDE.md: tránh "God Component") |
+| NFR-VOC-02 | Component | Path card tách thành **1 component tái sử dụng** `VocabPathCard` với prop `active` (cùng component cho card active & inactive — prompt §3). |
+| NFR-VOC-03 | Tokens | Mọi màu/spacing/radius tham chiếu `--color-*`, `--radius-*`, `--space-*`; KHÔNG hard-code hex (DESIGN.md "Don't"). |
+| NFR-VOC-04 | UX | Skeleton xuất hiện ≤100ms; không flash trắng. Mọi component API-backed phải có `isLoading` + `error` (CLAUDE.md React Anti-patterns). |
+| NFR-VOC-05 | Security | Route bọc `<PrivateRoute role="STUDENT">`; role khác redirect dashboard tương ứng. **Ẩn UI chỉ là UX** — quyền truy cập level/VIP do **backend** quyết định (403), xem §A.3. |
+| NFR-VOC-06 | Separation | **KHÔNG** đặt business logic ở frontend: trạng thái khóa/mở, chọn card `active`, đếm từ đã học, kiểm tra quyền level/VIP — tất cả do backend tính, frontend chỉ render (AGENTS.md §2.4, NEVER #11–12). Xem §A.3. |
+| NFR-VOC-07 | Styling | Per-page `.css` co-located + CSS custom properties; **KHÔNG** CSS-in-JS (CONSTITUTION §ĐIỀU 1) và **KHÔNG** utility-class-heavy markup (DESIGN.md). Xem §A.1. |
+| NFR-VOC-08 | Code limit | `VocabularyList.jsx` ≤ **300 dòng**, mỗi handler ≤ **40 dòng** (CONSTITUTION §2.2) → đó là lý do tách `VocabPathCard`. Không TODO comment trong code merge (§2.3). |
+| NFR-VOC-09 | Data layer | Gọi API qua `api/studentService.js` (không `fetch` inline trong component); streak/weekDays đọc từ `studentSlice` đã có. (CLAUDE.md: "Direct API in Component") |
+
+## ACCEPTANCE CRITERIA
+
+| ID | Given | When | Then |
+|:---|:---|:---|:---|
+| AC-VOC-01 | Path có 1 card `active` + nhiều `available` | Trang render | Card active to hơn, đậm hơn, có tag "START HERE" đè cạnh trên |
+| AC-VOC-02 | Card `locked` | Click | Không điều hướng, `aria-disabled="true"`, icon khóa |
+| AC-VOC-03 | streak = 0 | Render | StreakCard: flame opacity 0.30, Saku-chan `idle` |
+| AC-VOC-04 | Đổi level N5 → N4 | Click pill N4 | Title pill = "N4 Kanji & Vocab", path nạp lại, JLPT badge đổi màu N4 |
+| AC-VOC-05 | path = [] | Data resolve | EmptyState render, không trang trắng |
+| AC-VOC-06 | width < 768px | Render | Ẩn 2 sidebar, 1 cột, TopNav thu gọn |
+| AC-VOC-07 | Click Course List Card | Click | Điều hướng `/courses` |
 
 ---
 
-## 5. API CALLS
+## A. TUÂN THỦ QUY ƯỚC DỰ ÁN
 
-```js
-// GET /api/vocabulary?level=N5&topic=food&search=食&page=0&size=20
-// Response:
-{
-  "data": {
-    "content": [
-      {
-        "vocabId": 1,
-        "word": "食べる",
-        "reading": "たべる",
-        "meaning": "ăn",
-        "partOfSpeech": "動詞",
-        "jlptLevel": "N5",
-        "topic": "food",
-        "exampleSentence": "毎日ご飯を食べる。",
-        "exampleTranslation": "Tôi ăn cơm mỗi ngày.",
-        "audioUrl": "/uploads/vocab/taberu.mp3",
-        "isCompleted": false,
-        "isInFlashcard": false
-      }
-    ],
-    "totalElements": 800,
-    "totalPages": 40,
-    "completedCount": 124
-  }
-}
+> Tham chiếu: `CONSTITUTION.md`, `AGENTS.md`, `CLAUDE.md`, `DESIGN.md`. Phần này chốt các điểm dễ vi phạm cho trang này.
 
-// GET /api/vocabulary/topics?level=N5
-// Response: { "data": ["food", "family", "time", "body", "nature", ...] }
+### A.1 Stack & Styling
+- React 18 + npm (CONSTITUTION §ĐIỀU 1). Component **PascalCase + `.jsx`**, hook **`use*` camelCase**, util **camelCase** (AGENTS §3.2).
+- **Styling — CHỐT: dùng plain CSS.** Mỗi trang/component một file `.css` co-located (`VocabularyList.css`, `VocabPathCard` style gộp trong file trang), **CSS custom properties** (`--color-*`, `--radius-*`, `--space-*`) làm design token. **KHÔNG** CSS-in-JS, **KHÔNG** Tailwind utility-class trong markup. Khớp với toàn bộ codebase hiện có (`Dashboard.css`, `TopNav.css`, `VocabularyList.css`) và DESIGN.md ("Per-page CSS files… no utility-class-heavy markup").
+- Class đặt theo tiền tố trang `voc-` (BEM-lite: `voc-path-card`, `voc-path-card--active`) như §3–§9.
 
-// POST /api/vocabulary/{vocabId}/complete
-// Response: { "data": { "vocabId": 1, "isCompleted": true } }
+### A.2 Giới hạn & sạch code (CONSTITUTION §2.2–§2.3)
+- `VocabularyList.jsx` ≤ 300 dòng; handler ≤ 40 dòng → tách `VocabPathCard` + dùng lại StreakCard/TopNav để giữ page mỏng.
+- Không `console.log`, không TODO comment trong code merge. Comment giải thích **TẠI SAO**, không phải LÀM GÌ.
+- Cleanup mọi `useEffect` có timer/subscription (CLAUDE.md: "Memory Leaks").
 
-// POST /api/flashcard/add
-// Request: { "vocabId": 1 }
-// Response: { "data": { "cardId": 55, "message": "Đã thêm vào Flashcard" } }
+### A.3 Phân tách Frontend / Backend (BẮT BUỘC — AGENTS §2.4, CONSTITUTION §2.5, NEVER #11–12)
+
+> Trang này là **untrusted client** — chỉ render. Mọi quyết định nghiệp vụ nằm ở backend.
+
+| Trách nhiệm | Bên xử lý | Ghi chú cho trang Vocab |
+|:---|:---|:---|
+| Trạng thái card `active / available / completed / locked` | **Backend** | Frontend render đúng `status` trả về, **không** tự suy luận khóa/mở (Domain Rule 7.2 — mở bài theo `lesson_order`). |
+| Chọn card "START HERE" (`active`) | **Backend** | Backend chỉ ra đúng 1 card `active`; frontend không tự đoán "bài kế tiếp". |
+| Đếm `completedWords / totalWords`, % tiến độ | **Backend** | Frontend chỉ hiển thị số nhận về (Domain Rule 7.2.2 — progress chỉ tăng, không sửa ở client). |
+| Quyền truy cập **level** (N5→N1) + **VIP** (`is_vip_only`) | **Backend** | Đổi level ở UI chỉ là *request*; nếu student không có quyền, backend trả **403** → frontend hiển thị thông báo, **KHÔNG** tự mở (NEVER #5 cấm lẫn lộn level; Rule 7.3 check Role + subscription). |
+| Ẩn/hiện nội dung VIP | **Backend** | "Authorization by UI hide" là anti-pattern — backend phải 401/403, không chỉ ẩn UI. |
+| UI state: level đang chọn, hover, loading/error, điều hướng | **Frontend** | Được phép (AGENTS §2.4 cột Frontend). |
+| Validation UX (không có ở trang này) | **Frontend** | Không thay thế validation backend. |
+
+**Hệ quả EARS bổ sung:**
+- FR-VOC-05 (đổi level): nếu API trả **403/422**, hiển thị thông báo "Cấp độ này yêu cầu nâng cấp / chưa mở khóa" thay vì danh sách — **không** render path của level bị cấm.
+- FR-VOC-07 (locked): `status` đến từ backend; frontend chỉ chặn điều hướng + `aria-disabled`, không tự tính điều kiện mở.
+
+### A.4 API envelope & lỗi (AGENTS §6)
+- Mọi response theo chuẩn `{ "status", "message", "data" }`. Frontend đọc `res.data.data`.
+- Xử lý mã lỗi: `401` → điều hướng `/login`; `403/422` → thông báo quyền/level; `5xx` → error inline + "Thử lại". Route `/api/[resource]` kebab-case số nhiều (AGENTS §3.3) — xem §11.
+
+---
+
+## 1. TỔNG QUAN TRANG
+
+"Vocab Learning Hub" — màn hình lộ trình học từ vựng theo cấp độ JLPT. Học sinh nhìn vào biết ngay: **streak của mình (trái)**, **mình đang ở bài/chủ đề nào và học gì tiếp theo (giữa)**, **lối tắt sang danh sách khóa học (phải)**.
+
+**Cấu trúc tổng thể (3 tầng), đồng bộ Dashboard:**
+```
+[1] TopNav     — 64px sticky, full-width (dùng lại component)
+[2] Body       — flex row, 3 cột dưới TopNav
+[3] Background — washi canvas var(--color-bg) #FAF7F4
 ```
 
-API service (`studentService.js`):
-```js
-export async function getVocabularyList({ level, topic, search, page = 0, size = 20 } = {}) {
-  const params = { level, page, size };
-  if (topic)  params.topic  = topic;
-  if (search) params.search = search;
-  const res = await api.get('/vocabulary', { params });
-  return res.data.data;
-}
-
-export async function getVocabTopics(level) {
-  const res = await api.get('/vocabulary/topics', { params: { level } });
-  return res.data.data;
-}
-
-export async function markVocabComplete(vocabId) {
-  const res = await api.post(`/vocabulary/${vocabId}/complete`);
-  return res.data.data;
-}
-
-export async function addVocabToFlashcard(vocabId) {
-  const res = await api.post('/flashcard/add', { vocabId });
-  return res.data.data;
-}
+**3 khu vực nội dung:**
+```
+[LEFT  220px ] StreakCard + Saku-chan            (dùng lại từ Dashboard)
+[CENTER flex:1] Title pill → START HERE tag → Path of VocabPathCard
+[RIGHT 200px ] Course List Card (điều hướng) + chỗ trống cho card tương lai
 ```
 
 ---
 
-## 6. JSX STRUCTURE
-
-```jsx
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useAppSelector } from '../../store/hooks';
-import TopNav from '../../components/layout/TopNav';
-import { JlptBadge } from '../../components/common/Badges';
-import { ProgressBar } from '../../components/common/ProgressBar';
-import { Pagination } from '../../components/common/Pagination';
-import { EmptyState } from '../../components/common/EmptyState';
-import VocabCard from '../../components/student/VocabCard';
-import { getVocabularyList, getVocabTopics, markVocabComplete, addVocabToFlashcard } from '../../api/studentService';
-import './VocabularyList.css';
-
-const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
-
-export default function VocabularyList() {
-  const { user } = useAppSelector((s) => s.auth);
-  const [level,       setLevel]   = useState(user?.jlptLevel ?? 'N5');
-  const [topic,       setTopic]   = useState('');
-  const [search,      setSearch]  = useState('');
-  const [debounced,   setDebounced] = useState('');
-  const [words,       setWords]   = useState([]);
-  const [stats,       setStats]   = useState({ completed: 0, total: 0 });
-  const [topics,      setTopics]  = useState([]);
-  const [isLoading,   setLoading] = useState(true);
-  const [error,       setError]   = useState('');
-  const [page,        setPage]    = useState(1);
-  const [totalPages,  setTotal]   = useState(1);
-  const [totalEl,     setTotalEl] = useState(0);
-  const [actionState, setAction]  = useState({});
-  const timerRef = useRef(null);
-
-  // Debounce
-  useEffect(() => {
-    clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setDebounced(search), 400);
-    return () => clearTimeout(timerRef.current);
-  }, [search]);
-
-  // Reset page on filter change
-  useEffect(() => { setPage(1); }, [level, topic, debounced]);
-
-  // Fetch topics on level change
-  useEffect(() => {
-    setTopic('');
-    getVocabTopics(level).then(setTopics).catch(() => {});
-  }, [level]);
-
-  const fetchWords = useCallback(async () => {
-    setLoading(true); setError('');
-    try {
-      const data = await getVocabularyList({ level, topic, search: debounced, page: page - 1, size: 20 });
-      setWords(data.content);
-      setTotal(data.totalPages);
-      setTotalEl(data.totalElements);
-      setStats({ completed: data.completedCount ?? 0, total: data.totalElements });
-    } catch (err) {
-      setError(err?.response?.data?.message ?? 'Không thể tải từ vựng.');
-    } finally {
-      setLoading(false);
-    }
-  }, [level, topic, debounced, page]);
-
-  useEffect(() => { fetchWords(); }, [fetchWords]);
-
-  const handleComplete = async (vocabId) => {
-    setAction((prev) => ({ ...prev, [vocabId]: 'completing' }));
-    try {
-      await markVocabComplete(vocabId);
-      setWords((prev) => prev.map((w) => w.vocabId === vocabId ? { ...w, isCompleted: true } : w));
-      setStats((prev) => ({ ...prev, completed: prev.completed + 1 }));
-      setAction((prev) => ({ ...prev, [vocabId]: 'done' }));
-    } catch {
-      setAction((prev) => { const s = { ...prev }; delete s[vocabId]; return s; });
-    }
-  };
-
-  const handleAddFlashcard = async (vocabId) => {
-    setAction((prev) => ({ ...prev, [`fc_${vocabId}`]: 'adding' }));
-    try {
-      await addVocabToFlashcard(vocabId);
-      setWords((prev) => prev.map((w) => w.vocabId === vocabId ? { ...w, isInFlashcard: true } : w));
-      setAction((prev) => ({ ...prev, [`fc_${vocabId}`]: 'added' }));
-    } catch {
-      setAction((prev) => { const s = { ...prev }; delete s[`fc_${vocabId}`]; return s; });
-    }
-  };
-
-  const progressPct = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
-
-  return (
-    <div className="voc-page">
-      <TopNav activeTab="vocabulary" />
-      <main className="voc-body">
-        <div className="voc-header">
-          <h1 className="voc-title"><span lang="ja">語彙</span> Từ Vựng</h1>
-          <p className="voc-subtitle">Học từ vựng JLPT theo cấp độ và chủ đề.</p>
-        </div>
-
-        {/* Level tabs */}
-        <div className="voc-level-tabs" role="tablist" aria-label="Chọn cấp độ JLPT">
-          {LEVELS.map((l) => (
-            <button key={l} role="tab" aria-selected={level === l}
-              className={`voc-level-tab${level === l ? ' voc-level-tab--active' : ''}`}
-              onClick={() => setLevel(l)}>{l}</button>
-          ))}
-        </div>
-
-        {/* Stats */}
-        {!isLoading && (
-          <div className="voc-stats">
-            <JlptBadge level={level} />
-            <span className="voc-stats-text">đã học <strong>{stats.completed}</strong> / {stats.total} từ</span>
-            <div className="voc-stats-bar"><ProgressBar value={progressPct} /></div>
-            <span className="voc-stats-pct">{progressPct}%</span>
-          </div>
-        )}
-
-        {/* Filters */}
-        <div className="voc-filters">
-          <label className="visually-hidden" htmlFor="voc-topic-select">Chủ đề</label>
-          <select id="voc-topic-select" className="voc-select" value={topic} onChange={(e) => setTopic(e.target.value)}>
-            <option value="">Tất cả chủ đề</option>
-            {topics.map((t) => <option key={t} value={t}>{t}</option>)}
-          </select>
-          <div className="voc-search-wrap">
-            <label className="visually-hidden" htmlFor="voc-search">Tìm từ vựng</label>
-            <input id="voc-search" type="search" className="voc-search" placeholder="🔍 Tìm từ vựng..."
-              value={search} onChange={(e) => setSearch(e.target.value)} />
-          </div>
-        </div>
-
-        {error && (
-          <div className="voc-error" role="alert">{error}
-            <button className="voc-retry" onClick={fetchWords}>Thử lại</button>
-          </div>
-        )}
-
-        {/* Word list */}
-        {isLoading ? (
-          <div className="voc-list">
-            {Array.from({ length: 5 }).map((_, i) => <div key={i} className="voc-card-skel" aria-hidden="true" />)}
-          </div>
-        ) : words.length === 0 ? (
-          <EmptyState title="Không tìm thấy từ vựng" subtitle="Thử thay đổi bộ lọc hoặc từ khóa." mascotVariant="thinking" mascotSize={120} />
-        ) : (
-          <div className="voc-list">
-            {words.map((w) => (
-              <VocabCard
-                key={w.vocabId}
-                word={w}
-                actionState={actionState}
-                onComplete={handleComplete}
-                onAddFlashcard={handleAddFlashcard}
-              />
-            ))}
-          </div>
-        )}
-
-        {!isLoading && totalPages > 1 && (
-          <>
-            <p className="voc-count-text">Hiển thị {(page - 1) * 20 + 1}–{Math.min(page * 20, totalEl)} / {totalEl} từ</p>
-            <Pagination currentPage={page} totalPages={totalPages} onChange={setPage} />
-          </>
-        )}
-      </main>
-    </div>
-  );
-}
-```
-
-### VocabCard component
-
-```jsx
-// components/student/VocabCard.jsx
-export default function VocabCard({ word, actionState, onComplete, onAddFlashcard }) {
-  const audioRef = useRef(null);
-  const isAdding    = actionState[`fc_${word.vocabId}`] === 'adding';
-  const isAdded     = word.isInFlashcard || actionState[`fc_${word.vocabId}`] === 'added';
-  const isCompleting= actionState[word.vocabId] === 'completing';
-
-  return (
-    <div className={`voc-card${word.isCompleted ? ' voc-card--done' : ''}`}>
-      <div className="voc-card-main">
-        <div className="voc-card-word">
-          <span className="voc-word" lang="ja">{word.word}</span>
-          <span className="voc-reading" lang="ja">{word.reading}</span>
-          {word.audioUrl && (
-            <>
-              <button className="voc-btn-audio" onClick={() => audioRef.current?.play()} aria-label={`Nghe phát âm ${word.word}`}>▶</button>
-              <audio ref={audioRef} src={word.audioUrl} preload="none" />
-            </>
-          )}
-        </div>
-        <div className="voc-card-info">
-          <span className="voc-pos">{word.partOfSpeech}</span>
-          <span className="voc-meaning">{word.meaning}</span>
-        </div>
-        {word.exampleSentence && (
-          <div className="voc-example">
-            <span lang="ja">{word.exampleSentence}</span>
-            {word.exampleTranslation && <span className="voc-example-trans"> ({word.exampleTranslation})</span>}
-          </div>
-        )}
-      </div>
-      <div className="voc-card-actions">
-        <button
-          className={`voc-btn-fc${isAdded ? ' voc-btn-fc--added' : ''}`}
-          onClick={() => !isAdded && !isAdding && onAddFlashcard(word.vocabId)}
-          disabled={isAdded || isAdding}
-          aria-label={isAdded ? 'Đã thêm Flashcard' : 'Thêm vào Flashcard'}
-        >
-          {isAdding ? '...' : isAdded ? '✓ FC' : '+ FC'}
-        </button>
-        <button
-          className={`voc-btn-done${word.isCompleted ? ' voc-btn-done--active' : ''}`}
-          onClick={() => !word.isCompleted && !isCompleting && onComplete(word.vocabId)}
-          disabled={word.isCompleted || isCompleting}
-          aria-label={word.isCompleted ? 'Đã học' : 'Đánh dấu đã học'}
-        >
-          {word.isCompleted ? '✓' : isCompleting ? '...' : '✓'}
-        </button>
-      </div>
-    </div>
-  );
-}
-```
-
----
-
-## 7. CSS
+## 2. DESIGN TOKENS ÁP DỤNG
 
 ```css
-/* ===== Vocabulary List ===== */
-.voc-page  { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); }
-.voc-body  { flex: 1; max-width: 900px; width: 100%; margin: 0 auto; padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; }
+/* Surface */
+--color-bg:             #FAF7F4;   /* washi canvas — background toàn trang */
+--color-card:           #FFFFFF;
+--color-border:         #E8E0DC;
 
-.voc-header  { display: flex; flex-direction: column; gap: 4px; }
-.voc-title   { font-size: 26px; font-weight: 700; color: var(--color-text); margin: 0; }
-.voc-subtitle{ font-size: 14px; color: var(--color-text-sub); margin: 0; }
+/* Brand (sakura pink) */
+--color-primary:        #E8637A;   /* accent, active indicator, START HERE chip */
+--color-primary-light:  #F4A7B3;   /* gradient end-stop, viền hover */
+--color-primary-dark:   #C44E62;
+--color-primary-bg:     #FFF0F3;   /* nền chip, thumbnail mặc định, hover */
 
-/* Level tabs */
-.voc-level-tabs  { display: flex; gap: 0; border-bottom: 2px solid var(--color-border); }
-.voc-level-tab   { padding: 10px 20px; font-size: 15px; font-weight: 700; color: var(--color-text-sub); background: transparent; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; transition: color var(--transition), border-color var(--transition); }
-.voc-level-tab--active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+/* Action / Achievement */
+--color-secondary:      #4CAF50;   /* progress hoàn thành, badge "đã học" */
+--color-secondary-bg:   #F1F8E9;
+--color-accent:         #F5C842;   /* flame, sao */
+--color-accent-bg:      #FFFDE7;
 
-/* Stats */
-.voc-stats     { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.voc-stats-text{ font-size: 14px; color: var(--color-text-sub); }
-.voc-stats-bar { flex: 1; min-width: 120px; max-width: 280px; }
-.voc-stats-pct { font-size: 14px; font-weight: 700; color: var(--color-text); }
+/* Text */
+--color-text:           #2D2D2D;
+--color-text-sub:       #757575;
+--color-text-disabled:  #BDBDBD;
+--color-error:          #E53935;
 
-/* Filters */
-.voc-filters    { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-.voc-select     { height: 40px; padding: 0 12px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); font-size: 14px; background: var(--color-bg); min-width: 160px; }
-.voc-search-wrap{ flex: 1; min-width: 220px; }
-.voc-search     { width: 100%; height: 40px; padding: 0 14px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); font-size: 14px; background: var(--color-bg); box-sizing: border-box; }
+/* Radius */
+--radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 24px; --radius-full: 9999px;
 
-.voc-error { display: flex; align-items: center; justify-content: space-between; background: #FFEAEA; border: 1px solid var(--color-error); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; color: var(--color-error); }
-.voc-retry { background: transparent; border: 1.5px solid var(--color-error); border-radius: var(--radius-full); color: var(--color-error); font-size: 12px; font-weight: 700; padding: 4px 12px; cursor: pointer; }
+/* Shadow */
+--shadow-sm: 0 2px 8px rgba(0,0,0,0.07);
+--shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+--shadow-petal-glow: 0 2px 10px rgba(232,99,122,0.22);
 
-/* Word list */
-.voc-list { display: flex; flex-direction: column; gap: 10px; }
+/* Font + transition */
+--font-base: 'Nunito', 'Noto Sans JP', system-ui, sans-serif;
+--transition: 200ms ease;
+```
 
-/* VocabCard */
-.voc-card { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; background: var(--color-card); border: 1.5px solid var(--color-border); border-radius: var(--radius-lg); padding: 16px 18px; transition: border-color var(--transition), box-shadow var(--transition); }
-.voc-card:hover { border-color: var(--color-primary-light); box-shadow: var(--shadow-sm); }
-.voc-card--done { border-color: var(--color-secondary); background: var(--color-secondary-bg); }
+**JLPT level colours** (cho `JlptBadge` & khối màu trang trí Title pill — DESIGN.md §JLPT):
 
-.voc-card-main  { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-.voc-card-word  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.voc-word       { font-size: 20px; font-weight: 700; color: var(--color-text); }
-.voc-reading    { font-size: 14px; color: var(--color-text-sub); }
-.voc-btn-audio  { background: transparent; border: 1.5px solid var(--color-primary-light); border-radius: var(--radius-full); color: var(--color-primary); width: 28px; height: 28px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+| Level | Background | Text |
+|---|---|---|
+| N5 | `#E8F5E9` | `#2E7D32` |
+| N4 | `#E3F2FD` | `#1565C0` |
+| N3 | `#FFF3E0` | `#E65100` |
+| N2 | `#F3E5F5` | `#6A1B9A` |
+| N1 | `#FCE4EC` | `#C62828` |
 
-.voc-card-info  { display: flex; align-items: center; gap: 8px; }
-.voc-pos        { font-size: 11px; font-weight: 700; color: var(--color-text-sub); background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 2px 8px; }
-.voc-meaning    { font-size: 15px; color: var(--color-text); font-weight: 500; }
+---
 
-.voc-example      { font-size: 13px; color: var(--color-text-sub); line-height: 1.5; }
-.voc-example-trans{ font-style: italic; }
+## 3. LAYOUT TỔNG THỂ + MOCKUP
 
-.voc-card-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0; }
-.voc-btn-fc  { height: 28px; padding: 0 12px; background: var(--color-primary-bg); border: 1.5px solid var(--color-primary-light); border-radius: var(--radius-full); color: var(--color-primary); font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all var(--transition); }
-.voc-btn-fc--added { background: var(--color-secondary-bg); border-color: var(--color-secondary); color: var(--color-secondary); cursor: default; }
-.voc-btn-fc:disabled { opacity: 0.6; }
+### 3.1 Page shell & body
 
-.voc-btn-done { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--color-border); background: transparent; font-size: 14px; cursor: pointer; color: var(--color-text-sub); transition: all var(--transition); }
-.voc-btn-done--active { background: var(--color-secondary); border-color: var(--color-secondary); color: white; cursor: default; }
-.voc-btn-done:disabled { opacity: 0.6; }
+```
+.voc-page
+  min-height: 100vh; display: flex; flex-direction: column;
+  background: var(--color-bg); font-family: var(--font-base);
 
-.voc-card-skel { height: 100px; border-radius: var(--radius-lg); background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%); background-size: 200% 100%; animation: skelPulse 1.4s ease infinite; }
+.voc-body                       /* giống .dashboard-body */
+  display: flex; flex: 1; gap: 24px;
+  padding: 24px 32px; max-width: 1440px; margin: 0 auto; width: 100%;
+  align-items: flex-start;
 
-.voc-count-text { font-size: 13px; color: var(--color-text-sub); text-align: center; }
+.voc-left   { width: 220px; flex-shrink: 0; }
+.voc-center { flex: 1; min-width: 0; }
+.voc-right  { width: 200px; flex-shrink: 0; }
+```
 
-@media (max-width: 767px) {
-  .voc-body    { padding: 16px 16px 32px; }
-  .voc-card    { flex-direction: column; }
-  .voc-card-actions { flex-direction: row; align-items: center; }
-}
-@media (prefers-reduced-motion: reduce) { .voc-page * { animation: none !important; transition-duration: 0ms !important; } }
+### 3.2 Sơ đồ bố cục đầy đủ
+
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│ TopNav (sticky 64px)                                                       │
+│ [🌸 SakuJi]  [Ôn tập][Học mới][Kanji][Ngữ pháp][Từ điển][Thi thử]   [email][◯]│
+└────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────┐
+│ Background: washi #FAF7F4                                                   │
+│  ┌──────────┐  ┌──────────────────────────────────────┐  ┌──────────────┐  │
+│  │  LEFT    │  │  CENTER                              │  │  RIGHT       │  │
+│  │  220px   │  │  flex:1                              │  │  200px       │  │
+│  │          │  │   ▓                          ▓       │  │              │  │
+│  │[Streak ] │  │  ╭────────────────────────────────╮  │  │ ┌──────────┐ │  │
+│  │[ Card  ] │  │  │      N5 Kanji & Vocab          │  │  │ │📚 Course │ │  │
+│  │[Saku 🌸] │  │  ╰────────────────────────────────╯  │  │ │  List  → │ │  │
+│  │          │  │   ▓ (khối màu trang trí dưới pill) ▓  │  │ └──────────┘ │  │
+│  │          │  │                                      │  │              │  │
+│  │          │  │  ╭ START HERE╮ (đè cạnh trên card 1) │  │  (trống —    │  │
+│  │          │  │  ┌──────────────────────────────┐    │  │   card sau)  │  │
+│  │          │  │  │ ◯  たべる / 食べる   ← ACTIVE │    │  │              │  │
+│  │          │  │  │     Bài 1 · Động từ ăn uống   │    │  │              │  │
+│  │          │  │  └──────────────────────────────┘    │  │              │  │
+│  │          │  │  ┌──────────────────────────────┐    │  │              │  │
+│  │          │  │  │ ◯  がっこう / 学校            │    │  │              │  │
+│  │          │  │  │     Bài 2 · Trường học        │    │  │              │  │
+│  │          │  │  └──────────────────────────────┘    │  │              │  │
+│  │          │  │  ┌──────────────────────────────┐    │  │              │  │
+│  │          │  │  │ 🔒 かぞく / 家族   ← LOCKED   │    │  │              │  │
+│  │          │  │  └──────────────────────────────┘    │  │              │  │
+│  └──────────┘  └──────────────────────────────────────┘  └──────────────┘ │
+└────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 8. ACCESSIBILITY
+## 4. TOPNAV (dùng lại)
 
-- [ ] Level tabs dùng `role="tablist"` + `role="tab"` + `aria-selected`
-- [ ] `<select>` và `<input>` có `<label>` ẩn bằng `visually-hidden`
-- [ ] Audio không autoplay, luôn cần user click ▶
-- [ ] Nút "+FC" có `aria-label` đầy đủ khi đã thêm / chưa thêm
-- [ ] Skeleton rows có `aria-hidden="true"`
+Dùng nguyên `components/layout/TopNav.jsx` với `activeTab="vocabulary"`. Chi tiết style/tabs/user-dropdown xem `feat-dashboard/SPEC-dashboard.md §4`. **Không** định nghĩa lại trong spec này.
+
+```jsx
+<TopNav activeTab="vocabulary" />
+```
+
+---
+
+## 5. LEFT SIDEBAR — STREAK CARD (dùng lại)
+
+Dùng lại `StreakCard` (gradient sakura, số streak `number-xl`, 7 chấm tuần, Saku-chan `sm`). Spec đầy đủ: `feat-dashboard/SPEC-dashboard.md §5`.
+
+```jsx
+<aside className="voc-left">
+  {isLoading ? <div className="skeleton skeleton--streak" />
+             : <StreakCard streak={streak} weekDays={weekDays} />}
+</aside>
+```
+
+Phần còn lại của sidebar trái để trống (chừa cho card tương lai — prompt §2.1).
+
+---
+
+## 6. CENTER — TITLE PILL BANNER
+
+> Prompt §2.2.a — thanh "pill" bo tròn 2 đầu rất lớn, text căn giữa; 2 khối màu trang trí ở 2 góc làm lớp nền phía sau.
+
+### 6.1 Khối bao — `.voc-titlewrap`
+```
+position: relative;
+margin-bottom: 28px;            /* chừa chỗ cho START HERE tag bên dưới */
+display: flex; justify-content: center;
+```
+
+### 6.2 Pill — `.voc-title-pill`
+```
+position: relative; z-index: 2;
+display: inline-flex; align-items: center; justify-content: center;
+min-height: 56px; padding: 0 48px;
+background: var(--color-card);
+border: 1.5px solid var(--color-primary-light);
+border-radius: var(--radius-full);            /* pill — DESIGN.md: CTA & nhãn dạng petal */
+box-shadow: var(--shadow-sm);
+
+[Text]:
+  font: 800 22px var(--font-base);   /* heading-lg/display-lg vibe */
+  color: var(--color-text);
+  text-content: "{level} Kanji & Vocab"
+  (phần "{level}" tô màu var(--color-primary))
+```
+
+### 6.3 Khối màu trang trí — `.voc-title-blob` (lớp dưới)
+```
+position: absolute; z-index: 1; top: 50%; transform: translateY(-50%);
+width: 64px; height: 64px; border-radius: var(--radius-lg);
+opacity: 0.55; pointer-events: none;
+filter: blur(2px);
+
+.voc-title-blob--left  { left: 8%;  background: var(--color-primary-bg); rotate: -8deg; }
+.voc-title-blob--right { right: 8%; background: var(--color-accent-bg);  rotate: 10deg; }
+```
+> Màu blob có thể lấy theo JLPT level (bảng §2) để củng cố tín hiệu cấp độ.
+
+### 6.4 Level selector — `.voc-levels` (đặt trên Title pill)
+Đổi cấp độ học. Hàng pill nhỏ, căn giữa, ngay trên Title pill.
+```
+display: flex; gap: 8px; justify-content: center; margin-bottom: 14px;
+role="tablist"
+
+.voc-level-pill                       /* mỗi N5..N1 */
+  min-height: 32px; padding: 0 16px;
+  border-radius: var(--radius-full);
+  font: 700 13px var(--font-base);
+  background: var(--color-card); color: var(--color-text-sub);
+  border: 1.5px solid var(--color-border); cursor: pointer;
+  transition: var(--transition);
+
+.voc-level-pill:hover    { background: var(--color-primary-bg); }
+.voc-level-pill--active  { background: var(--color-primary); color:#fff; border-color: var(--color-primary); }
+```
+
+---
+
+## 7. CENTER — "START HERE" TAG
+
+> Prompt §2.2.b — label nhỏ dạng speech-bubble, nằm trên-trái card đầu tiên, đè lên cạnh trên card đó.
+
+```
+.voc-start-tag
+  position: absolute; z-index: 3;
+  top: -12px; left: 16px;                 /* đè ~12px lên cạnh trên card active */
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 12px;
+  background: var(--color-primary);
+  color: #fff;
+  font: 700 11px var(--font-base); letter-spacing: 0.4px; text-transform: uppercase;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-petal-glow);
+
+  /* đuôi speech-bubble nhỏ chỉ xuống card */
+  &::after {
+    content: ''; position: absolute; bottom: -4px; left: 16px;
+    width: 8px; height: 8px; background: var(--color-primary);
+    transform: rotate(45deg);
+  }
+```
+Tag chỉ render trên card có `status='active'`. `VocabPathCard active` đặt `position: relative` để tag (absolute) neo theo nó.
+
+---
+
+## 8. CENTER — PATH CARDS (`VocabPathCard`)
+
+> Prompt §2.2.c + §3 — danh sách card dọc, full-width center, **1 component tái sử dụng** dùng chung cho card active & inactive. Mỗi card dạng row: avatar tròn (trái) + 2 dòng text (phải).
+
+### 8.1 Danh sách — `.voc-path-list`
+```
+position: relative;          /* neo START HERE tag */
+display: flex; flex-direction: column; gap: 12px;
+/* scroll dọc khi dài hơn viewport: vùng cha cuộn tự nhiên theo trang */
+```
+
+### 8.2 Card — `.voc-path-card`
+Component: `components/student/VocabPathCard.jsx`, prop: `{ card, active, onOpen }`.
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│ [Avatar ◯ 52px]  食べる たべる             [JLPT N5] [→]     │
+│                  Bài 1 · Động từ ăn uống · 0/24 từ           │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Base:**
+```
+display: flex; align-items: center; gap: 16px;
+background: var(--color-card);
+border: 1.5px solid transparent;
+border-radius: var(--radius-lg);
+padding: 16px 20px;
+box-shadow: var(--shadow-sm);
+cursor: pointer;
+transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+```
+
+**Hover (available/active):**
+```
+box-shadow: var(--shadow-md); transform: translateY(-1px);
+border-color: var(--color-primary-light);
+```
+
+**Variant `active` (card "current/active", nổi bật hơn — prompt: to hơn/đậm hơn):**
+```
+position: relative;                /* neo START HERE tag (§7) */
+border: 1.5px solid var(--color-primary);
+box-shadow: var(--shadow-petal-glow);
+padding: 22px 24px;                /* lớn hơn các card sau */
+
+[Dải dọc cạnh trái]:
+  ::before { content:''; position:absolute; left:0; top:0; bottom:0;
+             width:3px; background: var(--color-primary); border-radius:0 3px 3px 0; }
+```
+
+**Variant `locked`:**
+```
+opacity: 0.55; cursor: default; background: var(--color-bg);
+[Avatar] → icon khóa 🔒, màu var(--color-text-disabled)
+aria-disabled="true"
+```
+
+#### 8.2.1 Avatar tròn — `.voc-pc-avatar`
+```
+width: 52px; height: 52px; border-radius: var(--radius-full); flex-shrink: 0;
+display: flex; align-items: center; justify-content: center;
+background: var(--color-primary-bg);
+font: 800 22px var(--font-base); color: var(--color-primary);   /* hoặc ảnh thumbnail */
+lang="ja" cho ký tự Nhật (kế thừa Noto Sans JP)
+
+active:  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%); color:#fff;
+locked:  background: var(--color-border);
+```
+
+#### 8.2.2 Nội dung text — `.voc-pc-body` (2 dòng — prompt §2.2.c)
+```
+flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px;
+
+[Dòng 1 — tiêu đề lớn .voc-pc-title]:
+  font: 700 18px var(--font-base); color: var(--color-text);
+  (active: 20px); lang="ja" cho từ tiếng Nhật;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+
+[Dòng 2 — mô tả nhạt .voc-pc-sub]:
+  font: 400 13px var(--font-base); color: var(--color-text-sub);
+  nội dung: "Bài {order} · {meaning/topic} · {completed}/{total} từ"
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+```
+
+#### 8.2.3 Meta phải — `.voc-pc-meta`
+```
+display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0;
+
+[JlptBadge level={card.level}]   ← dùng lại component
+[Arrow → 16px]: color var(--color-text-disabled); active/available: var(--color-text-sub);
+                parent:hover → translateX(3px), color var(--color-primary)
+```
+
+#### 8.2.4 Mini progress (tùy chọn, khi `completed > 0`)
+Thanh 4px dưới dòng 2, fill `var(--color-secondary)`, width `{completed/total*100}%` — giống `.lesson-progress` Dashboard §7.3.2.
+
+---
+
+## 9. RIGHT SIDEBAR — COURSE LIST CARD
+
+> Prompt §2.3 — card row ở top sidebar phải: icon (trái) + label "Course List" (giữa) + mũi tên (phải); toàn card click được → trang khóa học. Phần còn lại để trống.
+
+```
+.voc-courselist-card  (thẻ <a href="/courses"> hoặc <button>)
+  display: flex; align-items: center; gap: 12px;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none; cursor: pointer;
+  transition: box-shadow var(--transition), transform var(--transition);
+
+hover: box-shadow: var(--shadow-md); transform: translateY(-2px);
+
+[Icon 40px .voc-cl-icon]:
+  width:40px; height:40px; border-radius: var(--radius-md);
+  background: var(--color-primary-bg); color: var(--color-primary);
+  display:flex; align-items:center; justify-content:center;  (📚 SVG 22px)
+
+[Label .voc-cl-label]:
+  flex: 1; min-width: 0;
+  font: 700 14px var(--font-base); color: var(--color-text);
+  "Danh sách khóa học"
+
+[Arrow .voc-cl-arrow]:
+  width:20px; height:20px; color: var(--color-text-disabled); flex-shrink:0;
+  parent:hover → color var(--color-primary), translateX(3px)
+```
+Toàn card có `aria-label="Mở danh sách khóa học"`. Bên dưới để trống (placeholder card tương lai — prompt §2.3).
+
+---
+
+## 10. STATE & DATA FLOW
+
+```js
+const navigate = useNavigate();
+const { user } = useAppSelector((s) => s.auth);
+const { streak = 0, weekDays = [] } = useAppSelector((s) => s.student);  // cho StreakCard
+
+const [searchParams, setSearchParams] = useSearchParams();
+const [level,    setLevel]   = useState(searchParams.get('level') ?? user?.jlptLevel ?? 'N5');
+const [cards,    setCards]   = useState([]);     // path cards (topic groups)
+const [isLoading,setLoading] = useState(true);
+const [error,    setError]   = useState('');
+
+const LEVELS = ['N5','N4','N3','N2','N1'];
+
+// Mở topic detail (màn từ phẳng v1.0 — §11.2). Card locked đã chặn ở VocabPathCard.
+const openTopic = (card) => navigate(`/vocabulary?level=${level}&topic=${card.slug}`);
+```
+
+- Đổi `level` → cập nhật `?level=` (giữ deep-link) + nạp lại path.
+- `active` card = card có `status==='active'` (backend chỉ ra **đúng 1**; frontend KHÔNG tự suy luận "bài kế tiếp" — §A.3).
+- Dữ liệu StreakCard lấy từ `studentSlice` (đã có sẵn, không gọi thêm API).
+
+**Handler (≤40 dòng — NFR-VOC-08), phân biệt lỗi quyền (§A.3/§11):**
+```js
+const fetchPath = useCallback(async () => {
+  setLoading(true); setError('');
+  try {
+    setCards(await getVocabPath(level));
+  } catch (err) {
+    const code = err?.response?.status;
+    if (code === 401) return navigate('/login');
+    if (code === 403 || code === 422) {
+      setCards([]);
+      setError('Cấp độ này chưa mở khóa hoặc cần nâng cấp tài khoản.'); // backend quyết định, FE chỉ hiển thị
+    } else {
+      setError(err?.response?.data?.message ?? 'Không thể tải lộ trình từ vựng.');
+    }
+  } finally { setLoading(false); }
+}, [level, navigate]);
+
+useEffect(() => { fetchPath(); }, [fetchPath]);
+```
+
+---
+
+## 11. API
+
+### 11.1 Path cards (trang này)
+```
+GET /api/vocabulary/path?level=N5        (route kebab-case số nhiều — AGENTS §3.3)
+Response (envelope chuẩn AGENTS §6):
+{
+  "status": 200,
+  "message": "OK",
+  "data": [
+    {
+      "topicId": 12, "slug": "food",
+      "titleJa": "食べ物", "titleVi": "Đồ ăn",
+      "order": 1, "level": "N5",
+      "totalWords": 24, "completedWords": 0,
+      "status": "active"            // active | available | completed | locked  ← BACKEND quyết định (§A.3)
+    },
+    { "topicId": 13, "slug": "school", "titleJa": "学校", "titleVi": "Trường học",
+      "order": 2, "level": "N5", "totalWords": 18, "completedWords": 0, "status": "available" }
+  ]
+}
+```
+
+> `status`, `completedWords`, và việc level/VIP có được truy cập hay không đều do **backend** tính (Role + subscription/level, Domain Rule 7.2/7.3). Frontend không suy luận lại — xem §A.3.
+
+**Mã lỗi cần handle:**
+
+| Code | Ý nghĩa | Frontend |
+|:---|:---|:---|
+| 200 | OK | Render path |
+| 401 | Token thiếu/hết hạn | Điều hướng `/login` |
+| 403 | Không có quyền level/VIP | Thông báo "Cấp độ này chưa mở khóa / cần nâng cấp", không render path |
+| 422 | Level không hợp lệ với student | Như 403 |
+| 5xx | Lỗi hệ thống | Error inline + nút "Thử lại" |
+
+Service (`api/studentService.js` — không `fetch` inline trong component, NFR-VOC-09):
+```js
+export async function getVocabPath(level) {
+  const res = await api.get('/vocabulary/path', { params: { level } });
+  return res.data.data;   // bóc envelope { status, message, data }
+}
+```
+
+### 11.2 Topic detail (màn kế tiếp — OUT OF SCOPE spec này)
+Click path card → `/vocabulary?topic={slug}&level={level}`. Màn này tái sử dụng **danh sách từ phẳng của v1.0** (word card: reading/audio/+FC/đánh dấu đã học) qua các API đã có:
+`GET /api/vocabulary?level=&topic=&search=&page=&size=`, `GET /api/vocabulary/topics`,
+`POST /api/vocabulary/{id}/complete`, `POST /api/flashcard/add`.
+→ Sẽ tách thành `SPEC-vocabulary-topic.md` riêng.
+
+---
+
+## 12. LOADING SKELETON
+
+| Vùng | Skeleton |
+|:---|:---|
+| Left | 1 block 220×220, `--radius-xl` |
+| Center | Title pill block 220×56 `--radius-full` + 4 path block 76px `--radius-lg` |
+| Right | 1 block 68px `--radius-lg` |
+
+```css
+@keyframes skeleton-pulse { 0%,100%{opacity:1;} 50%{opacity:.45;} }
+.skeleton { background: var(--color-border); border-radius: var(--radius-md);
+            animation: skeleton-pulse 1.4s ease-in-out infinite; }
+```
+Skeleton có `aria-hidden="true"`; `<main>` set `aria-busy="true"` khi loading.
+
+---
+
+## 13. EMPTY STATE
+
+Khi `cards.length === 0` (cấp độ chưa có chủ đề):
+```jsx
+<EmptyState
+  mascotVariant="thinking" mascotSize={160}
+  title="Chưa có chủ đề từ vựng"
+  subtitle="Nội dung cấp độ này đang được cập nhật. Hãy quay lại sau nhé!"
+/>
+```
+**Không bao giờ** render trang trắng (DESIGN.md `empty-state`).
+
+---
+
+## 14. ANIMATIONS
+
+```css
+/* Path card lần lượt trượt lên */
+@keyframes slideUp { from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:translateY(0);} }
+.voc-path-card { animation: slideUp 250ms ease forwards; }
+.voc-path-card:nth-child(1){animation-delay:0ms;}
+.voc-path-card:nth-child(2){animation-delay:60ms;}
+.voc-path-card:nth-child(3){animation-delay:120ms;}
+.voc-path-card:nth-child(4){animation-delay:180ms;}
+
+@media (prefers-reduced-motion: reduce) {
+  .voc-page * { animation: none !important; transition-duration: 0ms !important; }
+}
+```
+Saku-chan & flame animation kế thừa từ StreakCard.
+
+---
+
+## 15. RESPONSIVE
+
+> Prompt §3 — sidebar trái/phải ẩn hoặc đẩy xuống dưới trên mobile; TopNav center → hamburger / scroll ngang.
+
+| Breakpoint | Thay đổi |
+|:---|:---|
+| ≥ 1200px | Full 3 cột: left 220px + center flex + right 200px |
+| 768–1199px | Ẩn `.voc-left`; còn center + right |
+| < 768px | 1 cột; ẩn `.voc-right`; TopNav thu gọn hamburger; Title pill `padding: 0 24px`, font 18px |
+
+```css
+@media (max-width: 1199px) {
+  .voc-left { display: none; }
+  .voc-body { padding: 20px; }
+}
+@media (max-width: 767px) {
+  .voc-body  { flex-direction: column; padding: 16px; gap: 16px; }
+  .voc-right { display: none; }
+  .voc-title-pill { padding: 0 24px; min-height: 48px; font-size: 18px; }
+  .voc-title-blob { display: none; }
+  .voc-path-card--active { padding: 18px 16px; }
+}
+```
+Touch target mọi card/pill ≥ 44px (DESIGN.md §Touch Targets).
+
+---
+
+## 16. ACCESSIBILITY
+
+| Yêu cầu | Cách thực hiện |
+|:---|:---|
+| Landmark | `<aside>` (2 sidebar), `<main>` (center), TopNav `<header>` |
+| Heading | `<h1>` = Title pill "{level} Kanji & Vocab" |
+| Level selector | `role="tablist"` + `role="tab"` + `aria-selected` trên `.voc-level-pill` |
+| Path card | `<button>`/`<a>` bao card; `aria-label="Bài {order}: {titleVi}"`; active → `aria-current="true"` |
+| Locked card | `aria-disabled="true"` + `aria-label="Bị khóa — hoàn thành bài trước"` |
+| START HERE tag | `aria-hidden="true"` (trang trí); thông tin "bắt đầu ở đây" đã có ở `aria-current` |
+| Course List | `aria-label="Mở danh sách khóa học"` |
+| Loading | `aria-busy="true"` trên `<main>`; skeleton `aria-hidden="true"` |
+| Focus ring | `outline: 2px solid var(--color-primary)` mọi phần tử tương tác |
+| Reduced motion | Tắt animation khi `prefers-reduced-motion: reduce` |
+| Ký tự Nhật | `lang="ja"` trên từ/tiêu đề tiếng Nhật để fallback Noto Sans JP |
+
+---
+
+## 17. FILE STRUCTURE / COMPONENT
+
+```
+apps/frontend/src/
+├── pages/vocabulary/
+│   ├── VocabularyList.jsx        ← page root (Vocab Learning Hub 3 cột)
+│   └── VocabularyList.css
+├── components/student/
+│   └── VocabPathCard.jsx         ← MỚI — card lộ trình (prop active/locked)
+├── components/layout/TopNav.jsx  ← dùng lại
+├── pages/dashboard/StreakCard.jsx← dùng lại
+└── components/common/
+    ├── Badges.jsx (JlptBadge)    ← dùng lại
+    └── EmptyState.jsx            ← dùng lại
+```
+
+**Skeleton JSX page root:**
+```jsx
+<div className="voc-page">
+  <TopNav activeTab="vocabulary" />
+  <div className="voc-body">
+    <aside className="voc-left">
+      {isLoading ? <div className="skeleton skeleton--streak" />
+                 : <StreakCard streak={streak} weekDays={weekDays} />}
+    </aside>
+
+    <main className="voc-center" aria-busy={isLoading}>
+      <div className="voc-levels" role="tablist" aria-label="Chọn cấp độ JLPT">
+        {LEVELS.map((l) => (
+          <button key={l} role="tab" aria-selected={level === l}
+            className={`voc-level-pill${level === l ? ' voc-level-pill--active' : ''}`}
+            onClick={() => setLevel(l)}>{l}</button>
+        ))}
+      </div>
+
+      <div className="voc-titlewrap">
+        <span className="voc-title-blob voc-title-blob--left" aria-hidden="true" />
+        <span className="voc-title-blob voc-title-blob--right" aria-hidden="true" />
+        <h1 className="voc-title-pill"><span className="voc-title-lv">{level}</span> Kanji &amp; Vocab</h1>
+      </div>
+
+      {error ? (
+        <div className="voc-error" role="alert">{error}
+          <button className="voc-retry" onClick={fetchPath}>Thử lại</button></div>
+      ) : isLoading ? (
+        <div className="voc-path-list">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="skeleton skeleton--path" aria-hidden="true" />))}
+        </div>
+      ) : cards.length === 0 ? (
+        <EmptyState mascotVariant="thinking" mascotSize={160}
+          title="Chưa có chủ đề từ vựng"
+          subtitle="Nội dung cấp độ này đang được cập nhật. Hãy quay lại sau nhé!" />
+      ) : (
+        <div className="voc-path-list">
+          {cards.map((c) => (
+            <VocabPathCard key={c.topicId} card={c}
+              active={c.status === 'active'} onOpen={openTopic} />))}
+        </div>
+      )}
+    </main>
+
+    <aside className="voc-right">
+      <a className="voc-courselist-card" href="/courses" aria-label="Mở danh sách khóa học">
+        <span className="voc-cl-icon" aria-hidden="true">{/* 📚 SVG */}</span>
+        <span className="voc-cl-label">Danh sách khóa học</span>
+        <span className="voc-cl-arrow" aria-hidden="true">{/* → SVG */}</span>
+      </a>
+    </aside>
+  </div>
+</div>
+```
+
+**VocabPathCard.jsx (khung):**
+```jsx
+export default function VocabPathCard({ card, active, onOpen }) {
+  const locked = card.status === 'locked';
+  const cls = `voc-path-card${active ? ' voc-path-card--active' : ''}${locked ? ' voc-path-card--locked' : ''}`;
+  return (
+    <button type="button" className={cls}
+      aria-current={active ? 'true' : undefined}
+      aria-disabled={locked || undefined}
+      aria-label={`Bài ${card.order}: ${card.titleVi}`}
+      onClick={() => !locked && onOpen(card)}>
+      {active && <span className="voc-start-tag" aria-hidden="true">START HERE</span>}
+      <span className="voc-pc-avatar" lang="ja" aria-hidden="true">
+        {locked ? '🔒' : card.titleJa.charAt(0)}
+      </span>
+      <span className="voc-pc-body">
+        <span className="voc-pc-title" lang="ja">{card.titleJa}</span>
+        <span className="voc-pc-sub">
+          Bài {card.order} · {card.titleVi} · {card.completedWords}/{card.totalWords} từ
+        </span>
+      </span>
+      <span className="voc-pc-meta">
+        <JlptBadge level={card.level} />
+        <span className="voc-pc-arrow" aria-hidden="true">{/* → SVG */}</span>
+      </span>
+    </button>
+  );
+}
+```
+
+---
+
+## 18. OUT OF SCOPE
+
+- ❌ Màn **topic detail / word list** (reading, audio, +Flashcard, đánh dấu đã học) → `SPEC-vocabulary-topic.md` riêng (tái dùng API v1.0, §11.2).
+- ❌ Backend endpoint `GET /api/vocabulary/path` (định nghĩa ở backend spec).
+- ❌ Mobile hamburger menu implementation (spec TopNav riêng).
+- ❌ Search/filter chủ đề (đẩy về topic detail).
+- ❌ Dark mode.
+```

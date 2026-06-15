@@ -11,7 +11,7 @@ export default function VocabCard({ word, actionState, onComplete, onAddFlashcar
       <div className="voc-card-main">
         <div className="voc-card-word">
           <span className="voc-word" lang="ja">{word.word}</span>
-          <span className="voc-reading" lang="ja">{word.reading}</span>
+          <span className="voc-reading" lang="ja">{word.furigana || word.reading}</span>
           {word.audioUrl && (
             <>
               <button
@@ -24,14 +24,14 @@ export default function VocabCard({ word, actionState, onComplete, onAddFlashcar
           )}
         </div>
         <div className="voc-card-info">
-          <span className="voc-pos">{word.partOfSpeech}</span>
+          <span className="voc-pos">{word.wordType || word.partOfSpeech}</span>
           <span className="voc-meaning">{word.meaning}</span>
         </div>
-        {word.exampleSentence && (
+        {(word.exampleSentenceJp || word.exampleSentence) && (
           <div className="voc-example">
-            <span lang="ja">{word.exampleSentence}</span>
-            {word.exampleTranslation && (
-              <span className="voc-example-trans"> ({word.exampleTranslation})</span>
+            <span lang="ja">{word.exampleSentenceJp || word.exampleSentence}</span>
+            {(word.exampleSentenceVi || word.exampleTranslation) && (
+              <span className="voc-example-trans"> ({word.exampleSentenceVi || word.exampleTranslation})</span>
             )}
           </div>
         )}
