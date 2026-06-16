@@ -6,8 +6,7 @@ import { JlptBadge } from '../../components/common/Badges';
 import { ProgressBar } from '../../components/common/ProgressBar';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
-import { getKanjiList, getKanjiDetail } from '../../api/studentService';
-import { DEMO_MODE, MOCK_KANJI_LIST, MOCK_KANJI_DETAIL_MAP } from '../../api/mockData';
+import { getKanjiList, getKanjiDetail, getKanjiProgressSummary } from '../../api/studentService';
 import './KanjiList.css';
 
 const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
@@ -33,18 +32,9 @@ export default function KanjiList() {
     setLoading(true);
     setError('');
     try {
-      if (DEMO_MODE) {
-        const mock = MOCK_KANJI_LIST[level] ?? { kanji: [], completedCount: 0, totalElements: 0 };
-        setKanji(mock.kanji);
-        setTotal(1);
-        setStats({ completed: mock.completedCount, total: mock.totalElements });
-        setLoading(false);
-        return;
-      }
       const res = await getKanjiList({ level, page: page - 1, size: 50 });
       setKanji(res.content ?? []);
       setTotal(res.totalPages ?? 1);
-      setStats({ completed: res.completedCount ?? 0, total: res.totalElements ?? 0 });
     } catch (err) {
       setError(err?.response?.data?.message ?? 'Không thể tải danh sách Kanji.');
     } finally {
@@ -52,7 +42,17 @@ export default function KanjiList() {
     }
   }, [level, page]);
 
+  const fetchStats = useCallback(async () => {
+    try {
+      const summary = await getKanjiProgressSummary(level);
+      setStats({ completed: summary.completed, total: summary.total });
+    } catch {
+      setStats({ completed: 0, total: 0 });
+    }
+  }, [level]);
+
   useEffect(() => { fetchKanji(); }, [fetchKanji]);
+  useEffect(() => { fetchStats(); }, [fetchStats]);
   useEffect(() => { setPage(1); }, [level]);
 
   const openKanji = useCallback(async (k) => {
@@ -60,13 +60,8 @@ export default function KanjiList() {
     setDetail(null);
     setDetailLoading(true);
     try {
-      if (DEMO_MODE) {
-        const d = MOCK_KANJI_DETAIL_MAP[k.kanjiId] ?? null;
-        setDetail(d);
-      } else {
-        const d = await getKanjiDetail(k.kanjiId);
-        setDetail(d);
-      }
+      const d = await getKanjiDetail(k.kanjiId);
+      setDetail(d);
     } catch {
       setDetail(null);
     } finally {

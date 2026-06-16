@@ -1,54 +1,89 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useAppSelector } from '../../store/hooks';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { EmptyState } from '../../components/common/EmptyState';
+import { Pagination } from '../../components/common/Pagination';
+import { getGrammarList, getGrammarDetail, markProgress } from '../../api/studentService';
 import './Grammar.css';
 
-const LEVELS = ['All', 'N5', 'N4', 'N3', 'N2', 'N1'];
-
-const MOCK_GRAMMAR = [
-  { id: 1,  jlptLevel: 'N5', structure: '〜は〜です',        formula: 'N は N です',              meaning: 'A là B — câu khẳng định đơn giản',               exampleJp: '私は学生です。',               exampleVi: 'Tôi là học sinh.' },
-  { id: 2,  jlptLevel: 'N5', structure: '〜ます / 〜ません', formula: 'V-stem + ます / ません',     meaning: 'Hành động lịch sự (khẳng định / phủ định)',      exampleJp: '毎日日本語を勉強します。',       exampleVi: 'Tôi học tiếng Nhật mỗi ngày.' },
-  { id: 3,  jlptLevel: 'N5', structure: '〜が好きです',       formula: 'N が 好き / 嫌い です',     meaning: 'Thích / ghét cái gì đó',                        exampleJp: '日本語が好きです。',             exampleVi: 'Tôi thích tiếng Nhật.' },
-  { id: 4,  jlptLevel: 'N5', structure: '〜たい',            formula: 'V-stem + たい',             meaning: 'Muốn làm gì đó (nguyện vọng người nói)',        exampleJp: '日本に行きたいです。',           exampleVi: 'Tôi muốn đến Nhật.' },
-  { id: 5,  jlptLevel: 'N5', structure: '〜てください',       formula: 'V-te + ください',           meaning: 'Yêu cầu lịch sự (Hãy làm...)',                  exampleJp: 'ちょっと待ってください。',       exampleVi: 'Xin hãy đợi một chút.' },
-  { id: 6,  jlptLevel: 'N4', structure: '〜ている',           formula: 'V-te + いる',               meaning: 'Đang làm hành động / trạng thái kết quả',       exampleJp: '今、ご飯を食べています。',       exampleVi: 'Bây giờ tôi đang ăn cơm.' },
-  { id: 7,  jlptLevel: 'N4', structure: '〜たことがある',     formula: 'V-ta + ことがある',          meaning: 'Từng có kinh nghiệm làm gì',                    exampleJp: '富士山に登ったことがあります。', exampleVi: 'Tôi đã từng leo núi Phú Sĩ.' },
-  { id: 8,  jlptLevel: 'N4', structure: '〜てもいいです',     formula: 'V-te + もいいです / もいいか', meaning: 'Được phép làm gì / Xin phép',                  exampleJp: 'ここで写真を撮ってもいいですか。', exampleVi: 'Tôi có thể chụp ảnh ở đây không?' },
-  { id: 9,  jlptLevel: 'N3', structure: '〜ばかり',          formula: 'V-ta + ばかり / N + ばかり', meaning: 'Vừa mới... / chỉ toàn...',                      exampleJp: '今来たばかりです。',             exampleVi: 'Vừa mới đến.' },
-  { id: 10, jlptLevel: 'N3', structure: '〜ながら',          formula: 'V-stem + ながら',            meaning: 'Vừa làm A vừa làm B đồng thời',                 exampleJp: '音楽を聴きながら勉強します。',   exampleVi: 'Vừa học vừa nghe nhạc.' },
-  { id: 11, jlptLevel: 'N3', structure: '〜ようにする',       formula: 'V-plain + ようにする',       meaning: 'Cố gắng làm / tập thói quen',                   exampleJp: '毎日運動するようにしています。', exampleVi: 'Tôi cố gắng tập thể dục mỗi ngày.' },
-  { id: 12, jlptLevel: 'N2', structure: '〜に違いない',       formula: 'V / A / N + に違いない',     meaning: 'Chắc chắn là... (suy đoán rất mạnh)',           exampleJp: '彼は疲れているに違いない。',     exampleVi: 'Chắc chắn anh ấy đang mệt.' },
-  { id: 13, jlptLevel: 'N2', structure: '〜わけにはいかない', formula: 'V-plain + わけにはいかない', meaning: 'Không thể làm... (vì lý do đạo đức / xã hội)',  exampleJp: '約束したから行かないわけにはいかない。', exampleVi: 'Đã hứa rồi nên không thể không đến.' },
-  { id: 14, jlptLevel: 'N1', structure: '〜ざるを得ない',     formula: 'V-neg-stem + ざるを得ない',  meaning: 'Buộc phải làm... / không thể không...',          exampleJp: '残業せざるを得ない状況だ。',     exampleVi: 'Buộc phải ở lại làm thêm giờ.' },
-  { id: 15, jlptLevel: 'N1', structure: '〜にもかかわらず',   formula: 'V / A / N + にもかかわらず', meaning: 'Mặc dù... nhưng vẫn... (nghịch lý, văn viết)',  exampleJp: '雨にもかかわらず試合が続いた。', exampleVi: 'Mặc dù trời mưa, trận đấu vẫn tiếp tục.' },
-];
+const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
 export default function Grammar() {
   const [searchParams] = useSearchParams();
-  const [level,    setLevel]    = useState(searchParams.get('level') ?? 'All');
-  const [search,   setSearch]   = useState('');
-  const [expanded, setExpanded] = useState(null);
+  const { user } = useAppSelector((s) => s.auth);
+
+  const [level,      setLevel]      = useState(searchParams.get('level') ?? user?.jlptLevel ?? 'N5');
+  const [search,     setSearch]     = useState('');
+  const [grammar,    setGrammar]    = useState([]);
+  const [isLoading,  setLoading]    = useState(true);
+  const [error,      setError]      = useState('');
+  const [page,       setPage]       = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [expandedId,    setExpandedId]    = useState(null);
+  const [detailMap,     setDetailMap]     = useState({});
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [markingId,     setMarkingId]     = useState(null);
+
+  const fetchGrammar = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await getGrammarList({ level, page: page - 1, size: 20 });
+      setGrammar(res.content ?? []);
+      setTotalPages(res.totalPages ?? 1);
+    } catch (err) {
+      setError(err?.response?.data?.message ?? 'Không thể tải danh sách ngữ pháp.');
+    } finally {
+      setLoading(false);
+    }
+  }, [level, page]);
+
+  useEffect(() => { fetchGrammar(); }, [fetchGrammar]);
+  useEffect(() => { setPage(1); }, [level]);
 
   const filtered = useMemo(() => {
-    let list = MOCK_GRAMMAR;
-    if (level !== 'All') list = list.filter((g) => g.jlptLevel === level);
     const q = search.trim().toLowerCase();
-    if (q) {
-      list = list.filter(
-        (g) =>
-          g.structure.toLowerCase().includes(q) ||
-          g.meaning.toLowerCase().includes(q) ||
-          g.formula.toLowerCase().includes(q) ||
-          g.exampleJp.includes(q)
-      );
-    }
-    return list;
-  }, [level, search]);
+    if (!q) return grammar;
+    return grammar.filter(
+      (g) =>
+        g.structure.toLowerCase().includes(q) ||
+        g.meaning.toLowerCase().includes(q) ||
+        (g.formula ?? '').toLowerCase().includes(q)
+    );
+  }, [grammar, search]);
 
-  function toggle(id) {
-    setExpanded((prev) => (prev === id ? null : id));
+  async function toggle(g) {
+    if (expandedId === g.grammarId) {
+      setExpandedId(null);
+      return;
+    }
+    setExpandedId(g.grammarId);
+    if (detailMap[g.grammarId]) return;
+    setDetailLoading(true);
+    try {
+      const detail = await getGrammarDetail(g.grammarId);
+      setDetailMap((prev) => ({ ...prev, [g.grammarId]: detail }));
+    } catch {
+      setDetailMap((prev) => ({ ...prev, [g.grammarId]: null }));
+    } finally {
+      setDetailLoading(false);
+    }
+  }
+
+  async function handleMarkComplete(g) {
+    if (g.isCompleted || markingId === g.grammarId) return;
+    setMarkingId(g.grammarId);
+    try {
+      await markProgress('grammar', g.grammarId, 'completed', 100);
+      setGrammar((prev) =>
+        prev.map((item) => (item.grammarId === g.grammarId ? { ...item, isCompleted: true } : item))
+      );
+    } finally {
+      setMarkingId(null);
+    }
   }
 
   return (
@@ -87,58 +122,99 @@ export default function Grammar() {
           </div>
         </div>
 
-        <p className="grm-count-label">{filtered.length} cấu trúc</p>
+        {error && (
+          <div className="grm-error" role="alert">
+            <span>{error}</span>
+            <button className="grm-retry-btn" onClick={fetchGrammar}>Thử lại</button>
+          </div>
+        )}
 
-        {filtered.length === 0 ? (
+        {!isLoading && <p className="grm-count-label">{filtered.length} cấu trúc</p>}
+
+        {isLoading ? (
+          <div className="grm-list" aria-hidden="true">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="grm-card grm-card--skel" />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
           <EmptyState
-            title="Không tìm thấy cấu trúc nào"
+            title={`Chưa có cấu trúc ${level}`}
             subtitle="Thử tìm kiếm với từ khóa khác hoặc đổi cấp độ."
             mascotVariant="thinking"
             mascotSize={120}
           />
         ) : (
           <div className="grm-list">
-            {filtered.map((g) => (
-              <div
-                key={g.id}
-                className={`grm-card${expanded === g.id ? ' grm-card--open' : ''}`}
-                onClick={() => toggle(g.id)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && toggle(g.id)}
-                aria-expanded={expanded === g.id}
-              >
-                <div className="grm-card-main">
-                  <div className="grm-card-left">
-                    <JlptBadge level={g.jlptLevel} />
-                    <span className="grm-structure">{g.structure}</span>
+            {filtered.map((g) => {
+              const detail = detailMap[g.grammarId];
+              const isOpen = expandedId === g.grammarId;
+              return (
+                <div
+                  key={g.grammarId}
+                  className={`grm-card${isOpen ? ' grm-card--open' : ''}`}
+                  onClick={() => toggle(g)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === 'Enter' && toggle(g)}
+                  aria-expanded={isOpen}
+                >
+                  <div className="grm-card-main">
+                    <div className="grm-card-left">
+                      <JlptBadge level={g.jlptLevel} />
+                      <span className="grm-structure">{g.structure}</span>
+                      {g.isCompleted && <span className="grm-done-tick" aria-hidden="true">✓</span>}
+                    </div>
+                    <div className="grm-card-right">
+                      <span className="grm-meaning">{g.meaning}</span>
+                      <svg
+                        className={`grm-chevron${isOpen ? ' grm-chevron--up' : ''}`}
+                        width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+                      >
+                        <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
                   </div>
-                  <div className="grm-card-right">
-                    <span className="grm-meaning">{g.meaning}</span>
-                    <svg
-                      className={`grm-chevron${expanded === g.id ? ' grm-chevron--up' : ''}`}
-                      width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
-                    >
-                      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                </div>
 
-                {expanded === g.id && (
-                  <div className="grm-card-detail" onClick={(e) => e.stopPropagation()}>
-                    <div className="grm-formula-row">
-                      <span className="grm-formula-label">Công thức:</span>
-                      <code className="grm-formula">{g.formula}</code>
+                  {isOpen && (
+                    <div className="grm-card-detail" onClick={(e) => e.stopPropagation()}>
+                      {g.formula && (
+                        <div className="grm-formula-row">
+                          <span className="grm-formula-label">Công thức:</span>
+                          <code className="grm-formula">{g.formula}</code>
+                        </div>
+                      )}
+                      {detailLoading && !detail ? (
+                        <p className="grm-example-vi">Đang tải...</p>
+                      ) : detail ? (
+                        <div className="grm-example">
+                          {detail.exampleSentenceJp && <p className="grm-example-jp">{detail.exampleSentenceJp}</p>}
+                          {detail.exampleSentenceVi && <p className="grm-example-vi">{detail.exampleSentenceVi}</p>}
+                          {detail.usageExplanation && <p className="grm-example-vi">{detail.usageExplanation}</p>}
+                        </div>
+                      ) : null}
+
+                      <button
+                        className={`grm-mark-btn${g.isCompleted ? ' grm-mark-btn--done' : ''}`}
+                        onClick={() => handleMarkComplete(g)}
+                        disabled={g.isCompleted || markingId === g.grammarId}
+                      >
+                        {g.isCompleted
+                          ? '✓ Đã học xong'
+                          : markingId === g.grammarId
+                            ? 'Đang lưu...'
+                            : 'Đánh dấu đã học xong'}
+                      </button>
                     </div>
-                    <div className="grm-example">
-                      <p className="grm-example-jp">{g.exampleJp}</p>
-                      <p className="grm-example-vi">{g.exampleVi}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              );
+            })}
           </div>
+        )}
+
+        {!isLoading && totalPages > 1 && (
+          <Pagination currentPage={page} totalPages={totalPages} onChange={setPage} />
         )}
       </main>
     </div>

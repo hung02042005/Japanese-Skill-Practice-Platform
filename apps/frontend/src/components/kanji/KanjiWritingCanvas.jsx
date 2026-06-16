@@ -77,7 +77,7 @@ function FinalScore({ mistakesArr }) {
      Layer 3 — Comparison    : direction label, per-stroke quality badge,
                                final score overlay
    ═══════════════════════════════════════════════════════════════════════ */
-export default function KanjiWritingCanvas({ character, strokeCount, onBack }) {
+export default function KanjiWritingCanvas({ character, strokeCount, onBack, onComplete }) {
   const wrapRef   = useRef(null);  // kpw-canvas-box — đọc kích thước thực
   const hwRef     = useRef(null);  // div HanziWriter render vào
   const writerRef = useRef(null);
@@ -145,9 +145,10 @@ export default function KanjiWritingCanvas({ character, strokeCount, onBack }) {
       onComplete: () => {
         setCount(total);
         setTimeout(() => setDone(true), 450);
+        onComplete?.();
       },
     });
-  }, [total]);
+  }, [total, onComplete]);
 
   /* ── Tạo HanziWriter khi character thay đổi ─────────────────────── */
   useEffect(() => {

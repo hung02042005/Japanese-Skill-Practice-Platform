@@ -67,10 +67,20 @@ export async function getKanjiDetail(kanjiId) {
   return res.data.data;
 }
 
+export async function getKanjiProgressSummary(level) {
+  const res = await api.get('/kanji/progress-summary', { params: { level } });
+  return res.data.data;
+}
+
 export async function getGrammarList({ level, page = 0, size = 20 } = {}) {
   const params = { page, size };
   if (level) params.level = level;
   const res = await api.get('/grammar-points', { params });
+  return res.data.data;
+}
+
+export async function getGrammarDetail(grammarId) {
+  const res = await api.get(`/grammar-points/${grammarId}`);
   return res.data.data;
 }
 
@@ -195,13 +205,18 @@ export async function verifySubscription(orderId) {
 }
 
 // ─── Kana ────────────────────────────────────────────────────────────────────
-export async function getKanaList(script) {
-  const res = await api.get('/kana', { params: { script } });
+export async function getKanaList(type) {
+  const res = await api.get('/kana', { params: { type } });
   return res.data.data;
 }
 
 export async function markKanaComplete(kanaId) {
-  const res = await api.post(`/kana/${kanaId}/complete`);
+  const res = await api.post('/learning-progress', {
+    contentType: 'kana',
+    contentId: kanaId,
+    status: 'completed',
+    progressPercent: 100,
+  });
   return res.data.data;
 }
 
