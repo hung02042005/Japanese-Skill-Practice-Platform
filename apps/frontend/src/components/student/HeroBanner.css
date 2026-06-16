@@ -1,0 +1,116 @@
+/* ===== Hero Banner ===== */
+.hero-banner {
+  background: linear-gradient(135deg, var(--color-primary-bg) 0%, #FFF8FA 100%);
+  border: 1px solid var(--color-primary-light);
+  border-radius: var(--radius-xl);
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  gap: 16px;
+}
+
+.hero-content {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Heading */
+.hero-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.25;
+  margin: 0 0 6px;
+}
+
+.hero-desc {
+  font-size: 14px;
+  color: var(--color-text-sub);
+  line-height: 1.6;
+  margin: 0 0 16px;
+  max-width: 360px;
+}
+
+/* Progress bar row */
+.hero-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.hero-progress-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+  white-space: nowrap;
+}
+
+/* CTA button */
+.hero-cta {
+  background: var(--color-secondary);
+  color: #ffffff;
+  font-family: var(--font-base);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 13px 32px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(93, 187, 105, 0.30);
+  transition: filter var(--transition), transform 100ms, box-shadow var(--transition);
+}
+
+.hero-cta:hover  { filter: brightness(1.08); box-shadow: 0 6px 16px rgba(93, 187, 105, 0.38); }
+.hero-cta:active { transform: scale(0.97); }
+
+/* Mascot */
+.hero-mascot { flex-shrink: 0; position: relative; z-index: 1; }
+
+.hero-mascot .saku-chan {
+  margin: 0;
+  animation: heroMascotSway 3.5s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+@keyframes heroMascotSway {
+  0%, 100% { transform: rotate(-3.5deg); }
+  50%       { transform: rotate(3.5deg); }
+}
+
+/* Petal decorations */
+.hero-petal {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.13;
+  font-size: 20px;
+  animation: heroPetalDrift 5s ease-in-out infinite alternate;
+}
+
+.hero-petal--1 { top: 12%;    right: 32%; font-size: 22px; animation-delay: 0s;   }
+.hero-petal--2 { top: 45%;    right: 24%; font-size: 16px; animation-delay: 1.4s; }
+.hero-petal--3 { bottom: 14%; right: 30%; font-size: 18px; animation-delay: 0.7s; }
+
+@keyframes heroPetalDrift {
+  0%   { transform: translateY(0)    rotate(0deg);   opacity: 0.13; }
+  100% { transform: translateY(-8px) rotate(14deg);  opacity: 0.07; }
+}
+
+@media (max-width: 767px) {
+  .hero-banner  { padding: 20px; }
+  .hero-mascot  { display: none; }
+  .hero-title   { font-size: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-petal,
+  .hero-mascot .saku-chan { animation: none !important; }
+  .hero-cta { transition: none !important; }
+}

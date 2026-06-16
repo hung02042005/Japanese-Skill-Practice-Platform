@@ -1,0 +1,25 @@
+/* ===== StaffTickets — SakuJi Hanami Theme ===== */
+
+.tkt-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  font-family: var(--font-base);
+}
+
+.tkt-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 32px 0;
+  box-sizing: border-box;
+  min-height: calc(100vh - 64px);
+}
+
+@media (max-width: 1199px) { .tkt-body { padding: 0 20px; } }
+@media (max-width: 767px)  { .tkt-body { flex-direction: column; padding: 0; } }
+@media (prefers-reduced-motion: reduce) { .tkt-page * { animation: none !important; transition-duration: 0ms !important; } }

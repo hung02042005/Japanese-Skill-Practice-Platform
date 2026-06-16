@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 200" fill="none">
+  <!-- Background circle -->
+  <circle cx="140" cy="104" r="90" fill="#E8F5E9" opacity="0.6"/>
+
+  <!-- Globe base -->
+  <circle cx="140" cy="104" r="72" fill="#E3F2FD" stroke="#A5D6A7" stroke-width="1.5"/>
+
+  <!-- Landmasses (simplified) -->
+  <!-- Asia/Japan area -->
+  <ellipse cx="178" cy="82" rx="22" ry="18" fill="#66BB6A" opacity="0.8"/>
+  <ellipse cx="195" cy="72" rx="10" ry="14" fill="#66BB6A" opacity="0.7"/>
+  <!-- Vietnam/Southeast Asia -->
+  <ellipse cx="170" cy="106" rx="12" ry="20" fill="#66BB6A" opacity="0.75"/>
+  <!-- Europe/Africa area -->
+  <ellipse cx="118" cy="86" rx="16" ry="24" fill="#66BB6A" opacity="0.7"/>
+  <ellipse cx="122" cy="116" rx="14" ry="22" fill="#66BB6A" opacity="0.65"/>
+  <!-- Americas area -->
+  <ellipse cx="82" cy="80" rx="14" ry="20" fill="#66BB6A" opacity="0.7"/>
+  <ellipse cx="86" cy="108" rx="10" ry="16" fill="#66BB6A" opacity="0.65"/>
+
+  <!-- Globe meridians/parallels -->
+  <ellipse cx="140" cy="104" rx="72" ry="35" stroke="#A5D6A7" stroke-width="1" fill="none" opacity="0.6"/>
+  <ellipse cx="140" cy="104" rx="50" ry="72" stroke="#A5D6A7" stroke-width="1" fill="none" opacity="0.5"/>
+  <ellipse cx="140" cy="104" rx="20" ry="72" stroke="#A5D6A7" stroke-width="1" fill="none" opacity="0.4"/>
+  <line x1="68" y1="104" x2="212" y2="104" stroke="#A5D6A7" stroke-width="1" opacity="0.5"/>
+  <line x1="140" y1="32" x2="140" y2="176" stroke="#A5D6A7" stroke-width="1" opacity="0.5"/>
+
+  <!-- Globe border -->
+  <circle cx="140" cy="104" r="72" stroke="#A5D6A7" stroke-width="2" fill="none"/>
+
+  <!-- Location pin — Japan (pink) -->
+  <circle cx="198" cy="74" r="7" fill="#E8637A"/>
+  <path d="M198 74 L195 68 L201 68Z" fill="#E8637A"/>
+  <circle cx="198" cy="74" r="3" fill="white"/>
+
+  <!-- Saku-chan tiny at Japan pin -->
+  <circle cx="198" cy="60" r="7" fill="#FFF0F3" stroke="#F4A7B3" stroke-width="0.8"/>
+  <ellipse cx="195" cy="54" rx="4" ry="6" fill="#E8637A" transform="rotate(-20 195 54)"/>
+  <ellipse cx="198" cy="53" rx="4" ry="6.5" fill="#E8637A"/>
+  <ellipse cx="201" cy="54" rx="4" ry="6" fill="#E8637A" transform="rotate(20 201 54)"/>
+  <circle cx="196" cy="60" r="1.5" fill="#2D2D2D"/>
+  <circle cx="200" cy="60" r="1.5" fill="#2D2D2D"/>
+  <!-- Tiny wave gesture -->
+  <path d="M205 58 Q208 54 207 60" stroke="#F4A7B3" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+
+  <!-- Location pin — Vietnam (gold) -->
+  <circle cx="172" cy="110" r="6" fill="#F5C842"/>
+  <path d="M172 110 L169 104 L175 104Z" fill="#F5C842"/>
+  <circle cx="172" cy="110" r="2.5" fill="white"/>
+
+  <!-- Location pin — Brazil (green) -->
+  <circle cx="90" cy="120" r="5" fill="#4CAF50"/>
+  <path d="M90 120 L88 115 L92 115Z" fill="#4CAF50"/>
+  <circle cx="90" cy="120" r="2" fill="white"/>
+
+  <!-- Connection arcs (dashed) -->
+  <path d="M198 74 Q155 30 172 110" stroke="#757575" stroke-width="1.5" stroke-dasharray="4 3" fill="none" opacity="0.4"/>
+  <path d="M172 110 Q115 60 90 120" stroke="#757575" stroke-width="1.5" stroke-dasharray="4 3" fill="none" opacity="0.4"/>
+</svg>

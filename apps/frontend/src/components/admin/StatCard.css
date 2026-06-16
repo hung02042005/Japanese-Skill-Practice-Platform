@@ -1,0 +1,76 @@
+/* ===== Admin stat card ===== */
+.stat-card {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid transparent;
+  transition: box-shadow var(--transition), transform var(--transition);
+  animation: statCardIn 350ms ease both;
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+@keyframes statCardIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Stagger via nth-child on parent — parent sets delay */
+.stat-card:nth-child(1) { animation-delay: 0ms;   }
+.stat-card:nth-child(2) { animation-delay: 60ms;  }
+.stat-card:nth-child(3) { animation-delay: 120ms; }
+.stat-card:nth-child(4) { animation-delay: 180ms; }
+
+/* Variants */
+.stat-card--total  { border-color: var(--color-primary-light); }
+.stat-card--active { border-color: var(--color-secondary);     }
+.stat-card--banned { border-color: var(--color-error);         }
+.stat-card--new    { border-color: var(--color-accent);        }
+
+/* Icon wrap */
+.stat-card__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-card--total  .stat-card__icon { background: var(--color-primary-bg);   color: var(--color-primary); }
+.stat-card--active .stat-card__icon { background: var(--color-secondary-bg); color: #2E7D32; }
+.stat-card--banned .stat-card__icon { background: #FEF2F2;                   color: var(--color-error); }
+.stat-card--new    .stat-card__icon { background: var(--color-accent-bg);    color: #B7860B; }
+
+/* Body */
+.stat-card__value {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-card__label {
+  font-size: 13px;
+  color: var(--color-text-sub);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+@media (max-width: 767px) {
+  .stat-card       { padding: 14px; gap: 10px; }
+  .stat-card__value { font-size: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stat-card { animation: none !important; transition: none !important; }
+}

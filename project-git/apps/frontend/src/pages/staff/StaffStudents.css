@@ -1,0 +1,225 @@
+/* ===== Staff Students — SakuJi Hanami Theme ===== */
+
+.sst-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); font-family: var(--font-base); }
+.sst-body { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; }
+
+.sst-page-header  { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sst-page-title   { font-size: 24px; font-weight: 700; color: var(--color-text); margin: 0; }
+.sst-total-count  { font-size: 14px; color: var(--color-text-sub); }
+
+/* Filters */
+.sst-filters {
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
+.sst-search {
+  flex: 1; min-width: 240px; height: 40px; padding: 0 14px;
+  border: 1.5px solid var(--color-border); border-radius: var(--radius-md);
+  font-size: 14px; background: var(--color-bg); font-family: var(--font-base);
+}
+.sst-search:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(232,154,170,0.15); background: var(--color-card); }
+.sst-select {
+  height: 40px; padding: 0 12px;
+  border: 1.5px solid var(--color-border); border-radius: var(--radius-md);
+  font-size: 14px; background: var(--color-bg); min-width: 140px;
+  font-family: var(--font-base);
+}
+
+/* Error */
+.sst-error {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: #FFEAEA; border: 1px solid var(--color-error);
+  border-radius: var(--radius-md); padding: 12px 16px;
+  font-size: 13px; color: var(--color-error);
+}
+.sst-retry {
+  background: transparent; border: 1.5px solid var(--color-error);
+  border-radius: var(--radius-full); color: var(--color-error);
+  font-size: 12px; font-weight: 700; padding: 4px 12px; cursor: pointer;
+  font-family: var(--font-base);
+}
+
+/* Table */
+.sst-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--color-card); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.sst-table th {
+  font-size: 12px; font-weight: 700; color: var(--color-text-sub);
+  padding: 12px 16px; text-align: left;
+  border-bottom: 1px solid var(--color-border); background: #FAFAFA;
+}
+.sst-table td {
+  font-size: 14px; color: var(--color-text);
+  padding: 14px 16px; border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+.sst-table tr:last-child td { border-bottom: none; }
+.sst-table tbody tr:hover td { background: var(--color-primary-bg); }
+
+.sst-td-email { color: var(--color-text-sub); font-size: 13px; }
+.sst-name-btn {
+  background: transparent; border: none; color: var(--color-primary);
+  font-size: 14px; font-weight: 600; cursor: pointer; padding: 0;
+  text-decoration: underline; text-underline-offset: 3px;
+  font-family: var(--font-base);
+}
+.sst-name-btn:hover { color: var(--color-primary-dark); }
+
+/* Status badge */
+.sst-status-badge {
+  display: inline-block; font-size: 12px; font-weight: 700;
+  padding: 3px 10px; border-radius: var(--radius-full);
+}
+.sst-status-badge--active    { background: var(--color-secondary-bg); color: var(--color-secondary); }
+.sst-status-badge--suspended { background: #FFEAEA; color: var(--color-error); }
+
+/* Action buttons */
+.sst-td-actions { display: flex; gap: 8px; align-items: center; }
+.sst-btn-icon {
+  width: 32px; height: 32px; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border); background: transparent;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: var(--color-text-sub); transition: all var(--transition);
+}
+.sst-btn-icon:hover { background: var(--color-primary-bg); border-color: var(--color-primary-light); color: var(--color-primary); }
+.sst-btn-suspend {
+  height: 32px; padding: 0 12px; background: #FFF3F0;
+  border: 1.5px solid var(--color-error); border-radius: var(--radius-full);
+  color: var(--color-error); font-size: 13px; cursor: pointer;
+  transition: filter var(--transition);
+}
+.sst-btn-suspend:hover { filter: brightness(1.05); }
+.sst-btn-activate {
+  height: 32px; padding: 0 12px; background: var(--color-secondary-bg);
+  border: 1.5px solid var(--color-secondary); border-radius: var(--radius-full);
+  color: var(--color-secondary); font-size: 13px; cursor: pointer;
+  transition: filter var(--transition);
+}
+.sst-btn-activate:hover { filter: brightness(1.05); }
+
+/* Skeleton cells */
+.sst-cell-skel {
+  height: 18px; border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%);
+  background-size: 200% 100%; animation: sstSkelPulse 1.4s ease infinite;
+}
+@keyframes sstSkelPulse {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Detail view */
+.sst-back-btn {
+  background: transparent; border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-full); color: var(--color-text-sub);
+  font-size: 13px; font-weight: 600; padding: 6px 14px; cursor: pointer;
+  align-self: flex-start; transition: all var(--transition); font-family: var(--font-base);
+}
+.sst-back-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+.sst-detail-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+}
+.sst-detail-info  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sst-detail-name  { font-size: 22px; font-weight: 700; color: var(--color-text); margin: 0; }
+.sst-detail-email { font-size: 14px; color: var(--color-text-sub); }
+
+.sst-action-btn {
+  height: 38px; padding: 0 18px; border-radius: var(--radius-full);
+  font-size: 13px; font-weight: 700; cursor: pointer; border: 1.5px solid;
+  font-family: var(--font-base);
+}
+.sst-action-btn--suspend  { background: #FFF3F0; border-color: var(--color-error); color: var(--color-error); }
+.sst-action-btn--activate { background: var(--color-secondary-bg); border-color: var(--color-secondary); color: var(--color-secondary); }
+
+.sst-detail-skel {
+  height: 280px; border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%);
+  background-size: 200% 100%; animation: sstSkelPulse 1.4s ease infinite;
+}
+
+/* Stats grid (inside detail panel) */
+.sst-detail-body  { display: flex; flex-direction: column; gap: 20px; }
+.sst-stats-grid   { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.sst-stat-card    {
+  background: var(--color-card); border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg); padding: 20px; text-align: center;
+}
+.sst-stat-value   { font-size: 28px; font-weight: 800; color: var(--color-primary); }
+.sst-stat-label   { font-size: 12px; color: var(--color-text-sub); margin-top: 4px; }
+
+/* Recent attempts */
+.sst-recent       { display: flex; flex-direction: column; gap: 10px; }
+.sst-recent-title { font-size: 16px; font-weight: 700; color: var(--color-text); margin: 0; }
+.sst-attempts-wrap { overflow-x: auto; }
+.sst-attempts-table {
+  width: 100%; border-collapse: collapse; background: var(--color-card);
+  border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);
+}
+.sst-attempts-table th {
+  font-size: 12px; font-weight: 700; color: var(--color-text-sub);
+  padding: 10px 14px; background: #FAFAFA;
+  border-bottom: 1px solid var(--color-border); text-align: left;
+}
+.sst-attempts-table td {
+  font-size: 13px; padding: 12px 14px; border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+.sst-attempts-table tr:last-child td { border-bottom: none; }
+.sst-score--pass { color: var(--color-secondary); font-weight: 700; }
+.sst-score--fail { color: var(--color-error); font-weight: 700; }
+
+/* Confirm Modal */
+.sst-modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 16px;
+}
+.sst-modal {
+  background: var(--color-card); border-radius: var(--radius-xl);
+  padding: 32px 28px 24px; max-width: 440px; width: 100%;
+  display: flex; flex-direction: column; gap: 16px;
+  box-shadow: var(--shadow-lg);
+}
+.sst-modal-icon   { font-size: 36px; text-align: center; }
+.sst-modal-title  { font-size: 20px; font-weight: 700; color: var(--color-text); margin: 0; text-align: center; }
+.sst-modal-desc   { font-size: 14px; color: var(--color-text-sub); line-height: 1.6; margin: 0; text-align: center; }
+.sst-modal-reason { display: flex; flex-direction: column; gap: 6px; }
+.sst-modal-reason-label { font-size: 13px; font-weight: 600; color: var(--color-text); }
+.sst-modal-reason-input {
+  height: 40px; padding: 0 12px;
+  border: 1.5px solid var(--color-border); border-radius: var(--radius-md);
+  font-size: 14px; background: var(--color-bg); font-family: var(--font-base);
+}
+.sst-modal-reason-input:focus { outline: none; border-color: var(--color-primary); }
+.sst-modal-actions      { display: flex; gap: 10px; justify-content: flex-end; }
+.sst-modal-btn-cancel   {
+  height: 40px; padding: 0 20px; background: transparent;
+  border: 1.5px solid var(--color-border); border-radius: var(--radius-full);
+  font-size: 14px; font-weight: 600; color: var(--color-text-sub); cursor: pointer;
+  font-family: var(--font-base);
+}
+.sst-modal-btn-cancel:hover:not(:disabled) { color: var(--color-text); }
+.sst-modal-btn-confirm {
+  height: 40px; padding: 0 20px; background: var(--color-primary);
+  color: white; border: none; border-radius: var(--radius-full);
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  transition: filter var(--transition); font-family: var(--font-base);
+}
+.sst-modal-btn-confirm--danger { background: var(--color-error); }
+.sst-modal-btn-confirm:hover:not(:disabled) { filter: brightness(1.07); }
+.sst-modal-btn-confirm:disabled,
+.sst-modal-btn-cancel:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media (max-width: 1199px) { .sst-stats-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 767px)  {
+  .sst-body    { padding: 16px 16px 32px; }
+  .sst-filters { flex-direction: column; align-items: stretch; }
+  .sst-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .sst-modal { padding: 24px 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sst-page * { animation: none !important; transition-duration: 0ms !important; }
+}

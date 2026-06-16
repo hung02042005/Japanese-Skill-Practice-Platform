@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 310" fill="none">
+  <!-- Shadow -->
+  <ellipse cx="120" cy="302" rx="58" ry="7" fill="#F4A7B3" opacity="0.25"/>
+
+  <!-- Body -->
+  <ellipse cx="120" cy="222" rx="66" ry="68" fill="#FFF0F3" stroke="#F4A7B3" stroke-width="2"/>
+
+  <!-- Head -->
+  <circle cx="120" cy="150" r="60" fill="#FFF0F3" stroke="#F4A7B3" stroke-width="2"/>
+
+  <!-- Crown petal left -->
+  <ellipse cx="87" cy="90" rx="18" ry="30" fill="#E8637A" transform="rotate(-25 87 90)"/>
+  <!-- Crown petal center -->
+  <ellipse cx="120" cy="80" rx="18" ry="32" fill="#E8637A"/>
+  <!-- Crown petal right -->
+  <ellipse cx="153" cy="90" rx="18" ry="30" fill="#E8637A" transform="rotate(25 153 90)"/>
+  <!-- Crown center -->
+  <circle cx="120" cy="97" r="11" fill="#F4A7B3"/>
+  <circle cx="120" cy="97" r="6" fill="#FFF0F3"/>
+
+  <!-- Cheeks -->
+  <ellipse cx="83" cy="164" rx="18" ry="11" fill="#E8637A" opacity="0.22"/>
+  <ellipse cx="157" cy="164" rx="18" ry="11" fill="#E8637A" opacity="0.22"/>
+
+  <!-- Eyes -->
+  <circle cx="103" cy="148" r="7" fill="#2D2D2D"/>
+  <circle cx="137" cy="148" r="7" fill="#2D2D2D"/>
+  <circle cx="105.5" cy="145.5" r="2.5" fill="white"/>
+  <circle cx="139.5" cy="145.5" r="2.5" fill="white"/>
+
+  <!-- Smile -->
+  <path d="M107 170 Q120 182 133 170" stroke="#E8637A" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+  <!-- Left arm -->
+  <ellipse cx="52" cy="212" rx="15" ry="20" fill="#FFF0F3" stroke="#F4A7B3" stroke-width="2" transform="rotate(15 52 212)"/>
+
+  <!-- Right arm (raised, holding brush) -->
+  <ellipse cx="188" cy="195" rx="15" ry="20" fill="#FFF0F3" stroke="#F4A7B3" stroke-width="2" transform="rotate(-30 188 195)"/>
+
+  <!-- Brush handle -->
+  <rect x="193" y="118" width="5" height="72" rx="2.5" fill="#C4A26A" transform="rotate(18 195 154)"/>
+  <!-- Brush ferrule -->
+  <rect x="191" y="110" width="9" height="10" rx="2" fill="#8B7355" transform="rotate(18 195 115)"/>
+  <!-- Brush tip -->
+  <path d="M198 106 Q193 92 188 106 Q190 100 193 98 Q196 100 198 106Z" fill="#2D2D2D" transform="rotate(18 193 102)"/>
+
+  <!-- Apron -->
+  <rect x="80" y="198" width="80" height="70" rx="12" fill="white" stroke="#E8E0DC" stroke-width="1.5"/>
+  <line x1="80" y1="203" x2="60" y2="192" stroke="#E8E0DC" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="160" y1="203" x2="180" y2="192" stroke="#E8E0DC" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 学 character -->
+  <text x="120" y="247" text-anchor="middle" font-family="Noto Sans JP, serif" font-size="28" font-weight="700" fill="#E8637A">学</text>
+
+  <!-- Feet -->
+  <ellipse cx="97" cy="282" rx="22" ry="13" fill="#FFF0F3" stroke="#F4A7B3" stroke-width="2"/>
+  <ellipse cx="143" cy="282" rx="22" ry="13" fill="#FFF0F3" stroke="#F4A7B3" stroke-width="2"/>
+</svg>

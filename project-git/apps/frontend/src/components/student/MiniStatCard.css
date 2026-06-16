@@ -1,0 +1,55 @@
+/* ===== Student Mini Stat Cards ===== */
+.stat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.db-stat-card {
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.db-stat-card--words {
+  background: var(--color-accent-bg);
+  border: 2px solid var(--color-accent);
+}
+
+.db-stat-card--days {
+  background: var(--color-secondary-bg);
+  border: 2px solid var(--color-secondary);
+}
+
+.db-stat-card__icon {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.22;
+}
+
+/* SVG resolves currentColor from these */
+.db-stat-card--words .db-stat-card__icon { color: var(--color-accent); }
+.db-stat-card--days  .db-stat-card__icon { color: var(--color-secondary); }
+
+.db-stat-card__value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.db-stat-card__label {
+  font-size: 12px;
+  color: var(--color-text-sub);
+  font-weight: 600;
+  line-height: 1.3;
+}

@@ -1,0 +1,252 @@
+/* ===== ManagerContentPipeline — SakuJi Hanami Theme ===== */
+
+.mcp-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  font-family: var(--font-base);
+}
+
+.mcp-body {
+  flex: 1;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 24px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+/* Status tabs */
+
+.mcp-status-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mcp-status-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid transparent;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+  background: var(--color-card);
+  color: var(--color-text-sub);
+  font-family: var(--font-base);
+}
+
+.mcp-status-tab:hover {
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.mcp-status-tab--active.mcp-tab--amber  { background: var(--color-accent-bg);   color: var(--color-text); border-color: var(--color-accent); }
+.mcp-status-tab--active.mcp-tab--green  { background: var(--color-secondary-bg); color: var(--color-secondary); border-color: var(--color-secondary); }
+.mcp-status-tab--active.mcp-tab--red    { background: #FCE4EC; color: var(--color-error); border-color: var(--color-error); }
+.mcp-status-tab--active.mcp-tab--gray   { background: var(--color-bg); color: var(--color-text); border-color: var(--color-border); }
+
+.mcp-tab-count {
+  background: rgba(0,0,0,0.08);
+  border-radius: var(--radius-full);
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* Filter bar */
+
+.mcp-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mcp-select {
+  height: 36px;
+  padding: 0 12px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-card);
+  color: var(--color-text);
+  font-size: 13px;
+  font-family: var(--font-base);
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.mcp-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(232,154,170,0.15);
+}
+
+.mcp-result-count {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--color-text-sub);
+  font-weight: 600;
+}
+
+/* Error */
+
+.mcp-error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #FFEAEA;
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--color-error);
+}
+
+.mcp-retry-btn {
+  background: transparent;
+  border: 1.5px solid var(--color-error);
+  border-radius: var(--radius-full);
+  color: var(--color-error);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font-base);
+}
+
+/* Skeleton */
+
+.mcp-skel-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mcp-row-skel {
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%);
+  background-size: 200% 100%;
+  animation: skelPulse 1.4s ease infinite;
+}
+
+@keyframes skelPulse {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Table */
+
+.mcp-table-wrap {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.mcp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.mcp-table thead {
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mcp-table th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.mcp-tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background var(--transition);
+  animation: rowIn 0.25s ease both;
+  animation-delay: calc(var(--row-i) * 30ms);
+}
+
+.mcp-tr:last-child {
+  border-bottom: none;
+}
+
+.mcp-tr:hover {
+  background: var(--color-bg);
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.mcp-table td {
+  padding: 13px 16px;
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+.mcp-content-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mcp-type-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mcp-content-title {
+  font-weight: 500;
+}
+
+.mcp-td-staff {
+  color: var(--color-text-sub);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mcp-td-date {
+  color: var(--color-text-sub);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Responsive */
+
+@media (max-width: 1199px) {
+  .mcp-body { padding: 24px 20px 40px; }
+}
+
+@media (max-width: 767px) {
+  .mcp-body { padding: 16px 16px 32px; }
+  .mcp-table { min-width: 560px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mcp-page * { animation: none !important; transition-duration: 0ms !important; }
+}
