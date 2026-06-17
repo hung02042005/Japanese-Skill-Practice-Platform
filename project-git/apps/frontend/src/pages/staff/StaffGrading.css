@@ -1,0 +1,63 @@
+/* ===== StaffGrading — SakuJi Hanami Theme ===== */
+
+.grd-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  font-family: var(--font-base);
+}
+
+.grd-header-bar {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 32px 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.grd-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.grd-pending-badge {
+  font-size: 12px;
+  font-weight: 700;
+  background: #FFEAEA;
+  color: var(--color-error);
+  border-radius: var(--radius-full);
+  padding: 3px 12px;
+}
+
+.grd-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  max-width: 1400px;
+  width: 100%;
+  margin: 16px auto 0;
+  padding: 0 32px 32px;
+  box-sizing: border-box;
+  min-height: 0;
+  gap: 0;
+}
+
+@media (max-width: 1199px) {
+  .grd-body { padding: 0 20px 24px; }
+  .grd-header-bar { padding: 16px 20px 0; }
+}
+
+@media (max-width: 767px) {
+  .grd-body { flex-direction: column; padding: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grd-page * { animation: none !important; transition-duration: 0ms !important; }
+}

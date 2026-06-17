@@ -1,0 +1,580 @@
+/* ===== StaffQuestions — SakuJi Hanami Theme ===== */
+
+.sfq-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  font-family: var(--font-base);
+}
+
+.sfq-body {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 32px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+/* ── Page header ─────────────────────────────────────────────────── */
+.sfq-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sfq-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.sfq-btn-add {
+  height: 40px;
+  padding: 0 20px;
+  background: var(--color-secondary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-base);
+  transition: filter var(--transition);
+}
+
+.sfq-btn-add:hover {
+  filter: brightness(1.07);
+}
+
+/* ── Filter bar ──────────────────────────────────────────────────── */
+.sfq-filter-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sfq-search {
+  flex: 1;
+  min-width: 200px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  background: var(--color-bg);
+  font-family: var(--font-base);
+  color: var(--color-text);
+  box-sizing: border-box;
+}
+
+.sfq-search:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.sfq-select {
+  height: 40px;
+  padding: 0 10px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  background: var(--color-bg);
+  min-width: 120px;
+  font-family: var(--font-base);
+  color: var(--color-text);
+  box-sizing: border-box;
+}
+
+.sfq-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+/* ── Summary bar ─────────────────────────────────────────────────── */
+.sfq-summary {
+  font-size: 13px;
+  color: var(--color-text-sub);
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.sfq-summary strong {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+/* ── Table ───────────────────────────────────────────────────────── */
+.sfq-table-wrap {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.sfq-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sfq-table th {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-sub);
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+  background: #FAFAFA;
+  white-space: nowrap;
+}
+
+.sfq-table td {
+  font-size: 14px;
+  color: var(--color-text);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.sfq-table tr:last-child td {
+  border-bottom: none;
+}
+
+.sfq-table tr:hover td {
+  background: var(--color-primary-bg);
+}
+
+.sfq-table tr.sfq-row--locked td {
+  opacity: 0.8;
+}
+
+/* Question text cell */
+.sfq-q-text {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--color-primary-dark);
+  display: block;
+}
+
+.sfq-q-text:hover {
+  text-decoration: underline;
+}
+
+/* ── Skill badge ─────────────────────────────────────────────────── */
+.sfq-skill-badge {
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+/* ── Status badges ───────────────────────────────────────────────── */
+.sfq-status {
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  padding: 3px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.sfq-status--draft {
+  background: #F0EDEB;
+  color: var(--color-text-sub);
+}
+
+.sfq-status--pending {
+  background: var(--color-accent-bg);
+  color: var(--color-warning);
+}
+
+.sfq-status--published {
+  background: var(--color-secondary-bg);
+  color: var(--color-secondary);
+}
+
+.sfq-status--rejected {
+  background: #FFEAEA;
+  color: var(--color-error);
+}
+
+/* ── Type pill ───────────────────────────────────────────────────── */
+.sfq-type-pill {
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  padding: 3px 10px;
+  background: var(--color-bg);
+  color: var(--color-text-sub);
+  border: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+/* Lock icon */
+.sfq-lock-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  vertical-align: middle;
+  color: var(--color-text-disabled);
+}
+
+/* ── Actions ─────────────────────────────────────────────────────── */
+.sfq-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.sfq-btn-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-sub);
+  transition: all var(--transition);
+}
+
+.sfq-btn-icon:hover {
+  background: var(--color-primary-bg);
+  border-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.sfq-btn--submit {
+  height: 30px;
+  padding: 0 12px;
+  background: var(--color-secondary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-base);
+  transition: filter var(--transition);
+  white-space: nowrap;
+}
+
+.sfq-btn--submit:hover {
+  filter: brightness(1.07);
+}
+
+.sfq-btn--newver {
+  height: 30px;
+  padding: 0 12px;
+  background: transparent;
+  border: 1.5px solid var(--color-primary);
+  color: var(--color-primary);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-base);
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.sfq-btn--newver:hover {
+  background: var(--color-primary-bg);
+}
+
+/* ── Modal (used by QuestionFormModal) ───────────────────────────── */
+.sfq-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.40);
+  backdrop-filter: blur(2px);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.sfq-modal {
+  background: var(--color-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: 28px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: sfqModalIn 0.22s ease;
+  box-sizing: border-box;
+}
+
+@keyframes sfqModalIn {
+  from { opacity: 0; transform: scale(0.93) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.sfq-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.sfq-modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.sfq-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-bg);
+  color: var(--color-text-sub);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), color var(--transition);
+}
+
+.sfq-modal-close:hover {
+  background: #FFEAEA;
+  color: var(--color-error);
+}
+
+.sfq-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sfq-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 16px;
+  margin-top: 8px;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ── Form elements in modal ──────────────────────────────────────── */
+.sfq-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sfq-field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.sfq-field-error {
+  font-size: 12px;
+  color: var(--color-error);
+}
+
+.sfq-input {
+  height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font-family: var(--font-base);
+  font-size: 14px;
+  color: var(--color-text);
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.sfq-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(232, 154, 170, 0.15);
+  background: var(--color-card);
+}
+
+.sfq-input--err {
+  border-color: var(--color-error);
+}
+
+.sfq-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font-family: var(--font-base);
+  font-size: 14px;
+  color: var(--color-text);
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.sfq-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(232, 154, 170, 0.15);
+}
+
+.sfq-select-field {
+  height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font-family: var(--font-base);
+  font-size: 14px;
+  color: var(--color-text);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sfq-select-field:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.sfq-radio-group {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.sfq-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.sfq-options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Modal buttons ───────────────────────────────────────────────── */
+.sfq-btn-ghost-modal {
+  height: 40px;
+  padding: 0 20px;
+  background: transparent;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-sub);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-base);
+  transition: color var(--transition), background var(--transition);
+}
+
+.sfq-btn-ghost-modal:hover {
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+.sfq-btn-draft-modal {
+  height: 40px;
+  padding: 0 20px;
+  background: transparent;
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-base);
+  transition: background var(--transition);
+}
+
+.sfq-btn-draft-modal:hover {
+  background: var(--color-primary-bg);
+}
+
+.sfq-btn-submit-modal {
+  height: 40px;
+  padding: 0 20px;
+  background: var(--color-secondary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-base);
+  transition: filter var(--transition);
+}
+
+.sfq-btn-submit-modal:hover {
+  filter: brightness(1.07);
+}
+
+/* ── Empty state wrapper ─────────────────────────────────────────── */
+.sfq-empty-wrap {
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 1199px) {
+  .sfq-body {
+    padding: 24px 20px 40px;
+  }
+}
+
+@media (max-width: 767px) {
+  .sfq-body {
+    padding: 16px 16px 32px;
+  }
+
+  .sfq-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sfq-col-type {
+    display: none;
+  }
+
+  .sfq-table-wrap {
+    overflow-x: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sfq-page * {
+    animation: none !important;
+    transition-duration: 0ms !important;
+  }
+}

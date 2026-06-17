@@ -1,0 +1,93 @@
+/* ===== StaffContent — SakuJi Hanami Theme ===== */
+
+.sfc-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); font-family: var(--font-base); }
+.sfc-body { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; }
+
+.sfc-page-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sfc-page-title { font-size: 24px; font-weight: 700; color: var(--color-text); margin: 0; }
+
+/* Dropdown */
+.sfc-create-wrap { position: relative; }
+.sfc-btn-create { height: 40px; padding: 0 20px; background: var(--color-secondary); color: white; border: none; border-radius: var(--radius-full); font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: var(--font-base); transition: filter var(--transition); }
+.sfc-btn-create:hover { filter: brightness(1.07); }
+.sfc-dropdown { position: absolute; top: calc(100% + 6px); right: 0; background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: var(--shadow-md); min-width: 180px; z-index: 200; overflow: hidden; }
+.sfc-dropdown-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 16px; background: transparent; border: none; font-size: 14px; color: var(--color-text); cursor: pointer; font-family: var(--font-base); text-align: left; transition: background var(--transition); }
+.sfc-dropdown-item:hover { background: var(--color-primary-bg); }
+
+/* Tabs */
+.sfc-content-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--color-border); }
+.sfc-content-tab { padding: 10px 20px; font-size: 14px; font-weight: 600; color: var(--color-text-sub); border: none; background: transparent; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all var(--transition); font-family: var(--font-base); border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.sfc-content-tab--active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+.sfc-content-tab:hover:not(.sfc-content-tab--active) { background: var(--color-primary-bg); }
+
+/* Filter bar */
+.sfc-filter-bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.sfc-search { flex: 1; min-width: 200px; height: 40px; padding: 0 14px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); font-size: 14px; background: var(--color-bg); font-family: var(--font-base); color: var(--color-text); transition: border-color var(--transition); }
+.sfc-search:focus { outline: none; border-color: var(--color-primary); }
+.sfc-select { height: 40px; padding: 0 12px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); font-size: 14px; background: var(--color-bg); min-width: 130px; font-family: var(--font-base); color: var(--color-text); cursor: pointer; }
+.sfc-select:focus { outline: none; border-color: var(--color-primary); }
+
+/* Table */
+.sfc-table-wrap { background: var(--color-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
+.sfc-table { width: 100%; border-collapse: collapse; }
+.sfc-table th { font-size: 12px; font-weight: 700; color: var(--color-text-sub); padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--color-border); background: #FAFAFA; white-space: nowrap; }
+.sfc-table td { font-size: 14px; color: var(--color-text); padding: 13px 16px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+.sfc-table tr:last-child td { border-bottom: none; }
+.sfc-table tr:hover td { background: var(--color-primary-bg); }
+
+/* Kanji character cell */
+.sfc-kanji-char { font-size: 22px; font-weight: 700; color: var(--color-text); }
+
+/* Status badge */
+.sfc-status { font-size: 11px; font-weight: 700; border-radius: var(--radius-full); padding: 3px 10px; display: inline-block; white-space: nowrap; }
+.sfc-status--draft      { background: #F0EDEB; color: var(--color-text-sub); }
+.sfc-status--pending_review { background: var(--color-accent-bg); color: var(--color-warning); }
+.sfc-status--published  { background: var(--color-secondary-bg); color: var(--color-secondary); }
+.sfc-status--rejected   { background: #FFEAEA; color: var(--color-error); }
+.sfc-status--archived   { background: #EEE; color: var(--color-text-disabled); }
+
+/* Actions */
+.sfc-actions { display: flex; gap: 6px; align-items: center; }
+.sfc-btn-icon { width: 32px; height: 32px; border-radius: var(--radius-sm); border: 1.5px solid var(--color-border); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--color-text-sub); transition: all var(--transition); }
+.sfc-btn-icon:hover { background: var(--color-primary-bg); border-color: var(--color-primary-light); color: var(--color-primary); }
+.sfc-btn--submit { height: 32px; padding: 0 14px; background: var(--color-secondary); color: white; border: none; border-radius: var(--radius-full); font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--font-base); transition: filter var(--transition); white-space: nowrap; }
+.sfc-btn--submit:hover { filter: brightness(1.07); }
+
+/* Modal */
+.sfc-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.40); backdrop-filter: blur(2px); z-index: 300; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.sfc-modal { background: var(--color-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: 28px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; animation: sfcModalIn 0.22s ease; }
+@keyframes sfcModalIn { from { opacity: 0; transform: scale(0.93) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.sfc-modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.sfc-modal-title { font-size: 18px; font-weight: 700; color: var(--color-text); margin: 0; }
+.sfc-modal-close { width: 32px; height: 32px; border-radius: var(--radius-full); border: none; background: var(--color-bg); color: var(--color-text-sub); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.sfc-modal-close:hover { background: #FFEAEA; color: var(--color-error); }
+.sfc-modal-body { display: flex; flex-direction: column; gap: 16px; }
+.sfc-modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding-top: 16px; margin-top: 8px; border-top: 1px solid var(--color-border); }
+
+/* Form fields */
+.sfc-field { display: flex; flex-direction: column; gap: 6px; }
+.sfc-field-label { font-size: 13px; font-weight: 600; color: var(--color-text); }
+.sfc-field-label--req::after { content: ' *'; color: var(--color-error); }
+.sfc-input { height: 44px; padding: 0 14px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg); font-family: var(--font-base); font-size: 14px; color: var(--color-text); width: 100%; box-sizing: border-box; transition: border-color var(--transition), box-shadow var(--transition); }
+.sfc-input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(232,154,170,0.15); background: var(--color-card); }
+.sfc-textarea { width: 100%; min-height: 100px; padding: 10px 14px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg); font-family: var(--font-base); font-size: 14px; color: var(--color-text); resize: vertical; box-sizing: border-box; transition: border-color var(--transition), box-shadow var(--transition); }
+.sfc-textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(232,154,170,0.15); }
+
+/* Buttons for modal */
+.sfc-btn-ghost   { height: 40px; padding: 0 20px; background: transparent; border: 1.5px solid var(--color-border); border-radius: var(--radius-full); color: var(--color-text-sub); font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font-base); transition: all var(--transition); }
+.sfc-btn-ghost:hover { color: var(--color-text); background: var(--color-bg); }
+.sfc-btn-draft   { height: 40px; padding: 0 20px; background: transparent; border: 1.5px solid var(--color-primary); border-radius: var(--radius-full); color: var(--color-primary); font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font-base); transition: all var(--transition); }
+.sfc-btn-draft:hover { background: var(--color-primary-bg); }
+.sfc-btn-submit-modal { height: 40px; padding: 0 20px; background: var(--color-secondary); color: white; border: none; border-radius: var(--radius-full); font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font-base); transition: filter var(--transition); }
+.sfc-btn-submit-modal:hover { filter: brightness(1.07); }
+
+/* Visually hidden */
+.sfc-visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0; }
+
+/* Empty state */
+.sfc-empty-wrap { padding: 40px 20px; display: flex; justify-content: center; }
+
+/* Responsive */
+@media (max-width: 1199px) { .sfc-body { padding: 24px 20px 40px; } }
+@media (max-width: 767px)  { .sfc-body { padding: 16px 16px 32px; } .sfc-filter-bar { flex-direction: column; align-items: stretch; } .sfc-content-tabs { overflow-x: auto; } }
+@media (prefers-reduced-motion: reduce) { .sfc-page * { animation: none !important; transition-duration: 0ms !important; } }

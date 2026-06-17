@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+  body {
+    font-family: 'Nunito', 'Noto Sans JP', system-ui, sans-serif;
+    background-color: #FAF7F4;
+    color: #2D2D2D;
+  }
+}
+
+/* ===== Design Tokens — SakuJi ===== */
+:root {
+  /* Color Primary (Sakura Pink) */
+  --color-primary:        #E89AAA;
+  --color-primary-light:  #F7CBD4;
+  --color-primary-dark:   #D84F68;
+  --color-primary-bg:     #FFF0F3;
+
+  /* Color Secondary (Learning Green) */
+  --color-secondary:      #5DBB69;
+  --color-secondary-light:#8DD494;
+  --color-secondary-bg:   #F4FBF5;
+
+  /* Color Accent (Achievement Gold) */
+  --color-accent:         #F7C948;
+  --color-accent-bg:      #FFF7DD;
+
+  /* Surface */
+  --color-bg:             #FAF7F4;
+  --color-card:           #FFFFFF;
+  --color-border:         #E8E0DC;
+
+  /* Text */
+  --color-text:           #2D2D2D;
+  --color-text-sub:       #6B625E;
+  --color-text-disabled:  #B7ABA5;
+
+  /* Semantic */
+  --color-error:          #E57373;
+  --color-error-bg:       #FEF2F2;
+  --color-error-tint:     #FFEAEA;
+  --color-warning:        #F4A261;
+  --color-accent-dark:    #B7670A;
+  --color-secondary-row:  rgba(93,187,105,0.04);
+  --color-error-row:      rgba(229,115,115,0.04);
+
+  /* Landing-page only */
+  --color-cream:          #F7F4E6;
+  --color-hero-bg:        #FFF8FA;
+
+  /* Border Radius */
+  --radius-sm:    8px;
+  --radius-md:    12px;
+  --radius-lg:    16px;
+  --radius-xl:    24px;
+  --radius-full:  9999px;
+
+  /* Shadow */
+  --shadow-sm:        0 2px 8px rgba(0,0,0,0.07);
+  --shadow-md:        0 4px 12px rgba(0,0,0,0.10);
+  --shadow-lg:        0 8px 24px rgba(0,0,0,0.12);
+  --shadow-card:      0 4px 20px rgba(0,0,0,0.08);
+  --shadow-hero:      0 8px 40px rgba(232,154,170,0.12);
+  --shadow-primary:   0 2px 8px rgba(232,154,170,0.35);
+  --shadow-secondary: 0 2px 8px rgba(93,187,105,0.25);
+  --shadow-petal:     0 4px 14px rgba(232,154,170,0.22);
+
+  /* Focus rings */
+  --focus-ring:       0 0 0 3px rgba(232,154,170,0.18);
+  --focus-ring-error: 0 0 0 3px rgba(229,115,115,0.12);
+
+  /* Skeleton */
+  --skeleton-from: #f0ebe8;
+  --skeleton-to:   #f8f4f2;
+
+  /* Font */
+  --font-base: 'Nunito', 'Noto Sans JP', system-ui, sans-serif;
+
+  /* Transition */
+  --transition: 200ms ease;
+}

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none">
+  <!-- Body -->
+  <ellipse cx="40" cy="70" rx="26" ry="24" fill="#FFF0F3" stroke="#F4A7B3" stroke-width="1.5"/>
+
+  <!-- Head -->
+  <circle cx="40" cy="48" r="25" fill="#FFF0F3" stroke="#F4A7B3" stroke-width="1.5"/>
+
+  <!-- Crown petals -->
+  <ellipse cx="27" cy="24" rx="9" ry="14" fill="#E8637A" transform="rotate(-22 27 24)"/>
+  <ellipse cx="40" cy="20" rx="9" ry="15" fill="#E8637A"/>
+  <ellipse cx="53" cy="24" rx="9" ry="14" fill="#E8637A" transform="rotate(22 53 24)"/>
+  <circle cx="40" cy="29" r="5" fill="#F4A7B3"/>
+  <circle cx="40" cy="29" r="3" fill="#FFF0F3"/>
+
+  <!-- Cheeks -->
+  <ellipse cx="27" cy="54" rx="9" ry="5.5" fill="#E8637A" opacity="0.25"/>
+  <ellipse cx="53" cy="54" rx="9" ry="5.5" fill="#E8637A" opacity="0.25"/>
+
+  <!-- Eyes (happy crescents) -->
+  <path d="M30 47 Q34 43 38 47" stroke="#2D2D2D" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M42 47 Q46 43 50 47" stroke="#2D2D2D" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+  <!-- Smile -->
+  <path d="M33 60 Q40 66 47 60" stroke="#E8637A" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+
+  <!-- Hands raised (happy/jumping) -->
+  <ellipse cx="15" cy="58" rx="8" ry="10" fill="#FFF0F3" stroke="#F4A7B3" stroke-width="1.5" transform="rotate(-25 15 58)"/>
+  <ellipse cx="65" cy="58" rx="8" ry="10" fill="#FFF0F3" stroke="#F4A7B3" stroke-width="1.5" transform="rotate(25 65 58)"/>
+</svg>

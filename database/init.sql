@@ -265,6 +265,7 @@ GO
 -- 10. Ngữ pháp
 CREATE TABLE grammar_points (
     grammar_id          BIGINT IDENTITY(1,1) PRIMARY KEY,
+    title               NVARCHAR(255)  NULL,
     structure           NVARCHAR(255)  NOT NULL,
     formula             NVARCHAR(500)  NULL,
     meaning             NVARCHAR(500)  NOT NULL,
