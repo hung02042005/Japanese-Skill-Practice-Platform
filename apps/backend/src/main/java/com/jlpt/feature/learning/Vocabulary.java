@@ -53,7 +53,7 @@ public class Vocabulary {
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ContentStatusConverter.class)
     @Column(nullable = false, length = 20)
     @Builder.Default
     private Kanji.ContentStatus status = Kanji.ContentStatus.DRAFT;
