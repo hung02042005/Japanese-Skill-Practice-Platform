@@ -592,9 +592,9 @@ export const MOCK_STATS = {
 
 export const MOCK_EXAM_HISTORY = {
   content: [
-    { attemptId: 1, assessmentId: 1, assessmentTitle: 'N5 Đề thi thử #1', jlptLevel: 'N5', score: 72, maxScore: 100, isPassed: true,  attemptedAt: '2026-05-28T09:30:00' },
-    { attemptId: 2, assessmentId: 2, assessmentTitle: 'N5 Đề thi thử #2', jlptLevel: 'N5', score: 58, maxScore: 100, isPassed: false, attemptedAt: '2026-05-20T14:00:00' },
-    { attemptId: 3, assessmentId: 1, assessmentTitle: 'N5 Đề thi thử #1', jlptLevel: 'N5', score: 65, maxScore: 100, isPassed: true,  attemptedAt: '2026-05-15T10:15:00' },
+    { attemptId: 1, assessmentTitle: 'N5 Đề thi thử #1', jlptLevel: 'N5', totalScore: 72, maxScore: 100, isPassed: true,  submittedAt: '2026-05-28T09:30:00' },
+    { attemptId: 2, assessmentTitle: 'N5 Đề thi thử #2', jlptLevel: 'N5', totalScore: 58, maxScore: 100, isPassed: false, submittedAt: '2026-05-20T14:00:00' },
+    { attemptId: 3, assessmentTitle: 'N5 Đề thi thử #1', jlptLevel: 'N5', totalScore: 65, maxScore: 100, isPassed: true,  submittedAt: '2026-05-15T10:15:00' },
   ],
   totalPages: 1,
 };
@@ -603,15 +603,15 @@ export const MOCK_EXAM_HISTORY = {
 export const MOCK_EXAM_LIST = {
   N5: {
     content: [
-      { assessmentId: 1, title: 'N5 Đề thi thử #1 — Tổng hợp',           jlptLevel: 'N5', totalQuestions: 100, durationMin: 105, passScore: 65, maxScore: 100, lastAttempt: { attemptedAt: '2026-05-28T09:30:00', score: 72, isPassed: true  } },
-      { assessmentId: 2, title: 'N5 Đề thi thử #2 — Trọng tâm từ vựng',  jlptLevel: 'N5', totalQuestions: 40,  durationMin: 35,  passScore: 26, maxScore: 40,  lastAttempt: { attemptedAt: '2026-05-20T14:00:00', score: 20, isPassed: false } },
-      { assessmentId: 3, title: 'N5 Đề thi thử #3 — Ngữ pháp & Đọc hiểu',jlptLevel: 'N5', totalQuestions: 60,  durationMin: 60,  passScore: 38, maxScore: 60,  lastAttempt: null },
+      { assessmentId: 1, title: 'N5 Đề thi thử #1 — Tổng hợp',           jlptLevel: 'N5', questionCount: 100, durationMin: 105, passScore: 65, totalScore: 100 },
+      { assessmentId: 2, title: 'N5 Đề thi thử #2 — Trọng tâm từ vựng',  jlptLevel: 'N5', questionCount: 40,  durationMin: 35,  passScore: 26, totalScore: 40  },
+      { assessmentId: 3, title: 'N5 Đề thi thử #3 — Ngữ pháp & Đọc hiểu',jlptLevel: 'N5', questionCount: 60,  durationMin: 60,  passScore: 38, totalScore: 60  },
     ],
     totalPages: 1,
   },
   N4: {
     content: [
-      { assessmentId: 4, title: 'N4 Đề thi thử #1 — Tổng hợp', jlptLevel: 'N4', totalQuestions: 100, durationMin: 105, passScore: 65, maxScore: 100, lastAttempt: null },
+      { assessmentId: 4, title: 'N4 Đề thi thử #1 — Tổng hợp', jlptLevel: 'N4', questionCount: 100, durationMin: 105, passScore: 65, totalScore: 100 },
     ],
     totalPages: 1,
   },
@@ -658,31 +658,24 @@ export const MOCK_ASSESSMENT_DETAIL = {
 // ─── MockTestResults ──────────────────────────────────────────────────────────
 export const MOCK_QUIZ_RESULT = {
   attemptId: 1,
-  assessmentId: 1,
-  assessmentTitle: 'N5 Đề thi thử #1 — Tổng hợp',
-  jlptLevel: 'N5',
-  score: 72,
+  totalScore: 72,
   maxScore: 100,
-  passScore: 65,
   isPassed: true,
-  attemptedAt: '2026-05-28T09:30:00',
-  previousAttempt: { score: 65 },
   sectionScores: {
-    vocabulary: { percent: 80 },
-    grammar:    { percent: 70 },
-    reading:    { percent: 65 },
-    listening:  { percent: 60 },
+    languageKnowledge: 45,
+    reading: 18,
+    listening: 9,
   },
-  questionResults: [
-    { questionNumber: 1,  skill: 'vocabulary', selectedOption: 'A', correctOption: 'A', isCorrect: true  },
-    { questionNumber: 2,  skill: 'vocabulary', selectedOption: 'A', correctOption: 'A', isCorrect: true  },
-    { questionNumber: 3,  skill: 'vocabulary', selectedOption: 'B', correctOption: 'A', isCorrect: false },
-    { questionNumber: 4,  skill: 'vocabulary', selectedOption: 'A', correctOption: 'A', isCorrect: true  },
-    { questionNumber: 5,  skill: 'grammar',    selectedOption: 'A', correctOption: 'A', isCorrect: true  },
-    { questionNumber: 6,  skill: 'grammar',    selectedOption: 'D', correctOption: 'A', isCorrect: false },
-    { questionNumber: 7,  skill: 'grammar',    selectedOption: 'A', correctOption: 'A', isCorrect: true  },
-    { questionNumber: 8,  skill: 'reading',    selectedOption: 'B', correctOption: 'B', isCorrect: true  },
-    { questionNumber: 9,  skill: 'reading',    selectedOption: 'C', correctOption: 'B', isCorrect: false },
-    { questionNumber: 10, skill: 'reading',    selectedOption: null, correctOption: 'B', isCorrect: false },
+  results: [
+    { questionId: 1,  questionText: '毎朝、わたしは６___に おきます。',        optionA: 'じ', optionB: 'ふん', optionC: 'まえ', optionD: 'ごろ', selectedOption: 'A', correctOption: 'A', isCorrect: true,  score: 7.2, explanation: '「6じ」là cách đọc giờ đúng.' },
+    { questionId: 2,  questionText: 'この りんごは ___ ですか。',                optionA: 'いくら', optionB: 'いつ', optionC: 'どこ', optionD: 'だれ', selectedOption: 'A', correctOption: 'A', isCorrect: true,  score: 7.2, explanation: '「いくら」dùng để hỏi giá.' },
+    { questionId: 3,  questionText: 'きょうの てんきは___です。',                optionA: 'はれ', optionB: 'さかな', optionC: 'ほん', optionD: 'えき', selectedOption: 'B', correctOption: 'A', isCorrect: false, score: 0,   explanation: '「はれ」nghĩa là "nắng", phù hợp để tả thời tiết.' },
+    { questionId: 4,  questionText: '___で でんしゃに のります。',               optionA: 'えき', optionB: 'みせ', optionC: 'がっこう', optionD: 'うち', selectedOption: 'A', correctOption: 'A', isCorrect: true,  score: 7.2, explanation: '「えき」(nhà ga) là nơi lên tàu điện.' },
+    { questionId: 5,  questionText: 'わたしは まいにち 6じ___おきます。',         optionA: 'に', optionB: 'を', optionC: 'が', optionD: 'で', selectedOption: 'A', correctOption: 'A', isCorrect: true,  score: 7.2, explanation: 'Trợ từ「に」chỉ thời điểm.' },
+    { questionId: 6,  questionText: 'あの かばん___わたしの です。',             optionA: 'は', optionB: 'を', optionC: 'に', optionD: 'へ', selectedOption: 'D', correctOption: 'A', isCorrect: false, score: 0,   explanation: 'Trợ từ「は」đánh dấu chủ đề câu.' },
+    { questionId: 7,  questionText: 'としょかん___ほんを かります。',             optionA: 'で', optionB: 'に', optionC: 'を', optionD: 'が', selectedOption: 'A', correctOption: 'A', isCorrect: true,  score: 7.2, explanation: 'Trợ từ「で」chỉ địa điểm diễn ra hành động.' },
+    { questionId: 8,  questionText: 'たなかさんは まいにち なんじに おきますか。', optionA: '6じ', optionB: '7じ', optionC: '8じ', optionD: '9じ', selectedOption: 'B', correctOption: 'B', isCorrect: true,  score: 6,   explanation: 'Theo đoạn văn, Tanaka thức dậy lúc 7 giờ.' },
+    { questionId: 9,  questionText: 'たなかさんは なにで かいしゃへ いきますか。', optionA: 'バス', optionB: 'でんしゃ', optionC: 'じてんしゃ', optionD: 'あるいて', selectedOption: 'C', correctOption: 'B', isCorrect: false, score: 0,   explanation: 'Theo đoạn văn, Tanaka đi làm bằng tàu điện.' },
+    { questionId: 10, questionText: 'たなかさんの しゅみは なんですか。',          optionA: 'りょうり', optionB: 'どくしょ', optionC: 'スポーツ', optionD: 'おんがく', selectedOption: null, correctOption: 'B', isCorrect: false, score: 0,  explanation: 'Theo đoạn văn, sở thích của Tanaka là đọc sách.' },
   ],
 };

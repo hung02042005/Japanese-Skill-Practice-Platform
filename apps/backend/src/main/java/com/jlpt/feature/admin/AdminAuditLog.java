@@ -2,6 +2,7 @@
 package com.jlpt.feature.admin;
 
 import com.jlpt.feature.staff.StaffUser;
+import com.jlpt.feature.student.StudentUser;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -27,6 +28,10 @@ public class AdminAuditLog {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "staff_actor_id")
     private StaffUser staffActor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_actor_id")
+    private StudentUser studentActor;
 
     @Column(nullable = false, length = 100)
     private String action;

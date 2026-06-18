@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ExamTopBar from '../../components/student/ExamTopBar';
 import ExamNavigator from '../../components/student/ExamNavigator';
-import { getAssessmentDetail, submitQuizAttempt } from '../../api/studentService';
+import { startAssessment, submitAssessment } from '../../api/studentService';
 import { DEMO_MODE, MOCK_ASSESSMENT_DETAIL } from '../../api/mockData';
 import './MockTestAttempt.css';
 
@@ -11,6 +11,7 @@ export default function MockTestAttempt() {
   const navigate = useNavigate();
 
   const [exam,        setExam]    = useState(null);
+  const [attemptId,   setAttemptId] = useState(null);
   const [questions,   setQs]      = useState([]);
   const [answers,     setAnswers] = useState({});
   const [currentIdx,  setIdx]     = useState(0);
@@ -29,13 +30,16 @@ export default function MockTestAttempt() {
     (async () => {
       setLoading(true);
       try {
-        const data = DEMO_MODE ? MOCK_ASSESSMENT_DETAIL : await getAssessmentDetail(id);
+        const data = DEMO_MODE ? MOCK_ASSESSMENT_DETAIL : await startAssessment(id);
         const allQs = data.sections?.flatMap((s) =>
           s.questions.map((q) => ({ ...q, sectionName: s.sectionName }))
         ) ?? data.questions ?? [];
         setExam(data);
+        setAttemptId(data.attemptId);
         setQs(allQs);
-        setTime(data.durationMin * 60);
+        setTime(DEMO_MODE
+          ? data.durationMin * 60
+          : Math.max(0, Math.floor((new Date(data.expiresAt).getTime() - Date.now()) / 1000)));
         const draft = localStorage.getItem(DRAFT_KEY);
         if (draft) {
           try { setAnswers(JSON.parse(draft)); } catch { /* ignore */ }
@@ -56,7 +60,7 @@ export default function MockTestAttempt() {
       setTime((t) => {
         if (t <= 1) {
           clearInterval(timerRef.current);
-          if (!submitted.current) doSubmit();
+          if (!submitted.current) doSubmit(true);
           return 0;
         }
         return t - 1;
@@ -71,7 +75,7 @@ export default function MockTestAttempt() {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(updated));
   }
 
-  async function doSubmit() {
+  async function doSubmit(isAutoSubmit = false) {
     if (submitted.current || isSubmitting) return;
     submitted.current = true;
     setSubmit(true);
@@ -86,7 +90,7 @@ export default function MockTestAttempt() {
         questionId:     q.questionId,
         selectedOption: answers[q.questionId] ?? null,
       }));
-      const result = await submitQuizAttempt({ assessmentId: exam.assessmentId, answers: payload });
+      const result = await submitAssessment(id, { attemptId, isAutoSubmit, answers: payload });
       localStorage.removeItem(DRAFT_KEY);
       navigate(`/mock-test/${id}/results?attemptId=${result.attemptId}`);
     } catch {
@@ -253,7 +257,7 @@ export default function MockTestAttempt() {
               <button className="mxa-modal-cancel" onClick={() => setConfirm(false)}>Về làm tiếp</button>
               <button
                 className="mxa-modal-submit"
-                onClick={doSubmit}
+                onClick={() => doSubmit(false)}
                 disabled={isSubmitting}
                 aria-busy={isSubmitting}
               >

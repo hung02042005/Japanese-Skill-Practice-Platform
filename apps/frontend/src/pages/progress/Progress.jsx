@@ -158,8 +158,8 @@ export default function Progress() {
                         {history.map((h, i) => (
                           <tr key={h.attemptId} className="prg-tr" style={{ '--row-i': i }}>
                             <td>
-                              <time dateTime={h.attemptedAt}>
-                                {new Date(h.attemptedAt).toLocaleDateString('vi-VN')}
+                              <time dateTime={h.submittedAt}>
+                                {new Date(h.submittedAt).toLocaleDateString('vi-VN')}
                               </time>
                             </td>
                             <td>
@@ -168,7 +168,7 @@ export default function Progress() {
                                 <span>{h.assessmentTitle}</span>
                               </div>
                             </td>
-                            <td className="prg-td-score">{h.score}/{h.maxScore}</td>
+                            <td className="prg-td-score">{h.totalScore}/{h.maxScore}</td>
                             <td>
                               <span className={`prg-result-badge${h.isPassed ? ' prg-result-badge--pass' : ' prg-result-badge--fail'}`}>
                                 {h.isPassed ? '✅ Đậu' : '❌ Không đậu'}
@@ -176,7 +176,7 @@ export default function Progress() {
                             </td>
                             <td>
                               <Link
-                                to={`/mock-test/${h.assessmentId}/results?attemptId=${h.attemptId}`}
+                                to={`/mock-test/results?attemptId=${h.attemptId}`}
                                 className="prg-detail-link"
                               >
                                 Xem →

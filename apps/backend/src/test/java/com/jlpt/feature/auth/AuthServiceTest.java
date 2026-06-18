@@ -5,19 +5,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.jlpt.feature.admin.AdminAuthService;
+import com.jlpt.feature.admin.AdminUserRepository;
 import com.jlpt.feature.auth.dto.request.LoginRequest;
 import com.jlpt.feature.auth.dto.response.LoginApiResponse;
-import com.jlpt.feature.auth.AuthToken;
 import com.jlpt.feature.staff.StaffUser;
-import com.jlpt.feature.student.StudentUser;
-import com.jlpt.shared.exception.BusinessException;
-import com.jlpt.feature.admin.AdminUserRepository;
-import com.jlpt.feature.auth.AuthTokenRepository;
 import com.jlpt.feature.staff.StaffUserRepository;
+import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.StudentUserRepository;
-import com.jlpt.shared.security.JwtProvider;
 import com.jlpt.shared.email.EmailService;
-import com.jlpt.feature.admin.AdminAuthService;
+import com.jlpt.shared.exception.BusinessException;
+import com.jlpt.shared.security.JwtProvider;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -187,8 +185,9 @@ class AuthServiceTest {
         assertEquals("limited-token", response.getAccessToken());
         assertTrue(response.getRequirePasswordChange());
         assertEquals("STAFF", response.getRole());
-        verify(authTokenRepository).save(argThat(token -> token.getTokenType() == AuthToken.TokenType.LIMITED_SESSION
-                && token.getStaffId().equals(2L)
-                && token.getExpiresAt() != null));
+        verify(authTokenRepository)
+                .save(argThat(token -> token.getTokenType() == AuthToken.TokenType.LIMITED_SESSION
+                        && token.getStaffId().equals(2L)
+                        && token.getExpiresAt() != null));
     }
 }

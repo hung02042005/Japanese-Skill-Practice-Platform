@@ -17,17 +17,17 @@ import com.jlpt.feature.auth.dto.request.RefreshTokenRequest;
 import com.jlpt.feature.auth.dto.request.RegisterRequest;
 import com.jlpt.feature.auth.dto.request.ResendVerificationRequest;
 import com.jlpt.feature.auth.dto.request.ResetPasswordRequest;
-import com.jlpt.feature.student.dto.request.UpdateProfileRequest;
 import com.jlpt.feature.auth.dto.request.VerifyEmailRequest;
 import com.jlpt.feature.auth.dto.response.AccountTypeResponse;
 import com.jlpt.feature.auth.dto.response.AuthResponse;
 import com.jlpt.feature.auth.dto.response.LoginApiResponse;
 import com.jlpt.feature.auth.dto.response.RefreshTokenResponse;
-import com.jlpt.feature.student.dto.response.StudentResponse;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.StudentUserRepository;
+import com.jlpt.feature.student.dto.request.UpdateProfileRequest;
+import com.jlpt.feature.student.dto.response.StudentResponse;
 import com.jlpt.shared.email.EmailService;
 import com.jlpt.shared.exception.BusinessException;
 import com.jlpt.shared.security.JwtProvider;
@@ -146,8 +146,7 @@ public class AuthService {
     public LoginApiResponse loginStaff(LoginRequest request, String ip) {
         StaffUser staff = staffUserRepository
                 .findByEmail(request.getEmail())
-                .orElseThrow(() ->
-                        new BusinessException(401, "INVALID_CREDENTIALS", "Email hoặc mật khẩu không đúng"));
+                .orElseThrow(() -> new BusinessException(401, "INVALID_CREDENTIALS", "Email hoặc mật khẩu không đúng"));
         return handleStaffLogin(staff, request.getPassword(), ip);
     }
 

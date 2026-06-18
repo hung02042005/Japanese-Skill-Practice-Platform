@@ -2,7 +2,6 @@
 package com.jlpt.feature.auth.dto.response;
 
 import com.jlpt.feature.student.dto.response.StudentResponse;
-
 import lombok.Builder;
 import lombok.Data;
 

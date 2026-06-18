@@ -1,29 +1,29 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.admin;
 
-import com.jlpt.feature.staff.dto.request.ChangeStaffRoleRequest;
-import com.jlpt.feature.staff.dto.request.CreateStaffRequest;
 import com.jlpt.feature.admin.dto.request.SuspendUserRequest;
-import com.jlpt.feature.staff.dto.request.UpdateStaffInfoRequest;
-import com.jlpt.feature.student.dto.request.UpdateStudentRequest;
 import com.jlpt.feature.admin.dto.request.UpdateUserRoleRequest;
 import com.jlpt.feature.admin.dto.request.UpdateUserStatusRequest;
 import com.jlpt.feature.admin.dto.response.ActivateUserResponse;
 import com.jlpt.feature.admin.dto.response.AdminDetailResponse;
 import com.jlpt.feature.admin.dto.response.AdminUserResponse;
-import com.jlpt.feature.staff.dto.response.ChangeStaffRoleResponse;
-import com.jlpt.feature.staff.dto.response.CreateStaffResponse;
 import com.jlpt.feature.admin.dto.response.SoftDeleteUserResponse;
-import com.jlpt.feature.staff.dto.response.StaffDetailResponse;
-import com.jlpt.feature.student.dto.response.StudentDetailResponse;
 import com.jlpt.feature.admin.dto.response.SuspendUserResponse;
 import com.jlpt.feature.admin.dto.response.UserSummaryResponse;
 import com.jlpt.feature.auth.AuthToken;
 import com.jlpt.feature.auth.AuthTokenRepository;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
+import com.jlpt.feature.staff.dto.request.ChangeStaffRoleRequest;
+import com.jlpt.feature.staff.dto.request.CreateStaffRequest;
+import com.jlpt.feature.staff.dto.request.UpdateStaffInfoRequest;
+import com.jlpt.feature.staff.dto.response.ChangeStaffRoleResponse;
+import com.jlpt.feature.staff.dto.response.CreateStaffResponse;
+import com.jlpt.feature.staff.dto.response.StaffDetailResponse;
 import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.StudentUserRepository;
+import com.jlpt.feature.student.dto.request.UpdateStudentRequest;
+import com.jlpt.feature.student.dto.response.StudentDetailResponse;
 import com.jlpt.shared.email.EmailService;
 import com.jlpt.shared.exception.BadRequestException;
 import com.jlpt.shared.exception.BusinessException;
@@ -130,7 +130,8 @@ public class AdminUserService {
             throw new DuplicateResourceException("Email đã được sử dụng trong hệ thống");
         }
 
-        StaffUser.StaffRole role = StaffUser.StaffRole.valueOf(request.getStaffRole().toUpperCase());
+        StaffUser.StaffRole role =
+                StaffUser.StaffRole.valueOf(request.getStaffRole().toUpperCase());
         StaffUser staff = StaffUser.builder()
                 .email(email)
                 .fullName(request.getFullName().trim())
@@ -150,8 +151,7 @@ public class AdminUserService {
 
         emailService.sendStaffInvitationEmail(email, inviteToken);
 
-        auditLog(actor, "create_staff", "staff_users", staff.getId(),
-                "Tạo tài khoản Staff: " + email);
+        auditLog(actor, "create_staff", "staff_users", staff.getId(), "Tạo tài khoản Staff: " + email);
 
         log.info("[AdminUserService] Admin {} created staff id={} email={}", adminEmail, staff.getId(), email);
         return CreateStaffResponse.builder()
@@ -173,14 +173,16 @@ public class AdminUserService {
 
         AuthToken token = authTokenRepository
                 .findByTokenValueAndTokenType(request.getToken(), AuthToken.TokenType.EMAIL_VERIFICATION)
-                .orElseThrow(() -> new BusinessException(400, "INVALID_TOKEN", "Link kích hoạt không hợp lệ hoặc đã được sử dụng"));
+                .orElseThrow(() -> new BusinessException(
+                        400, "INVALID_TOKEN", "Link kích hoạt không hợp lệ hoặc đã được sử dụng"));
 
         if (token.getActorType() != AuthToken.ActorType.STAFF) {
             throw new BusinessException(400, "INVALID_TOKEN", "Link kích hoạt không hợp lệ");
         }
 
         if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new BusinessException(400, "TOKEN_EXPIRED", "Link kích hoạt đã hết hạn. Vui lòng liên hệ Admin để được cấp lại.");
+            throw new BusinessException(
+                    400, "TOKEN_EXPIRED", "Link kích hoạt đã hết hạn. Vui lòng liên hệ Admin để được cấp lại.");
         }
 
         StaffUser staff = staffUserRepository
@@ -197,8 +199,10 @@ public class AdminUserService {
 
         authTokenRepository.delete(token);
 
-        log.info("[AdminUserService] Staff id={} email={} completed setup-password and is now ACTIVE",
-                staff.getId(), staff.getEmail());
+        log.info(
+                "[AdminUserService] Staff id={} email={} completed setup-password and is now ACTIVE",
+                staff.getId(),
+                staff.getEmail());
     }
 
     // ── UC-37-04: Edit user info ────────────────────────────────────────────
@@ -216,14 +220,19 @@ public class AdminUserService {
                 UpdateStudentRequest req = (UpdateStudentRequest) request;
                 StringBuilder changes = new StringBuilder();
                 if (StringUtils.hasText(req.getFullName())) {
-                    changes.append("fullName: ").append(s.getFullName()).append("→").append(req.getFullName()).append("; ");
+                    changes.append("fullName: ")
+                            .append(s.getFullName())
+                            .append("→")
+                            .append(req.getFullName())
+                            .append("; ");
                     s.setFullName(req.getFullName().trim());
                 }
                 if (req.getPhone() != null) {
                     s.setPhone(req.getPhone().isBlank() ? null : req.getPhone().trim());
                 }
                 if (StringUtils.hasText(req.getTargetJlptLevel())) {
-                    s.setTargetJlptLevel(StudentUser.JlptLevel.valueOf(req.getTargetJlptLevel().toUpperCase()));
+                    s.setTargetJlptLevel(StudentUser.JlptLevel.valueOf(
+                            req.getTargetJlptLevel().toUpperCase()));
                 }
                 s = studentUserRepository.save(s);
                 auditLog(actor, "update_user", "student_users", userId, changes.toString());
@@ -271,8 +280,12 @@ public class AdminUserService {
                 authTokenRepository.revokeAllActiveByStudentId(userId, now);
                 auditLog(actor, "suspend_user", "student_users", userId, request.getReason());
                 yield SuspendUserResponse.builder()
-                        .userId(userId).userType("student").status("suspended")
-                        .suspendReason(request.getReason()).suspendedAt(now).build();
+                        .userId(userId)
+                        .userType("student")
+                        .status("suspended")
+                        .suspendReason(request.getReason())
+                        .suspendedAt(now)
+                        .build();
             }
             case "staff" -> {
                 StaffUser st = staffUserRepository
@@ -288,8 +301,12 @@ public class AdminUserService {
                 authTokenRepository.revokeAllActiveByStaffId(userId, now);
                 auditLog(actor, "suspend_user", "staff_users", userId, request.getReason());
                 yield SuspendUserResponse.builder()
-                        .userId(userId).userType("staff").status("suspended")
-                        .suspendReason(request.getReason()).suspendedAt(now).build();
+                        .userId(userId)
+                        .userType("staff")
+                        .status("suspended")
+                        .suspendReason(request.getReason())
+                        .suspendedAt(now)
+                        .build();
             }
             case "admin" -> {
                 AdminUser a = adminUserRepository
@@ -305,8 +322,12 @@ public class AdminUserService {
                 authTokenRepository.revokeAllActiveByAdminId(userId, now);
                 auditLog(actor, "suspend_user", "admin_users", userId, request.getReason());
                 yield SuspendUserResponse.builder()
-                        .userId(userId).userType("admin").status("suspended")
-                        .suspendReason(request.getReason()).suspendedAt(now).build();
+                        .userId(userId)
+                        .userType("admin")
+                        .status("suspended")
+                        .suspendReason(request.getReason())
+                        .suspendedAt(now)
+                        .build();
             }
             default -> throw new BadRequestException("Loại người dùng không hợp lệ");
         };
@@ -333,7 +354,11 @@ public class AdminUserService {
                 studentUserRepository.save(s);
                 auditLog(actor, "activate_user", "student_users", userId, null);
                 yield ActivateUserResponse.builder()
-                        .userId(userId).userType("student").status("active").activatedAt(now).build();
+                        .userId(userId)
+                        .userType("student")
+                        .status("active")
+                        .activatedAt(now)
+                        .build();
             }
             case "staff" -> {
                 StaffUser st = staffUserRepository
@@ -347,7 +372,11 @@ public class AdminUserService {
                 staffUserRepository.save(st);
                 auditLog(actor, "activate_user", "staff_users", userId, null);
                 yield ActivateUserResponse.builder()
-                        .userId(userId).userType("staff").status("active").activatedAt(now).build();
+                        .userId(userId)
+                        .userType("staff")
+                        .status("active")
+                        .activatedAt(now)
+                        .build();
             }
             case "admin" -> {
                 AdminUser a = adminUserRepository
@@ -361,7 +390,11 @@ public class AdminUserService {
                 adminUserRepository.save(a);
                 auditLog(actor, "activate_user", "admin_users", userId, null);
                 yield ActivateUserResponse.builder()
-                        .userId(userId).userType("admin").status("active").activatedAt(now).build();
+                        .userId(userId)
+                        .userType("admin")
+                        .status("active")
+                        .activatedAt(now)
+                        .build();
             }
             default -> throw new BadRequestException("Loại người dùng không hợp lệ");
         };
@@ -461,7 +494,11 @@ public class AdminUserService {
                 authTokenRepository.revokeAllActiveByStudentId(userId, now);
                 auditLog(actor, "soft_delete_user", "student_users", userId, null);
                 yield SoftDeleteUserResponse.builder()
-                        .userId(userId).userType("student").status("deleted").deletedAt(now).build();
+                        .userId(userId)
+                        .userType("student")
+                        .status("deleted")
+                        .deletedAt(now)
+                        .build();
             }
             case "staff" -> {
                 StaffUser st = staffUserRepository
@@ -475,7 +512,11 @@ public class AdminUserService {
                 authTokenRepository.revokeAllActiveByStaffId(userId, now);
                 auditLog(actor, "soft_delete_user", "staff_users", userId, null);
                 yield SoftDeleteUserResponse.builder()
-                        .userId(userId).userType("staff").status("deleted").deletedAt(now).build();
+                        .userId(userId)
+                        .userType("staff")
+                        .status("deleted")
+                        .deletedAt(now)
+                        .build();
             }
             case "admin" -> throw new BusinessRuleException(
                     "Không thể xóa tài khoản Admin đang hoạt động qua giao diện này");
@@ -492,17 +533,21 @@ public class AdminUserService {
                 .findById(staffId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhân viên"));
 
-        StaffUser.StaffRole newRole = StaffUser.StaffRole.valueOf(request.getStaffRole().toUpperCase());
+        StaffUser.StaffRole newRole =
+                StaffUser.StaffRole.valueOf(request.getStaffRole().toUpperCase());
         String oldRoleValue = staff.getStaffRole().getValue();
 
         staff.setStaffRole(newRole);
         staffUserRepository.save(staff);
 
-        auditLog(actor, "change_staff_role", "staff_users", staffId,
-                oldRoleValue + " → " + newRole.getValue());
+        auditLog(actor, "change_staff_role", "staff_users", staffId, oldRoleValue + " → " + newRole.getValue());
 
-        log.info("[AdminUserService] Admin {} changed staffId={} role {} → {}",
-                adminEmail, staffId, oldRoleValue, newRole.getValue());
+        log.info(
+                "[AdminUserService] Admin {} changed staffId={} role {} → {}",
+                adminEmail,
+                staffId,
+                oldRoleValue,
+                newRole.getValue());
 
         return ChangeStaffRoleResponse.builder()
                 .staffId(staffId)
@@ -578,8 +623,7 @@ public class AdminUserService {
     /** BR-37-01: Admin cannot modify their own account. */
     private void checkSelfModification(Long actorAdminId, String type, Long targetId) {
         if ("admin".equalsIgnoreCase(type) && actorAdminId.equals(targetId)) {
-            throw new ForbiddenException(
-                    "Không thể thực hiện thao tác này lên tài khoản của chính mình");
+            throw new ForbiddenException("Không thể thực hiện thao tác này lên tài khoản của chính mình");
         }
     }
 
@@ -608,7 +652,10 @@ public class AdminUserService {
                 .fullName(s.getFullName())
                 .email(s.getEmail())
                 .status(s.getStatus().getValue())
-                .currentJlptLevel(s.getCurrentJlptLevel() != null ? s.getCurrentJlptLevel().name() : null)
+                .currentJlptLevel(
+                        s.getCurrentJlptLevel() != null
+                                ? s.getCurrentJlptLevel().name()
+                                : null)
                 .currentStreak(s.getCurrentStreak())
                 .createdAt(s.getCreatedAt())
                 .build();
@@ -646,8 +693,12 @@ public class AdminUserService {
                 .avatarUrl(s.getAvatarUrl())
                 .status(s.getStatus().getValue())
                 .suspendReason(s.getSuspendReason())
-                .currentJlptLevel(s.getCurrentJlptLevel() != null ? s.getCurrentJlptLevel().name() : null)
-                .targetJlptLevel(s.getTargetJlptLevel() != null ? s.getTargetJlptLevel().name() : null)
+                .currentJlptLevel(
+                        s.getCurrentJlptLevel() != null
+                                ? s.getCurrentJlptLevel().name()
+                                : null)
+                .targetJlptLevel(
+                        s.getTargetJlptLevel() != null ? s.getTargetJlptLevel().name() : null)
                 .currentStreak(s.getCurrentStreak())
                 .longestStreak(s.getLongestStreak())
                 .lastLoginAt(s.getLastLoginAt())
@@ -681,50 +732,85 @@ public class AdminUserService {
 
     private AdminUserResponse toLegacyResponse(StudentUser s) {
         return AdminUserResponse.builder()
-                .id(s.getId()).userType("STUDENT").role("STUDENT")
-                .fullName(s.getFullName()).email(s.getEmail())
-                .jlptLevel(s.getCurrentJlptLevel() != null ? s.getCurrentJlptLevel().name() : null)
-                .status(s.getStatus() == StudentUser.StudentStatus.SUSPENDED ? "BANNED" : s.getStatus().name())
-                .streak(s.getCurrentStreak()).createdAt(s.getCreatedAt()).build();
+                .id(s.getId())
+                .userType("STUDENT")
+                .role("STUDENT")
+                .fullName(s.getFullName())
+                .email(s.getEmail())
+                .jlptLevel(
+                        s.getCurrentJlptLevel() != null
+                                ? s.getCurrentJlptLevel().name()
+                                : null)
+                .status(
+                        s.getStatus() == StudentUser.StudentStatus.SUSPENDED
+                                ? "BANNED"
+                                : s.getStatus().name())
+                .streak(s.getCurrentStreak())
+                .createdAt(s.getCreatedAt())
+                .build();
     }
 
     private AdminUserResponse toLegacyResponse(StaffUser s) {
         return AdminUserResponse.builder()
-                .id(s.getId()).userType("STAFF").role("STAFF")
-                .fullName(s.getFullName()).email(s.getEmail())
-                .status(s.getStatus() == StaffUser.StaffStatus.SUSPENDED ? "BANNED" : s.getStatus().name())
-                .createdAt(s.getCreatedAt()).build();
+                .id(s.getId())
+                .userType("STAFF")
+                .role("STAFF")
+                .fullName(s.getFullName())
+                .email(s.getEmail())
+                .status(
+                        s.getStatus() == StaffUser.StaffStatus.SUSPENDED
+                                ? "BANNED"
+                                : s.getStatus().name())
+                .createdAt(s.getCreatedAt())
+                .build();
     }
 
     private AdminUserResponse toLegacyResponse(AdminUser a) {
         return AdminUserResponse.builder()
-                .id(a.getId()).userType("ADMIN").role("ADMIN")
-                .fullName(a.getFullName()).email(a.getEmail())
-                .status(a.getStatus() == AdminUser.AdminStatus.SUSPENDED ? "BANNED" : a.getStatus().name())
-                .createdAt(a.getCreatedAt()).build();
+                .id(a.getId())
+                .userType("ADMIN")
+                .role("ADMIN")
+                .fullName(a.getFullName())
+                .email(a.getEmail())
+                .status(
+                        a.getStatus() == AdminUser.AdminStatus.SUSPENDED
+                                ? "BANNED"
+                                : a.getStatus().name())
+                .createdAt(a.getCreatedAt())
+                .build();
     }
 
     private AdminUserResponse getUser(String userType, Long id) {
         return switch (userType) {
-            case "STUDENT" -> studentUserRepository.findById(id).map(this::toLegacyResponse)
+            case "STUDENT" -> studentUserRepository
+                    .findById(id)
+                    .map(this::toLegacyResponse)
                     .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy user"));
-            case "STAFF" -> staffUserRepository.findById(id).map(this::toLegacyResponse)
+            case "STAFF" -> staffUserRepository
+                    .findById(id)
+                    .map(this::toLegacyResponse)
                     .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy user"));
-            case "ADMIN" -> adminUserRepository.findById(id).map(this::toLegacyResponse)
+            case "ADMIN" -> adminUserRepository
+                    .findById(id)
+                    .map(this::toLegacyResponse)
                     .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy user"));
             default -> throw new BadRequestException("userType không hợp lệ");
         };
     }
 
     private AdminUserResponse promoteStudentToStaff(Long studentId) {
-        StudentUser student = studentUserRepository.findById(studentId)
+        StudentUser student = studentUserRepository
+                .findById(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy học viên id=" + studentId));
         if (staffUserRepository.existsByEmail(student.getEmail()))
             throw new DuplicateResourceException("Email đã tồn tại trong bảng nhân viên");
         StaffUser saved = staffUserRepository.save(StaffUser.builder()
-                .email(student.getEmail()).fullName(student.getFullName())
+                .email(student.getEmail())
+                .fullName(student.getFullName())
                 .passwordHash(student.getPasswordHash())
-                .staffRole(StaffUser.StaffRole.STAFF).status(StaffUser.StaffStatus.ACTIVE).build());
+                .staffRole(StaffUser.StaffRole.STAFF)
+                .status(StaffUser.StaffStatus.ACTIVE)
+                .build());
         student.setStatus(StudentUser.StudentStatus.DELETED);
         studentUserRepository.save(student);
         log.info("[AdminUserService] Promoted studentId={} → STAFF staffId={}", studentId, saved.getId());
@@ -732,13 +818,17 @@ public class AdminUserService {
     }
 
     private AdminUserResponse demoteStaffToStudent(Long staffId) {
-        StaffUser staff = staffUserRepository.findById(staffId)
+        StaffUser staff = staffUserRepository
+                .findById(staffId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhân viên id=" + staffId));
         if (studentUserRepository.existsByEmail(staff.getEmail()))
             throw new DuplicateResourceException("Email đã tồn tại trong bảng học viên");
         StudentUser saved = studentUserRepository.save(StudentUser.builder()
-                .email(staff.getEmail()).fullName(staff.getFullName())
-                .passwordHash(staff.getPasswordHash()).status(StudentUser.StudentStatus.ACTIVE).build());
+                .email(staff.getEmail())
+                .fullName(staff.getFullName())
+                .passwordHash(staff.getPasswordHash())
+                .status(StudentUser.StudentStatus.ACTIVE)
+                .build());
         staff.setStatus(StaffUser.StaffStatus.DELETED);
         staffUserRepository.save(staff);
         log.info("[AdminUserService] Demoted staffId={} → STUDENT studentId={}", staffId, saved.getId());

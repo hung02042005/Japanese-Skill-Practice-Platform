@@ -1,6 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.assessment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.student.StudentUser;
 import jakarta.persistence.*;
@@ -57,9 +58,11 @@ public class Question {
     @Column(name = "option_d", columnDefinition = "NVARCHAR(MAX)")
     private String optionD;
 
+    @JsonIgnore
     @Column(name = "correct_option", columnDefinition = "CHAR(1)")
     private String correctOption;
 
+    @JsonIgnore
     @Column(name = "correct_answer_text", columnDefinition = "NVARCHAR(MAX)")
     private String correctAnswerText;
 

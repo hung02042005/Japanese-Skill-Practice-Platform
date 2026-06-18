@@ -27,16 +27,16 @@ public class StaffAuthController {
     @PostMapping("/setup-password")
     public ResponseEntity<ApiResponse<Void>> setupPassword(@Valid @RequestBody StaffSetupPasswordRequest request) {
         adminUserService.setupStaffPassword(request);
-        return ResponseEntity.ok(ApiResponse.success(
-                "Tài khoản đã được kích hoạt thành công. Vui lòng đăng nhập.", null));
+        return ResponseEntity.ok(
+                ApiResponse.success("Tài khoản đã được kích hoạt thành công. Vui lòng đăng nhập.", null));
     }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<Void>> forgotPassword(
             @Valid @RequestBody StaffForgotPasswordRequest request, HttpServletRequest httpRequest) {
         staffPasswordResetService.requestReset(request, httpRequest.getRemoteAddr());
-        return ResponseEntity.ok(ApiResponse.success(
-                "Yêu cầu đã gửi đến quản trị viên. Vui lòng chờ email xác nhận.", null));
+        return ResponseEntity.ok(
+                ApiResponse.success("Yêu cầu đã gửi đến quản trị viên. Vui lòng chờ email xác nhận.", null));
     }
 
     @PostMapping("/login")
@@ -54,8 +54,7 @@ public class StaffAuthController {
             @RequestHeader(value = "Authorization", required = false) String authorization,
             @Valid @RequestBody ChangeTempPasswordRequest request) {
         staffPasswordResetService.changeTempPassword(extractBearerToken(authorization), request);
-        return ResponseEntity.ok(
-                ApiResponse.success("Đặt mật khẩu mới thành công. Vui lòng đăng nhập lại.", null));
+        return ResponseEntity.ok(ApiResponse.success("Đặt mật khẩu mới thành công. Vui lòng đăng nhập lại.", null));
     }
 
     private String extractBearerToken(String authorization) {

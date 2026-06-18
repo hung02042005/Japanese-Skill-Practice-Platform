@@ -1,9 +1,8 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.auth.dto.response;
 
-import com.jlpt.feature.student.dto.response.StudentResponse;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.jlpt.feature.student.dto.response.StudentResponse;
 import lombok.Builder;
 import lombok.Data;
 

@@ -40,7 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     response.setContentType("application/json");
                     response.getWriter()
-                            .write("{\"status\":403,\"message\":\"Token nay chi dung de doi mat khau tam thoi\",\"data\":null}");
+                            .write(
+                                    "{\"status\":403,\"message\":\"Token nay chi dung de doi mat khau tam thoi\",\"data\":null}");
                     return;
                 }
 

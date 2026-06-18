@@ -5,6 +5,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jlpt.feature.admin.AdminAuditLogRepository;
+import com.jlpt.feature.assessment.AttemptAnswerRepository;
+import com.jlpt.feature.assessment.TestAttemptRepository;
 import com.jlpt.feature.auth.dto.request.LoginRequest;
 import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.StudentUserRepository;
@@ -31,10 +34,22 @@ class AuthControllerIntegrationTest {
     private StudentUserRepository studentUserRepository;
 
     @Autowired
+    private AdminAuditLogRepository adminAuditLogRepository;
+
+    @Autowired
+    private AttemptAnswerRepository attemptAnswerRepository;
+
+    @Autowired
+    private TestAttemptRepository testAttemptRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
+        attemptAnswerRepository.deleteAll();
+        testAttemptRepository.deleteAll();
+        adminAuditLogRepository.deleteAll();
         studentUserRepository.deleteAll();
         StudentUser user = new StudentUser();
         user.setEmail("integration@example.com");
