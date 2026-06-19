@@ -77,6 +77,10 @@ public class Assessment {
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
+    private Boolean isDeleted = Boolean.FALSE;
+
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();

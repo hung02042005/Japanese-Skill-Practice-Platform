@@ -2,6 +2,7 @@
 package com.jlpt.feature.assessment.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,5 +15,5 @@ public class AttemptResponse {
     private LocalDateTime startedAt;
     private Integer durationMin;
     private String status;
-    private Object sections; // Could be a map or list of sections
+    private List<SectionResponse> sections;
 }

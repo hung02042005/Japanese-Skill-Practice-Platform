@@ -32,5 +32,25 @@ public interface AssessmentRepository extends JpaRepository<Assessment, Long> {
 
     Optional<Assessment> findByIdAndStatus(Long id, Kanji.ContentStatus status);
 
+    Optional<Assessment> findByIdAndAssessmentTypeAndStatus(
+            Long id, Assessment.AssessmentType assessmentType, Kanji.ContentStatus status);
+
     boolean existsByTitle(String title);
+
+    Optional<Assessment> findByIdAndIsDeletedFalse(Long id);
+
+    @Query(
+            """
+            SELECT a FROM Assessment a
+            WHERE a.assessmentType = :assessmentType
+              AND a.isDeleted = false
+              AND (:status IS NULL OR a.status = :status)
+              AND (:jlptLevel IS NULL OR a.jlptLevel = :jlptLevel)
+            ORDER BY a.createdAt DESC
+            """)
+    Page<Assessment> findAllByAssessmentTypeForStaff(
+            @Param("assessmentType") Assessment.AssessmentType assessmentType,
+            @Param("status") Kanji.ContentStatus status,
+            @Param("jlptLevel") StudentUser.JlptLevel jlptLevel,
+            Pageable pageable);
 }

@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Mapping/grading helpers dùng chung giữa {@link AssessmentService} (quiz) và {@link MockExamService} (exam). */
+/** Mapping/grading helpers dùng chung giữa {@link QuizService} (quiz) và {@link MockExamService} (exam). */
 final class QuestionAssignmentSupport {
 
     private QuestionAssignmentSupport() {}
