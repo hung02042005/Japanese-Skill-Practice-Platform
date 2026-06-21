@@ -32,36 +32,20 @@ public interface VocabularyRepository extends JpaRepository<Vocabulary, Long> {
     @Query(
             """
             SELECT v FROM Vocabulary v
-            LEFT JOIN v.topicRef t
             WHERE v.status = :status
               AND (:jlptLevel IS NULL OR v.jlptLevel = :jlptLevel)
-              AND (:topic IS NULL
-                OR v.topic = :topic
-                OR t.slug = :topic
-                OR t.titleVi = :topic)
+              AND (:topicId IS NULL OR v.topicRef.id = :topicId)
               AND (:q IS NULL OR v.word LIKE CONCAT('%', :q, '%')
                 OR v.furigana LIKE CONCAT('%', :q, '%')
                 OR v.meaning LIKE CONCAT('%', :q, '%'))
-            ORDER BY v.jlptLevel ASC, v.topic ASC, v.word ASC
+            ORDER BY v.jlptLevel ASC, v.word ASC
             """)
     Page<Vocabulary> findPublished(
             @Param("status") Kanji.ContentStatus status,
             @Param("jlptLevel") StudentUser.JlptLevel jlptLevel,
-            @Param("topic") String topic,
+            @Param("topicId") Long topicId,
             @Param("q") String q,
             Pageable pageable);
-
-    @Query(
-            """
-            SELECT DISTINCT v.topic FROM Vocabulary v
-            WHERE v.status = :status
-              AND v.jlptLevel = :jlptLevel
-              AND v.topic IS NOT NULL
-              AND v.topic <> ''
-            ORDER BY v.topic ASC
-            """)
-    List<String> findDistinctTopics(
-            @Param("status") Kanji.ContentStatus status, @Param("jlptLevel") StudentUser.JlptLevel jlptLevel);
 
     @Query(
             """
@@ -80,22 +64,16 @@ public interface VocabularyRepository extends JpaRepository<Vocabulary, Long> {
             """)
     long countPublishedByTopic(@Param("status") Kanji.ContentStatus status, @Param("topicId") Long topicId);
 
-    // Toàn bộ từ vựng published của một (cấp độ, chủ đề) — phiên học theo giáo trình (§3.7, FR-FC-62).
+    // Toàn bộ từ vựng published của một chủ đề (theo topic_id) — phiên học theo giáo trình (§3.7, FR-FC-62).
     @Query(
             """
             SELECT v FROM Vocabulary v
-            LEFT JOIN v.topicRef t
             WHERE v.status = :status
-              AND v.jlptLevel = :jlptLevel
-              AND (v.topic = :topic
-                OR t.slug = :topic
-                OR t.titleVi = :topic)
+              AND v.topicRef.id = :topicId
             ORDER BY v.word ASC
             """)
-    List<Vocabulary> findPublishedByLevelAndTopic(
-            @Param("status") Kanji.ContentStatus status,
-            @Param("jlptLevel") StudentUser.JlptLevel jlptLevel,
-            @Param("topic") String topic);
+    List<Vocabulary> findPublishedByTopicId(
+            @Param("status") Kanji.ContentStatus status, @Param("topicId") Long topicId);
 
     // Pool ứng viên cho đáp án nhiễu (distractor) theo cấp độ — batch một lần, tránh N+1 (FR-FC-54).
     @Query(

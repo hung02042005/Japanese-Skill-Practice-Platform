@@ -1,8 +1,9 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.learning;
 
+import com.jlpt.feature.learning.dto.VocabTopicResponse;
 import com.jlpt.feature.student.StudentUser;
-import com.jlpt.shared.exception.BadRequestException;
+import com.jlpt.shared.common.JlptLevels;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,9 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Truy vấn nội dung từ vựng cho Student (read-only) — phục vụ màn "Chủ đề khoá học".
  *
- * <p>Topic trả về là {@code title_vi} của {@link VocabularyTopic} (cùng giá trị với
- * {@code vocabulary.topic}), sắp theo {@code display_order}. Chuỗi này khớp với bộ lọc
- * danh sách từ vựng và tham số {@code topic} của phiên flashcard nên FE dùng trực tiếp.
+ * <p>Trả {@link VocabTopicResponse} (topicId, slug, titleJa, titleVi) sắp theo {@code display_order}.
+ * FE dùng {@code topicId} làm khoá mở phiên flashcard và lọc danh sách từ.
  */
 @Service
 @RequiredArgsConstructor
@@ -22,21 +22,10 @@ public class StudentVocabularyService {
 
     private final VocabularyTopicRepository topicRepository;
 
-    public List<String> getTopics(String level) {
-        StudentUser.JlptLevel jlptLevel = parseLevel(level);
+    public List<VocabTopicResponse> getTopics(String level) {
+        StudentUser.JlptLevel jlptLevel = JlptLevels.parseRequired(level);
         return topicRepository.findPublishedByLevel(jlptLevel, Kanji.ContentStatus.PUBLISHED).stream()
-                .map(VocabularyTopic::getTitleVi)
+                .map(VocabTopicResponse::from)
                 .toList();
-    }
-
-    private StudentUser.JlptLevel parseLevel(String level) {
-        if (level == null || level.isBlank()) {
-            throw new BadRequestException("Cấp độ JLPT không được để trống");
-        }
-        try {
-            return StudentUser.JlptLevel.valueOf(level.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Cấp độ JLPT không hợp lệ: " + level);
-        }
     }
 }

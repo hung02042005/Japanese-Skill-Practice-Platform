@@ -2,6 +2,7 @@
 package com.jlpt.feature.flashcard.service;
 
 import com.jlpt.feature.flashcard.Flashcard;
+import com.jlpt.feature.flashcard.FlashcardConstants;
 import com.jlpt.feature.flashcard.FlashcardDeck;
 import com.jlpt.feature.flashcard.dto.AddFlashcardRequest;
 import com.jlpt.feature.flashcard.dto.DeckSummaryResponse;
@@ -21,6 +22,8 @@ import com.jlpt.feature.learning.Kanji;
 import com.jlpt.feature.learning.KanjiRepository;
 import com.jlpt.feature.learning.Vocabulary;
 import com.jlpt.feature.learning.VocabularyRepository;
+import com.jlpt.feature.learning.VocabularyTopic;
+import com.jlpt.feature.learning.VocabularyTopicRepository;
 import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.StudentUserRepository;
 import com.jlpt.shared.exception.BadRequestException;
@@ -38,8 +41,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -83,6 +87,7 @@ public class FlashcardSrsService {
     private final FlashcardRepository flashcardRepository;
     private final FlashcardDeckRepository flashcardDeckRepository;
     private final VocabularyRepository vocabularyRepository;
+    private final VocabularyTopicRepository vocabularyTopicRepository;
     private final KanjiRepository kanjiRepository;
     private final GrammarPointRepository grammarPointRepository;
     private final StudentUserRepository studentUserRepository;
@@ -96,7 +101,6 @@ public class FlashcardSrsService {
         return flashcardDeckRepository.findDeckSummaries(studentId, today).stream()
                 .map(r -> new DeckSummaryResponse(
                         ((Number) r[0]).longValue(),
-                        (String) r[1],
                         (String) r[1],
                         r[7] != null ? ((Number) r[7]).intValue() : 0,
                         r[8] != null ? ((Number) r[8]).intValue() : 0,
@@ -116,7 +120,7 @@ public class FlashcardSrsService {
         // Deck first-class (V9): deck rỗng là bản ghi thật, KHÔNG cần thẻ giữ chỗ (FR-FC-07).
         FlashcardDeck deck = getOrCreateDeck(student, deckName);
         return new DeckSummaryResponse(
-                deck.getId(), deckName, deckName, 0, 0, deck.getJlptLevel(), deck.getTopic(), false, false);
+                deck.getId(), deckName, 0, 0, deck.getJlptLevel(), deck.getTopic(), false, false);
     }
 
     public DeckSummaryResponse updateDeck(Long studentId, Long deckId, DeckUpdateRequest request) {
@@ -140,7 +144,6 @@ public class FlashcardSrsService {
         flashcardDeckRepository.save(deck);
         return new DeckSummaryResponse(
                 deck.getId(),
-                deck.getName(),
                 deck.getName(),
                 0,
                 0,
@@ -168,10 +171,13 @@ public class FlashcardSrsService {
         LocalDate today = LocalDate.now();
         String needle = q == null ? null : q.trim().toLowerCase();
 
-        // Tìm kiếm server-side (SPEC-notebook): resolve live cả deck rồi lọc theo mặt trước —
-        // không bị giới hạn bởi paging DB nên không bỏ sót thẻ ngoài trang đầu.
-        if (needle != null && !needle.isEmpty() && deckId != null) {
-            List<Flashcard> all = flashcardRepository.findByStudentAndDeck(studentId, deckId);
+        // Tìm kiếm server-side (SPEC-notebook): resolve live rồi lọc theo mặt trước — không bị giới
+        // hạn bởi paging DB nên không bỏ sót thẻ ngoài trang đầu. Khi không có deckId thì tìm trên
+        // toàn bộ thẻ của student (trước đây bỏ qua `q` âm thầm — anti-pattern silent ignore).
+        if (needle != null && !needle.isEmpty()) {
+            List<Flashcard> all = deckId != null
+                    ? flashcardRepository.findByStudentAndDeck(studentId, deckId)
+                    : flashcardRepository.findByStudent(studentId);
             ContentMaps maps = loadContentMaps(all);
             List<FlashcardResponse> matched = all.stream()
                     .filter(c -> !dueOnly || isDue(c, today))
@@ -275,7 +281,7 @@ public class FlashcardSrsService {
                 if (request.frontText() == null || request.backText() == null) {
                     throw new BadRequestException("frontText và backText là bắt buộc cho thẻ tùy chỉnh");
                 }
-                deckName = request.deckName() != null ? request.deckName() : "Mặc định";
+                deckName = requestedDeckName != null ? requestedDeckName : FlashcardConstants.DEFAULT_DECK_NAME;
                 builder.frontText(request.frontText()).backText(request.backText());
             }
             default -> throw new BadRequestException("contentType không hợp lệ");
@@ -317,6 +323,10 @@ public class FlashcardSrsService {
             rating = Flashcard.LastRating.valueOf(request.rating().toUpperCase());
         }
 
+        // Đóng dấu phiên (V17) để cuối phiên gom đúng từ sai của CHÍNH phiên này (thay cửa sổ 2h).
+        if (request.sessionId() != null && !request.sessionId().isBlank()) {
+            card.setLastSessionId(request.sessionId());
+        }
         applySm2(card, rating);
         flashcardRepository.save(card);
         // NFR-FC-05: log mọi lượt đánh giá phiên ôn.
@@ -329,10 +339,10 @@ public class FlashcardSrsService {
 
         boolean suggest = false;
         List<ReviewResultResponse.WrongWord> wrongWords = List.of();
-        if (request.isLastCardInSession() && card.getDeck() != null) {
-            LocalDateTime sessionStart = LocalDateTime.now().minusHours(2);
-            List<Flashcard> wrong = flashcardRepository.findWrongVocabCardsInSession(
-                    studentId, card.getDeck().getId(), sessionStart);
+        if (request.isLastCardInSession() && card.getLastSessionId() != null) {
+            // Gom theo session_id (V17): chính xác các từ sai của phiên này, không phụ thuộc thời gian.
+            List<Flashcard> wrong =
+                    flashcardRepository.findWrongVocabCardsInSession(studentId, card.getLastSessionId());
             if (!wrong.isEmpty()) {
                 suggest = true;
                 ContentMaps maps = loadContentMaps(wrong);
@@ -410,18 +420,22 @@ public class FlashcardSrsService {
     // ── Phiên học trộn NEW + REVIEW (§3.6/§3.7) ───────────────────────────────
 
     @Transactional
-    public SessionResponse getSession(Long studentId, Long deckId, String level, String topic, Integer newLimit) {
+    public SessionResponse getSession(Long studentId, Long deckId, Long topicId, Integer newLimit) {
         int limit = (newLimit != null && newLimit > 0) ? newLimit : NEW_CARDS_PER_DAY;
         LocalDate today = LocalDate.now();
         StudentUser student = studentUserRepository.getReferenceById(studentId);
 
         FlashcardDeck sessionDeck;
         List<Vocabulary> distractorPool;
+        String sessionLevel;
+        String sessionTopicTitle;
         // Tập từ ứng viên cho phiên + thẻ tương ứng (thẻ có thể chưa tồn tại với từ chưa học).
         List<WordCard> words = new ArrayList<>();
 
         if (deckId != null) {
             sessionDeck = ownDeckOrThrow(studentId, deckId);
+            sessionLevel = sessionDeck.getJlptLevel();
+            sessionTopicTitle = sessionDeck.getName();
             List<Flashcard> cards = flashcardRepository.findByStudentAndDeck(studentId, deckId).stream()
                     .filter(c -> c.getContentType() == Flashcard.ContentType.VOCABULARY && c.getContentId() != null)
                     .toList();
@@ -436,12 +450,19 @@ public class FlashcardSrsService {
             }
             distractorPool = new ArrayList<>(vocabMap.values());
         } else {
-            StudentUser.JlptLevel jl = parseLevel(level);
-            if (jl == null || topic == null || topic.isBlank()) {
-                throw new BadRequestException("Cần deckId, hoặc level + topic hợp lệ");
+            // FR-redo-topic: phiên theo giáo trình dùng topicId (khoá chủ đề duy nhất).
+            if (topicId == null) {
+                throw new BadRequestException("Cần deckId hoặc topicId hợp lệ");
             }
-            sessionDeck = getOrCreateDeck(student, jl.name() + "_" + topic);
-            List<Vocabulary> vocabList = vocabularyRepository.findPublishedByLevelAndTopic(PUBLISHED, jl, topic);
+            VocabularyTopic topic = vocabularyTopicRepository
+                    .findById(topicId)
+                    .filter(t -> t.getStatus() == PUBLISHED)
+                    .orElseThrow(() -> new ResourceNotFoundException("Chủ đề", topicId));
+            StudentUser.JlptLevel jl = topic.getJlptLevel();
+            sessionLevel = jl != null ? jl.name() : null;
+            sessionTopicTitle = topic.getTitleVi();
+            sessionDeck = getOrCreateDeck(student, jl.name() + "_" + topic.getSlug());
+            List<Vocabulary> vocabList = vocabularyRepository.findPublishedByTopicId(PUBLISHED, topicId);
             Map<Long, Flashcard> byContent = flashcardRepository
                     .findByStudentAndContentIds(
                             studentId,
@@ -491,22 +512,25 @@ public class FlashcardSrsService {
 
         // Trộn "học rồi kiểm tra" (FR-FC-70..72): mỗi lô học LEARN_BATCH (2–3) thẻ MỚI (lật), rồi cho
         // ngay thẻ ÔN TẬP (trắc nghiệm) của đúng các từ vừa học để củng cố, trước khi sang lô kế.
-        Random rnd = new Random();
+        ThreadLocalRandom rnd = ThreadLocalRandom.current();
         List<SessionResponse.QueueItem> items = new ArrayList<>(chosen.size() * 2);
         for (int i = 0; i < chosen.size(); ) {
             int batch =
                     Math.min(LEARN_BATCH_MIN + rnd.nextInt(LEARN_BATCH_MAX - LEARN_BATCH_MIN + 1), chosen.size() - i);
             for (int j = i; j < i + batch; j++) { // phần học: lật thẻ
                 WordCard w = chosen.get(j);
-                items.add(toQueueItem(new SessionEntry(w.card, w.vocab, true), distractorPool, rnd));
+                items.add(toQueueItem(new SessionEntry(w.card, w.vocab, true), distractorPool));
             }
             for (int j = i; j < i + batch; j++) { // phần kiểm tra: trắc nghiệm đúng các từ đó
                 WordCard w = chosen.get(j);
-                items.add(toQueueItem(new SessionEntry(w.card, w.vocab, false), distractorPool, rnd));
+                items.add(toQueueItem(new SessionEntry(w.card, w.vocab, false), distractorPool));
             }
             i += batch;
         }
-        return new SessionResponse(sessionDeck.getId(), chosen.size(), chosen.size(), items);
+        // session_id (V17): mỗi lượt review trong phiên đóng dấu UUID này lên thẻ → cuối phiên gom
+        // đúng các từ sai của CHÍNH phiên này, thay cửa sổ thời gian 2h dễ gom nhầm.
+        String sessionId = UUID.randomUUID().toString();
+        return new SessionResponse(sessionId, sessionDeck.getId(), sessionLevel, sessionTopicTitle, chosen.size(), items);
     }
 
     /** Thứ tự ưu tiên chọn từ vào phiên: chưa học (0) → đến hạn ôn (1) → đã học chưa đến hạn (2). */
@@ -595,7 +619,7 @@ public class FlashcardSrsService {
                 .findByStudentIdAndIsReviewDeckTrue(student.getId())
                 .orElseGet(() -> flashcardDeckRepository.save(FlashcardDeck.builder()
                         .student(student)
-                        .name("Từ cần ôn lại")
+                        .name(FlashcardConstants.REVIEW_DECK_NAME)
                         .isReviewDeck(true)
                         .build()));
     }
@@ -607,7 +631,7 @@ public class FlashcardSrsService {
         return deckName.trim();
     }
 
-    private SessionResponse.QueueItem toQueueItem(SessionEntry e, List<Vocabulary> pool, Random rnd) {
+    private SessionResponse.QueueItem toQueueItem(SessionEntry e, List<Vocabulary> pool) {
         SessionResponse.Front front = new SessionResponse.Front(e.vocab.getWord(), e.vocab.getFurigana());
         SessionResponse.Learn learn = e.isNew
                 ? new SessionResponse.Learn(
@@ -617,12 +641,12 @@ public class FlashcardSrsService {
                         e.vocab.getAudioUrl())
                 : null;
         // Thẻ MỚI chỉ lật học nghĩa (không quiz); thẻ ÔN TẬP mới có trắc nghiệm.
-        SessionResponse.Quiz quiz = e.isNew ? null : buildQuiz(e.vocab, pool, rnd);
+        SessionResponse.Quiz quiz = e.isNew ? null : buildQuiz(e.vocab, pool);
         return new SessionResponse.QueueItem(e.card.getId(), e.isNew ? "NEW" : "REVIEW", front, learn, quiz);
     }
 
     /** 2 đáp án: nghĩa đúng + 1 distractor từ vocab khác (FR-FC-54), trộn ngẫu nhiên. */
-    private SessionResponse.Quiz buildQuiz(Vocabulary target, List<Vocabulary> pool, Random rnd) {
+    private SessionResponse.Quiz buildQuiz(Vocabulary target, List<Vocabulary> pool) {
         List<SessionResponse.Option> options = new ArrayList<>();
         options.add(new SessionResponse.Option(target.getId(), target.getMeaning()));
         List<Vocabulary> candidates = pool.stream()
@@ -631,7 +655,7 @@ public class FlashcardSrsService {
                         && !v.getMeaning().equals(target.getMeaning()))
                 .toList();
         if (!candidates.isEmpty()) {
-            Vocabulary d = candidates.get(rnd.nextInt(candidates.size()));
+            Vocabulary d = candidates.get(ThreadLocalRandom.current().nextInt(candidates.size()));
             options.add(new SessionResponse.Option(d.getId(), d.getMeaning()));
         }
         Collections.shuffle(options);
@@ -639,64 +663,97 @@ public class FlashcardSrsService {
     }
 
     private FlashcardRevealResponse buildRevealResponse(Flashcard card) {
-        ContentMaps maps = loadContentMaps(List.of(card));
-        String front = null;
-        String back = null;
-        String furigana = null;
-        String exampleJp = null;
-        String exampleVi = null;
-        String audioUrl = null;
-        String strokeUrl = null;
-        switch (card.getContentType()) {
+        ResolvedCard r = resolve(card, loadContentMaps(List.of(card)));
+        return new FlashcardRevealResponse(
+                card.getId(),
+                r.front(),
+                r.back(),
+                r.furigana(),
+                r.exampleJp(),
+                r.exampleVi(),
+                r.audioUrl(),
+                r.strokeUrl());
+    }
+
+    /**
+     * Resolve live toàn bộ mặt thẻ (front/back/furigana/ví dụ/audio/stroke/level) dùng chung cho cả
+     * reveal lẫn danh sách (Notebook §7) — một chỗ switch theo contentType, tránh lệch logic khi sửa.
+     * Nguồn tích hợp đã xóa/không PUBLISHED → {@link ResolvedCard#EMPTY} (FR-FC-34). CUSTOM dùng text thẻ.
+     */
+    private ResolvedCard resolve(Flashcard card, ContentMaps maps) {
+        Long cid = card.getContentId();
+        return switch (card.getContentType()) {
             case VOCABULARY -> {
-                Vocabulary v = maps.vocab().get(card.getContentId());
-                if (v != null && v.getStatus() == PUBLISHED) {
-                    front = v.getWord();
-                    back = v.getMeaning();
-                    furigana = v.getFurigana();
-                    exampleJp = v.getExampleSentenceJp();
-                    exampleVi = v.getExampleSentenceVi();
-                    audioUrl = v.getAudioUrl();
-                }
+                Vocabulary v = maps.vocab().get(cid);
+                yield (v != null && v.getStatus() == PUBLISHED)
+                        ? new ResolvedCard(
+                                v.getWord(),
+                                v.getMeaning(),
+                                v.getFurigana(),
+                                v.getExampleSentenceJp(),
+                                v.getExampleSentenceVi(),
+                                v.getAudioUrl(),
+                                null,
+                                levelName(v.getJlptLevel()))
+                        : ResolvedCard.EMPTY;
             }
             case KANJI -> {
-                Kanji k = maps.kanji().get(card.getContentId());
-                if (k != null && k.getStatus() == PUBLISHED) {
-                    front = k.getCharacterValue();
-                    back = k.getMeaning();
-                    strokeUrl = k.getStrokeOrderUrl();
-                }
+                Kanji k = maps.kanji().get(cid);
+                yield (k != null && k.getStatus() == PUBLISHED)
+                        ? new ResolvedCard(
+                                k.getCharacterValue(),
+                                k.getMeaning(),
+                                null,
+                                null,
+                                null,
+                                null,
+                                k.getStrokeOrderUrl(),
+                                levelName(k.getJlptLevel()))
+                        : ResolvedCard.EMPTY;
             }
             case GRAMMAR -> {
-                GrammarPoint g = maps.grammar().get(card.getContentId());
-                if (g != null && g.getStatus() == PUBLISHED) {
-                    front = g.getStructure();
-                    back = g.getMeaning();
-                    exampleJp = g.getExampleSentenceJp();
-                    exampleVi = g.getExampleSentenceVi();
-                }
+                GrammarPoint g = maps.grammar().get(cid);
+                yield (g != null && g.getStatus() == PUBLISHED)
+                        ? new ResolvedCard(
+                                g.getStructure(),
+                                g.getMeaning(),
+                                null,
+                                g.getExampleSentenceJp(),
+                                g.getExampleSentenceVi(),
+                                null,
+                                null,
+                                levelName(g.getJlptLevel()))
+                        : ResolvedCard.EMPTY;
             }
-            case CUSTOM -> {
-                front = card.getFrontText();
-                back = card.getBackText();
-            }
-        }
-        return new FlashcardRevealResponse(
-                card.getId(), front, back, furigana, exampleJp, exampleVi, audioUrl, strokeUrl);
+            case CUSTOM -> new ResolvedCard(
+                    card.getFrontText(), card.getBackText(), null, null, null, null, null, null);
+        };
+    }
+
+    private record ResolvedCard(
+            String front,
+            String back,
+            String furigana,
+            String exampleJp,
+            String exampleVi,
+            String audioUrl,
+            String strokeUrl,
+            String jlptLevel) {
+        static final ResolvedCard EMPTY = new ResolvedCard(null, null, null, null, null, null, null, null);
     }
 
     private FlashcardResponse toFlashcardResponse(Flashcard card, ContentMaps maps) {
         boolean isDue = isDue(card, LocalDate.now());
-        BackMeta meta = resolveBackMeta(card, maps);
+        ResolvedCard r = resolve(card, maps);
         return new FlashcardResponse(
                 card.getId(),
                 card.getDeck() != null ? card.getDeck().getId() : null,
                 card.getContentType().name(),
                 card.getContentId(),
-                resolveFront(card, maps),
-                meta.meaning(),
-                meta.furigana(),
-                meta.jlptLevel(),
+                r.front(),
+                r.back(),
+                r.furigana(),
+                r.jlptLevel(),
                 Boolean.TRUE.equals(card.getIsSystem()),
                 card.getNextReviewDate(),
                 card.getIntervalDays(),
@@ -706,76 +763,14 @@ public class FlashcardSrsService {
                 isDue);
     }
 
-    /**
-     * Mặt sau resolve live (nghĩa + furigana + cấp độ) cho danh sách/sổ tay (Notebook §7).
-     * Null khi nguồn tích hợp đã xóa/không published (FR-FC-34). CUSTOM dùng backText, không có level.
-     */
-    private BackMeta resolveBackMeta(Flashcard card, ContentMaps maps) {
-        Long cid = card.getContentId();
-        return switch (card.getContentType()) {
-            case VOCABULARY -> {
-                Vocabulary v = maps.vocab().get(cid);
-                yield (v != null && v.getStatus() == PUBLISHED)
-                        ? new BackMeta(v.getMeaning(), v.getFurigana(), levelName(v.getJlptLevel()))
-                        : BackMeta.EMPTY;
-            }
-            case KANJI -> {
-                Kanji k = maps.kanji().get(cid);
-                yield (k != null && k.getStatus() == PUBLISHED)
-                        ? new BackMeta(k.getMeaning(), null, levelName(k.getJlptLevel()))
-                        : BackMeta.EMPTY;
-            }
-            case GRAMMAR -> {
-                GrammarPoint g = maps.grammar().get(cid);
-                yield (g != null && g.getStatus() == PUBLISHED)
-                        ? new BackMeta(g.getMeaning(), null, levelName(g.getJlptLevel()))
-                        : BackMeta.EMPTY;
-            }
-            case CUSTOM -> new BackMeta(card.getBackText(), null, null);
-        };
-    }
-
     private static String levelName(StudentUser.JlptLevel level) {
         return level != null ? level.name() : null;
     }
 
-    private record BackMeta(String meaning, String furigana, String jlptLevel) {
-        static final BackMeta EMPTY = new BackMeta(null, null, null);
-    }
-
-    /** Mặt trước resolve live; null nếu nguồn tích hợp đã xóa/không published (FR-FC-34). */
-    private String resolveFront(Flashcard card, ContentMaps maps) {
-        Long cid = card.getContentId();
-        return switch (card.getContentType()) {
-            case VOCABULARY -> {
-                Vocabulary v = maps.vocab().get(cid);
-                yield (v != null && v.getStatus() == PUBLISHED) ? v.getWord() : null;
-            }
-            case KANJI -> {
-                Kanji k = maps.kanji().get(cid);
-                yield (k != null && k.getStatus() == PUBLISHED) ? k.getCharacterValue() : null;
-            }
-            case GRAMMAR -> {
-                GrammarPoint g = maps.grammar().get(cid);
-                yield (g != null && g.getStatus() == PUBLISHED) ? g.getStructure() : null;
-            }
-            case CUSTOM -> card.getFrontText();
-        };
-    }
-
     private String buildVocabDeckName(Vocabulary vocab) {
         String level = vocab.getJlptLevel() != null ? vocab.getJlptLevel().name() : "UNKNOWN";
-        String topic = (vocab.getTopic() != null && !vocab.getTopic().isBlank()) ? vocab.getTopic() : "その他";
+        String topic = vocab.getTopicRef() != null ? vocab.getTopicRef().getSlug() : "other";
         return level + "_" + topic;
-    }
-
-    private StudentUser.JlptLevel parseLevel(String levelStr) {
-        if (levelStr == null || levelStr.isBlank()) return null;
-        try {
-            return StudentUser.JlptLevel.valueOf(levelStr.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
     }
 
     private static boolean isNew(Flashcard c) {

@@ -44,13 +44,13 @@ import ManagerReviewQueue    from './pages/manager/ManagerReviewQueue';
 import ManagerStaffPerformance from './pages/manager/ManagerStaffPerformance';
 import ManagerContentPipeline  from './pages/manager/ManagerContentPipeline';
 import ManagerReports          from './pages/manager/ManagerReports';
+import ManagerNotifications    from './pages/manager/ManagerNotifications';
 import StaffDashboard    from './pages/staff/StaffDashboard';
 import StaffContent      from './pages/staff/StaffContent';
 import StaffQuestions    from './pages/staff/StaffQuestions';
 import StaffAssessments  from './pages/staff/StaffAssessments';
 import StaffTickets      from './pages/staff/StaffTickets';
 import StaffGrading      from './pages/staff/StaffGrading';
-import StaffNotifications from './pages/staff/StaffNotifications';
 import StaffStudents    from './pages/staff/StaffStudents';
 import KanaList         from './pages/kana/KanaList';
 import VocabularyRoute       from './pages/vocabulary/VocabularyRoute';
@@ -110,7 +110,6 @@ function App() {
         <Route path="/staff/assessments"     element={<StaffRoute><StaffAssessments /></StaffRoute>} />
         <Route path="/staff/tickets"         element={<StaffRoute><StaffTickets /></StaffRoute>} />
         <Route path="/staff/grading"         element={<StaffRoute><StaffGrading /></StaffRoute>} />
-        <Route path="/staff/notifications"   element={<StaffRoute><StaffNotifications /></StaffRoute>} />
         <Route path="/staff/students"        element={<StaffRoute><StaffStudents /></StaffRoute>} />
 
         {/* Protected — Manager (staff_manager role) */}
@@ -119,6 +118,7 @@ function App() {
         <Route path="/manager/staff-performance"  element={<ManagerRoute><ManagerStaffPerformance /></ManagerRoute>} />
         <Route path="/manager/content-pipeline"   element={<ManagerRoute><ManagerContentPipeline /></ManagerRoute>} />
         <Route path="/manager/reports"            element={<ManagerRoute><ManagerReports /></ManagerRoute>} />
+        <Route path="/manager/notifications"      element={<ManagerRoute><ManagerNotifications /></ManagerRoute>} />
 
         {/* Protected — Admin */}
         <Route path="/admin"           element={<AdminRoute><AdminDashboard /></AdminRoute>} />

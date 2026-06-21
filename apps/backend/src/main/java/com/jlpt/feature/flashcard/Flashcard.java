@@ -52,6 +52,11 @@ public class Flashcard {
     @Column(name = "added_reason", length = 20)
     private String addedReason;
 
+    // UUID phiên ôn gần nhất đóng dấu lên thẻ (V17) — gom "từ sai trong phiên" theo session_id
+    // thay cửa sổ thời gian 2h. NULL với thẻ chưa từng ôn trong phiên có session.
+    @Column(name = "last_session_id", length = 36)
+    private String lastSessionId;
+
     @Column(name = "front_text", columnDefinition = "NVARCHAR(MAX)")
     private String frontText;
 

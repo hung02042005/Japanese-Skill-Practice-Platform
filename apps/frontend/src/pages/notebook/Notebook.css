@@ -175,6 +175,9 @@
   .ntb-controls { flex-direction: column; align-items: stretch; }
   .ntb-search { width: 100%; }
 }
+/* 1A: mốc kích hoạt cuộn vô hạn (vô hình) */
+.ntb-sentinel { height: 1px; }
+
 @media (prefers-reduced-motion: reduce) {
   .ntb-page * { animation: none !important; transition-duration: 0ms !important; }
 }

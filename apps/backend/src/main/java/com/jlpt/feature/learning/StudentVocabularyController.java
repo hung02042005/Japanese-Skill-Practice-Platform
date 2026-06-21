@@ -1,6 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.learning;
 
+import com.jlpt.feature.learning.dto.VocabTopicResponse;
 import com.jlpt.shared.common.ApiResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class StudentVocabularyController {
     private final StudentVocabularyService vocabularyService;
 
     @GetMapping("/topics")
-    public ResponseEntity<ApiResponse<List<String>>> getTopics(@RequestParam String level) {
+    public ResponseEntity<ApiResponse<List<VocabTopicResponse>>> getTopics(@RequestParam String level) {
         return ResponseEntity.ok(ApiResponse.success(vocabularyService.getTopics(level)));
     }
 }

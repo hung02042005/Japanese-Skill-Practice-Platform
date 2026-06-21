@@ -2,6 +2,7 @@
 package com.jlpt.feature.dictionary.service;
 
 import com.jlpt.feature.dictionary.dto.SearchResponse;
+import com.jlpt.feature.dictionary.dto.TypeSearchResponse;
 import com.jlpt.feature.learning.GrammarPoint;
 import com.jlpt.feature.learning.GrammarPointRepository;
 import com.jlpt.feature.learning.Kanji;
@@ -11,6 +12,7 @@ import com.jlpt.feature.learning.LessonRepository;
 import com.jlpt.feature.learning.Vocabulary;
 import com.jlpt.feature.learning.VocabularyRepository;
 import com.jlpt.feature.student.StudentUser;
+import com.jlpt.shared.common.JlptLevels;
 import com.jlpt.shared.exception.BadRequestException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,7 @@ public class DictionaryService {
             throw new BadRequestException("Từ khóa tìm kiếm không được để trống");
         }
 
-        StudentUser.JlptLevel level = parseJlptLevel(jlptLevel);
+        StudentUser.JlptLevel level = JlptLevels.parseOptional(jlptLevel);
         PageRequest limit = PageRequest.of(0, MAX_RESULTS_PER_TYPE);
 
         List<SearchResponse.VocabItem> vocabulary = List.of();
@@ -71,13 +73,48 @@ public class DictionaryService {
         return new SearchResponse(keyword, vocabulary, kanji, grammar, lessons);
     }
 
-    private StudentUser.JlptLevel parseJlptLevel(String jlptLevel) {
-        if (jlptLevel == null || jlptLevel.isBlank()) return null;
-        try {
-            return StudentUser.JlptLevel.valueOf(jlptLevel.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Cấp độ JLPT không hợp lệ: " + jlptLevel);
+    /**
+     * Tra cứu phân trang cho MỘT loại — phục vụ "Xem thêm" (1B). page-index khớp với overview
+     * (size mặc định = {@link #MAX_RESULTS_PER_TYPE}): page 0 = đúng 10 mục overview, page 1+ nối tiếp.
+     * {@code hasMore} suy từ việc trang trả về đủ {@code size} phần tử (tránh COUNT thừa).
+     */
+    public TypeSearchResponse searchByType(String keyword, String jlptLevel, String type, int page, int size) {
+        if (keyword == null || keyword.isBlank()) {
+            throw new BadRequestException("Từ khóa tìm kiếm không được để trống");
         }
+        if (type == null || type.isBlank()) {
+            throw new BadRequestException("Tham số 'type' là bắt buộc");
+        }
+        StudentUser.JlptLevel level = JlptLevels.parseOptional(jlptLevel);
+        int capped = Math.min(Math.max(size, 1), 50);
+        PageRequest pageable = PageRequest.of(Math.max(page, 0), capped);
+        Kanji.ContentStatus pub = Kanji.ContentStatus.PUBLISHED;
+
+        List<Object> items =
+                switch (type.toUpperCase()) {
+                    case "VOCABULARY" -> vocabularyRepository.searchPublished(keyword, level, pub, pageable).stream()
+                            .map(this::toVocabItem)
+                            .map(Object.class::cast)
+                            .toList();
+                    case "KANJI" -> kanjiRepository.searchPublished(keyword, level, pub, pageable).stream()
+                            .map(this::toKanjiItem)
+                            .map(Object.class::cast)
+                            .toList();
+                    case "GRAMMAR" -> grammarPointRepository.searchPublished(keyword, level, pub, pageable).stream()
+                            .map(this::toGrammarItem)
+                            .map(Object.class::cast)
+                            .toList();
+                    case "LESSON" -> lessonRepository
+                            .searchPublished(keyword, level, Lesson.LessonStatus.PUBLISHED, pageable)
+                            .stream()
+                            .map(this::toLessonItem)
+                            .map(Object.class::cast)
+                            .toList();
+                    default -> throw new BadRequestException("Loại không hợp lệ: " + type);
+                };
+
+        boolean hasMore = items.size() == capped;
+        return new TypeSearchResponse(type.toUpperCase(), items, hasMore);
     }
 
     private SearchResponse.VocabItem toVocabItem(Vocabulary v) {
@@ -88,7 +125,7 @@ public class DictionaryService {
                 v.getMeaning(),
                 v.getWordType(),
                 v.getJlptLevel() != null ? v.getJlptLevel().name() : null,
-                v.getTopic(),
+                v.getTopicRef() != null ? v.getTopicRef().getTitleVi() : null,
                 v.getExampleSentenceJp(),
                 v.getExampleSentenceVi(),
                 v.getAudioUrl());

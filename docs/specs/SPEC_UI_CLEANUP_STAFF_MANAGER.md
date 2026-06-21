@@ -1,7 +1,7 @@
 # SPEC — UI Cleanup: Bỏ UI Thừa Staff & Manager
 > **Feature ID:** `feat-ui-cleanup-staff-manager`
-> **Version:** 1.0 | **Status:** Draft
-> **Author:** Team | **Last Updated:** 2026-06-15
+> **Version:** 1.1 | **Status:** ✅ Implemented
+> **Author:** Team | **Last Updated:** 2026-06-21
 
 ---
 

@@ -22,5 +22,5 @@ public record ReviewResultResponse(
         boolean suggestAddToReviewDeck,
         List<WrongWord> wrongWords) {
 
-    public record WrongWord(String contentType, Long contentId, String frontText) {}
+    public record WrongWord(String contentType, Long contentId, String word) {}
 }

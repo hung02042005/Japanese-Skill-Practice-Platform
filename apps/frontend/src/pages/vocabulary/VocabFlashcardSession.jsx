@@ -25,9 +25,9 @@ export default function VocabFlashcardSession() {
   const { user } = useAppSelector((s) => s.auth);
   const { toasts, addToast, removeToast } = useToast();
 
-  const deckId = searchParams.get('deckId');
-  const level  = searchParams.get('level') ?? user?.jlptLevel ?? 'N5';
-  const topic  = searchParams.get('topic') ?? '';
+  const deckId  = searchParams.get('deckId');
+  const topicId = searchParams.get('topicId');
+  const level   = searchParams.get('level') ?? user?.jlptLevel ?? 'N5';
 
   const [status,  setStatus]  = useState('loading'); // loading | ready | error
   const [error,   setError]   = useState('');
@@ -52,7 +52,7 @@ export default function VocabFlashcardSession() {
     setError('');
     try {
       const data = await getVocabFlashcardSession(
-        deckId ? { deckId: Number(deckId) } : { level, topic },
+        deckId ? { deckId: Number(deckId) } : { topicId: Number(topicId) },
       );
       setSession(data);
       setIdx(0);
@@ -73,7 +73,7 @@ export default function VocabFlashcardSession() {
       );
       setStatus('error');
     }
-  }, [deckId, level, topic, navigate]);
+  }, [deckId, topicId, navigate]);
 
   useEffect(() => { loadSession(); }, [loadSession]);
 
@@ -98,6 +98,7 @@ export default function VocabFlashcardSession() {
       const res = await submitFlashcardReview(card.flashcardId, {
         selectedOptionId: optionId,
         isLastCardInSession: isLast,
+        sessionId: session?.sessionId,   // V17: đóng dấu phiên để gom đúng từ sai cuối phiên
       });
       setResult(res);
       if (res.correct) setCorrectCnt((c) => c + 1);
@@ -156,8 +157,8 @@ export default function VocabFlashcardSession() {
               <span>📓 Từ cần ôn lại</span>
             ) : (
               <>
-                <JlptBadge level={level} />
-                <span lang="ja">{topic || 'Từ vựng'}</span>
+                <JlptBadge level={session?.level ?? level} />
+                <span lang="ja">{session?.topicTitle || 'Từ vựng'}</span>
               </>
             )}
           </h1>
@@ -215,7 +216,7 @@ export default function VocabFlashcardSession() {
                 </p>
                 <div className="vfs-wrong-list" lang="ja">
                   {finalResult.wrongWords.map((w) => (
-                    <span key={w.contentId} className="vfs-wrong-chip">{w.frontText}</span>
+                    <span key={w.contentId} className="vfs-wrong-chip">{w.word}</span>
                   ))}
                 </div>
                 <button

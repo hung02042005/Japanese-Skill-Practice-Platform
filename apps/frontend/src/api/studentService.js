@@ -86,15 +86,16 @@ export async function getGrammarList({ level, page = 0, size = 20 } = {}) {
   return res.data.data;
 }
 
-export async function getVocabularyList({ level, topic, search, page = 0, size = 20 } = {}) {
+export async function getVocabularyList({ level, topicId, search, page = 0, size = 20 } = {}) {
   const params = { page, size };
-  if (level)  params.level  = level;
-  if (topic)  params.topic  = topic;
-  if (search) params.search = search;
+  if (level)   params.level   = level;
+  if (topicId) params.topicId = topicId;
+  if (search)  params.search  = search;
   const res = await api.get('/vocabulary', { params });
   return res.data.data;
 }
 
+// Trả danh sách chủ đề dạng object { topicId, jlptLevel, slug, titleJa, titleVi, ... }.
 export async function getVocabTopics(level) {
   const res = await api.get('/vocabulary/topics', { params: { level } });
   return res.data.data;
@@ -138,18 +139,22 @@ export async function addToFlashcard(contentType, contentId, deckName = 'Mặc �
   return res.data.data;
 }
 
-export async function getVocabFlashcardSession({ level, topic, newLimit, deckId } = {}) {
-  const params = deckId != null ? { deckId } : { level, topic, newLimit };
+export async function getVocabFlashcardSession({ topicId, newLimit, deckId } = {}) {
+  const params = deckId != null ? { deckId } : { topicId, newLimit };
   // POST (không phải GET) vì build phiên có side-effect: backend tạo deck/thẻ MỚI cho từ được chọn.
   const res = await api.post('/flashcards/session', null, { params });
   return res.data.data;
 }
 
-export async function submitFlashcardReview(flashcardId, { rating, selectedOptionId, isLastCardInSession }) {
+export async function submitFlashcardReview(
+  flashcardId,
+  { rating, selectedOptionId, isLastCardInSession, sessionId },
+) {
   const res = await api.post(`/flashcards/${flashcardId}/review`, {
     rating,
     selectedOptionId,
     isLastCardInSession,
+    sessionId,
   });
   return res.data.data;
 }
@@ -178,6 +183,15 @@ export async function saveToNotebook(contentType, contentId) {
 // Tìm kiếm gom nhóm (UC-16) — backend lọc status='published' (FR-DICT-05)
 export async function searchDictionary(q, jlptLevel, type) {
   const res = await api.get('/dictionary/search', { params: { q, jlptLevel, type } });
+  return res.data.data;
+}
+
+// Phân trang theo 1 loại — nút "Xem thêm" (1B). page 0 = 10 mục overview, page 1+ nối tiếp.
+// Trả { type, items, hasMore }.
+export async function searchDictionaryByType(q, type, { jlptLevel, page = 1, size = 10 } = {}) {
+  const res = await api.get(`/dictionary/search/${type}`, {
+    params: { q, jlptLevel, page, size },
+  });
   return res.data.data;
 }
 

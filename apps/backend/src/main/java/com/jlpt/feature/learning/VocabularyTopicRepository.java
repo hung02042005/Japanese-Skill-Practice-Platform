@@ -21,4 +21,15 @@ public interface VocabularyTopicRepository extends JpaRepository<VocabularyTopic
             """)
     List<VocabularyTopic> findPublishedByLevel(
             @Param("jlptLevel") StudentUser.JlptLevel jlptLevel, @Param("status") Kanji.ContentStatus status);
+
+    // Toàn bộ chủ đề của một cấp độ (mọi trạng thái) — màn quản lý topic của Staff.
+    List<VocabularyTopic> findByJlptLevelOrderByDisplayOrderAscIdAsc(StudentUser.JlptLevel jlptLevel);
+
+    boolean existsByJlptLevelAndSlug(StudentUser.JlptLevel jlptLevel, String slug);
+
+    boolean existsByJlptLevelAndTitleVi(StudentUser.JlptLevel jlptLevel, String titleVi);
+
+    // Thứ tự hiển thị kế tiếp khi staff tạo chủ đề mới (append cuối danh sách của cấp độ).
+    @Query("SELECT COALESCE(MAX(t.displayOrder), 0) FROM VocabularyTopic t WHERE t.jlptLevel = :jlptLevel")
+    int findMaxDisplayOrder(@Param("jlptLevel") StudentUser.JlptLevel jlptLevel);
 }

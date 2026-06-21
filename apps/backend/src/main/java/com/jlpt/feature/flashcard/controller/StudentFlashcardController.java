@@ -82,18 +82,17 @@ public class StudentFlashcardController {
     }
 
     /**
-     * Phiên học trộn (§3.6/§3.7): ?deckId=… HOẶC ?level=N5&topic=…&newLimit=10.
+     * Phiên học trộn (§3.6/§3.7): ?deckId=… HOẶC ?topicId=…&newLimit=10.
      * POST (không phải GET) vì build phiên có side-effect: tạo deck/thẻ MỚI cho các từ được chọn.
      */
     @PostMapping("/flashcards/session")
     public ResponseEntity<ApiResponse<SessionResponse>> getSession(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam(required = false) Long deckId,
-            @RequestParam(required = false) String level,
-            @RequestParam(required = false) String topic,
+            @RequestParam(required = false) Long topicId,
             @RequestParam(required = false) Integer newLimit) {
         SessionResponse session =
-                flashcardSrsService.getSession(userDetails.getStudentUser().getId(), deckId, level, topic, newLimit);
+                flashcardSrsService.getSession(userDetails.getStudentUser().getId(), deckId, topicId, newLimit);
         return ResponseEntity.ok(ApiResponse.success(session));
     }
 

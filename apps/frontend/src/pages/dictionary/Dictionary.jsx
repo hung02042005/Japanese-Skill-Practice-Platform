@@ -6,7 +6,7 @@ import { ToastContainer, useToast } from '../../components/common/Toast';
 import DictResultGroup from '../../components/student/DictResultGroup';
 import DictDetailPanel from '../../components/student/DictDetailPanel';
 import DictGrammarPanel from '../../components/student/DictGrammarPanel';
-import { searchDictionary, saveToNotebook } from '../../api/studentService';
+import { searchDictionary, searchDictionaryByType, saveToNotebook } from '../../api/studentService';
 import './Dictionary.css';
 
 /**
@@ -37,6 +37,7 @@ export default function Dictionary() {
   const [savedIds,  setSavedIds]  = useState(new Set());
   const [savingId,  setSavingId]  = useState(null);
   const [error,     setError]     = useState('');
+  const [more,      setMore]      = useState({});     // 1B: { VOCABULARY: { items, page, hasMore, loading } }
   const timerRef = useRef(null);
 
   const onQueryChange = useCallback((val) => {
@@ -48,11 +49,12 @@ export default function Dictionary() {
   useEffect(() => () => clearTimeout(timerRef.current), []);
 
   useEffect(() => {
-    if (!debounced) { setResults(null); setError(''); return; }
+    if (!debounced) { setResults(null); setError(''); setMore({}); return; }
     let active = true;
     (async () => {
       setLoading(true);
       setError('');
+      setMore({});   // 1B: mỗi lần tìm mới reset các trang "Xem thêm" đã nạp
       try {
         const data = await searchDictionary(debounced, undefined, activeType || undefined);
         if (active) setResults(data ?? {});
@@ -64,6 +66,41 @@ export default function Dictionary() {
     })();
     return () => { active = false; };
   }, [debounced, activeType]);
+
+  // 1B: nạp thêm 1 trang cho riêng một loại (VOCABULARY/KANJI/GRAMMAR/LESSON).
+  async function handleMore(typeUpper) {
+    const cur = more[typeUpper];
+    if (cur?.loading) return;
+    const nextPage = cur ? cur.page + 1 : 1;   // page 0 = 10 mục overview đã hiển thị
+    setMore((m) => ({ ...m, [typeUpper]: { ...(cur ?? { items: [], page: 0 }), loading: true } }));
+    try {
+      const data = await searchDictionaryByType(debounced, typeUpper, { page: nextPage, size: 10 });
+      setMore((m) => ({
+        ...m,
+        [typeUpper]: {
+          items: [...(cur?.items ?? []), ...(data.items ?? [])],
+          page: nextPage,
+          hasMore: data.hasMore,
+          loading: false,
+        },
+      }));
+    } catch {
+      setMore((m) => ({ ...m, [typeUpper]: { ...(cur ?? { items: [], page: 0 }), loading: false } }));
+      addToast('error', 'Không thể tải thêm. Thử lại.');
+    }
+  }
+
+  // Gộp item overview + các trang "Xem thêm" đã nạp; suy hasMore (10 mục đầy ⇒ có thể còn).
+  function groupProps(lowerType, baseItems) {
+    const upper = lowerType === 'lesson' ? 'LESSON' : lowerType.toUpperCase();
+    const extra = more[upper];
+    return {
+      items: [...(baseItems ?? []), ...(extra?.items ?? [])],
+      hasMore: extra ? extra.hasMore : (baseItems?.length ?? 0) >= 10,
+      loadingMore: !!extra?.loading,
+      onMore: () => handleMore(upper),
+    };
+  }
 
   async function handleSave(id) {
     const key = `vocabulary:${id}`;
@@ -192,22 +229,26 @@ export default function Dictionary() {
             {!isLoading && results && total > 0 && (
               <div className="dct-results">
                 <DictResultGroup
-                  title="Từ vựng" items={results.vocabulary} type="vocabulary"
+                  title="Từ vựng" type="vocabulary"
+                  {...groupProps('vocabulary', results.vocabulary)}
                   savedIds={savedIds} savingId={savingId}
                   onOpen={(id, raw) => setSelected({ kind: 'vocabulary', item: raw })}
                   onSave={(id) => handleSave(id)}
                   canSave
                 />
                 <DictResultGroup
-                  title="Kanji" items={results.kanji} type="kanji"
+                  title="Kanji" type="kanji"
+                  {...groupProps('kanji', results.kanji)}
                   onOpen={(id) => navigate(`/kanji/${id}`)}
                 />
                 <DictResultGroup
-                  title="Ngữ pháp" items={results.grammar} type="grammar"
+                  title="Ngữ pháp" type="grammar"
+                  {...groupProps('grammar', results.grammar)}
                   onOpen={(id, raw) => setSelected({ kind: 'grammar', item: raw })}
                 />
                 <DictResultGroup
-                  title="Bài học" items={results.lessons} type="lesson"
+                  title="Bài học" type="lesson"
+                  {...groupProps('lesson', results.lessons)}
                   onOpen={(id) => navigate(`/lessons/${id}`)}
                 />
               </div>

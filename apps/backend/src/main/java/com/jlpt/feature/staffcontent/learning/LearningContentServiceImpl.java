@@ -8,6 +8,8 @@ import com.jlpt.feature.learning.Lesson.LessonStatus;
 import com.jlpt.feature.learning.Lesson.LessonType;
 import com.jlpt.feature.learning.LessonRepository;
 import com.jlpt.feature.learning.Vocabulary;
+import com.jlpt.feature.learning.VocabularyTopic;
+import com.jlpt.feature.learning.VocabularyTopicRepository;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.feature.staffcontent.learning.dto.CreateKanjiRequest;
@@ -47,6 +49,7 @@ public class LearningContentServiceImpl implements LearningContentService {
 
     private final LessonRepository lessonRepository;
     private final StaffVocabularyRepository vocabularyRepository;
+    private final VocabularyTopicRepository vocabularyTopicRepository;
     private final StaffKanjiRepository kanjiRepository;
     private final StaffUserRepository staffUserRepository;
 
@@ -128,13 +131,15 @@ public class LearningContentServiceImpl implements LearningContentService {
         StaffUser staff = resolveStaff(staffEmail);
         JlptLevel level = parseLevel(request.getJlptLevel());
 
+        VocabularyTopic topic = resolveTopic(request.getTopicId(), level);
+
         Vocabulary vocabulary = Vocabulary.builder()
                 .word(request.getWord().trim())
                 .furigana(request.getFurigana().trim())
                 .meaning(request.getMeaning().trim())
                 .wordType(trimToNull(request.getWordType()))
                 .jlptLevel(level)
-                .topic(trimToNull(request.getTopic()))
+                .topicRef(topic) // FR-redo-topic: khoá chủ đề duy nhất
                 .audioUrl(trimToNull(request.getAudioUrl()))
                 .exampleSentenceJp(trimToNull(request.getExampleSentenceJp()))
                 .exampleSentenceVi(trimToNull(request.getExampleSentenceVi()))
@@ -173,7 +178,9 @@ public class LearningContentServiceImpl implements LearningContentService {
             vocabulary.setMeaning(request.getMeaning().trim());
         if (request.getWordType() != null) vocabulary.setWordType(trimToNull(request.getWordType()));
         if (request.getJlptLevel() != null) vocabulary.setJlptLevel(parseLevel(request.getJlptLevel()));
-        if (request.getTopic() != null) vocabulary.setTopic(trimToNull(request.getTopic()));
+        if (request.getTopicId() != null) {
+            vocabulary.setTopicRef(resolveTopic(request.getTopicId(), vocabulary.getJlptLevel()));
+        }
         if (request.getAudioUrl() != null) vocabulary.setAudioUrl(trimToNull(request.getAudioUrl()));
         if (request.getExampleSentenceJp() != null)
             vocabulary.setExampleSentenceJp(trimToNull(request.getExampleSentenceJp()));
@@ -348,7 +355,7 @@ public class LearningContentServiceImpl implements LearningContentService {
     @Override
     @Transactional(readOnly = true)
     public Page<VocabularyDetailResponse> listVocabulary(
-            String q, String jlptLevelStr, String topic, String statusStr, int page, int size, String staffEmail) {
+            String q, String jlptLevelStr, Long topicId, String statusStr, int page, int size, String staffEmail) {
         StaffUser staff = resolveStaff(staffEmail);
         int effectiveSize = Math.min(size, 100);
         Pageable pageable = PageRequest.of(page, effectiveSize, Sort.by(Sort.Direction.DESC, "updatedAt"));
@@ -371,7 +378,7 @@ public class LearningContentServiceImpl implements LearningContentService {
         Page<Vocabulary> resultPage = vocabularyRepository.findByCreatedByWithFilters(
                 staff.getId(),
                 jlptLevel,
-                StringUtils.hasText(topic) ? topic : null,
+                topicId,
                 status,
                 ContentStatus.DELETED,
                 StringUtils.hasText(q) ? q : null,
@@ -475,6 +482,22 @@ public class LearningContentServiceImpl implements LearningContentService {
         }
     }
 
+    /**
+     * Resolve chủ đề từ catalog, đảm bảo cùng cấp độ với từ vựng (FR-redo-topic).
+     * Topic không tồn tại → 404; lệch cấp độ → 400.
+     */
+    private VocabularyTopic resolveTopic(Long topicId, JlptLevel vocabLevel) {
+        if (topicId == null) {
+            throw LearningContentException.missingField("topicId");
+        }
+        VocabularyTopic topic =
+                vocabularyTopicRepository.findById(topicId).orElseThrow(LearningContentException::contentNotFound);
+        if (vocabLevel != null && topic.getJlptLevel() != vocabLevel) {
+            throw LearningContentException.validationFailed("Chủ đề không thuộc cấp độ " + vocabLevel);
+        }
+        return topic;
+    }
+
     private LessonType parseLessonType(String value) {
         try {
             return LessonType.valueOf(value.toUpperCase());
@@ -534,7 +557,9 @@ public class LearningContentServiceImpl implements LearningContentService {
                 .meaning(entity.getMeaning())
                 .wordType(entity.getWordType())
                 .jlptLevel(entity.getJlptLevel() != null ? entity.getJlptLevel().name() : null)
-                .topic(entity.getTopic())
+                .topicId(entity.getTopicRef() != null ? entity.getTopicRef().getId() : null)
+                .topicTitle(entity.getTopicRef() != null ? entity.getTopicRef().getTitleVi() : null)
+                .topicSlug(entity.getTopicRef() != null ? entity.getTopicRef().getSlug() : null)
                 .audioUrl(entity.getAudioUrl())
                 .exampleSentenceJp(entity.getExampleSentenceJp())
                 .exampleSentenceVi(entity.getExampleSentenceVi())

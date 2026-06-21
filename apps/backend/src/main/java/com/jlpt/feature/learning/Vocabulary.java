@@ -37,11 +37,9 @@ public class Vocabulary {
     @Column(name = "jlpt_level", nullable = false, length = 5)
     private StudentUser.JlptLevel jlptLevel;
 
-    @Column(length = 100)
-    private String topic;
-
+    // Khoá chủ đề DUY NHẤT (FK → vocabulary_topics). Cột free-text 'topic' cũ đã bị bỏ (V16).
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "topic_id")
+    @JoinColumn(name = "topic_id", nullable = false)
     private VocabularyTopic topicRef;
 
     @Column(name = "audio_url", length = 500)

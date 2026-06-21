@@ -12,7 +12,10 @@ const FIELD = {
   lesson:     (i) => ({ id: i.id, main: i.title,     sub: '',         meaning: '',        level: i.jlptLevel }),
 };
 
-export default function DictResultGroup({ title, items = [], type, savedIds, savingId, onOpen, onSave, canSave }) {
+export default function DictResultGroup({
+  title, items = [], type, savedIds, savingId, onOpen, onSave, canSave,
+  hasMore = false, loadingMore = false, onMore,
+}) {
   if (!items || items.length === 0) return null;
   const map = FIELD[type];
 
@@ -55,6 +58,12 @@ export default function DictResultGroup({ title, items = [], type, savedIds, sav
           );
         })}
       </div>
+      {/* 1B: nút "Xem thêm" — nối thêm trang kế cho riêng nhóm này */}
+      {hasMore && onMore && (
+        <button className="dct-more-btn" onClick={onMore} disabled={loadingMore}>
+          {loadingMore ? 'Đang tải…' : 'Xem thêm'}
+        </button>
+      )}
     </section>
   );
 }

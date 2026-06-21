@@ -32,7 +32,7 @@ public interface StaffVocabularyRepository extends JpaRepository<Vocabulary, Lon
             SELECT v FROM Vocabulary v
             WHERE v.createdBy.id = :staffId
               AND (:jlptLevel IS NULL OR v.jlptLevel = :jlptLevel)
-              AND (:topic IS NULL OR v.topic = :topic)
+              AND (:topicId IS NULL OR v.topicRef.id = :topicId)
               AND ((:status IS NULL AND v.status <> :deletedStatus) OR v.status = :status)
               AND (:q IS NULL OR LOWER(v.word) LIKE LOWER(CONCAT('%', :q, '%'))
                    OR LOWER(v.meaning) LIKE LOWER(CONCAT('%', :q, '%')))
@@ -42,7 +42,7 @@ public interface StaffVocabularyRepository extends JpaRepository<Vocabulary, Lon
             SELECT COUNT(v) FROM Vocabulary v
             WHERE v.createdBy.id = :staffId
               AND (:jlptLevel IS NULL OR v.jlptLevel = :jlptLevel)
-              AND (:topic IS NULL OR v.topic = :topic)
+              AND (:topicId IS NULL OR v.topicRef.id = :topicId)
               AND ((:status IS NULL AND v.status <> :deletedStatus) OR v.status = :status)
               AND (:q IS NULL OR LOWER(v.word) LIKE LOWER(CONCAT('%', :q, '%'))
                    OR LOWER(v.meaning) LIKE LOWER(CONCAT('%', :q, '%')))
@@ -50,7 +50,7 @@ public interface StaffVocabularyRepository extends JpaRepository<Vocabulary, Lon
     Page<Vocabulary> findByCreatedByWithFilters(
             @Param("staffId") Long staffId,
             @Param("jlptLevel") JlptLevel jlptLevel,
-            @Param("topic") String topic,
+            @Param("topicId") Long topicId,
             @Param("status") Kanji.ContentStatus status,
             @Param("deletedStatus") Kanji.ContentStatus deletedStatus,
             @Param("q") String q,

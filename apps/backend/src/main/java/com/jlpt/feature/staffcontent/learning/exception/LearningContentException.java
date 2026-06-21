@@ -19,6 +19,10 @@ public class LearningContentException extends BusinessException {
         return new LearningContentException(400, "VALIDATION_FAILED", "Thiếu trường bắt buộc: " + field);
     }
 
+    public static LearningContentException validationFailed(String message) {
+        return new LearningContentException(400, "VALIDATION_FAILED", message);
+    }
+
     public static LearningContentException invalidJlptLevel() {
         return new LearningContentException(400, "INVALID_JLPT_LEVEL", "Cấp độ JLPT phải là N5 đến N1");
     }

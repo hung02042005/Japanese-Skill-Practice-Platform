@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { getStaffVocabularyTopics, createStaffVocabularyTopic } from '../../api/staffService';
 
 const TYPE_LABELS = {
   course: 'Khóa học',
@@ -53,6 +54,7 @@ function buildInitialForm(contentType, editItem) {
         furigana: editItem?.furigana || '',
         meaning: editItem?.meaning || '',
         wordType: editItem?.wordType || '名詞',
+        topicId: editItem?.topicId ? String(editItem.topicId) : '',
         exampleSentenceJp: editItem?.exampleSentenceJp || '',
       };
     case 'grammar':
@@ -84,9 +86,52 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
   const [form, setForm] = useState(() => buildInitialForm(contentType, editItem));
   const backdropRef = useRef(null);
 
+  // Catalog chủ đề từ vựng (theo cấp độ) + form tạo nhanh chủ đề mới.
+  const [topics, setTopics] = useState([]);
+  const [topicsLoading, setTopicsLoading] = useState(false);
+  const [topicError, setTopicError] = useState('');
+  const [showNewTopic, setShowNewTopic] = useState(false);
+  const [newTopic, setNewTopic] = useState({ titleVi: '', titleJa: '' });
+  const [creatingTopic, setCreatingTopic] = useState(false);
+
   useEffect(() => {
     setForm(buildInitialForm(contentType, editItem));
   }, [contentType, editItem, isOpen]);
+
+  // Tải danh sách chủ đề khi mở form Từ vựng / đổi cấp độ.
+  useEffect(() => {
+    if (!isOpen || contentType !== 'vocabulary' || !form.jlptLevel) return;
+    let cancelled = false;
+    setTopicsLoading(true);
+    setTopicError('');
+    setShowNewTopic(false);
+    getStaffVocabularyTopics(form.jlptLevel)
+      .then((list) => { if (!cancelled) setTopics(list || []); })
+      .catch(() => { if (!cancelled) setTopicError('Không tải được danh sách chủ đề.'); })
+      .finally(() => { if (!cancelled) setTopicsLoading(false); });
+    return () => { cancelled = true; };
+  }, [isOpen, contentType, form.jlptLevel]);
+
+  const handleCreateTopic = async () => {
+    const titleVi = newTopic.titleVi.trim();
+    const titleJa = newTopic.titleJa.trim();
+    if (!titleVi || !titleJa) { setTopicError('Cần nhập cả tên tiếng Việt và tiếng Nhật.'); return; }
+    setCreatingTopic(true);
+    setTopicError('');
+    try {
+      const res = await createStaffVocabularyTopic({ jlptLevel: form.jlptLevel, titleVi, titleJa });
+      const created = res?.data;
+      if (!created?.topicId) throw new Error(res?.message || 'Lỗi tạo chủ đề');
+      setTopics((prev) => [...prev, created]);
+      setForm((prev) => ({ ...prev, topicId: String(created.topicId) }));
+      setNewTopic({ titleVi: '', titleJa: '' });
+      setShowNewTopic(false);
+    } catch (err) {
+      setTopicError(err?.response?.data?.message || err?.message || 'Lỗi tạo chủ đề');
+    } finally {
+      setCreatingTopic(false);
+    }
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -120,16 +165,24 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
       payload.description = exp;
       payload.contentText = exp.trim() || form.title.trim() || 'Course Content';
     }
+    if (contentType === 'vocabulary') {
+      payload.topicId = form.topicId ? Number(form.topicId) : null;
+    }
     return payload;
   };
 
-  const handleSaveDraft = () => {
-    onSave(getSubmitPayload('draft'));
+  // Từ vựng bắt buộc có chủ đề (FR-redo-topic) — chặn submit nếu chưa chọn.
+  const submit = (status) => {
+    if (contentType === 'vocabulary' && !form.topicId) {
+      setTopicError('Vui lòng chọn (hoặc tạo) một chủ đề cho từ vựng.');
+      return;
+    }
+    onSave(getSubmitPayload(status));
   };
 
-  const handleSaveSubmit = () => {
-    onSave(getSubmitPayload('pending_review'));
-  };
+  const handleSaveDraft = () => submit('draft');
+
+  const handleSaveSubmit = () => submit('pending_review');
 
   const typeLabel = TYPE_LABELS[contentType] || 'Nội dung';
   const modalTitle = editItem ? `Chỉnh sửa ${typeLabel}` : `Tạo ${typeLabel} mới`;
@@ -274,6 +327,57 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
                   value={form.meaning}
                   onChange={(e) => set('meaning', e.target.value)}
                 />
+              </div>
+              <div className="sfc-field">
+                <label className="sfc-field-label sfc-field-label--req" htmlFor="sfc-field-topic">Chủ đề</label>
+                <select
+                  id="sfc-field-topic"
+                  className="sfc-input sfc-select"
+                  value={form.topicId}
+                  onChange={(e) => set('topicId', e.target.value)}
+                  disabled={topicsLoading}
+                >
+                  <option value="">{topicsLoading ? 'Đang tải chủ đề…' : '— Chọn chủ đề —'}</option>
+                  {topics.map((t) => (
+                    <option key={t.topicId} value={String(t.topicId)}>{t.titleVi}</option>
+                  ))}
+                </select>
+                {!showNewTopic ? (
+                  <button
+                    type="button"
+                    className="sfc-btn-ghost"
+                    style={{ marginTop: 6, alignSelf: 'flex-start' }}
+                    onClick={() => { setShowNewTopic(true); setTopicError(''); }}
+                  >
+                    ➕ Tạo chủ đề mới
+                  </button>
+                ) : (
+                  <div className="sfc-newtopic" style={{ marginTop: 8, display: 'grid', gap: 6 }}>
+                    <input
+                      className="sfc-input"
+                      type="text"
+                      placeholder="Tên chủ đề (tiếng Việt) — ví dụ: Gia đình"
+                      value={newTopic.titleVi}
+                      onChange={(e) => setNewTopic((p) => ({ ...p, titleVi: e.target.value }))}
+                    />
+                    <input
+                      className="sfc-input"
+                      type="text"
+                      placeholder="Tên chủ đề (tiếng Nhật) — ví dụ: 家族"
+                      value={newTopic.titleJa}
+                      onChange={(e) => setNewTopic((p) => ({ ...p, titleJa: e.target.value }))}
+                    />
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button type="button" className="sfc-btn-submit-modal" onClick={handleCreateTopic} disabled={creatingTopic}>
+                        {creatingTopic ? 'Đang tạo…' : 'Lưu chủ đề'}
+                      </button>
+                      <button type="button" className="sfc-btn-ghost" onClick={() => { setShowNewTopic(false); setTopicError(''); }}>
+                        Hủy
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {topicError && <span className="sfc-field-error" style={{ color: 'var(--color-danger, #c0392b)' }}>{topicError}</span>}
               </div>
               <div className="sfc-field">
                 <label className="sfc-field-label" htmlFor="sfc-field-pos">Từ loại</label>

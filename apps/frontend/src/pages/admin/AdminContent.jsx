@@ -109,14 +109,6 @@ export default function AdminContent() {
   const safePage   = Math.min(currentPage, totalPages);
   const pageItems  = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
-  function doApprove(item) {
-    setItems((prev) => prev.map((it) => it.id === item.id ? { ...it, status: 'published' } : it));
-    addToast('success', `Đã duyệt: "${getItemLabel(item)}"`);
-  }
-  function doReject(item) {
-    setItems((prev) => prev.map((it) => it.id === item.id ? { ...it, status: 'rejected' } : it));
-    addToast('info', `Đã từ chối: "${getItemLabel(item)}"`);
-  }
   function doArchive(item) {
     setItems((prev) => prev.map((it) => it.id === item.id ? { ...it, status: 'archived' } : it));
     addToast('info', 'Đã lưu trữ nội dung.');
@@ -130,10 +122,7 @@ export default function AdminContent() {
     return (
       <div className="adc-acts">
         {item.status === 'pending_review' && (
-          <>
-            <button type="button" className="adc-act adc-act--approve" onClick={() => doApprove(item)} title="Duyệt xuất bản">✓</button>
-            <button type="button" className="adc-act adc-act--reject"  onClick={() => doReject(item)}  title="Từ chối">✗</button>
-          </>
+          <span className="adc-act-note" title="Manager phụ trách duyệt nội dung này">Chờ Manager duyệt</span>
         )}
         {item.status === 'published' && (
           <button type="button" className="adc-act adc-act--archive" onClick={() => doArchive(item)} title="Lưu trữ">

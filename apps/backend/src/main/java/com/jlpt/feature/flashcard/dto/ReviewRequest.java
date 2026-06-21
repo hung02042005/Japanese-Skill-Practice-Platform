@@ -15,4 +15,6 @@ import jakarta.validation.constraints.Pattern;
 public record ReviewRequest(
         @Pattern(regexp = "(?i)easy|hard|wrong", message = "Rating phải là easy, hard hoặc wrong") String rating,
         Long selectedOptionId,
-        boolean isLastCardInSession) {}
+        boolean isLastCardInSession,
+        // UUID phiên (V17) do getSession trả về — đóng dấu lên thẻ để gom đúng từ sai cuối phiên.
+        String sessionId) {}

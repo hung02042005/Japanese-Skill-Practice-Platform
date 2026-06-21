@@ -73,6 +73,23 @@ const NAV_TABS = [
       </svg>
     ),
   },
+  {
+    id: 'manager-notifications',
+    label: 'Thông báo',
+    route: '/manager/notifications',
+    icon: (
+      // Chuông gió (風鈴) — thông báo rung nhẹ
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <line x1="12" y1="2" x2="12" y2="4"/>
+        <path d="M9 10 C9 6.5 10.5 4 12 4 C13.5 4 15 6.5 15 10 L16 14 L8 14 Z"/>
+        <path d="M8 14 Q12 16.5 16 14"/>
+        <line x1="12" y1="16.5" x2="12" y2="18.5"/>
+        <circle cx="12" cy="19.5" r="1" fill="currentColor" stroke="none"/>
+        <line x1="10.5" y1="20.5" x2="13.5" y2="20.5"/>
+        <line x1="12" y1="20.5" x2="12" y2="22"/>
+      </svg>
+    ),
+  },
 ];
 
 function ManagerTopNav({ activeTab }) {

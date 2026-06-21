@@ -18,7 +18,9 @@ public class VocabularyDetailResponse {
     private String meaning;
     private String wordType;
     private String jlptLevel;
-    private String topic;
+    private Long topicId;
+    private String topicTitle; // title_vi của chủ đề (hiển thị)
+    private String topicSlug;
     private String audioUrl;
     private String exampleSentenceJp;
     private String exampleSentenceVi;

@@ -22,7 +22,8 @@ public class UpdateVocabularyRequest {
     @Pattern(regexp = "N[1-5]", message = "JLPT level must be N1–N5")
     private String jlptLevel;
 
-    private String topic;
+    /** Chủ đề mới (topic_id thuộc catalog, đúng cấp độ). Null = giữ nguyên. */
+    private Long topicId;
 
     private String audioUrl;
 

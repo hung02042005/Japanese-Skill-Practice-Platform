@@ -1,7 +1,12 @@
 # SPEC — Dictionary & Bookmarks
+> ⚠️ **DEPRECATED (2026-06-21).** Mô tả bookmark qua `student_content_progress` trong file này **không còn
+> đúng với code**: cơ chế bookmark đã được thay bằng sổ "Từ cần ôn lại" (review deck). Tham chiếu spec
+> hiện hành: [`docs/specs/SPEC_BACKEND_FLASHCARD_NOTEBOOK_DICTIONARY.md`](../../../../docs/specs/SPEC_BACKEND_FLASHCARD_NOTEBOOK_DICTIONARY.md).
+> Giữ lại để tra lịch sử; KHÔNG dùng làm nguồn chuẩn.
+>
 > **Feature ID:** `feat-dictionary-bookmark`
 > **UC Coverage:** UC-16 (Dictionary & Search), UC-17 (Bookmark Learning)
-> **Version:** 1.0 | **Status:** Draft
+> **Version:** 1.0 | **Status:** Deprecated
 > **Author:** Team | **Last Updated:** 2026-05-28
 
 ---

@@ -117,13 +117,13 @@ public class StaffLearningContentController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> listVocabulary(
             @RequestParam(required = false) String q,
             @RequestParam(required = false) String jlptLevel,
-            @RequestParam(required = false) String topic,
+            @RequestParam(required = false) Long topicId,
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             Authentication authentication) {
         Page<VocabularyDetailResponse> resultPage = learningContentService.listVocabulary(
-                q, jlptLevel, topic, status, page, size, authentication.getName());
+                q, jlptLevel, topicId, status, page, size, authentication.getName());
         Map<String, Object> data = new HashMap<>();
         data.put("content", resultPage.getContent());
         data.put("totalElements", resultPage.getTotalElements());

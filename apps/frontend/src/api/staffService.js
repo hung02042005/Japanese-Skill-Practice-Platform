@@ -185,6 +185,18 @@ export async function updateStaffVocabulary(vocabularyId, data) {
   return res.data;
 }
 
+// --- Vocabulary topics (catalog) — staff chọn/tạo chủ đề khi soạn từ vựng -----
+
+export async function getStaffVocabularyTopics(level) {
+  const res = await api.get('/staff/vocabulary-topics', { params: { level } });
+  return res.data.data; // [{ topicId, jlptLevel, slug, titleJa, titleVi, displayOrder, status }]
+}
+
+export async function createStaffVocabularyTopic(data) {
+  const res = await api.post('/staff/vocabulary-topics', data);
+  return res.data; // ApiResponse { status, message, data: VocabTopicResponse }
+}
+
 export async function createStaffKanji(data) {
   const res = await api.post('/staff/kanji', data);
   return res.data;

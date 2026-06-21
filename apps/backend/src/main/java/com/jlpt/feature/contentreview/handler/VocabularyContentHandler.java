@@ -64,7 +64,8 @@ public class VocabularyContentHandler implements ReviewableContentHandler {
             HandlerSupport.put(detail, "furigana", v.getFurigana());
             HandlerSupport.put(detail, "meaning", v.getMeaning());
             HandlerSupport.put(detail, "wordType", v.getWordType());
-            HandlerSupport.put(detail, "topic", v.getTopic());
+            HandlerSupport.put(
+                    detail, "topic", v.getTopicRef() != null ? v.getTopicRef().getTitleVi() : null);
             HandlerSupport.put(detail, "exampleSentenceJp", v.getExampleSentenceJp());
             HandlerSupport.put(detail, "exampleSentenceVi", v.getExampleSentenceVi());
         }

@@ -5,7 +5,6 @@ import { JlptBadge } from '../../components/common/Badges';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
 import StudentDetailPanel from '../../components/staff/StudentDetailPanel';
-import SuspendConfirmModal from '../../components/staff/SuspendConfirmModal';
 import './StaffStudents.css';
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
@@ -90,14 +89,11 @@ export default function StaffStudents() {
   const [debounced,     setDebounced]   = useState('');
   const [levelFilter,   setLevel]       = useState('');
   const [statusFilter,  setStatus]      = useState('');
-  const [students,      setStudents]    = useState(MOCK_STUDENTS);
+  const [students]                      = useState(MOCK_STUDENTS);
   const [page,          setPage]        = useState(1);
   const [activeStudent, setActiveStudent] = useState(null);
   const [detail,        setDetail]        = useState(null);
   const [isLoadingDet,  setLoadingDet]    = useState(false);
-  const [confirmModal,  setConfirmModal]  = useState(null);
-  const [reason,        setReason]        = useState('');
-  const [isActioning,   setActioning]     = useState(false);
   const timerRef = useRef(null);
 
   // Debounce search
@@ -133,27 +129,6 @@ export default function StaffStudents() {
     }, 300);
   }, []);
 
-  const openConfirm = useCallback((student, action) => {
-    setReason('');
-    setConfirmModal({ student, action });
-  }, []);
-
-  const handleAction = useCallback(async () => {
-    if (!confirmModal || isActioning) return;
-    setActioning(true);
-    const { student, action } = confirmModal;
-    await new Promise((res) => setTimeout(res, 500));
-    const newStatus = action === 'suspend' ? 'suspended' : 'active';
-    setStudents((prev) =>
-      prev.map((s) => s.studentId === student.studentId ? { ...s, status: newStatus } : s)
-    );
-    if (activeStudent?.studentId === student.studentId) {
-      setActiveStudent((prev) => ({ ...prev, status: newStatus }));
-    }
-    setConfirmModal(null);
-    setActioning(false);
-  }, [confirmModal, isActioning, activeStudent]);
-
   // ── Detail view ──
   if (view === 'detail' && activeStudent) {
     return (
@@ -173,20 +148,6 @@ export default function StaffStudents() {
                 {activeStudent.status === 'active' ? 'Active' : 'Suspended'}
               </span>
             </div>
-            <button
-              className={`sst-action-btn${activeStudent.status === 'active' ? ' sst-action-btn--suspend' : ' sst-action-btn--activate'}`}
-              onClick={() => openConfirm(
-                activeStudent,
-                activeStudent.status === 'active' ? 'suspend' : 'activate'
-              )}
-              aria-label={
-                activeStudent.status === 'active'
-                  ? `Suspend ${activeStudent.fullName}`
-                  : `Kích hoạt lại ${activeStudent.fullName}`
-              }
-            >
-              {activeStudent.status === 'active' ? '🔒 Suspend' : '🔓 Kích hoạt lại'}
-            </button>
           </div>
 
           {isLoadingDet ? (
@@ -197,17 +158,6 @@ export default function StaffStudents() {
             <div className="sst-error" role="alert">Không có dữ liệu tiến độ cho học viên này.</div>
           )}
         </main>
-
-        {confirmModal && (
-          <SuspendConfirmModal
-            modal={confirmModal}
-            reason={reason}
-            onReasonChange={setReason}
-            isActioning={isActioning}
-            onConfirm={handleAction}
-            onClose={() => setConfirmModal(null)}
-          />
-        )}
       </div>
     );
   }
@@ -325,25 +275,6 @@ export default function StaffStudents() {
                           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                         </svg>
                       </button>
-                      {s.status === 'active' ? (
-                        <button
-                          className="sst-btn-suspend"
-                          onClick={() => openConfirm(s, 'suspend')}
-                          aria-label={`Suspend ${s.fullName}`}
-                          title="Suspend"
-                        >
-                          🔒
-                        </button>
-                      ) : (
-                        <button
-                          className="sst-btn-activate"
-                          onClick={() => openConfirm(s, 'activate')}
-                          aria-label={`Kích hoạt ${s.fullName}`}
-                          title="Kích hoạt"
-                        >
-                          🔓
-                        </button>
-                      )}
                     </div>
                   </td>
                 </tr>
@@ -356,17 +287,6 @@ export default function StaffStudents() {
           <Pagination currentPage={safePage} totalPages={totalPages} onChange={setPage} />
         )}
       </main>
-
-      {confirmModal && (
-        <SuspendConfirmModal
-          modal={confirmModal}
-          reason={reason}
-          onReasonChange={setReason}
-          isActioning={isActioning}
-          onConfirm={handleAction}
-          onClose={() => setConfirmModal(null)}
-        />
-      )}
     </div>
   );
 }

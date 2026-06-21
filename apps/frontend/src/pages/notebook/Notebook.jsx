@@ -17,6 +17,7 @@ import './Notebook.css';
  * Trang chỉ liệt kê + điều hướng "Ôn lại ngay" → phiên Flashcard theo deckId.
  */
 const REVIEW_DECK_NAME = 'Từ cần ôn lại';
+const PAGE_SIZE = 30;   // 1A: tải theo trang + cuộn vô hạn, thay vì cứng 200 (mất từ khi >200)
 
 export default function Notebook() {
   const navigate = useNavigate();
@@ -33,7 +34,11 @@ export default function Notebook() {
   const [isLoading, setLoading] = useState(true);
   const [confirmDel, setConfirm] = useState(null);   // { flashcardId, label }
   const [error,     setError]   = useState('');
+  const [page,      setPage]    = useState(0);        // 1A: trang hiện tại đã tải
+  const [hasMore,   setHasMore] = useState(false);    // còn trang sau không
+  const [loadingMore, setLoadingMore] = useState(false);
   const timerRef = useRef(null);
+  const sentinelRef = useRef(null);                   // mốc cuối danh sách → kích hoạt tải thêm
 
   // Tìm deck "Từ cần ôn lại" một lần.
   const loadDeck = useCallback(async () => {
@@ -54,18 +59,22 @@ export default function Notebook() {
     }
   }, []);
 
-  // Tải thẻ — tìm kiếm + lọc "đến hạn" chạy ở server (SPEC-notebook): không bỏ sót thẻ ngoài trang đầu.
-  const loadCards = useCallback(async (id, q, dueOnly) => {
-    if (!id) { setWords([]); setLoading(false); return; }
-    setLoading(true);
+  // Tải thẻ theo trang — tìm kiếm + lọc "đến hạn" chạy ở server (SPEC-notebook): không bỏ sót thẻ.
+  // append=true → nối thêm trang kế (cuộn vô hạn); ngược lại thay danh sách (đổi filter/từ khóa).
+  const loadCards = useCallback(async (id, q, dueOnly, pageNum = 0, append = false) => {
+    if (!id) { setWords([]); setHasMore(false); setLoading(false); return; }
+    if (append) setLoadingMore(true); else setLoading(true);
     try {
-      const res = await getFlashcardsByDeck(id, 0, 200, q, dueOnly);
-      setWords(res.content ?? []);
+      const res = await getFlashcardsByDeck(id, pageNum, PAGE_SIZE, q, dueOnly);
+      const content = res.content ?? [];
+      setWords((prev) => (append ? [...prev, ...content] : content));
+      setHasMore(!res.last);
+      setPage(pageNum);
       setError('');
     } catch {
-      setError('Không thể tải sổ tay. Thử lại sau.');
+      if (!append) setError('Không thể tải sổ tay. Thử lại sau.');
     } finally {
-      setLoading(false);
+      if (append) setLoadingMore(false); else setLoading(false);
     }
   }, []);
 
@@ -85,10 +94,27 @@ export default function Notebook() {
   }, []);
   useEffect(() => () => clearTimeout(timerRef.current), []);
 
-  // Tải/làm mới thẻ khi deck sẵn sàng, từ khóa hoặc bộ lọc thay đổi (lọc "đến hạn" ở server).
+  // Tải/làm mới thẻ (trang 0) khi deck sẵn sàng, từ khóa hoặc bộ lọc thay đổi.
   useEffect(() => {
-    if (deckReady) loadCards(deckId, debounced, filter === 'due');
+    if (deckReady) loadCards(deckId, debounced, filter === 'due', 0, false);
   }, [deckReady, deckId, debounced, filter, loadCards]);
+
+  // Cuộn vô hạn: khi mốc cuối danh sách lọt vào khung nhìn thì tải trang kế.
+  const loadMore = useCallback(() => {
+    if (!deckId || isLoading || loadingMore || !hasMore) return;
+    loadCards(deckId, debounced, filter === 'due', page + 1, true);
+  }, [deckId, isLoading, loadingMore, hasMore, page, debounced, filter, loadCards]);
+
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node) return;
+    const obs = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) loadMore(); },
+      { rootMargin: '200px' },
+    );
+    obs.observe(node);
+    return () => obs.disconnect();
+  }, [loadMore]);
 
   // Đếm tab lấy từ deck summary (toàn deck), độc lập với danh sách đã lọc.
   const visible = words;
@@ -219,6 +245,9 @@ export default function Notebook() {
                 onRemove={() => setConfirm({ flashcardId: w.flashcardId, label: w.frontText })}
               />
             ))}
+            {/* Mốc cuộn vô hạn + chỉ báo tải thêm */}
+            {hasMore && <div ref={sentinelRef} className="ntb-sentinel" aria-hidden="true" />}
+            {loadingMore && [1, 2].map((i) => <div key={`m${i}`} className="ntb-skel" aria-hidden="true" />)}
           </div>
         )}
       </main>

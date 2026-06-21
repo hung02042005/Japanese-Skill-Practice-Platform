@@ -3,7 +3,6 @@ package com.jlpt.feature.flashcard.repository;
 
 import com.jlpt.feature.flashcard.Flashcard;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +63,10 @@ public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
     @Query("SELECT f FROM Flashcard f WHERE f.student.id = :studentId AND f.deck.id = :deckId")
     List<Flashcard> findByStudentAndDeck(@Param("studentId") Long studentId, @Param("deckId") Long deckId);
 
+    // Toàn bộ thẻ của student (tìm kiếm `q` không kèm deckId — resolve live rồi lọc theo mặt trước).
+    @Query("SELECT f FROM Flashcard f WHERE f.student.id = :studentId")
+    List<Flashcard> findByStudent(@Param("studentId") Long studentId);
+
     boolean existsByIdAndStudentId(Long flashcardId, Long studentId);
 
     // Soft delete (ADR-004) toàn bộ thẻ của một deck khi xóa sổ tay.
@@ -71,20 +74,17 @@ public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
     @Query("UPDATE Flashcard f SET f.isDeleted = true WHERE f.deck.id = :deckId")
     void softDeleteByDeckId(@Param("deckId") Long deckId);
 
-    // Thẻ từ vựng bị chấm WRONG trong phiên (gom theo deck + thời điểm bắt đầu phiên) — §3.5.
+    // Thẻ từ vựng bị chấm WRONG trong phiên (gom theo session_id — V17) — §3.5.
     @Query(
             """
             SELECT f FROM Flashcard f
             WHERE f.student.id = :studentId
-              AND f.deck.id = :deckId
+              AND f.lastSessionId = :sessionId
               AND f.contentType = com.jlpt.feature.flashcard.Flashcard$ContentType.VOCABULARY
               AND f.lastRating = com.jlpt.feature.flashcard.Flashcard$LastRating.WRONG
-              AND f.lastReviewedAt >= :sessionStart
             """)
     List<Flashcard> findWrongVocabCardsInSession(
-            @Param("studentId") Long studentId,
-            @Param("deckId") Long deckId,
-            @Param("sessionStart") LocalDateTime sessionStart);
+            @Param("studentId") Long studentId, @Param("sessionId") String sessionId);
 
     @Query(
             """
@@ -110,18 +110,4 @@ public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
             @Param("studentId") Long studentId,
             @Param("contentType") Flashcard.ContentType contentType,
             @Param("contentIds") Collection<Long> contentIds);
-
-    /**
-     * Lấy tập hợp contentId của các flashcard VOCABULARY của student.
-     * Dùng DB query để tránh load toàn bộ bảng.
-     */
-    @Query(
-            """
-            SELECT f.contentId FROM Flashcard f
-            WHERE f.student.id = :studentId
-              AND f.contentType = :contentType
-              AND f.contentId IS NOT NULL
-            """)
-    java.util.Set<Long> findVocabContentIdsByStudent(
-            @Param("studentId") Long studentId, @Param("contentType") Flashcard.ContentType contentType);
 }

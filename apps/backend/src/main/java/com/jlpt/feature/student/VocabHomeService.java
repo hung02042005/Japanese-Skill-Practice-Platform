@@ -6,7 +6,7 @@ import com.jlpt.feature.learning.VocabularyRepository;
 import com.jlpt.feature.learning.VocabularyTopic;
 import com.jlpt.feature.learning.VocabularyTopicRepository;
 import com.jlpt.feature.student.dto.response.VocabHomeResponse;
-import com.jlpt.shared.exception.BadRequestException;
+import com.jlpt.shared.common.JlptLevels;
 import com.jlpt.shared.exception.ResourceNotFoundException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -49,7 +49,7 @@ public class VocabHomeService {
                 .findById(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy học viên"));
 
-        StudentUser.JlptLevel level = parseLevel(levelOverride);
+        StudentUser.JlptLevel level = JlptLevels.parseOptional(levelOverride);
         if (level == null) {
             level = student.getCurrentJlptLevel() != null ? student.getCurrentJlptLevel() : StudentUser.JlptLevel.N5;
         }
@@ -120,17 +120,5 @@ public class VocabHomeService {
             days.set(i, studied);
         }
         return days;
-    }
-
-    /** Null/blank → null (dùng cấp độ học viên). Sai định dạng → BadRequestException. */
-    private StudentUser.JlptLevel parseLevel(String level) {
-        if (level == null || level.isBlank()) {
-            return null;
-        }
-        try {
-            return StudentUser.JlptLevel.valueOf(level.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Cấp độ JLPT không hợp lệ: " + level);
-        }
     }
 }

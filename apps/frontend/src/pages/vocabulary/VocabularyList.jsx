@@ -22,7 +22,7 @@ export default function VocabularyList() {
   const navigate = useNavigate();
   const { user } = useAppSelector((s) => s.auth);
   const [level,       setLevel]      = useState(searchParams.get('level') ?? user?.jlptLevel ?? 'N5');
-  const [topic,       setTopic]      = useState('');
+  const [topicId,     setTopicId]    = useState('');
   const [search,      setSearch]     = useState('');
   const [debounced,   setDebounced]  = useState('');
   const [words,       setWords]      = useState([]);
@@ -44,11 +44,11 @@ export default function VocabularyList() {
   }, [search]);
 
   // Reset page when filters change
-  useEffect(() => { setPage(1); }, [level, topic, debounced]);
+  useEffect(() => { setPage(1); }, [level, topicId, debounced]);
 
   // Fetch topics when level changes
   useEffect(() => {
-    setTopic('');
+    setTopicId('');
     getVocabTopics(level).then(setTopics).catch(() => {});
   }, [level]);
 
@@ -58,7 +58,7 @@ export default function VocabularyList() {
     try {
       const data = await getVocabularyList({
         level,
-        topic,
+        topicId: topicId || undefined,
         search: debounced,
         page: page - 1,
         size: 20,
@@ -72,7 +72,7 @@ export default function VocabularyList() {
     } finally {
       setLoading(false);
     }
-  }, [level, topic, debounced, page]);
+  }, [level, topicId, debounced, page]);
 
   useEffect(() => { fetchWords(); }, [fetchWords]);
 
@@ -99,9 +99,9 @@ export default function VocabularyList() {
     }
   };
 
-  // Click thẳng 1 chủ đề → mở phiên flashcard ôn tập (NEW + REVIEW) của chủ đề đó.
-  const startFlashcard = (t) =>
-    navigate(`/vocabulary/flashcard?level=${level}&topic=${encodeURIComponent(t)}`);
+  // Click thẳng 1 chủ đề → mở phiên flashcard ôn tập (NEW + REVIEW) theo topicId.
+  const startFlashcard = (tid) =>
+    navigate(`/vocabulary/flashcard?topicId=${encodeURIComponent(tid)}&level=${level}`);
 
   const progressPct = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
@@ -142,11 +142,11 @@ export default function VocabularyList() {
           <select
             id="voc-topic-select"
             className="voc-select"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
+            value={topicId}
+            onChange={(e) => setTopicId(e.target.value)}
           >
             <option value="">Tất cả chủ đề</option>
-            {topics.map((t) => <option key={t} value={t}>{t}</option>)}
+            {topics.map((t) => <option key={t.topicId} value={t.topicId}>{t.titleVi}</option>)}
           </select>
           <div className="voc-search-wrap">
             <label className="visually-hidden" htmlFor="voc-search">Tìm từ vựng</label>
@@ -168,13 +168,13 @@ export default function VocabularyList() {
             <div className="voc-topics-grid">
               {topics.map((t) => (
                 <button
-                  key={t}
+                  key={t.topicId}
                   type="button"
                   className="voc-topic-chip"
-                  onClick={() => startFlashcard(t)}
-                  aria-label={`Học flashcard chủ đề ${t}`}
+                  onClick={() => startFlashcard(t.topicId)}
+                  aria-label={`Học flashcard chủ đề ${t.titleVi}`}
                 >
-                  <span className="voc-topic-name" lang="ja">{t}</span>
+                  <span className="voc-topic-name" lang="ja">{t.titleVi}</span>
                   <span className="voc-topic-go" aria-hidden="true">⚡ Học</span>
                 </button>
               ))}

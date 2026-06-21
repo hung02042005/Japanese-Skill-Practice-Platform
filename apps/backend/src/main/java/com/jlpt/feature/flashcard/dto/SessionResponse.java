@@ -8,7 +8,8 @@ import java.util.List;
  * đến hạn, trộn ngẫu nhiên. Với {@code stage = REVIEW}, {@code learn} = null và payload KHÔNG
  * chứa nghĩa đúng/contentId (chống lộ đáp án — FR-FC-55).
  */
-public record SessionResponse(Long deckId, int newCount, int reviewCount, List<QueueItem> queue) {
+public record SessionResponse(
+        String sessionId, Long deckId, String level, String topicTitle, int wordCount, List<QueueItem> queue) {
 
     public record QueueItem(Long flashcardId, String stage, Front front, Learn learn, Quiz quiz) {}
 

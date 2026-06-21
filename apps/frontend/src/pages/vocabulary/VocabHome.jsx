@@ -64,11 +64,10 @@ export default function VocabHome() {
             <VocabLessonList
               lessons={lessons}
               onOpen={(lesson) => {
-                // Click bài → mở phiên flashcard ôn tập của chủ đề tại route riêng /vocabulary/flashcard.
-                const topicKey = lesson.slug || lesson.subtitleEn || lesson.titleJp;
+                // Click bài → mở phiên flashcard ôn tập của chủ đề (theo topicId — khoá duy nhất).
                 navigate(
-                  `/vocabulary/flashcard?level=${encodeURIComponent(level || 'N5')}` +
-                  `&topic=${encodeURIComponent(topicKey)}`,
+                  `/vocabulary/flashcard?topicId=${encodeURIComponent(lesson.topicId)}` +
+                  `&level=${encodeURIComponent(level || 'N5')}`,
                 );
               }}
             />
