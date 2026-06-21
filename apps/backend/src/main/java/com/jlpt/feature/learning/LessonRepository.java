@@ -25,6 +25,11 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
     List<Lesson> findByCreatedByAndStatusNotOrderByUpdatedAtDesc(StaffUser createdBy, Lesson.LessonStatus status);
 
     /**
+     * Đếm số bài học đã publish của một cấp độ JLPT (SPEC-course-list — totalLessons mỗi khoá).
+     */
+    long countByJlptLevelAndStatus(JlptLevel jlptLevel, Lesson.LessonStatus status);
+
+    /**
      * UC-27 — Filtered paginated query for staff listing their own lessons.
      * All params except {@code staffId} and {@code deletedStatus} are optional.
      */
@@ -54,5 +59,20 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
             @Param("status") Lesson.LessonStatus status,
             @Param("deletedStatus") Lesson.LessonStatus deletedStatus,
             @Param("q") String q,
+            Pageable pageable);
+
+    /** Dictionary search over published lessons by title (ported from legacy flat repository). */
+    @Query(
+            """
+            SELECT l FROM Lesson l
+            WHERE l.status = :status
+              AND (:jlptLevel IS NULL OR l.jlptLevel = :jlptLevel)
+              AND l.title LIKE CONCAT('%', :q, '%')
+            ORDER BY l.title ASC
+            """)
+    List<Lesson> searchPublished(
+            @Param("q") String q,
+            @Param("jlptLevel") JlptLevel jlptLevel,
+            @Param("status") Lesson.LessonStatus status,
             Pageable pageable);
 }

@@ -35,7 +35,7 @@
 }
 
 /* SVG inherits `color` as currentColor */
-.qa-icon--flashcard  { background: var(--color-primary-bg);   color: var(--color-primary-dark); }
+.qa-icon--notebook   { background: var(--color-primary-bg);   color: var(--color-primary-dark); }
 .qa-icon--exam       { background: #E3F2FD;                    color: #1565C0;                   }
 .qa-icon--dictionary { background: var(--color-secondary-bg); color: #3A9E46;                   }
 .qa-icon--progress   { background: var(--color-accent-bg);    color: #C49A00;                   }

@@ -15,8 +15,8 @@ import './VocabFlashcardSession.css';
 
 /**
  * Phiên học từ vựng dạng Flashcard SRS (§3.6/§3.7) — thay cho danh sách phẳng.
- * Thẻ 2 mặt: mặt trước = từ + furigana, lật ra mặt sau = nghĩa + ví dụ + audio,
- * rồi tự đánh giá mức nhớ (Không nhớ / Khó / Dễ). Server tính SM-2 từ `rating`.
+ * Thẻ MỚI 2 mặt: mặt trước = từ + furigana, lật ra mặt sau = nghĩa + ví dụ + audio,
+ * rồi bấm "Tiếp theo" để học từ kế (không tự đánh giá dễ/khó). Thẻ ÔN TẬP = trắc nghiệm chọn nghĩa.
  * Bấm "Tiếp theo" → thẻ kế luôn bắt đầu ở mặt trước.
  */
 export default function VocabFlashcardSession() {
@@ -25,8 +25,9 @@ export default function VocabFlashcardSession() {
   const { user } = useAppSelector((s) => s.auth);
   const { toasts, addToast, removeToast } = useToast();
 
-  const level = searchParams.get('level') ?? user?.jlptLevel ?? 'N5';
-  const topic = searchParams.get('topic') ?? '';
+  const deckId = searchParams.get('deckId');
+  const level  = searchParams.get('level') ?? user?.jlptLevel ?? 'N5';
+  const topic  = searchParams.get('topic') ?? '';
 
   const [status,  setStatus]  = useState('loading'); // loading | ready | error
   const [error,   setError]   = useState('');
@@ -50,7 +51,9 @@ export default function VocabFlashcardSession() {
     setStatus('loading');
     setError('');
     try {
-      const data = await getVocabFlashcardSession({ level, topic });
+      const data = await getVocabFlashcardSession(
+        deckId ? { deckId: Number(deckId) } : { level, topic },
+      );
       setSession(data);
       setIdx(0);
       setRevealed(false);
@@ -70,35 +73,21 @@ export default function VocabFlashcardSession() {
       );
       setStatus('error');
     }
-  }, [level, topic, navigate]);
+  }, [deckId, level, topic, navigate]);
 
   useEffect(() => { loadSession(); }, [loadSession]);
 
-  // Thứ tự thẻ (xen kẽ 1 thẻ MỚI → 1 thẻ ÔN TẬP) do backend quyết định — §3.6.
+  // Thứ tự thẻ do backend quyết định — học 2–3 thẻ MỚI rồi kiểm tra ngay các từ đó (§3.6).
   const queue   = session?.queue ?? [];
   const total   = queue.length;
+  // Mỗi từ xuất hiện 2 lần (học + kiểm tra); điểm tính trên các thẻ ÔN TẬP (trắc nghiệm).
+  const quizTotal = queue.filter((c) => c.stage !== 'NEW').length;
   const card    = queue[idx];
   const isLast  = idx === total - 1;
   const isNew   = card?.stage === 'NEW';
 
-  // Thẻ từ (NEW): tự đánh giá mức nhớ sau khi lật → gửi rating (SM-2).
-  async function handleRate(rating) {
-    if (submitting || result) return;
-    setSubmitting(true);
-    try {
-      const res = await submitFlashcardReview(card.flashcardId, {
-        rating,
-        isLastCardInSession: isLast,
-      });
-      setResult(res);
-      if (rating !== 'WRONG') setCorrectCnt((c) => c + 1);
-      if (isLast) setFinalResult(res);
-    } catch (err) {
-      addToast('error', err?.response?.data?.message ?? 'Không thể lưu kết quả. Thử lại nhé.');
-    } finally {
-      setSubmitting(false);
-    }
-  }
+  // Thẻ từ (NEW): chỉ lật học nghĩa rồi đi tiếp — KHÔNG chấm điểm/ghi SM-2 ở đây.
+  // Việc ghi nhận đúng/sai do thẻ ÔN TẬP (trắc nghiệm) của cùng từ đó (ngay sau) đảm nhiệm.
 
   // Thẻ bài tập (REVIEW): chọn 1 trong 2 đáp án → server chấm đúng/sai.
   async function handleAnswer(optionId) {
@@ -150,27 +139,36 @@ export default function VocabFlashcardSession() {
     if (url) new Audio(url).play().catch(() => {});
   }
 
-  const backToHub = () => navigate(`/vocabulary?level=${level}`);
+  const backToHub = () =>
+    navigate(deckId ? '/notebook' : `/vocabulary?level=${level}`);
 
   return (
     <div className="vfs-page">
-      <TopNav activeTab="vocabulary" />
+      <TopNav activeTab={deckId ? '' : 'vocabulary'} />
       <main className="vfs-body">
         <button type="button" className="vfs-back" onClick={backToHub}>
-          ← Lộ trình từ vựng
+          {deckId ? '← Sổ tay' : '← Lộ trình từ vựng'}
         </button>
 
         <div className="vfs-head">
           <h1 className="vfs-title">
-            <JlptBadge level={level} />
-            <span lang="ja">{topic || 'Từ vựng'}</span>
+            {deckId ? (
+              <span>📓 Từ cần ôn lại</span>
+            ) : (
+              <>
+                <JlptBadge level={level} />
+                <span lang="ja">{topic || 'Từ vựng'}</span>
+              </>
+            )}
           </h1>
-          <a
-            className="vfs-listlink"
-            href={`/vocabulary?level=${level}&topic=${encodeURIComponent(topic)}&view=list`}
-          >
-            Xem danh sách từ
-          </a>
+          {!deckId && (
+            <a
+              className="vfs-listlink"
+              href={`/vocabulary?level=${level}&view=list`}
+            >
+              Xem danh sách từ
+            </a>
+          )}
         </div>
 
         {/* ── Loading ── */}
@@ -206,7 +204,7 @@ export default function VocabFlashcardSession() {
           <div className="vfs-summary">
             <EmptyState
               title="Hoàn thành phiên học! 🎉"
-              subtitle={`Bạn nhớ được ${correctCnt}/${total} thẻ.`}
+              subtitle={`Bạn trả lời đúng ${correctCnt}/${quizTotal} câu.`}
               mascotVariant="celebrate"
               mascotSize={170}
             />
@@ -280,6 +278,12 @@ export default function VocabFlashcardSession() {
                     <div className="vfs-face vfs-face--back" aria-hidden={!revealed}>
                       {card.learn && (
                         <>
+                          <div className="vfs-back-term">
+                            <span className="vfs-back-word" lang="ja">{card.front.word}</span>
+                            {card.front.furigana && (
+                              <span className="vfs-back-reading" lang="ja">{card.front.furigana}</span>
+                            )}
+                          </div>
                           <p className="vfs-meaning">{card.learn.meaning}</p>
                           {card.learn.exampleJp && (
                             <div className="vfs-example">
@@ -305,36 +309,11 @@ export default function VocabFlashcardSession() {
                   </div>
                 </div>
 
-                {/* Sau khi lật: tự đánh giá mức nhớ */}
-                {revealed && !result && (
-                  <div className="vfs-rating" role="group" aria-label="Đánh giá mức nhớ">
-                    <p className="vfs-rating-prompt">Bạn nhớ từ này tốt không?</p>
-                    <div className="vfs-rating-row">
-                      <button className="vfs-rate vfs-rate--wrong" onClick={() => handleRate('WRONG')} disabled={submitting}>
-                        <span className="vfs-rate-icon" aria-hidden="true">✗</span> Không nhớ
-                      </button>
-                      <button className="vfs-rate vfs-rate--hard" onClick={() => handleRate('HARD')} disabled={submitting}>
-                        <span className="vfs-rate-icon" aria-hidden="true">△</span> Khó
-                      </button>
-                      <button className="vfs-rate vfs-rate--easy" onClick={() => handleRate('EASY')} disabled={submitting}>
-                        <span className="vfs-rate-icon" aria-hidden="true">✓</span> Dễ
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {result && (
-                  <div
-                    className={`vfs-feedback${result.rating?.toUpperCase() === 'WRONG' ? ' vfs-feedback--no' : ' vfs-feedback--ok'}`}
-                    aria-live="polite"
-                  >
-                    <span className="vfs-feedback-text">
-                      {result.rating?.toUpperCase() === 'WRONG' ? 'Sẽ ôn lại sớm nhé!' : 'Tốt lắm! 🎉'}
-                      {result.nextReviewDate &&
-                        ` · Ôn lại: ${new Date(result.nextReviewDate).toLocaleDateString('vi-VN')}`}
-                    </span>
+                {/* Sau khi lật: chỉ học nghĩa rồi đi tiếp — thẻ ÔN TẬP của từ này sẽ tới ngay sau */}
+                {revealed && (
+                  <div className="vfs-next-row">
                     <button className="vfs-btn vfs-btn--primary" onClick={handleNext}>
-                      {isLast ? 'Hoàn thành →' : 'Tiếp theo →'}
+                      Tiếp theo →
                     </button>
                   </div>
                 )}

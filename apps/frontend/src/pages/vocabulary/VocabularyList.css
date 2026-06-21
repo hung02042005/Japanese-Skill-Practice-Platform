@@ -42,6 +42,34 @@
 }
 .voc-search:focus { outline: none; border-color: var(--color-primary); box-shadow: var(--focus-ring); background: var(--color-card); }
 
+/* Flashcard theo chủ đề — click thẳng 1 chủ đề để mở phiên ôn tập */
+.voc-topics { display: flex; flex-direction: column; gap: 8px; }
+.voc-topics-title { font-size: 16px; font-weight: 700; color: var(--color-text); margin: 0; }
+.voc-topics-hint  { font-size: 13px; color: var(--color-text-sub); margin: 0; }
+.voc-topics-grid  {
+  display: grid; gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  margin-top: 4px;
+}
+.voc-topic-chip {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 12px 16px; cursor: pointer; text-align: left;
+  background: var(--color-card); border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg); font-family: var(--font-base);
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+.voc-topic-chip:hover { border-color: var(--color-primary-light); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+.voc-topic-chip:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: var(--focus-ring); }
+.voc-topic-name {
+  font-size: 15px; font-weight: 700; color: var(--color-text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.voc-topic-go {
+  flex-shrink: 0; font-size: 12px; font-weight: 700; color: var(--color-primary);
+  background: var(--color-primary-bg); border-radius: var(--radius-full);
+  padding: 4px 10px; white-space: nowrap;
+}
+
 /* Error */
 .voc-error {
   display: flex; align-items: center; justify-content: space-between;

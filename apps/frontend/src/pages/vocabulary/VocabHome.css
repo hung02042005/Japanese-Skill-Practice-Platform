@@ -1,0 +1,299 @@
+/* ============================================================
+   VocabHome — Trang chủ Từ Vựng (SakuJi · Hanami)
+   SPEC: .sdd/specs/frontend/feat-student/SPEC-vocab-home.md
+   Token toàn cục: src/index.css (--color-*, --radius-*, --shadow-*)
+   ============================================================ */
+
+.vh-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  font-family: var(--font-base, 'Nunito', 'Noto Sans JP', system-ui, sans-serif);
+}
+
+/* ─── Body grid (desktop ≥ 1024px) ─── */
+.vh-body {
+  display: grid;
+  grid-template-columns: 220px 1fr 220px;
+  gap: 24px;
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+  align-items: start;
+}
+
+.vh-left,
+.vh-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vh-center { min-width: 0; }
+
+/* ============================================================
+   SECTION TITLE + LESSON LIST (§7)
+   ============================================================ */
+.vh-section-title {
+  margin: 0 0 14px;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.vh-lesson-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Lesson card (base) ── */
+.vh-lesson {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 20px;
+  text-align: left;
+  font-family: inherit;
+  background: var(--color-card);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  animation: vhSlideUp 250ms ease forwards;
+}
+
+.vh-lesson:nth-child(1) { animation-delay: 0ms; }
+.vh-lesson:nth-child(2) { animation-delay: 60ms; }
+.vh-lesson:nth-child(3) { animation-delay: 120ms; }
+.vh-lesson:nth-child(4) { animation-delay: 180ms; }
+.vh-lesson:nth-child(5) { animation-delay: 240ms; }
+
+/* Hover + focus (FR-VH-14, + keyboard tương đương §15) */
+.vh-lesson--available:hover,
+.vh-lesson--active:hover,
+.vh-lesson--available:focus-visible,
+.vh-lesson--active:focus-visible {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-light);
+}
+.vh-lesson:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+/* State: active (green nổi bật) */
+.vh-lesson--active {
+  padding: 22px 24px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #66BB6A 0%, var(--color-secondary) 100%);
+  box-shadow: 0 8px 20px rgba(93, 187, 105, 0.28);
+}
+.vh-lesson--active .vh-lesson-title { color: #ffffff; }
+.vh-lesson--active .vh-lesson-sub   { color: rgba(255, 255, 255, 0.9); }
+.vh-lesson--active .vh-lesson-trail { color: #ffffff; }
+
+/* State: available (trắng) */
+.vh-lesson--available .vh-lesson-trail { color: var(--color-text-disabled); }
+.vh-lesson--available:hover .vh-lesson-trail { color: var(--color-secondary); }
+
+/* ── Thumbnail ── */
+.vh-lesson-thumb {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-bg);
+}
+.vh-lesson--active .vh-lesson-thumb { background: #ffffff; }
+
+.vh-lesson-thumb-char {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+/* ── Content ── */
+.vh-lesson-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.vh-lesson-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vh-lesson-sub {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Trailing ── */
+.vh-lesson-trail {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
+   RIGHT SIDEBAR (§8)
+   ============================================================ */
+.vh-account {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 16px;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.vh-account-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-primary-light);
+  background: var(--color-primary-bg);
+  color: var(--color-primary-dark);
+  font-size: 22px;
+  font-weight: 800;
+}
+.vh-account-name { font-size: 15px; font-weight: 800; color: var(--color-text); }
+.vh-account-meta { font-size: 12px; font-weight: 600; color: var(--color-text-sub); }
+
+.vh-courselist {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 18px 16px;
+  font-family: inherit;
+  text-align: left;
+  background: var(--color-card);
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.vh-courselist:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.vh-courselist:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+.vh-courselist-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+  border-radius: var(--radius-full);
+}
+.vh-courselist-label { flex: 1; font-size: 15px; font-weight: 800; color: var(--color-text); }
+.vh-courselist-arrow {
+  display: inline-flex;
+  color: var(--color-text-disabled);
+  transition: transform var(--transition), color var(--transition);
+}
+.vh-courselist:hover .vh-courselist-arrow { transform: translateX(3px); color: var(--color-primary); }
+
+/* ============================================================
+   EMPTY / ERROR STATE (§10, §12)
+   ============================================================ */
+.vh-empty-cta,
+.vh-error-retry {
+  margin-top: 16px;
+  padding: 12px 28px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: transparent;
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.vh-empty-cta:hover,
+.vh-error-retry:hover { background: var(--color-primary-bg); }
+.vh-empty-cta:focus-visible,
+.vh-error-retry:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+.vh-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px;
+  text-align: center;
+}
+.vh-error-text { margin: 0; font-size: 15px; color: var(--color-text-sub); }
+
+/* ============================================================
+   SKELETON (§9)
+   ============================================================ */
+.vh-skel {
+  background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%);
+  background-size: 200% 100%;
+  animation: vhSkel 1.4s ease infinite;
+  border-radius: var(--radius-lg);
+}
+.vh-skel--streak  { height: 210px; border-radius: var(--radius-xl); }
+.vh-skel--lesson  { height: 84px; }
+.vh-skel--account { height: 130px; }
+
+/* ============================================================
+   ANIMATIONS (§11)
+   ============================================================ */
+@keyframes vhSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes vhSkel {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================================
+   RESPONSIVE (§14)
+   ============================================================ */
+@media (max-width: 1023px) {
+  .vh-body { grid-template-columns: 1fr 220px; }
+  .vh-left { display: none; }
+}
+@media (max-width: 767px) {
+  .vh-body { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
+  .vh-right { display: none; }
+  .vh-lesson { padding: 14px 16px; }
+}
+
+/* ============================================================
+   REDUCED MOTION (§13, AC-VH-13)
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .vh-page * {
+    animation: none !important;
+    transition-duration: 0ms !important;
+  }
+}

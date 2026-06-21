@@ -3,20 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logoutThunk } from '../../store/slices/authSlice';
 import AppLogo from '../common/AppLogo';
+import { VocabIcon } from '../student/StudentIcons';
 import './TopNav.css';
 
 const NAV_TABS = [
-  {
-    id: 'review',
-    label: 'Ôn tập',
-    route: '/review',
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-        <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-      </svg>
-    ),
-  },
   {
     id: 'learn',
     label: 'Học từ mới',
@@ -27,6 +17,12 @@ const NAV_TABS = [
         <path d="M12 8v4l3 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
+  },
+  {
+    id: 'vocabulary',
+    label: 'Từ vựng',
+    route: '/vocabulary',
+    icon: <VocabIcon size={22} />,
   },
   {
     id: 'kanji',
@@ -80,6 +76,11 @@ function UserDropdown({ user, streak, wordCount, daysThisMonth, onClose, onLogou
   function handleProfile() {
     onClose();
     navigate('/progress');
+  }
+
+  function handleNotebook() {
+    onClose();
+    navigate('/notebook');
   }
 
   async function handleLogout() {
@@ -145,6 +146,17 @@ function UserDropdown({ user, streak, wordCount, daysThisMonth, onClose, onLogou
             <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
           </svg>
           Xem thành tích đầy đủ
+          <svg className="ud-action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+
+        <button type="button" className="ud-action-btn ud-action-btn--notebook" onClick={handleNotebook}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 4a2 2 0 0 1 2-2h12a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+            <path d="M4 18h14M8 7h7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+          Sổ tay — Từ cần ôn lại
           <svg className="ud-action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>

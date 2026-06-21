@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getDashboard } from '../../api/studentService';
+import { getDashboard, getVocabHome, getCourses } from '../../api/studentService';
 
 // Demo data — replace with real API response when backend is ready
 const DEMO = {
@@ -54,12 +54,70 @@ const DEMO = {
 
 export const fetchDashboardThunk = createAsyncThunk(
   'student/fetchDashboard',
-  async (_, { rejectWithValue }) => {
+  async () => {
     try {
       const res = await getDashboard();
       return res.data;
     } catch {
       return DEMO;
+    }
+  },
+);
+
+// ── Vocab Home (SPEC-vocab-home FR-VH-01) ──────────────────────────────────────
+// Demo fallback giữ trang chạy được khi backend /students/vocab-home chưa sẵn sàng
+// (cùng pattern với fetchDashboardThunk).
+const DEMO_VOCAB_HOME = {
+  streak: 10,
+  weekDays: [true, true, false, true, true, false, false],
+  courseTitle: 'N5 Kanji & Vocab',
+  level: 'N5',
+  subscription: 'FREE',
+  lessons: [
+    { topicId: 1, slug: 'greetings',  titleJp: 'はじめましょう', subtitleEn: 'Start with Mochi', status: 'active',    thumbnail: 'saku-mascot' },
+    { topicId: 2, slug: 'introduce',  titleJp: 'はじめまして',   subtitleEn: 'Nice to meet you', status: 'available', thumbnail: '窓' },
+    { topicId: 3, slug: 'family',     titleJp: '家族',           subtitleEn: 'Family & people',  status: 'available', thumbnail: '家' },
+    { topicId: 4, slug: 'food',       titleJp: '食べ物',         subtitleEn: 'Food & drink',     status: 'available', thumbnail: null },
+    { topicId: 5, slug: 'travel',     titleJp: '旅行',           subtitleEn: 'Travel basics',    status: 'available', thumbnail: null },
+  ],
+};
+
+export const fetchVocabHomeThunk = createAsyncThunk(
+  'student/fetchVocabHome',
+  async (level, { rejectWithValue }) => {
+    try {
+      return await getVocabHome(level);
+    } catch (err) {
+      // Backend chưa sẵn sàng → dùng demo để không vỡ UI (giống dashboard).
+      if (err?.response?.status === 404) return DEMO_VOCAB_HOME;
+      return rejectWithValue(err?.response?.data?.message ?? 'Không thể tải trang Từ vựng.');
+    }
+  },
+);
+
+// ── Course List (SPEC-course-list FR-CL-01) ────────────────────────────────────
+// Demo fallback giữ trang /courses chạy được khi backend /students/courses chưa
+// sẵn sàng (cùng pattern với fetchVocabHomeThunk). VIP đã bỏ khỏi phạm vi.
+const DEMO_COURSES = {
+  currentLevel: 'N5',
+  courses: [
+    { jlptLevel: 'N5', title: 'Tiếng Nhật N5', description: 'Hiragana, Katakana, từ vựng & ngữ pháp cơ bản', completedLessons: 5, totalLessons: 40 },
+    { jlptLevel: 'N4', title: 'Tiếng Nhật N4', description: 'Giao tiếp hàng ngày, mở rộng từ vựng & Kanji',   completedLessons: 0, totalLessons: 52 },
+    { jlptLevel: 'N3', title: 'Tiếng Nhật N3', description: 'Trung cấp: cấu trúc phức hợp, đọc hiểu thực tế',  completedLessons: 0, totalLessons: 60 },
+    { jlptLevel: 'N2', title: 'Tiếng Nhật N2', description: 'Cao cấp & học thuật',                            completedLessons: 0, totalLessons: 70 },
+    { jlptLevel: 'N1', title: 'Tiếng Nhật N1', description: 'Trình độ bản ngữ',                              completedLessons: 0, totalLessons: 80 },
+  ],
+};
+
+export const fetchCoursesThunk = createAsyncThunk(
+  'student/fetchCourses',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await getCourses();
+    } catch (err) {
+      // Backend chưa sẵn sàng → dùng demo để không vỡ UI (giống vocab-home).
+      if (err?.response?.status === 404) return DEMO_COURSES;
+      return rejectWithValue(err?.response?.data?.message ?? 'Không thể tải danh sách khoá học.');
     }
   },
 );
@@ -70,6 +128,22 @@ const studentSlice = createSlice({
     ...DEMO,
     status: 'idle',
     error: null,
+    // Vocab Home — sub-state riêng để không ghi đè lessons/status của Dashboard.
+    vocabHome: {
+      streak: 0,
+      weekDays: [],
+      courseTitle: 'N5 Kanji & Vocab',
+      level: 'N5',
+      subscription: undefined,
+      lessons: [],
+    },
+    vocabHomeStatus: 'idle',
+    vocabHomeError: null,
+    // Course List — chọn cấp độ JLPT (VIP đã bỏ khỏi phạm vi).
+    courses: [],
+    currentLevel: 'N5',
+    coursesStatus: 'idle',
+    coursesError: null,
   },
   reducers: {
     clearError: (state) => { state.error = null; },
@@ -92,6 +166,40 @@ const studentSlice = createSlice({
       .addCase(fetchDashboardThunk.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
+      })
+      // ── Vocab Home ──
+      .addCase(fetchVocabHomeThunk.pending, (state) => {
+        state.vocabHomeStatus = 'loading';
+        state.vocabHomeError = null;
+      })
+      .addCase(fetchVocabHomeThunk.fulfilled, (state, action) => {
+        state.vocabHomeStatus = 'succeeded';
+        state.vocabHome = {
+          streak:       action.payload.streak ?? 0,
+          weekDays:     action.payload.weekDays ?? [],
+          courseTitle:  action.payload.courseTitle ?? 'N5 Kanji & Vocab',
+          level:        action.payload.level ?? 'N5',
+          subscription: action.payload.subscription,
+          lessons:      action.payload.lessons ?? [],
+        };
+      })
+      .addCase(fetchVocabHomeThunk.rejected, (state, action) => {
+        state.vocabHomeStatus = 'failed';
+        state.vocabHomeError = action.payload;
+      })
+      // ── Course List ──
+      .addCase(fetchCoursesThunk.pending, (state) => {
+        state.coursesStatus = 'loading';
+        state.coursesError = null;
+      })
+      .addCase(fetchCoursesThunk.fulfilled, (state, action) => {
+        state.coursesStatus = 'succeeded';
+        state.courses      = action.payload.courses ?? [];
+        state.currentLevel = action.payload.currentLevel ?? state.currentLevel;
+      })
+      .addCase(fetchCoursesThunk.rejected, (state, action) => {
+        state.coursesStatus = 'failed';
+        state.coursesError = action.payload;
       });
   },
 });

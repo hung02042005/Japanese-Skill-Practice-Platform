@@ -43,16 +43,6 @@ public class StudentContentProgress {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
-    @Column(name = "is_bookmarked", nullable = false)
-    @Builder.Default
-    private Boolean isBookmarked = false;
-
-    @Column(name = "bookmark_note", length = 500)
-    private String bookmarkNote;
-
-    @Column(name = "bookmarked_at")
-    private LocalDateTime bookmarkedAt;
-
     @Column(name = "last_studied_at", nullable = false)
     @Builder.Default
     private LocalDateTime lastStudiedAt = LocalDateTime.now();

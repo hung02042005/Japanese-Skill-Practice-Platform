@@ -48,7 +48,11 @@ export default function ChangePassword() {
     setSaving(true);
     setApiErr('');
     try {
-      await changePassword({ currentPassword: form.currentPassword, newPassword: form.newPassword });
+      await changePassword({
+        currentPassword: form.currentPassword,
+        newPassword: form.newPassword,
+        confirmPassword: form.confirmPassword,
+      });
       addToast('success', 'Đổi mật khẩu thành công! Đang đăng xuất...');
       setTimeout(async () => {
         await dispatch(logoutThunk());

@@ -6,6 +6,18 @@ export async function getDashboard() {
   return res.data;
 }
 
+// ─── Vocab Home (gamified lesson-path) — UC-09 / UC-19 ─────────────────────────
+export async function getVocabHome(level) {
+  const res = await api.get('/students/vocab-home', { params: level ? { level } : undefined });
+  return res.data.data;
+}
+
+// ─── Courses (chọn cấp độ JLPT) — UC-08 / UC-09 ───────────────────────────────
+export async function getCourses() {
+  const res = await api.get('/students/courses');
+  return res.data.data;
+}
+
 // ─── Onboarding ──────────────────────────────────────────────────────────────
 export async function submitOnboarding({ jlptGoal, dailyMinutes, focusSkills }) {
   const res = await api.post('/students/onboarding', { jlptGoal, dailyMinutes, focusSkills });
@@ -33,8 +45,8 @@ export async function uploadAvatar(file) {
 }
 
 // ─── Password ────────────────────────────────────────────────────────────────
-export async function changePassword({ currentPassword, newPassword }) {
-  const res = await api.post('/auth/change-password', { currentPassword, newPassword });
+export async function changePassword({ currentPassword, newPassword, confirmPassword }) {
+  const res = await api.put('/students/me/password', { currentPassword, newPassword, confirmPassword });
   return res.data;
 }
 
@@ -94,7 +106,7 @@ export async function markVocabComplete(vocabId) {
 }
 
 export async function addVocabToFlashcard(vocabId) {
-  const res = await api.post('/flashcard/add', { vocabId });
+  const res = await api.post('/flashcards', { contentType: 'VOCABULARY', contentId: vocabId });
   return res.data.data;
 }
 
@@ -104,23 +116,10 @@ export async function getFlashcardDecks() {
   return res.data.data;
 }
 
-export async function getFlashcardsDue(size = 50) {
-  const res = await api.get('/flashcards', { params: { dueOnly: true, size, page: 0 } });
-  return res.data.data;
-}
-
-export async function getFlashcardsByDeck(deckName, page = 0, size = 50) {
-  const res = await api.get('/flashcards', { params: { deckName, page, size } });
-  return res.data.data;
-}
-
-export async function revealFlashcard(flashcardId) {
-  const res = await api.get(`/flashcards/${flashcardId}/reveal`);
-  return res.data.data;
-}
-
-export async function rateFlashcard(flashcardId, rating) {
-  const res = await api.post(`/flashcards/${flashcardId}/review`, { rating });
+export async function getFlashcardsByDeck(deckId, page = 0, size = 50, q, dueOnly = false) {
+  const res = await api.get('/flashcards', {
+    params: { deckId, page, size, q: q || undefined, dueOnly: dueOnly || undefined },
+  });
   return res.data.data;
 }
 
@@ -129,13 +128,56 @@ export async function createDeck(deckName) {
   return res.data.data;
 }
 
-export async function deleteDeck(deckName) {
-  const res = await api.delete(`/flashcard-decks/${encodeURIComponent(deckName)}`);
+export async function deleteDeck(deckId) {
+  const res = await api.delete(`/flashcard-decks/${deckId}`);
   return res.data;
 }
 
 export async function addToFlashcard(contentType, contentId, deckName = 'Mặc định') {
   const res = await api.post('/flashcards', { contentType, contentId, deckName });
+  return res.data.data;
+}
+
+export async function getVocabFlashcardSession({ level, topic, newLimit, deckId } = {}) {
+  const params = deckId != null ? { deckId } : { level, topic, newLimit };
+  // POST (không phải GET) vì build phiên có side-effect: backend tạo deck/thẻ MỚI cho từ được chọn.
+  const res = await api.post('/flashcards/session', null, { params });
+  return res.data.data;
+}
+
+export async function submitFlashcardReview(flashcardId, { rating, selectedOptionId, isLastCardInSession }) {
+  const res = await api.post(`/flashcards/${flashcardId}/review`, {
+    rating,
+    selectedOptionId,
+    isLastCardInSession,
+  });
+  return res.data.data;
+}
+
+export async function addWrongWordsToReviewDeck(items) {
+  const res = await api.post('/flashcards/review-deck/add', { items, reason: 'wrong' });
+  return res.data.data;
+}
+
+// Gỡ một thẻ khỏi sổ (soft-delete card) — SPEC-notebook §5
+export async function removeFlashcardCard(flashcardId) {
+  const res = await api.delete(`/flashcards/${flashcardId}`);
+  return res.data;
+}
+
+// Lưu thủ công 1 từ vào Sổ tay "Từ cần ôn lại" — dùng chung review-deck/add (SPEC-dictionary §5)
+export async function saveToNotebook(contentType, contentId) {
+  const res = await api.post('/flashcards/review-deck/add', {
+    items: [{ contentType: contentType.toUpperCase(), contentId }],
+    reason: 'manual',
+  });
+  return res.data.data;
+}
+
+// ─── Dictionary ──────────────────────────────────────────────────────────────
+// Tìm kiếm gom nhóm (UC-16) — backend lọc status='published' (FR-DICT-05)
+export async function searchDictionary(q, jlptLevel, type) {
+  const res = await api.get('/dictionary/search', { params: { q, jlptLevel, type } });
   return res.data.data;
 }
 

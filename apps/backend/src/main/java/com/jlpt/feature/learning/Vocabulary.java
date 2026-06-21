@@ -40,6 +40,10 @@ public class Vocabulary {
     @Column(length = 100)
     private String topic;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "topic_id")
+    private VocabularyTopic topicRef;
+
     @Column(name = "audio_url", length = 500)
     private String audioUrl;
 

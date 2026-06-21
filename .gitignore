@@ -1,4 +1,18 @@
+# Dependencies
 node_modules/
+
+# Build output
 target/
+dist/
+.vite/
+
+# IDE
 .idea/
+
+# Env & secrets
 .env
+login.json
+session.json
+
+# Logs
+*.log

@@ -2,6 +2,7 @@
 package com.jlpt.shared.config;
 
 import com.jlpt.shared.security.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,15 @@ public class SecurityConfig {
                         .requestMatchers("/api/staff/**")
                         .hasRole("STAFF")
                         .anyRequest()
-                        .authenticated());
+                        .authenticated())
+                // Chưa xác thực → 401 (không phải 403 mặc định của Spring) để FE biết refresh token.
+                .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authEx) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter()
+                            .write(
+                                    "{\"status\":401,\"message\":\"Phiên đăng nhập đã hết hạn hoặc chưa đăng nhập\",\"data\":null}");
+                }));
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

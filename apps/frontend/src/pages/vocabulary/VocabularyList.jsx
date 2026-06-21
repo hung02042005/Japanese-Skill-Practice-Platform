@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
@@ -19,6 +19,7 @@ const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
 export default function VocabularyList() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { user } = useAppSelector((s) => s.auth);
   const [level,       setLevel]      = useState(searchParams.get('level') ?? user?.jlptLevel ?? 'N5');
   const [topic,       setTopic]      = useState('');
@@ -98,6 +99,10 @@ export default function VocabularyList() {
     }
   };
 
+  // Click thẳng 1 chủ đề → mở phiên flashcard ôn tập (NEW + REVIEW) của chủ đề đó.
+  const startFlashcard = (t) =>
+    navigate(`/vocabulary/flashcard?level=${level}&topic=${encodeURIComponent(t)}`);
+
   const progressPct = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
   return (
@@ -155,6 +160,27 @@ export default function VocabularyList() {
             />
           </div>
         </div>
+
+        {topics.length > 0 && (
+          <section className="voc-topics" aria-label="Học Flashcard theo chủ đề">
+            <h2 className="voc-topics-title">⚡ Học Flashcard theo chủ đề</h2>
+            <p className="voc-topics-hint">Bấm vào một chủ đề để bắt đầu phiên ôn tập (thẻ mới + ôn lại).</p>
+            <div className="voc-topics-grid">
+              {topics.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  className="voc-topic-chip"
+                  onClick={() => startFlashcard(t)}
+                  aria-label={`Học flashcard chủ đề ${t}`}
+                >
+                  <span className="voc-topic-name" lang="ja">{t}</span>
+                  <span className="voc-topic-go" aria-hidden="true">⚡ Học</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
 
         {error && (
           <div className="voc-error" role="alert">

@@ -58,7 +58,10 @@
 .vfs-face--back { transform: rotateY(180deg); }
 .vfs-fliphint { margin-top: 8px; font-size: 12px; font-weight: 600; color: var(--color-text-sub); opacity: 0.8; }
 
-/* Nội dung mặt sau (nghĩa / ví dụ / audio) */
+/* Nội dung mặt sau (từ + cách đọc / nghĩa / ví dụ / audio) */
+.vfs-back-term { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.vfs-back-word { font-size: 24px; font-weight: 800; color: var(--color-text); line-height: 1.2; }
+.vfs-back-reading { font-size: 15px; color: var(--color-text-sub); }
 .vfs-meaning { font-size: 18px; font-weight: 700; color: var(--color-primary); margin: 0; text-align: center; }
 .vfs-example { background: var(--color-bg); border-radius: var(--radius-md); padding: 10px 14px; width: 100%; box-sizing: border-box; text-align: center; }
 .vfs-example p { margin: 0; font-size: 15px; color: var(--color-text); }
@@ -81,28 +84,14 @@
 .vfs-option--wrong   { border-color: var(--color-error); background: #FEF2F2; color: var(--color-error); }
 .vfs-mark { font-weight: 800; }
 
-/* Self-rating (thẻ lật) */
-.vfs-rating { width: 100%; display: flex; flex-direction: column; gap: 12px; border-top: 1px dashed var(--color-border); padding-top: 16px; }
-.vfs-rating-prompt { margin: 0; font-size: 14px; font-weight: 700; color: var(--color-text); text-align: center; }
-.vfs-rating-row { display: flex; gap: 10px; }
-.vfs-rate {
-  flex: 1; display: inline-flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 12px 8px; border-radius: var(--radius-md); border: 2px solid var(--color-border);
-  background: var(--color-surface, #fff); font-family: var(--font-base); font-size: 13px; font-weight: 700;
-  color: var(--color-text); cursor: pointer; transition: filter var(--transition), border-color var(--transition);
-}
-.vfs-rate:hover:not(:disabled) { filter: brightness(0.98); }
-.vfs-rate:disabled { opacity: 0.6; cursor: not-allowed; }
-.vfs-rate-icon { font-size: 18px; font-weight: 800; }
-.vfs-rate--wrong { border-color: var(--color-error); color: var(--color-error); }
-.vfs-rate--hard  { border-color: var(--color-accent); color: #B7670A; }
-.vfs-rate--easy  { border-color: var(--color-secondary); color: var(--color-secondary); }
-
 /* Feedback */
 .vfs-feedback { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px; border-top: 1px dashed var(--color-border); padding-top: 16px; }
 .vfs-feedback-text { font-size: 15px; font-weight: 700; text-align: center; }
 .vfs-feedback--ok .vfs-feedback-text { color: var(--color-secondary); }
 .vfs-feedback--no .vfs-feedback-text { color: var(--color-error); }
+
+/* Thẻ NEW: chỉ một nút đi tiếp sau khi lật */
+.vfs-next-row { width: 100%; display: flex; justify-content: center; border-top: 1px dashed var(--color-border); padding-top: 16px; }
 
 /* Summary */
 .vfs-summary { display: flex; flex-direction: column; align-items: center; gap: 18px; }

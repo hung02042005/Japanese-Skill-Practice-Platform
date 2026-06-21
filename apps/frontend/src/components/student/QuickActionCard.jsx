@@ -1,14 +1,14 @@
 import { useNavigate } from 'react-router-dom';
-import { FlashcardIcon, ExamIcon, DictionaryIcon, ChartIcon } from './StudentIcons';
+import { NotebookIcon, ExamIcon, DictionaryIcon, ChartIcon } from './StudentIcons';
 import './QuickActionCard.css';
 
 const ACTIONS = {
-  flashcard: {
-    label: 'Ôn Flashcard',
-    desc:  'Spaced repetition',
-    route: '/flashcard',
-    Icon:  FlashcardIcon,
-    mod:   'flashcard',
+  notebook: {
+    label: 'Sổ tay',
+    desc:  'Từ cần ôn lại',
+    route: '/notebook',
+    Icon:  NotebookIcon,
+    mod:   'notebook',
   },
   exam: {
     label: 'Thi Thử JLPT',

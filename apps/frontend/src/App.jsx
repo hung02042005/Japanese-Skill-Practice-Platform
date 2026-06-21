@@ -15,9 +15,7 @@ import Onboarding from './pages/onboarding/Onboarding';
 import Profile from './pages/profile/Profile';
 import ChangePassword from './pages/settings/ChangePassword';
 import LearnNew from './pages/learn/LearnNew';
-import Review from './pages/review/Review';
 import LessonDetail from './pages/lessons/LessonDetail';
-import Flashcard from './pages/flashcard/Flashcard';
 import MockTestList from './pages/mock-test/MockTestList';
 import MockTestAttempt from './pages/mock-test/MockTestAttempt';
 import MockTestResults from './pages/mock-test/MockTestResults';
@@ -27,6 +25,7 @@ import KanjiPractice from './pages/kanji/KanjiPractice';
 import Certificates from './pages/certificates/Certificates';
 import Grammar from './pages/grammar/Grammar';
 import Dictionary from './pages/dictionary/Dictionary';
+import Notebook from './pages/notebook/Notebook';
 import Reading from './pages/reading/Reading';
 import Listening from './pages/listening/Listening';
 import NotFound from './pages/error/NotFound';
@@ -54,7 +53,9 @@ import StaffGrading      from './pages/staff/StaffGrading';
 import StaffNotifications from './pages/staff/StaffNotifications';
 import StaffStudents    from './pages/staff/StaffStudents';
 import KanaList         from './pages/kana/KanaList';
-import VocabularyList   from './pages/vocabulary/VocabularyList';
+import VocabularyRoute       from './pages/vocabulary/VocabularyRoute';
+import VocabFlashcardSession from './pages/vocabulary/VocabFlashcardSession';
+import CourseList       from './pages/courses/CourseList';
 import QuizPage         from './pages/quiz/QuizPage';
 import SpeakingPage     from './pages/speaking/SpeakingPage';
 
@@ -82,9 +83,7 @@ function App() {
         <Route path="/profile"      element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/settings/change-password" element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
         <Route path="/learn"        element={<PrivateRoute><LearnNew /></PrivateRoute>} />
-        <Route path="/review"       element={<PrivateRoute><Review /></PrivateRoute>} />
         <Route path="/lessons/:id"  element={<PrivateRoute><LessonDetail /></PrivateRoute>} />
-        <Route path="/flashcard"    element={<PrivateRoute><Flashcard /></PrivateRoute>} />
         <Route path="/mock-test"                    element={<PrivateRoute><MockTestList /></PrivateRoute>} />
         <Route path="/mock-test/:id/attempt"        element={<PrivateRoute><MockTestAttempt /></PrivateRoute>} />
         <Route path="/mock-test/:id/results"        element={<PrivateRoute><MockTestResults /></PrivateRoute>} />
@@ -94,10 +93,13 @@ function App() {
         <Route path="/certificates" element={<PrivateRoute><Certificates /></PrivateRoute>} />
         <Route path="/grammar"      element={<PrivateRoute><Grammar /></PrivateRoute>} />
         <Route path="/dictionary"   element={<PrivateRoute><Dictionary /></PrivateRoute>} />
+        <Route path="/notebook"     element={<PrivateRoute><Notebook /></PrivateRoute>} />
         <Route path="/reading"      element={<PrivateRoute><Reading /></PrivateRoute>} />
         <Route path="/listening"    element={<PrivateRoute><Listening /></PrivateRoute>} />
         <Route path="/kana"         element={<PrivateRoute><KanaList /></PrivateRoute>} />
-        <Route path="/vocabulary"   element={<PrivateRoute><VocabularyList /></PrivateRoute>} />
+        <Route path="/vocabulary"           element={<PrivateRoute><VocabularyRoute /></PrivateRoute>} />
+        <Route path="/vocabulary/flashcard" element={<PrivateRoute><VocabFlashcardSession /></PrivateRoute>} />
+        <Route path="/courses"              element={<PrivateRoute><CourseList /></PrivateRoute>} />
         <Route path="/quiz"         element={<PrivateRoute><QuizPage /></PrivateRoute>} />
         <Route path="/speaking"     element={<PrivateRoute><SpeakingPage /></PrivateRoute>} />
 

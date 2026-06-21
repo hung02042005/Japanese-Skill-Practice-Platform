@@ -117,7 +117,7 @@ function Dashboard() {
         {/* ── RIGHT ── */}
         <aside className="dashboard-right" aria-label="Chức năng nhanh">
           <div className="qa-list">
-            <QuickActionCard type="flashcard" />
+            <QuickActionCard type="notebook" />
             <QuickActionCard type="progress" />
           </div>
 

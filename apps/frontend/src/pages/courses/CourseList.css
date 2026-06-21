@@ -1,0 +1,250 @@
+/* ============================================================
+   CourseList — chọn khoá học theo cấp độ JLPT (SPEC-course-list)
+   SakuJi · Hanami theme. VIP/locked đã bỏ khỏi phạm vi.
+   ============================================================ */
+
+/* ── Page shell (§3.1) ── */
+.cl-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  font-family: var(--font-base);
+}
+
+/* ── Content container (§3.2) ── */
+.cl-content {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+  width: 100%;
+}
+
+/* ── Breadcrumb (§5.1) ── */
+.cl-breadcrumb {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.cl-breadcrumb button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--color-text-sub);
+  cursor: pointer;
+  border-radius: 4px;
+}
+.cl-breadcrumb button:hover { color: var(--color-primary); text-decoration: underline; }
+.cl-breadcrumb button:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.cl-breadcrumb [aria-current="page"] { color: var(--color-text); }
+
+/* ── Title (§5.2) ── */
+.cl-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 8px 0 0;
+}
+.cl-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+  margin: 4px 0 20px;
+}
+
+/* ── Grid (§3.3 / §10) ── */
+.cl-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* ── CourseCard (§6.2) ── */
+.cl-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  min-height: 180px;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  animation: clSlideUp 250ms ease forwards;
+}
+.cl-card:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-light);
+}
+.cl-card:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+/* Stagger entrance (§11) */
+.cl-card:nth-child(1) { animation-delay: 0ms; }
+.cl-card:nth-child(2) { animation-delay: 50ms; }
+.cl-card:nth-child(3) { animation-delay: 100ms; }
+.cl-card:nth-child(4) { animation-delay: 150ms; }
+.cl-card:nth-child(5) { animation-delay: 200ms; }
+
+/* ── Level badge (§6.2.1 / §2) ── */
+.cl-card-level {
+  align-self: flex-start;
+  border-radius: var(--radius-full);
+  padding: 2px 10px;
+  font-size: 13px;
+  font-weight: 800;
+}
+.cl-card-level--n5 { color: var(--color-secondary);    background: rgba(76, 175, 80, 0.12); }
+.cl-card-level--n4 { color: #1E88E5;                    background: rgba(66, 165, 245, 0.12); }
+.cl-card-level--n3 { color: var(--color-primary);      background: var(--color-primary-bg); }
+.cl-card-level--n2 { color: #AB47BC;                    background: rgba(171, 71, 188, 0.12); }
+.cl-card-level--n1 { color: var(--color-primary-dark); background: rgba(196, 78, 98, 0.12); }
+
+/* ── Title / Description (§6.2.2) ── */
+.cl-card-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cl-card-desc {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.45;
+}
+
+/* ── Progress (§6.2.3) ── */
+.cl-card-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: auto;
+}
+.cl-card-progress-track {
+  display: block;
+  height: 8px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.cl-card-progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width var(--transition);
+}
+.cl-card-progress-fill--high { background: var(--color-secondary); }
+.cl-card-progress-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+}
+
+/* ── Footer: chip + trailing (§6.2.4) ── */
+.cl-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.cl-card-current {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  background: var(--color-primary-bg);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+}
+.cl-card-arrow {
+  margin-left: auto;
+  font-size: 20px;
+  color: var(--color-text-sub);
+  transition: transform var(--transition), color var(--transition);
+}
+.cl-card:hover .cl-card-arrow {
+  transform: translateX(3px);
+  color: var(--color-primary);
+}
+
+/* ── Skeleton (§7) ── */
+.cl-skel {
+  background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%);
+  background-size: 200% 100%;
+  animation: clSkel 1.4s ease infinite;
+  border-radius: var(--radius-lg);
+}
+.cl-skel--card { height: 180px; }
+
+/* ── Error (§9) ── */
+.cl-error {
+  background: var(--color-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.cl-error p {
+  margin: 0 0 12px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.cl-error button,
+.cl-empty-cta {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 10px 22px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.cl-error button:hover,
+.cl-empty-cta:hover { background: var(--color-primary-dark); }
+.cl-error button:focus-visible,
+.cl-empty-cta:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.cl-empty-cta { margin-top: 16px; }
+
+/* ── Animations (§11) ── */
+@keyframes clSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes clSkel {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Responsive (§10) ── */
+@media (max-width: 1023px) {
+  .cl-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 767px) {
+  .cl-grid { grid-template-columns: 1fr; }
+  .cl-content { padding: 16px; }
+}
+
+/* ── Reduced motion (§11 / AC-CL-12) ── */
+@media (prefers-reduced-motion: reduce) {
+  .cl-page * {
+    animation: none !important;
+    transition-duration: 0ms !important;
+  }
+}

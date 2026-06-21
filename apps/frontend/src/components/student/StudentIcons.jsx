@@ -278,6 +278,27 @@ export function DictionaryIcon({ size = 24 }) {
   );
 }
 
+/** 📓 Notebook — sổ tay "Từ cần ôn lại" (book + spiral binding + bookmark) */
+export function NotebookIcon({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      {/* Cover fill */}
+      <rect x="5" y="3" width="14" height="18" rx="2.5" fill="currentColor" opacity="0.13" />
+      {/* Cover outline */}
+      <rect x="5" y="3" width="14" height="18" rx="2.5" stroke="currentColor" strokeWidth="2" fill="none" />
+      {/* Spiral binding */}
+      <line x1="9" y1="2" x2="9" y2="22" stroke="currentColor" strokeWidth="2" strokeOpacity="0.5" />
+      {/* Text lines */}
+      <line x1="11.5" y1="8.5"  x2="16" y2="8.5"
+        stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeOpacity="0.5" />
+      <line x1="11.5" y1="11.5" x2="16" y2="11.5"
+        stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeOpacity="0.5" />
+      {/* Bookmark */}
+      <path d="M14.5 3 V10 l1.75 -1.3 L18 10 V3" fill="currentColor" opacity="0.7" />
+    </svg>
+  );
+}
+
 /** 📊 Progress — three ascending bar chart */
 export function ChartIcon({ size = 24 }) {
   return (
