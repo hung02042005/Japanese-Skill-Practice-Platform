@@ -164,7 +164,7 @@ class AssessmentControllerIntegrationTest {
     }
 
     @Test
-    void listAssessments_withoutToken_returnsForbidden() throws Exception {
-        mockMvc.perform(get("/api/assessments").param("type", "quiz")).andExpect(status().isForbidden());
+    void listAssessments_withoutToken_returnsUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/assessments").param("type", "quiz")).andExpect(status().isUnauthorized());
     }
 }

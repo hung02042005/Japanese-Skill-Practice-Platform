@@ -16,6 +16,7 @@ import lombok.Getter;
 public class ExamQuestionRefEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_id")
     private Long id;
 
