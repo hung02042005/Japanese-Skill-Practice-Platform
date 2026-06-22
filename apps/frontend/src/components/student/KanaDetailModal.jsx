@@ -1,13 +1,27 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 export default function KanaDetailModal({ kana, isSaving, onComplete, onClose }) {
   const audioRef = useRef(null);
+  const [audioError, setAudioError] = useState(false);
+
+  const hasAudio = Boolean(kana.audioUrl);
 
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [onClose]);
+
+  const playAudio = async () => {
+    if (!audioRef.current) return;
+    setAudioError(false);
+    try {
+      audioRef.current.currentTime = 0;
+      await audioRef.current.play();
+    } catch {
+      setAudioError(true);
+    }
+  };
 
   return (
     <div
@@ -25,13 +39,27 @@ export default function KanaDetailModal({ kana, isSaving, onComplete, onClose })
         <div className="kna-modal-actions-row">
           <button
             className="kna-btn-audio"
-            onClick={() => audioRef.current?.play()}
+            onClick={playAudio}
+            disabled={!hasAudio}
+            title={hasAudio ? undefined : 'Chưa có file phát âm cho ký tự này'}
             aria-label={`Nghe phát âm ${kana.character}`}
           >
             ▶ Phát âm
           </button>
-          <audio ref={audioRef} src={kana.audioUrl} preload="none" />
+          {hasAudio && (
+            <audio
+              ref={audioRef}
+              src={kana.audioUrl}
+              preload="none"
+              onError={() => setAudioError(true)}
+            />
+          )}
         </div>
+        {audioError && (
+          <div className="kna-audio-error" role="alert">
+            Không phát được âm thanh. Vui lòng thử lại sau.
+          </div>
+        )}
 
         {kana.strokeGifUrl && (
           <img

@@ -67,7 +67,7 @@
   transition: border-color var(--transition), box-shadow var(--transition);
 }
 .voc-card:hover { border-color: var(--color-primary-light); box-shadow: var(--shadow-sm); }
-.voc-card--done { border-color: var(--color-secondary); background: var(--color-secondary-bg); }
+.voc-card--done { border-color: var(--color-primary); background: var(--color-primary-bg); }
 
 .voc-card-main  { flex: 1; display: flex; flex-direction: column; gap: 6px; }
 .voc-card-word  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -103,7 +103,7 @@
   font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;
   transition: all var(--transition); font-family: var(--font-base);
 }
-.voc-btn-fc--added { background: var(--color-secondary-bg); border-color: var(--color-secondary); color: var(--color-secondary); cursor: default; }
+.voc-btn-fc--added { background: var(--color-primary-bg); border-color: var(--color-primary); color: var(--color-primary); cursor: default; }
 .voc-btn-fc:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .voc-btn-done {
@@ -112,7 +112,7 @@
   font-size: 14px; cursor: pointer; color: var(--color-text-sub);
   transition: all var(--transition);
 }
-.voc-btn-done--active { background: var(--color-secondary); border-color: var(--color-secondary); color: white; cursor: default; }
+.voc-btn-done--active { background: var(--color-primary); border-color: var(--color-primary-dark, var(--color-primary)); color: white; cursor: default; }
 .voc-btn-done:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* Skeleton */

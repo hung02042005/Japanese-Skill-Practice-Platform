@@ -1,85 +1,59 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import HanziWriter from 'hanzi-writer';
 import KanjiStrokeLayer from './KanjiStrokeLayer';
+import { evaluateKanjiStroke, saveKanjiWritingAttempt } from '../../api/studentService';
 
 /* ── Lưới giấy thư pháp (半紙 / hanshi) ──────────────────────────── */
 function WritingGrid() {
   return (
     <svg className="kpw-grid" viewBox="0 0 100 100"
       preserveAspectRatio="none" aria-hidden="true">
-      {/* Đường chia 4 góc — xám nhạt */}
       <line x1="25"  y1="0"   x2="25"  y2="100" stroke="#E5DDD8" strokeWidth="0.4" />
       <line x1="75"  y1="0"   x2="75"  y2="100" stroke="#E5DDD8" strokeWidth="0.4" />
       <line x1="0"   y1="25"  x2="100" y2="25"  stroke="#E5DDD8" strokeWidth="0.4" />
       <line x1="0"   y1="75"  x2="100" y2="75"  stroke="#E5DDD8" strokeWidth="0.4" />
-      {/* Đường chéo — rất mờ */}
       <line x1="0"   y1="0"   x2="100" y2="100" stroke="#EDE5DE" strokeWidth="0.35" strokeDasharray="3 5" />
       <line x1="100" y1="0"   x2="0"   y2="100" stroke="#EDE5DE" strokeWidth="0.35" strokeDasharray="3 5" />
-      {/* Đường trung tâm — đỏ nhạt (như giấy luyện thư pháp thật) */}
       <line x1="50"  y1="0"   x2="50"  y2="100" stroke="#DDB8B8" strokeWidth="0.75" strokeDasharray="5 3" />
       <line x1="0"   y1="50"  x2="100" y2="50"  stroke="#DDB8B8" strokeWidth="0.75" strokeDasharray="5 3" />
-      {/* Chấm tâm */}
       <circle cx="50" cy="50" r="1" fill="#DDB8B8" opacity="0.85" />
     </svg>
   );
 }
 
-/* ── Direction helper ────────────────────────────────────────────────── */
-/**
- * Phân tích hướng viết của nét từ median (tọa độ HanziWriter, Y đi lên).
- * Trả về label tiếng Việt ngắn gọn.
- */
-function getDirectionLabel(median) {
-  if (!median || median.length < 2) return '';
-  const [sx, sy] = median[0];
-  const [ex, ey] = median[median.length - 1];
-  const dx = ex - sx;
-  const dy = ey - sy; // Y trục lên trong HW coords
-
-  const adx = Math.abs(dx), ady = Math.abs(dy);
-
-  if (ady > adx * 2.5) return dy > 0 ? '↑ Lên trên'      : '↓ Xuống';
-  if (adx > ady * 2.5) return dx > 0 ? '→ Sang phải'     : '← Sang trái';
-  if (dx > 0 && dy < 0) return '↘ Chéo phải xuống';
-  if (dx < 0 && dy < 0) return '↙ Chéo trái xuống';
-  if (dx > 0 && dy > 0) return '↗ Chéo phải lên';
-  return '↖ Chéo trái lên';
-}
-
-/* ── Score helpers ───────────────────────────────────────────────────── */
-function qualityFromMistakes(mistakes) {
-  if (mistakes === 0)  return 'perfect';
-  if (mistakes <= 2)   return 'good';
-  return 'ok';
-}
-
+/* ── Hiển thị quality badge — data từ API, không tính ở đây ─────── */
 function QualityBadge({ quality }) {
+  if (!quality || quality === 'loading') return <>⏳</>;
   if (quality === 'perfect') return <>✔ Hoàn hảo! ⭐⭐⭐</>;
   if (quality === 'good')    return <>✔ Tốt lắm! ⭐⭐</>;
   return <>✔ Đúng rồi ⭐</>;
 }
 
-function FinalScore({ mistakesArr }) {
-  const total = mistakesArr.length;
-  if (!total) return null;
-  const totalMistakes = mistakesArr.reduce((s, m) => s + m, 0);
-  const avg = totalMistakes / total;
-  if (avg < 0.5)  return <span className="kpw-done-stars">⭐⭐⭐ Hoàn hảo</span>;
-  if (avg < 1.5)  return <span className="kpw-done-stars">⭐⭐ Tốt</span>;
-  return            <span className="kpw-done-stars">⭐ Cần luyện thêm</span>;
+/* ── Hiển thị điểm cuối — data từ API saveAttempt ───────────────── */
+function FinalScore({ apiResult }) {
+  if (!apiResult) return null;
+  if (apiResult.finalQuality === 'perfect') return <span className="kpw-done-stars">⭐⭐⭐ Hoàn hảo</span>;
+  if (apiResult.finalQuality === 'good')    return <span className="kpw-done-stars">⭐⭐ Tốt</span>;
+  return <span className="kpw-done-stars">⭐ Cần luyện thêm</span>;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
    KanjiWritingCanvas
    Kiến trúc 3 layer:
-     Layer 1 — Stroke data   : HanziWriter.loadCharacterData() → SVG paths
-     Layer 2 — 3 states      : KanjiStrokeLayer (future ghost / current guide / done←HW)
-     Layer 3 — Comparison    : direction label, per-stroke quality badge,
-                               final score overlay
+     Layer 1 — HanziWriter quiz : animation + xác nhận nét đúng/sai
+     Layer 2 — KanjiStrokeLayer : ghost strokes + current guide
+     Layer 3 — API result       : quality badge + final score từ backend
+   Business logic (DTW scoring, chất lượng, lưu DB) = BACKEND ONLY
    ═══════════════════════════════════════════════════════════════════════ */
+<<<<<<< Updated upstream
 export default function KanjiWritingCanvas({ character, strokeCount, onBack, onComplete }) {
   const wrapRef   = useRef(null);  // kpw-canvas-box — đọc kích thước thực
   const hwRef     = useRef(null);  // div HanziWriter render vào
+=======
+export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, onBack, onComplete }) {
+  const wrapRef   = useRef(null);
+  const hwRef     = useRef(null);
+>>>>>>> Stashed changes
   const writerRef = useRef(null);
 
   /* ── UI state ──────────────────────────────────────────────────── */
@@ -87,80 +61,167 @@ export default function KanjiWritingCanvas({ character, strokeCount, onBack, onC
   const [feedback,     setFeedback]     = useState(null);  // 'ok'|'bad'|null
   const [hint,         setHint]         = useState(false);
   const [done,         setDone]         = useState(false);
-  const [status,       setStatus]       = useState('loading'); // 'loading'|'ready'|'error'
-  const [strokeQuality, setStrokeQuality] = useState(null);   // 'perfect'|'good'|'ok'|null
+  const [status,       setStatus]       = useState('loading');
+  const [strokeQuality, setStrokeQuality] = useState(null); // từ API
 
-  /* ── HanziWriter sizing (dùng để đồng bộ KanjiStrokeLayer) ────── */
+  /* ── HanziWriter sizing ────────────────────────────────────────── */
   const [hwSize,    setHwSize]    = useState(400);
   const [hwPadding, setHwPadding] = useState(16);
 
-  /* ── Character data (từ KanjiStrokeLayer callback) → direction ── */
-  const [charData,  setCharData]  = useState(null);
+  /* ── Character data cho KanjiStrokeLayer + hướng nét gợi ý ─────── */
+  const [charData, setCharData] = useState(null);
 
-  /* ── Mistake tracking per stroke ────────────────────────────────── */
-  const mistakesRef          = useRef([]);   // mistakes[i] = số lần sai ở nét i
-  const currentStrokeIdxRef  = useRef(0);    // nét đang được quiz
+  /* ── Kết quả lần luyện viết — từ API saveAttempt ───────────────── */
+  const [finalScore, setFinalScore] = useState(null);
+
+  /* ── Refs cho values cần thiết bên trong HanziWriter callbacks ─── */
+  const charDataRef  = useRef(null);
+  const hwSizeRef    = useRef(400);
+  const kanjiIdRef   = useRef(kanjiId);
+  const strokeResRef = useRef([]);  // [{strokeIndex, dtwScore, quality, direction}]
+
+  useEffect(() => { charDataRef.current = charData; },  [charData]);
+  useEffect(() => { hwSizeRef.current   = hwSize; },    [hwSize]);
+  useEffect(() => { kanjiIdRef.current  = kanjiId; },   [kanjiId]);
+
+  /* ── Pointer capture — ghi lại đường vẽ của người dùng ─────────── */
+  const currentUserPathRef = useRef([]);
+  const isDrawingRef       = useRef(false);
+
+  useEffect(() => {
+    const el = hwRef.current;
+    if (!el) return;
+
+    const onDown = (e) => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      // Flip Y để khớp trục Y-up của HanziWriter medians
+      const y = rect.height - (e.clientY - rect.top);
+      currentUserPathRef.current = [[x, y]];
+      isDrawingRef.current = true;
+    };
+    const onMove = (e) => {
+      if (!isDrawingRef.current) return;
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = rect.height - (e.clientY - rect.top);
+      currentUserPathRef.current.push([x, y]);
+    };
+    const onUp = () => { isDrawingRef.current = false; };
+
+    el.addEventListener('pointerdown', onDown, { passive: true });
+    el.addEventListener('pointermove', onMove, { passive: true });
+    el.addEventListener('pointerup',   onUp,   { passive: true });
+
+    return () => {
+      el.removeEventListener('pointerdown', onDown);
+      el.removeEventListener('pointermove', onMove);
+      el.removeEventListener('pointerup',   onUp);
+    };
+  }, [status]); // re-attach sau khi HanziWriter load xong
 
   const total = Math.max(strokeCount || 1, 1);
 
-  /* ── Direction label cho nét hiện tại ──────────────────────────── */
-  const dirLabel = useMemo(() => {
+  /* ── Hướng nét TIẾP THEO để gợi ý người dùng (UX display, không phải scoring) */
+  const nextStrokeDirLabel = useMemo(() => {
     const med = charData?.medians?.[count];
-    return getDirectionLabel(med);
+    if (!med || med.length < 2) return '';
+    const [sx, sy] = med[0];
+    const [ex, ey] = med[med.length - 1];
+    const dx = ex - sx, dy = ey - sy;
+    const adx = Math.abs(dx), ady = Math.abs(dy);
+    if (ady > adx * 2.5) return dy > 0 ? '↑ Lên trên'       : '↓ Xuống';
+    if (adx > ady * 2.5) return dx > 0 ? '→ Sang phải'      : '← Sang trái';
+    if (dx > 0 && dy < 0) return '↘ Chéo phải xuống';
+    if (dx < 0 && dy < 0) return '↙ Chéo trái xuống';
+    if (dx > 0 && dy > 0) return '↗ Chéo phải lên';
+    return '↖ Chéo trái lên';
   }, [charData, count]);
 
-  /* ── startQuiz (khi reset hoặc tải xong) ───────────────────────── */
+  /* ── startQuiz ─────────────────────────────────────────────────── */
   const startQuiz = useCallback((writer) => {
-    // Reset mistake tracking
-    mistakesRef.current         = new Array(total).fill(0);
-    currentStrokeIdxRef.current = 0;
+    strokeResRef.current = new Array(total).fill(null);
 
     writer.quiz({
-      showHintAfterMisses:    3,   // animation gợi ý sau 3 lần sai
+      showHintAfterMisses:     3,
       markStrokesReadyForQuiz: false,
 
       onMistake: () => {
-        // Ghi nhận lỗi cho nét hiện tại
-        mistakesRef.current[currentStrokeIdxRef.current] =
-          (mistakesRef.current[currentStrokeIdxRef.current] || 0) + 1;
+        // Feedback UX tức thì — không liên quan đến scoring
         setFeedback('bad');
         setTimeout(() => setFeedback(null), 750);
       },
 
       onCorrectStroke: (strokeData) => {
-        const completed = total - strokeData.strokesRemaining;
-        currentStrokeIdxRef.current = completed; // chuẩn bị cho nét tiếp theo
-        setCount(completed);
+        const completed  = total - strokeData.strokesRemaining;
+        const strokeIdx  = completed - 1;
 
-        // Quality badge dựa trên số lần sai ở nét vừa hoàn thành
-        const m = mistakesRef.current[completed - 1] || 0;
-        setStrokeQuality(qualityFromMistakes(m));
+        // Capture path ngay trước khi pointerdown reset nó
+        const userPath      = [...currentUserPathRef.current];
+        const referencePath = charDataRef.current?.medians?.[strokeIdx] ?? [];
+
+        setCount(completed);
         setFeedback('ok');
-        setTimeout(() => {
-          setFeedback(null);
-          setStrokeQuality(null);
-        }, 1100);
+        setStrokeQuality('loading'); // chờ API
+
+        // Gọi backend DTW — không block HanziWriter
+        evaluateKanjiStroke({ strokeIndex: strokeIdx, userPath, referencePath })
+          .then((result) => {
+            strokeResRef.current[strokeIdx] = result;
+            setStrokeQuality(result.quality);
+            setTimeout(() => { setFeedback(null); setStrokeQuality(null); }, 1000);
+          })
+          .catch(() => {
+            setStrokeQuality('ok'); // fallback an toàn
+            setTimeout(() => { setFeedback(null); setStrokeQuality(null); }, 800);
+          });
       },
 
       onComplete: () => {
         setCount(total);
+<<<<<<< Updated upstream
         setTimeout(() => setDone(true), 450);
         onComplete?.();
       },
     });
   }, [total, onComplete]);
+=======
+        const strokes = strokeResRef.current
+          .map((r, i) => ({
+            strokeIndex: i,
+            dtwScore:    r?.dtwScore  ?? 0,
+            quality:     r?.quality   ?? 'ok',
+            direction:   r?.direction ?? '',
+          }));
+
+        // Lưu kết quả luyện viết lên backend
+        saveKanjiWritingAttempt({
+          kanjiId:        kanjiIdRef.current,
+          characterValue: character,
+          totalStrokes:   total,
+          strokes,
+        })
+          .then((result) => { setFinalScore(result); })
+          .catch(() => { setFinalScore(null); })
+          .finally(() => {
+            setDone(true);
+            if (onComplete) onComplete();
+          });
+      },
+    });
+  }, [total, character, onComplete]);
+>>>>>>> Stashed changes
 
   /* ── Tạo HanziWriter khi character thay đổi ─────────────────────── */
   useEffect(() => {
     if (!hwRef.current || !wrapRef.current) return;
 
-    // Đọc kích thước thực của container
     const size    = Math.round(wrapRef.current.getBoundingClientRect().width) || 400;
     const padding = Math.max(Math.round(size * 0.04), 8);
 
-    // Lưu để truyền vào KanjiStrokeLayer (phải khớp với HanziWriter)
     setHwSize(size);
     setHwPadding(padding);
+    hwSizeRef.current = size;
 
     hwRef.current.innerHTML = '';
     setCount(0);
@@ -170,20 +231,19 @@ export default function KanjiWritingCanvas({ character, strokeCount, onBack, onC
     setStatus('loading');
     setStrokeQuality(null);
     setCharData(null);
+    setFinalScore(null);
+    strokeResRef.current = [];
 
     const writer = HanziWriter.create(hwRef.current, character, {
       width:   size,
       height:  size,
       padding,
-
-      showOutline:   false,      // KanjiStrokeLayer xử lý future strokes
-      showCharacter: false,
-
-      strokeColor:        '#2D2D2D',  // nét đã vẽ đúng — ink đậm
-      highlightColor:     '#22C55E',  // flash xanh lá khi hoàn thành nét
+      showOutline:        false,
+      showCharacter:      false,
+      strokeColor:        '#2D2D2D',
+      highlightColor:     '#22C55E',
       drawingWidth:       8,
       highlightOnComplete: true,
-
       onLoadCharDataSuccess: () => {
         setStatus('ready');
         startQuiz(writer);
@@ -192,7 +252,6 @@ export default function KanjiWritingCanvas({ character, strokeCount, onBack, onC
     });
 
     writerRef.current = writer;
-
     return () => { writerRef.current = null; };
   }, [character, startQuiz]);
 
@@ -205,10 +264,12 @@ export default function KanjiWritingCanvas({ character, strokeCount, onBack, onC
     setDone(false);
     setHint(false);
     setStrokeQuality(null);
+    setFinalScore(null);
+    strokeResRef.current = [];
     startQuiz(writerRef.current);
   }, [status, startQuiz]);
 
-  /* ── Gợi ý (hiện/ẩn chữ mờ) ─────────────────────────────────────── */
+  /* ── Gợi ý ──────────────────────────────────────────────────────── */
   const handleHint = useCallback(() => {
     if (!writerRef.current) return;
     const next = !hint;
@@ -257,10 +318,8 @@ export default function KanjiWritingCanvas({ character, strokeCount, onBack, onC
             feedback === 'bad' ? ' kpw--bad' : ''
           }`}
         >
-          {/* ── Layer 1+2 : HanziWriter quiz (input + completed strokes) */}
           <div ref={hwRef} className="kpw-hw" />
 
-          {/* ── Layer 2 : KanjiStrokeLayer — future ghost + current guide */}
           {status !== 'error' && (
             <KanjiStrokeLayer
               character={character}
@@ -272,24 +331,21 @@ export default function KanjiWritingCanvas({ character, strokeCount, onBack, onC
             />
           )}
 
-          {/* ── Lưới kẻ mờ (pointer-events: none) */}
           <WritingGrid />
 
-          {/* ── Loading overlay */}
           {status === 'loading' && (
             <div className="kpw-status-overlay">
               <div className="kpw-spinner-sm" />
             </div>
           )}
 
-          {/* ── Error overlay */}
           {status === 'error' && (
             <div className="kpw-status-overlay">
               <p className="kpw-status-msg">Ký tự này chưa có dữ liệu nét</p>
             </div>
           )}
 
-          {/* ── Layer 3 : Feedback badge với quality ── */}
+          {/* Quality badge — content từ API response */}
           {feedback && (
             <div className={`kpw-badge kpw-badge--${feedback}`} role="status">
               {feedback === 'ok'
@@ -299,13 +355,13 @@ export default function KanjiWritingCanvas({ character, strokeCount, onBack, onC
           )}
         </div>
 
-        {/* ── Layer 3 : Direction label + stroke counter ── */}
+        {/* Hướng nét tiếp theo — gợi ý UX, tính từ charData.medians */}
         {!done && status === 'ready' && (
           <div className="kpw-stroke-info">
             <span className="kpw-step-num">Nét <strong>{count + 1}</strong> / {total}</span>
-            {dirLabel && (
+            {nextStrokeDirLabel && (
               <span className="kpw-dir-label">
-                <DirectionIcon /> {dirLabel}
+                <DirectionIcon /> {nextStrokeDirLabel}
               </span>
             )}
           </div>
@@ -315,16 +371,14 @@ export default function KanjiWritingCanvas({ character, strokeCount, onBack, onC
       {/* ── Thanh điều khiển ──────────────────────────────────────── */}
       <div className="kpw-ctrls">
         <button className="kpw-ctrl" onClick={handleReset} title="Đặt lại toàn bộ">
-          <ResetIcon />
-          <span>Đặt lại</span>
+          <ResetIcon /><span>Đặt lại</span>
         </button>
         <button
           className={`kpw-ctrl${hint ? ' kpw-ctrl--on' : ''}`}
           onClick={handleHint}
           title={hint ? 'Ẩn gợi ý' : 'Hiện chữ mờ mẫu'}
         >
-          <HintIcon />
-          <span>Gợi ý</span>
+          <HintIcon /><span>Gợi ý</span>
         </button>
         <button
           className="kpw-ctrl"
@@ -332,18 +386,17 @@ export default function KanjiWritingCanvas({ character, strokeCount, onBack, onC
           disabled={done || status !== 'ready'}
           title="Bỏ qua nét này"
         >
-          <SkipIcon />
-          <span>Bỏ qua</span>
+          <SkipIcon /><span>Bỏ qua</span>
         </button>
       </div>
 
-      {/* ── Overlay hoàn thành ────────────────────────────────────── */}
+      {/* ── Overlay hoàn thành — điểm từ API saveAttempt ─────────── */}
       {done && (
         <div className="kpw-done-veil">
           <div className="kpw-done-box">
             <div className="kpw-done-k" lang="ja">{character}</div>
             <h3 className="kpw-done-h">Hoàn thành! 🎉</h3>
-            <FinalScore mistakesArr={mistakesRef.current} />
+            <FinalScore apiResult={finalScore} />
             <p className="kpw-done-p">
               Bạn đã viết đúng {total} nét của 「{character}」
             </p>

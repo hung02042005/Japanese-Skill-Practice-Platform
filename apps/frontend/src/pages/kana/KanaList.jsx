@@ -1,10 +1,12 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import TopNav from '../../components/layout/TopNav';
 import { ProgressBar } from '../../components/common/ProgressBar';
 import KanaDetailModal from '../../components/student/KanaDetailModal';
 import { getKanaList, markKanaComplete } from '../../api/studentService';
 import './KanaList.css';
+import KanaResetButton from '../../components/student/KanaResetButton';
+import './KanaStylesExtension.css';
 
 const SCRIPTS = [
   { id: 'hiragana', label: 'Hiragana' },
@@ -13,18 +15,18 @@ const SCRIPTS = [
 
 export default function KanaList() {
   const [searchParams] = useSearchParams();
-  const [script,    setScript]  = useState(searchParams.get('script') ?? 'hiragana');
-  const [chars,     setChars]   = useState([]);
-  const [stats,     setStats]   = useState({ completed: 0, total: 46 });
+  const [script, setScript] = useState(searchParams.get('script') ?? 'hiragana');
+  const [chars, setChars] = useState([]);
+  const [stats, setStats] = useState({ completed: 0, total: 0 });
   const [isLoading, setLoading] = useState(true);
-  const [error,     setError]   = useState('');
-  const [selected,  setSelected]= useState(null);
-  const [isSaving,  setSaving]  = useState(false);
+  const [error, setError] = useState('');
+  const [selected, setSelected] = useState(null);
+  const [isSaving, setSaving] = useState(false);
 
-  useEffect(() => {
+  const loadKana = useCallback(() => {
     setLoading(true);
     setError('');
-    getKanaList(script)
+    return getKanaList(script)
       .then((data) => {
         setChars(data.characters);
         setStats({ completed: data.completedCount, total: data.totalCount });
@@ -32,6 +34,10 @@ export default function KanaList() {
       .catch((err) => setError(err?.response?.data?.message ?? 'Không thể tải bảng chữ Kana.'))
       .finally(() => setLoading(false));
   }, [script]);
+
+  useEffect(() => {
+    loadKana();
+  }, [loadKana]);
 
   const rows = useMemo(() => {
     const map = {};
@@ -92,13 +98,14 @@ export default function KanaList() {
               <ProgressBar value={progressPct} />
             </div>
             <span className="kna-progress-pct">{progressPct}%</span>
+            <KanaResetButton onResetSuccess={loadKana} />
           </div>
         )}
 
         {error && (
           <div className="kna-error" role="alert">
             {error}
-            <button className="kna-retry" onClick={() => setScript((s) => s)}>Thử lại</button>
+            <button className="kna-retry" onClick={loadKana}>Thử lại</button>
           </div>
         )}
 

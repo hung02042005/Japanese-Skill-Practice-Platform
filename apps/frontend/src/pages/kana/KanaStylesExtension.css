@@ -1,0 +1,53 @@
+/* KanaStylesExtension.css */
+/* File CSS bổ sung để giãn cách các chữ cái Kana theo yêu cầu */
+
+.kna-row-cells {
+  gap: 24px !important; /* Tăng đáng kể khoảng cách giữa các ô chữ */
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.kna-cell {
+  margin: 6px !important; /* Thêm margin phụ để đảm bảo không dính nhau */
+  padding: 16px 20px !important; /* Tăng kích thước ô chữ cho dễ nhìn */
+  min-width: 80px; /* Đảm bảo các ô có độ rộng đều nhau hơn */
+}
+
+/* Thêm hiệu ứng hover đẹp mắt hơn khi đã giãn cách */
+.kna-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Nút Reset tiến độ Kana */
+.kna-reset-btn {
+  padding: 6px 12px;
+  background: var(--color-error-tint, #fef2f2);
+  color: var(--color-error, #ef4444);
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius-md, 6px);
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.kna-reset-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+.kna-reset-btn:hover:not(:disabled) {
+  filter: brightness(0.98);
+}
+
+/* Nút phát âm khi chưa có file audio */
+.kna-btn-audio:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: none;
+}
+
+/* Thông báo lỗi khi không phát được âm thanh */
+.kna-audio-error {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--color-error, #ef4444);
+}

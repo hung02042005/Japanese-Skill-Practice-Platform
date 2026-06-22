@@ -7,6 +7,7 @@ import { ProgressBar } from '../../components/common/ProgressBar';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
 import VocabCard from '../../components/student/VocabCard';
+import VocabResetButton from '../../components/student/VocabResetButton';
 import {
   getVocabularyList,
   getVocabTopics,
@@ -79,7 +80,7 @@ export default function VocabularyList() {
     setAction((prev) => ({ ...prev, [vocabId]: 'completing' }));
     try {
       await markVocabComplete(vocabId);
-      setWords((prev) => prev.map((w) => w.vocabId === vocabId ? { ...w, isCompleted: true } : w));
+      setWords((prev) => prev.map((w) => w.id === vocabId ? { ...w, isCompleted: true } : w));
       setStats((prev) => ({ ...prev, completed: prev.completed + 1 }));
       setAction((prev) => ({ ...prev, [vocabId]: 'done' }));
     } catch {
@@ -91,7 +92,7 @@ export default function VocabularyList() {
     setAction((prev) => ({ ...prev, [`fc_${vocabId}`]: 'adding' }));
     try {
       await addVocabToFlashcard(vocabId);
-      setWords((prev) => prev.map((w) => w.vocabId === vocabId ? { ...w, isInFlashcard: true } : w));
+      setWords((prev) => prev.map((w) => w.id === vocabId ? { ...w, isInFlashcard: true } : w));
       setAction((prev) => ({ ...prev, [`fc_${vocabId}`]: 'added' }));
     } catch {
       setAction((prev) => { const s = { ...prev }; delete s[`fc_${vocabId}`]; return s; });
@@ -129,6 +130,7 @@ export default function VocabularyList() {
             </span>
             <div className="voc-stats-bar"><ProgressBar value={progressPct} /></div>
             <span className="voc-stats-pct">{progressPct}%</span>
+            <VocabResetButton onResetSuccess={fetchWords} />
           </div>
         )}
 
@@ -180,7 +182,7 @@ export default function VocabularyList() {
           <div className="voc-list">
             {words.map((w) => (
               <VocabCard
-                key={w.vocabId}
+                key={w.id}
                 word={w}
                 actionState={actionState}
                 onComplete={handleComplete}

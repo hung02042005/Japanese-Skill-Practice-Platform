@@ -31,6 +31,14 @@ export default function KanjiPractice() {
       setCurrentStroke(0);
       markedRef.current = false;
       try {
+<<<<<<< Updated upstream
+=======
+        if (false /* DEMO_MODE */) {
+          const data = MOCK_KANJI_DETAIL_MAP[Number(id)] ?? MOCK_KANJI_DETAIL_DEFAULT;
+          if (!cancelled) { setKanji(data); setLoading(false); }
+          return;
+        }
+>>>>>>> Stashed changes
         const data = await getKanjiDetail(id);
         if (!cancelled) setKanji(data);
       } catch (err) {
@@ -59,7 +67,11 @@ export default function KanjiPractice() {
 
   async function handleAddFlashcard() {
     try {
+<<<<<<< Updated upstream
       await addToFlashcard('kanji', kanji.kanjiId);
+=======
+      if (!false /* DEMO_MODE */) await addToFlashcard('kanji', kanji.kanjiId);
+>>>>>>> Stashed changes
       setAdded(true);
       addToast('success', `Đã thêm "${kanji.characterValue}" vào Flashcard!`);
     } catch (err) {
@@ -101,10 +113,26 @@ export default function KanjiPractice() {
     return (
       <div className="kp-page kp-page--write">
         <KanjiWritingCanvas
+          kanjiId={kanji.kanjiId}
           character={kanji.characterValue}
           strokeCount={kanji.strokeCount}
           onBack={() => setMode('learn')}
+<<<<<<< Updated upstream
           onComplete={handleWritingComplete}
+=======
+          onComplete={async () => {
+            if (!kanji.isCompleted) {
+              try {
+                const { markProgress } = await import('../../api/studentService');
+                await markProgress('KANJI', kanji.kanjiId, 'COMPLETED', 100);
+                setKanji(prev => ({ ...prev, isCompleted: true }));
+                addToast('success', 'Bạn đã hoàn thành Kanji này!');
+              } catch (err) {
+                console.error("Failed to mark progress", err);
+              }
+            }
+          }}
+>>>>>>> Stashed changes
         />
         <ToastContainer toasts={toasts} onRemove={removeToast} />
       </div>

@@ -54,6 +54,11 @@ export async function markProgress(contentType, contentId, status = 'completed',
   return res.data.data;
 }
 
+export async function resetProgress(contentType) {
+  const res = await api.delete('/learning-progress/reset', { params: { contentType } });
+  return res.data;
+}
+
 // ─── Core Learning Content ───────────────────────────────────────────────────
 export async function getKanjiList({ level, page = 0, size = 50 } = {}) {
   const params = { page, size };
@@ -67,8 +72,36 @@ export async function getKanjiDetail(kanjiId) {
   return res.data.data;
 }
 
+<<<<<<< Updated upstream
 export async function getKanjiProgressSummary(level) {
   const res = await api.get('/kanji/progress-summary', { params: { level } });
+=======
+/**
+ * Gửi nét vừa vẽ lên backend để chạy DTW.
+ * @param {number} strokeIndex - chỉ số nét (0-based)
+ * @param {Array}  userPath    - [[x, y], ...] đã flip Y-up
+ * @param {Array}  referencePath - median từ HanziWriter [[x, y], ...]
+ */
+export async function evaluateKanjiStroke({ strokeIndex, userPath, referencePath }) {
+  const res = await api.post('/kanji/writing/evaluate-stroke', {
+    strokeIndex,
+    userPath,
+    referencePath,
+  });
+  return res.data.data;
+}
+
+/**
+ * Lưu kết quả toàn bộ phiên luyện viết sau khi hoàn thành.
+ */
+export async function saveKanjiWritingAttempt({ kanjiId, characterValue, totalStrokes, strokes }) {
+  const res = await api.post('/kanji/writing/attempt', {
+    kanjiId,
+    characterValue,
+    totalStrokes,
+    strokes,
+  });
+>>>>>>> Stashed changes
   return res.data.data;
 }
 
@@ -84,6 +117,10 @@ export async function getGrammarDetail(grammarId) {
   return res.data.data;
 }
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 export async function getVocabularyList({ level, topic, search, page = 0, size = 20 } = {}) {
   const params = { page, size };
   if (level)  params.level  = level;
@@ -99,13 +136,11 @@ export async function getVocabTopics(level) {
 }
 
 export async function markVocabComplete(vocabId) {
-  const res = await api.post(`/vocabulary/${vocabId}/complete`);
-  return res.data.data;
+  return markProgress('vocabulary', vocabId);
 }
 
 export async function addVocabToFlashcard(vocabId) {
-  const res = await api.post('/flashcard/add', { vocabId });
-  return res.data.data;
+  return addToFlashcard('vocabulary', vocabId);
 }
 
 // ─── Flashcard SRS ───────────────────────────────────────────────────────────

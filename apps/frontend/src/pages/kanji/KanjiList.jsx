@@ -32,6 +32,17 @@ export default function KanjiList() {
     setLoading(true);
     setError('');
     try {
+<<<<<<< Updated upstream
+=======
+      if (false /* DEMO_MODE */) {
+        const mock = MOCK_KANJI_LIST[level] ?? { kanji: [], completedCount: 0, totalElements: 0 };
+        setKanji(mock.kanji);
+        setTotal(1);
+        setStats({ completed: mock.completedCount, total: mock.totalElements });
+        setLoading(false);
+        return;
+      }
+>>>>>>> Stashed changes
       const res = await getKanjiList({ level, page: page - 1, size: 50 });
       setKanji(res.content ?? []);
       setTotal(res.totalPages ?? 1);
@@ -60,8 +71,18 @@ export default function KanjiList() {
     setDetail(null);
     setDetailLoading(true);
     try {
+<<<<<<< Updated upstream
       const d = await getKanjiDetail(k.kanjiId);
       setDetail(d);
+=======
+      if (false /* DEMO_MODE */) {
+        const d = MOCK_KANJI_DETAIL_MAP[k.kanjiId] ?? null;
+        setDetail(d);
+      } else {
+        const d = await getKanjiDetail(k.kanjiId);
+        setDetail(d);
+      }
+>>>>>>> Stashed changes
     } catch {
       setDetail(null);
     } finally {
@@ -113,10 +134,40 @@ export default function KanjiList() {
             <span className="knj-stats-text">
               đã học <strong>{stats.completed}</strong> / {stats.total} kanji
             </span>
-            <div className="knj-stats-progress">
-              <ProgressBar value={progressPct} />
+            <div className="kl-progress-wrapper" style={{ display: 'flex', gap: '1rem', alignItems: 'center', width: '100%', maxWidth: '400px' }}>
+              <div style={{ flex: 1 }}>
+                <ProgressBar value={progressPct} />
+              </div>
+              <span className="knj-stats-pct">{progressPct}%</span>
+              {stats.completed > 0 && (
+                <button 
+                  onClick={async () => {
+                    if (window.confirm('Bạn có chắc muốn reset toàn bộ tiến độ Kanji?')) {
+                      try {
+                        const { resetProgress } = await import('../../api/studentService');
+                        await resetProgress('KANJI');
+                        fetchKanji();
+                      } catch (e) {
+                        console.error(e);
+                        alert('Lỗi khi reset tiến độ!');
+                      }
+                    }
+                  }}
+                  style={{
+                    padding: '6px 12px',
+                    background: '#fef2f2',
+                    color: '#ef4444',
+                    border: '1px solid #fca5a5',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontWeight: '500',
+                    fontSize: '0.85rem'
+                  }}
+                >
+                  Reset
+                </button>
+              )}
             </div>
-            <span className="knj-stats-pct">{progressPct}%</span>
           </div>
         )}
 
