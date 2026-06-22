@@ -33,6 +33,15 @@ public interface StudentContentProgressRepository extends JpaRepository<StudentC
             @Param("contentType") StudentContentProgress.ContentType contentType,
             @Param("status") StudentContentProgress.ProgressStatus status);
 
+    @Query("SELECT COUNT(p) FROM StudentContentProgress p, Vocabulary v "
+            + "WHERE p.contentId = v.id AND p.student.id = :studentId AND p.contentType = :contentType "
+            + "AND p.status = :status AND v.jlptLevel = :level")
+    long countCompletedVocabularyByLevel(
+            @Param("studentId") Long studentId,
+            @Param("level") com.jlpt.feature.student.StudentUser.JlptLevel level,
+            @Param("contentType") StudentContentProgress.ContentType contentType,
+            @Param("status") StudentContentProgress.ProgressStatus status);
+
     /**
      * Trả về tập hợp contentId mà student đã hoàn thành theo contentType.
      * Dùng DB query thay vì load toàn bộ bảng vào memory.
