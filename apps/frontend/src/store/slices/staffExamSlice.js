@@ -63,6 +63,17 @@ export const submitExamReviewThunk = createAsyncThunk(
   }
 );
 
+export const assignExamQuestionsThunk = createAsyncThunk(
+  'staffExam/assignQuestions',
+  async ({ assessmentId, assignments }, { rejectWithValue }) => {
+    try {
+      return await staffService.assignStaffExamQuestions(assessmentId, assignments);
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || 'Lỗi khi gán câu hỏi vào đề thi');
+    }
+  }
+);
+
 // --- Slice ---
 
 const initialState = {

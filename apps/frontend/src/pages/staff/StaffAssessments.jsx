@@ -8,17 +8,20 @@ import { useToast, ToastContainer } from '../../components/common/Toast';
 import StaffPageHero from '../../components/staff/StaffPageHero';
 import AssessmentFormModal from '../../components/staff/AssessmentFormModal';
 import AssessmentPreviewModal from '../../components/staff/AssessmentPreviewModal';
+import AssignQuestionsModal from '../../components/staff/AssignQuestionsModal';
 import {
   fetchQuizzesThunk,
   createQuizThunk,
   updateQuizThunk,
   submitQuizReviewThunk,
+  assignQuizQuestionsThunk,
 } from '../../store/slices/staffQuizSlice';
 import {
   fetchExamsThunk,
   createExamThunk,
   updateExamThunk,
   submitExamReviewThunk,
+  assignExamQuestionsThunk,
 } from '../../store/slices/staffExamSlice';
 import './StaffAssessments.css';
 
@@ -59,6 +62,7 @@ export default function StaffAssessments() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [previewItem, setPreviewItem] = useState(null);
+  const [assignItem, setAssignItem] = useState(null);
   const [levelFilter, setLevel] = useState('');
   const [statusFilter, setStatus] = useState('');
   const [currentPage, setPage] = useState(1);
@@ -166,6 +170,17 @@ export default function StaffAssessments() {
     } catch (err) {
       addToast('error', err || 'Lỗi khi gửi duyệt');
     }
+  }
+
+  // Gán câu hỏi vào quiz/exam (modal trả về danh sách assignments đầy đủ — replace).
+  async function handleAssignSubmit(assignments) {
+    const assessmentId = assignItem.assessmentId;
+    await dispatch(isQuiz
+      ? assignQuizQuestionsThunk({ assessmentId, assignments })
+      : assignExamQuestionsThunk({ assessmentId, assignments })).unwrap();
+    addToast('success', `Đã gán ${assignments.length} câu hỏi vào: ${assignItem.title}`);
+    setAssignItem(null);
+    await fetchList();
   }
 
   return (
@@ -286,6 +301,17 @@ export default function StaffAssessments() {
                               </svg>
                             </button>
                             <button
+                              className="sfa-btn-icon"
+                              onClick={() => setAssignItem(item)}
+                              aria-label={`Gán câu hỏi ${item.title}`}
+                              title="Gán câu hỏi"
+                            >
+                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M9 11l3 3L22 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </button>
+                            <button
                               className="sfa-btn-submit"
                               onClick={() => handleSubmit(item)}
                               aria-label={`Gửi duyệt ${item.title}`}
@@ -319,6 +345,14 @@ export default function StaffAssessments() {
         item={previewItem}
         mode={activeTab}
         onClose={() => setPreviewItem(null)}
+      />
+
+      <AssignQuestionsModal
+        isOpen={Boolean(assignItem)}
+        mode={activeTab}
+        assessment={assignItem}
+        onClose={() => setAssignItem(null)}
+        onSubmit={handleAssignSubmit}
       />
 
       <ToastContainer toasts={toasts} onRemove={removeToast} />
