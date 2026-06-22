@@ -24,7 +24,7 @@ public class KanaCharacter {
     @Column(nullable = false, length = 10)
     private String romaji;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = KanaTypeConverter.class)
     @Column(name = "kana_type", nullable = false, length = 15)
     private KanaType kanaType;
 

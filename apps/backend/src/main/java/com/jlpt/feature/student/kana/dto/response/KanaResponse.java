@@ -18,5 +18,7 @@ public class KanaResponse {
     private String strokeOrderUrl;
     private Integer displayOrder;
     private String row;
+
+    @com.fasterxml.jackson.annotation.JsonProperty("isCompleted")
     private boolean isCompleted;
 }

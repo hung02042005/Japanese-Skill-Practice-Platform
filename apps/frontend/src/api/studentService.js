@@ -293,8 +293,8 @@ export async function verifySubscription(orderId) {
 }
 
 // ─── Kana ────────────────────────────────────────────────────────────────────
-export async function getKanaList(type) {
-  const res = await api.get('/kana', { params: { type } });
+export async function getKanaList(script) {
+  const res = await api.get('/kana', { params: { script } });
   return res.data.data;
 }
 

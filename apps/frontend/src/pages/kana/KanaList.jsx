@@ -42,7 +42,7 @@ export default function KanaList() {
   const rows = useMemo(() => {
     const map = {};
     chars.forEach((c) => {
-      const key = c.rowGroup ?? '1';
+      const key = c.row ?? '1';
       if (!map[key]) map[key] = [];
       map[key].push(c);
     });
