@@ -46,6 +46,29 @@ public class MockExamService {
     private static final String SECTION_READING = "reading";
     private static final String SECTION_LISTENING = "listening";
 
+    /**
+     * Section của câu hỏi (bộ staff gán: vocabulary/grammar/kanji/reading/listening) được gom về 3 nhóm
+     * điểm JLPT thật: 言語知識(language_knowledge) = từ vựng + ngữ pháp + kanji, 読解(reading), 聴解(listening).
+     * Bảo toàn bất biến NFR-MOCK-05: languageKnowledge + reading + listening == totalScore.
+     */
+    private static final java.util.Set<String> LANGUAGE_KNOWLEDGE_SECTIONS =
+            java.util.Set.of("language_knowledge", "vocabulary", "grammar", "kanji");
+
+    private static String canonicalSection(String raw) {
+        if (raw == null) {
+            return SECTION_LANGUAGE;
+        }
+        String s = raw.trim().toLowerCase();
+        if (SECTION_READING.equals(s)) {
+            return SECTION_READING;
+        }
+        if (SECTION_LISTENING.equals(s)) {
+            return SECTION_LISTENING;
+        }
+        // language_knowledge + vocabulary/grammar/kanji + mọi giá trị khác → gom vào ngôn ngữ
+        return SECTION_LANGUAGE;
+    }
+
     private final AssessmentRepository assessmentRepository;
     private final QuestionAssignmentRepository questionAssignmentRepository;
     private final TestAttemptRepository testAttemptRepository;
@@ -216,7 +239,7 @@ public class MockExamService {
             boolean correct = QuestionAssignmentSupport.isCorrect(question, selectedOption, answerText);
             BigDecimal score = correct ? qa.getScore() : BigDecimal.ZERO;
             totalScore = totalScore.add(score);
-            sectionScores.merge(section, score, BigDecimal::add);
+            sectionScores.merge(canonicalSection(section), score, BigDecimal::add);
 
             answerEntities.add(AttemptAnswer.builder()
                     .attempt(attempt)
