@@ -107,7 +107,7 @@ export default function MockTestList() {
                         <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" strokeWidth="2"/>
                         <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" strokeWidth="2"/>
                       </svg>
-                      {exam.totalQuestions} câu
+                      {exam.questionCount} câu
                     </span>
                     <span className="mkt-meta-item">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -121,21 +121,13 @@ export default function MockTestList() {
                         <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
                       </svg>
-                      Đậu: {exam.passScore}/{exam.maxScore}
+                      Đậu: {exam.passScore}/{exam.totalScore}
                     </span>
                   </div>
 
                   <div className="mkt-card-footer">
                     <div className="mkt-last-attempt">
-                      {exam.lastAttempt ? (
-                        <span className={`mkt-attempt-result${exam.lastAttempt.isPassed ? ' mkt-attempt-result--passed' : ' mkt-attempt-result--failed'}`}>
-                          Lần gần nhất: {new Date(exam.lastAttempt.attemptedAt).toLocaleDateString('vi-VN')} —{' '}
-                          {exam.lastAttempt.score}/{exam.maxScore}{' '}
-                          {exam.lastAttempt.isPassed ? '✅ Đậu' : '❌ Không đậu'}
-                        </span>
-                      ) : (
-                        <span className="mkt-attempt-virgin">Chưa thi lần nào</span>
-                      )}
+                      <span className="mkt-attempt-virgin">Chưa thi lần nào</span>
                     </div>
                     <button
                       className="mkt-start-btn"

@@ -86,7 +86,7 @@ function App() {
         <Route path="/lessons/:id"  element={<PrivateRoute><LessonDetail /></PrivateRoute>} />
         <Route path="/mock-test"                    element={<PrivateRoute><MockTestList /></PrivateRoute>} />
         <Route path="/mock-test/:id/attempt"        element={<PrivateRoute><MockTestAttempt /></PrivateRoute>} />
-        <Route path="/mock-test/:id/results"        element={<PrivateRoute><MockTestResults /></PrivateRoute>} />
+        <Route path="/mock-test/:id?/results"       element={<PrivateRoute><MockTestResults /></PrivateRoute>} />
         <Route path="/progress"     element={<PrivateRoute><Progress /></PrivateRoute>} />
         <Route path="/kanji"        element={<PrivateRoute><KanjiList /></PrivateRoute>} />
         <Route path="/kanji/:id"    element={<PrivateRoute><KanjiPractice /></PrivateRoute>} />

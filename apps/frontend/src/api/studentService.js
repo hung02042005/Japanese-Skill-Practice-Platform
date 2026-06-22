@@ -245,23 +245,23 @@ export async function getExamList({ level, page = 0, size = 10 } = {}) {
   return res.data.data;
 }
 
-export async function getAssessmentDetail(assessmentId) {
-  const res = await api.get(`/assessments/${assessmentId}`);
+export async function startAssessment(assessmentId) {
+  const res = await api.post(`/assessments/${assessmentId}/start`);
   return res.data.data;
 }
 
-export async function submitQuizAttempt({ assessmentId, answers }) {
-  const res = await api.post('/quiz-attempts', { assessmentId, answers });
+export async function submitAssessment(assessmentId, { attemptId, isAutoSubmit = false, answers }) {
+  const res = await api.post(`/assessments/${assessmentId}/submit`, { attemptId, isAutoSubmit, answers });
   return res.data.data;
 }
 
-export async function getQuizAttemptResult(attemptId) {
-  const res = await api.get(`/quiz-attempts/${attemptId}`);
+export async function getExamReview(attemptId) {
+  const res = await api.get(`/test-attempts/${attemptId}/review`);
   return res.data.data;
 }
 
 export async function getMyExamHistory({ page = 0, size = 10 } = {}) {
-  const res = await api.get('/quiz-attempts/me', { params: { page, size } });
+  const res = await api.get('/test-attempts', { params: { type: 'exam', page, size } });
   return res.data.data;
 }
 
