@@ -25,11 +25,11 @@ public class TestAttempt {
     @JoinColumn(name = "student_id", nullable = false)
     private StudentUser student;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = TestAttemptTypeConverter.class)
     @Column(name = "attempt_type", nullable = false, length = 20)
     private AttemptType attemptType;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = TestAttemptParentTypeConverter.class)
     @Column(name = "parent_type", nullable = false, length = 30)
     private ParentType parentType;
 
@@ -64,7 +64,7 @@ public class TestAttempt {
     @Column(name = "listening_score", precision = 8, scale = 2)
     private BigDecimal listeningScore;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = TestAttemptStatusConverter.class)
     @Column(nullable = false, length = 20)
     @Builder.Default
     private AttemptStatus status = AttemptStatus.IN_PROGRESS;

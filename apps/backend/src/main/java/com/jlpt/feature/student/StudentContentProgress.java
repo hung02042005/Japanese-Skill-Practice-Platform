@@ -24,14 +24,14 @@ public class StudentContentProgress {
     @JoinColumn(name = "student_id", nullable = false)
     private StudentUser student;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ContentProgressTypeConverter.class)
     @Column(name = "content_type", nullable = false, length = 30)
     private ContentType contentType;
 
     @Column(name = "content_id", nullable = false)
     private Long contentId;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ContentProgressStatusConverter.class)
     @Column(nullable = false, length = 20)
     @Builder.Default
     private ProgressStatus status = ProgressStatus.LEARNING;

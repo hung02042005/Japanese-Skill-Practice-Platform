@@ -19,7 +19,7 @@ public class QuestionAssignment {
     @Column(name = "assignment_id")
     private Long id;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = QuestionAssignmentParentTypeConverter.class)
     @Column(name = "parent_type", nullable = false, length = 30)
     private ParentType parentType;
 
