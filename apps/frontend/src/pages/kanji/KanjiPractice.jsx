@@ -1,12 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import KanjiGridPlayer from '../../components/kanji/KanjiGridPlayer';
 import KanjiWritingCanvas from '../../components/kanji/KanjiWritingCanvas';
-import { getKanjiDetail, addToFlashcard } from '../../api/studentService';
-import { DEMO_MODE, MOCK_KANJI_DETAIL_MAP, MOCK_KANJI_DETAIL_DEFAULT } from '../../api/mockData';
+import { getKanjiDetail, addToFlashcard, markProgress } from '../../api/studentService';
 import './KanjiPractice.css';
 
 export default function KanjiPractice() {
@@ -20,6 +19,7 @@ export default function KanjiPractice() {
   const [addedFlash, setAdded]     = useState(false);
   const [mode,       setMode]      = useState('learn'); // 'learn' | 'write'
   const [currentStroke, setCurrentStroke] = useState(0);
+  const markedRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -29,12 +29,8 @@ export default function KanjiPractice() {
       setAdded(false);
       setMode('learn');
       setCurrentStroke(0);
+      markedRef.current = false;
       try {
-        if (DEMO_MODE) {
-          const data = MOCK_KANJI_DETAIL_MAP[Number(id)] ?? MOCK_KANJI_DETAIL_DEFAULT;
-          if (!cancelled) { setKanji(data); setLoading(false); }
-          return;
-        }
         const data = await getKanjiDetail(id);
         if (!cancelled) setKanji(data);
       } catch (err) {
@@ -50,9 +46,20 @@ export default function KanjiPractice() {
 
   const handleStrokeChange = useCallback(n => setCurrentStroke(n), []);
 
+  const handleWritingComplete = useCallback(async () => {
+    if (markedRef.current) return;
+    markedRef.current = true;
+    try {
+      await markProgress('kanji', kanji.kanjiId, 'completed', 100);
+      addToast('success', `Đã đánh dấu "${kanji.characterValue}" là đã học!`);
+    } catch {
+      markedRef.current = false;
+    }
+  }, [kanji, addToast]);
+
   async function handleAddFlashcard() {
     try {
-      if (!DEMO_MODE) await addToFlashcard('kanji', kanji.kanjiId);
+      await addToFlashcard('kanji', kanji.kanjiId);
       setAdded(true);
       addToast('success', `Đã thêm "${kanji.characterValue}" vào Flashcard!`);
     } catch (err) {
@@ -94,9 +101,11 @@ export default function KanjiPractice() {
     return (
       <div className="kp-page kp-page--write">
         <KanjiWritingCanvas
+          kanjiId={kanji.kanjiId}
           character={kanji.characterValue}
           strokeCount={kanji.strokeCount}
           onBack={() => setMode('learn')}
+          onComplete={handleWritingComplete}
         />
         <ToastContainer toasts={toasts} onRemove={removeToast} />
       </div>
@@ -206,7 +215,7 @@ export default function KanjiPractice() {
           >
             <WriteIcon />
             Bắt đầu luyện viết
-          </button>
+          </button>         
         </div>
 
         {/* ── Prev / Next nav ── */}
@@ -235,6 +244,16 @@ function WriteIcon() {
       strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+    </svg>
+  );
+}
+
+function NextIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
     </svg>
   );
 }

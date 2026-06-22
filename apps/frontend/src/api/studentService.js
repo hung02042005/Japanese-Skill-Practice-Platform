@@ -66,6 +66,11 @@ export async function markProgress(contentType, contentId, status = 'completed',
   return res.data.data;
 }
 
+export async function resetProgress(contentType) {
+  const res = await api.delete('/learning-progress/reset', { params: { contentType } });
+  return res.data;
+}
+
 // ─── Core Learning Content ───────────────────────────────────────────────────
 export async function getKanjiList({ level, page = 0, size = 50 } = {}) {
   const params = { page, size };
@@ -79,10 +84,48 @@ export async function getKanjiDetail(kanjiId) {
   return res.data.data;
 }
 
+export async function getKanjiProgressSummary(level) {
+  const res = await api.get('/kanji/progress-summary', { params: { level } });
+  return res.data.data;
+}
+
+/**
+ * Gửi nét vừa vẽ lên backend để chạy DTW.
+ * @param {number} strokeIndex - chỉ số nét (0-based)
+ * @param {Array}  userPath    - [[x, y], ...] đã flip Y-up
+ * @param {Array}  referencePath - median từ HanziWriter [[x, y], ...]
+ */
+export async function evaluateKanjiStroke({ strokeIndex, userPath, referencePath }) {
+  const res = await api.post('/kanji/writing/evaluate-stroke', {
+    strokeIndex,
+    userPath,
+    referencePath,
+  });
+  return res.data.data;
+}
+
+/**
+ * Lưu kết quả toàn bộ phiên luyện viết sau khi hoàn thành.
+ */
+export async function saveKanjiWritingAttempt({ kanjiId, characterValue, totalStrokes, strokes }) {
+  const res = await api.post('/kanji/writing/attempt', {
+    kanjiId,
+    characterValue,
+    totalStrokes,
+    strokes,
+  });
+  return res.data.data;
+}
+
 export async function getGrammarList({ level, page = 0, size = 20 } = {}) {
   const params = { page, size };
   if (level) params.level = level;
   const res = await api.get('/grammar-points', { params });
+  return res.data.data;
+}
+
+export async function getGrammarDetail(grammarId) {
+  const res = await api.get(`/grammar-points/${grammarId}`);
   return res.data.data;
 }
 
@@ -102,8 +145,7 @@ export async function getVocabTopics(level) {
 }
 
 export async function markVocabComplete(vocabId) {
-  const res = await api.post(`/vocabulary/${vocabId}/complete`);
-  return res.data.data;
+  return markProgress('vocabulary', vocabId);
 }
 
 export async function addVocabToFlashcard(vocabId) {
@@ -251,13 +293,18 @@ export async function verifySubscription(orderId) {
 }
 
 // ─── Kana ────────────────────────────────────────────────────────────────────
-export async function getKanaList(script) {
-  const res = await api.get('/kana', { params: { script } });
+export async function getKanaList(type) {
+  const res = await api.get('/kana', { params: { type } });
   return res.data.data;
 }
 
 export async function markKanaComplete(kanaId) {
-  const res = await api.post(`/kana/${kanaId}/complete`);
+  const res = await api.post('/learning-progress', {
+    contentType: 'kana',
+    contentId: kanaId,
+    status: 'completed',
+    progressPercent: 100,
+  });
   return res.data.data;
 }
 

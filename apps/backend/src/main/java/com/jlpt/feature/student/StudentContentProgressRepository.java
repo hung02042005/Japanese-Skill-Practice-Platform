@@ -2,6 +2,9 @@
 package com.jlpt.feature.student;
 
 import com.jlpt.feature.learning.Kanji;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +13,25 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StudentContentProgressRepository extends JpaRepository<StudentContentProgress, Long> {
+
+    // ── Hợp nhất từ feature.student.progress (kana/kanji/grammar feature của Duy) ──
+    Optional<StudentContentProgress> findByStudentIdAndContentTypeAndContentId(
+            Long studentId, StudentContentProgress.ContentType contentType, Long contentId);
+
+    List<StudentContentProgress> findByStudentIdAndContentTypeAndContentIdIn(
+            Long studentId, StudentContentProgress.ContentType contentType, Collection<Long> contentIds);
+
+    @org.springframework.transaction.annotation.Transactional
+    void deleteByStudentIdAndContentType(Long studentId, StudentContentProgress.ContentType contentType);
+
+    @Query("SELECT COUNT(p) FROM StudentContentProgress p, Kanji k "
+            + "WHERE p.contentId = k.id AND p.student.id = :studentId AND p.contentType = :contentType "
+            + "AND p.status = :status AND k.jlptLevel = :level")
+    long countCompletedKanjiByLevel(
+            @Param("studentId") Long studentId,
+            @Param("level") com.jlpt.feature.student.StudentUser.JlptLevel level,
+            @Param("contentType") StudentContentProgress.ContentType contentType,
+            @Param("status") StudentContentProgress.ProgressStatus status);
 
     /**
      * Trả về tập hợp contentId mà student đã hoàn thành theo contentType.
@@ -112,4 +134,16 @@ public interface StudentContentProgressRepository extends JpaRepository<StudentC
             nativeQuery = true)
     long countDistinctStudyDaysInMonth(
             @Param("studentId") Long studentId, @Param("year") int year, @Param("month") int month);
+
+    Optional<StudentContentProgress> findByStudent_IdAndContentTypeAndContentId(
+            Long studentId, StudentContentProgress.ContentType contentType, Long contentId);
+
+    List<StudentContentProgress> findByStudent_IdAndContentTypeAndContentIdIn(
+            Long studentId, StudentContentProgress.ContentType contentType, List<Long> contentIds);
+
+    long countByStudent_IdAndContentTypeAndContentIdInAndStatus(
+            Long studentId,
+            StudentContentProgress.ContentType contentType,
+            List<Long> contentIds,
+            StudentContentProgress.ProgressStatus status);
 }

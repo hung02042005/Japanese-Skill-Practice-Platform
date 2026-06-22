@@ -50,6 +50,7 @@ jwt:
 
 app:
   frontend-url: http://localhost:3000
+  upload-dir: ${UPLOAD_DIR:uploads}
   cors:
     allowed-origins: http://localhost:3000,http://localhost:5173
 

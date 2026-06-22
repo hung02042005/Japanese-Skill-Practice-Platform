@@ -278,6 +278,9 @@
 .kp-cta-wrap {
   display: flex;
   justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
   padding: 4px 0;
 }
 .kp-start-btn {
@@ -308,6 +311,29 @@
   transform: scale(0.97);
   box-shadow: 0 2px 8px rgba(93, 187, 105, 0.3);
 }
+
+.kp-next-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 54px;
+  padding: 0 28px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-base);
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+.kp-next-btn:hover {
+  background: var(--color-primary-bg);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+}
+.kp-next-btn:active { transform: scale(0.97); }
 
 /* ─────────────────────────────────────────────────────────────────────
    FOOTER NAV — prev / next

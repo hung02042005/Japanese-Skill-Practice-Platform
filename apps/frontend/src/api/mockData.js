@@ -534,6 +534,46 @@ export const MOCK_KANJI_DETAIL_MAP = {
 };
 export const MOCK_KANJI_DETAIL_DEFAULT = MOCK_KANJI_DETAIL_MAP[1];
 
+// ─── Flashcard ────────────────────────────────────────────────────────────────
+export const MOCK_FLASHCARD_DECKS = [
+  { deckName: 'N5 Từ vựng', isSystem: true,  totalCards: 120, dueToday: 8,  nextReviewDate: '2026-06-04' },
+  { deckName: 'N5 Kanji',   isSystem: true,  totalCards: 80,  dueToday: 3,  nextReviewDate: '2026-06-05' },
+  { deckName: 'Yêu thích',  isSystem: false, totalCards: 25,  dueToday: 0,  nextReviewDate: null },
+  { deckName: 'Sai nhiều',  isSystem: false, totalCards: 12,  dueToday: 12, nextReviewDate: '2026-06-03' },
+];
+
+export const MOCK_DECK_CARDS = [
+  { flashcardId: 1, frontText: 'こんにちは', isDue: true },
+  { flashcardId: 2, frontText: 'ありがとう', isDue: true },
+  { flashcardId: 3, frontText: '日',         isDue: false },
+  { flashcardId: 4, frontText: '本',         isDue: false },
+  { flashcardId: 5, frontText: '山',         isDue: true },
+  { flashcardId: 6, frontText: '川',         isDue: false },
+  { flashcardId: 7, frontText: 'すみません', isDue: false },
+  { flashcardId: 8, frontText: '学生',       isDue: true },
+  { flashcardId: 9, frontText: '先生',       isDue: false },
+  { flashcardId: 10, frontText: '大学',      isDue: true },
+];
+
+// ─── Review ──────────────────────────────────────────────────────────────────
+export const MOCK_FLASHCARDS_DUE = [
+  { flashcardId: 1, frontText: 'こんにちは' },
+  { flashcardId: 2, frontText: '日' },
+  { flashcardId: 3, frontText: 'ありがとう' },
+  { flashcardId: 4, frontText: '山' },
+  { flashcardId: 5, frontText: '学生' },
+  { flashcardId: 6, frontText: '先生' },
+];
+
+export const MOCK_BACK_CONTENT_MAP = {
+  1: { reading: 'konnichiwa',   meaning: 'Xin chào (buổi trưa/chiều)', exampleSentence: 'こんにちは、田中さん。' },
+  2: { reading: 'ひ、にち、か', meaning: 'Ngày, mặt trời',              exampleSentence: '今日はいい日ですね。' },
+  3: { reading: 'arigatou',     meaning: 'Cảm ơn',                      exampleSentence: 'ありがとうございます。' },
+  4: { reading: 'やま、さん',   meaning: 'Núi',                          exampleSentence: '富士山はきれいです。' },
+  5: { reading: 'がくせい',     meaning: 'Học sinh, sinh viên',          exampleSentence: 'わたしは学生です。' },
+  6: { reading: 'せんせい',     meaning: 'Giáo viên, thầy/cô giáo',      exampleSentence: '田中先生はやさしいです。' },
+};
+
 // ─── Progress ────────────────────────────────────────────────────────────────
 export const MOCK_STATS = {
   currentStreak:    7,

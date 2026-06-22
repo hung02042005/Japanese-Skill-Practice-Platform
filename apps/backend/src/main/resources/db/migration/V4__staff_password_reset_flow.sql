@@ -6,24 +6,30 @@ IF NOT EXISTS (
     ADD must_change_password BIT NOT NULL CONSTRAINT DF_staff_users_must_change_password DEFAULT 0;
 GO
 
-CREATE TABLE staff_password_reset_requests (
-    request_id      BIGINT IDENTITY(1,1) PRIMARY KEY,
-    staff_id        BIGINT          NOT NULL,
-    status          NVARCHAR(20)    NOT NULL DEFAULT 'pending'
-        CHECK (status IN ('pending', 'completed', 'expired', 'cancelled')),
-    requested_at    DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME(),
-    expires_at      DATETIME2       NOT NULL,
-    completed_at    DATETIME2       NULL,
-    completed_by    BIGINT          NULL,
-    request_ip      NVARCHAR(45)    NULL,
+IF OBJECT_ID('staff_password_reset_requests') IS NULL
+BEGIN
+    CREATE TABLE staff_password_reset_requests (
+        request_id      BIGINT IDENTITY(1,1) PRIMARY KEY,
+        staff_id        BIGINT          NOT NULL,
+        status          NVARCHAR(20)    NOT NULL DEFAULT 'pending'
+            CHECK (status IN ('pending', 'completed', 'expired', 'cancelled')),
+        requested_at    DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME(),
+        expires_at      DATETIME2       NOT NULL,
+        completed_at    DATETIME2       NULL,
+        completed_by    BIGINT          NULL,
+        request_ip      NVARCHAR(45)    NULL,
 
-    CONSTRAINT FK_reset_req_staff FOREIGN KEY (staff_id) REFERENCES staff_users(staff_id),
-    CONSTRAINT FK_reset_req_admin FOREIGN KEY (completed_by) REFERENCES admin_users(admin_id)
-);
+        CONSTRAINT FK_reset_req_staff FOREIGN KEY (staff_id) REFERENCES staff_users(staff_id),
+        CONSTRAINT FK_reset_req_admin FOREIGN KEY (completed_by) REFERENCES admin_users(admin_id)
+    );
+END
 GO
 
-CREATE INDEX IX_reset_req_status_expires ON staff_password_reset_requests (status, expires_at);
-CREATE INDEX IX_reset_req_staff_requested ON staff_password_reset_requests (staff_id, requested_at);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_reset_req_status_expires')
+    CREATE INDEX IX_reset_req_status_expires ON staff_password_reset_requests (status, expires_at);
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_reset_req_staff_requested')
+    CREATE INDEX IX_reset_req_staff_requested ON staff_password_reset_requests (staff_id, requested_at);
 GO
 
 EXEC sp_executesql N'
@@ -37,6 +43,7 @@ EXEC sp_executesql N'
 ';
 GO
 
-ALTER TABLE auth_tokens ADD CONSTRAINT CK_auth_tokens_token_type
-CHECK (token_type IN ('session','email_verification','password_reset','refresh','limited_session'));
+IF NOT EXISTS (SELECT 1 FROM sys.check_constraints WHERE name = 'CK_auth_tokens_token_type')
+    ALTER TABLE auth_tokens ADD CONSTRAINT CK_auth_tokens_token_type
+    CHECK (token_type IN ('session','email_verification','password_reset','refresh','limited_session'));
 GO
