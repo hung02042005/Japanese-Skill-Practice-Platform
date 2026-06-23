@@ -63,6 +63,7 @@ Bước 6 [Frontend]: Hiển thị bảng danh sách người dùng
 ```
 
 **Bộ lọc hỗ trợ:**
+
 - `type`: `student` | `staff` | `admin` (bắt buộc)
 - `q`: tìm theo `full_name` hoặc `email` (tùy chọn, LIKE)
 - `status`: `active` | `suspended` | `pending` | `deleted` (tùy chọn)
@@ -116,6 +117,7 @@ Bước 6 [Backend]:  Trả về HTTP 200 kèm thông tin đã cập nhật
 ```
 
 **Trường được phép chỉnh sửa:**
+
 - Student: `full_name`, `phone`, `target_jlpt_level`
 - Staff: `full_name`
 - Admin: không cho phép chỉnh sửa thông tin Admin khác qua endpoint này
@@ -330,11 +332,13 @@ sequenceDiagram
 ## 8. Tham Chiếu API
 
 ### `GET /api/admin/users`
+
 **Actor:** Admin | **Auth:** Bearer JWT
 
 **Query params:** `type`, `q`, `status`, `jlptLevel`, `staffRole`, `page`, `size`
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -360,11 +364,13 @@ sequenceDiagram
 ---
 
 ### `GET /api/admin/users/{type}/{userId}`
+
 **Actor:** Admin | **Auth:** Bearer JWT
 
 **Path params:** `type` = `student` | `staff` | `admin`, `userId` = Long
 
 **Response (200) — Student:**
+
 ```json
 {
   "status": 200,
@@ -390,9 +396,11 @@ sequenceDiagram
 ---
 
 ### `POST /api/admin/staff`
+
 **Actor:** Admin | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "fullName": "Tran Thi B",
@@ -402,6 +410,7 @@ sequenceDiagram
 ```
 
 **Response (201):**
+
 ```json
 {
   "status": 201,
@@ -419,9 +428,11 @@ sequenceDiagram
 ---
 
 ### `PUT /api/admin/users/{type}/{userId}`
+
 **Actor:** Admin | **Auth:** Bearer JWT
 
 **Request (Student):**
+
 ```json
 {
   "fullName": "Nguyen Van A (Updated)",
@@ -431,6 +442,7 @@ sequenceDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -442,9 +454,11 @@ sequenceDiagram
 ---
 
 ### `POST /api/admin/users/{type}/{userId}/suspend`
+
 **Actor:** Admin | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "reason": "Vi phạm điều khoản sử dụng: spam câu hỏi và nội dung không phù hợp."
@@ -452,6 +466,7 @@ sequenceDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -469,9 +484,11 @@ sequenceDiagram
 ---
 
 ### `POST /api/admin/users/{type}/{userId}/activate`
+
 **Actor:** Admin | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -488,9 +505,11 @@ sequenceDiagram
 ---
 
 ### `POST /api/admin/users/{type}/{userId}/reset-password`
+
 **Actor:** Admin | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -502,9 +521,11 @@ sequenceDiagram
 ---
 
 ### `DELETE /api/admin/users/{type}/{userId}`
+
 **Actor:** Admin | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -521,9 +542,11 @@ sequenceDiagram
 ---
 
 ### `PUT /api/admin/staff/{staffId}/role`
+
 **Actor:** Admin | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "staffRole": "staff_manager"
@@ -531,6 +554,7 @@ sequenceDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

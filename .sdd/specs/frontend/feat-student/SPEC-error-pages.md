@@ -1,4 +1,5 @@
 # SPEC — Trang Lỗi (`/403` và `/404`)
+>
 > **Sprint:** 1 — Foundation
 > **Prefix:** `err-` | **activeTab:** `''` | **Guard:** Public
 > **Phụ thuộc:** `USER-SPEC.md §9.5`

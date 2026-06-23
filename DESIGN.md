@@ -9,6 +9,7 @@ Type is handled by two families: **Nunito** (rounded humanist sans) for all UI t
 Buttons are pill-shaped — `border-radius: 9999px` on all primary and secondary CTAs, evoking the oval outline of a falling petal. Cards use generous corner radii (12–24 px). No element in the UI has a 0 px corner.
 
 **Key Characteristics:**
+
 - Sakura pink (`#E89AAA`) as the primary brand hue — active nav states, highlighted text, streak indicators.
 - Emerald green (`#5DBB69`) for positive action CTAs ("HỌC TỪ MỚI"), correct-answer feedback, and study-days stat cards.
 - Soft gold (`#F7C948`) for word-count achievements, star decorations, and streak flame.
@@ -22,34 +23,39 @@ Buttons are pill-shaped — `border-radius: 9999px` on all primary and secondary
 ## Colors
 
 ### Brand & Accent
+
 - **Sakura Pink** (`--color-primary` — `#E89AAA`): The brand's signature. Soft pastel sakura pink used for active nav tab underlines, streak card gradient, highlighted inline text. Never used as a large fill background.
 - **Petal Light** (`--color-primary-light` — `#F7CBD4`): Hover states, streak card gradient end-stop, soft badge tints, petal effects.
 - **Deep Petal** (`--color-primary-dark` — `#D84F68`): Pressed/active states on primary-coloured elements.
 - **Blossom Tint** (`--color-primary-bg` — `#FFF0F3`): Nav tab hover background, primary chip fill, streak-related highlight rows.
 
 ### Surface
+
 - **Washi** (`--color-bg` — `#FAF7F4`): The default page background — warm ivory that evokes Japanese washi paper and lifts white cards without harsh contrast.
 - **Card** (`--color-card` — `#FFFFFF`): Every content card, modal, and panel surface.
 - **Secondary Tint** (`--color-secondary-bg` — `#F4FBF5`): Stat card background for the "days studied" variant.
 - **Gold Tint** (`--color-accent-bg` — `#FFF7DD`): Stat card background for the "words learned" variant.
 
 ### Text
+
 - **Ink** (`--color-text` — `#2D2D2D`): All body text, headings, and label copy.
 - **Mist** (`--color-text-sub` — `#6B625E`): Supporting labels, nav tab inactive, captions, placeholders.
 - **Disabled** (`--color-text-disabled` — `#B7ABA5`): Disabled form fields and buttons.
 - **Divider** (`--color-border` — `#E8E0DC`): Input borders, card separators, nav bottom edge — slightly warm to match the washi canvas.
 
 ### Semantic
+
 - **Success / Go** (`--color-secondary` — `#5DBB69`): Primary CTA button fill, correct-answer feedback, study-days stat card border.
 - **Achievement / Gold** (`--color-accent` — `#F7C948`): Word-count stat card border, star icon fill, streak flame glow, achievement badge.
 - **Error** (`--color-error` — `#E57373`): Form field error border, wrong-answer flash, inline error message.
 - **Warning** (`--color-warning` — `#F4A261`): Near-deadline notices, VIP expiry alerts.
 
 ### JLPT Level Colours
+
 Each JLPT level has a dedicated chip colour pair used consistently across badges, filter tabs, and lesson headers:
 
 | Level | Background | Text | Feel |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | N5 | `#E8F5E9` | `#2E7D32` | Sprout green — first steps |
 | N4 | `#E3F2FD` | `#1565C0` | Sky blue — gaining confidence |
 | N3 | `#FFF3E0` | `#E65100` | Warm amber — middle ground |
@@ -61,7 +67,9 @@ Each JLPT level has a dedicated chip colour pair used consistently across badges
 ## Typography
 
 ### Font Family
+
 Two families cover all use cases:
+
 1. **Nunito** — the primary UI font. Rounded terminals echo the soft petal curves of Saku-chan and the overall hanami aesthetic. Loaded in weights 400, 600, 700, 800. Used for every UI string: nav labels, headings, body, buttons, captions, number displays.
 2. **Noto Sans JP** — mandatory CJK fallback, loaded alongside Nunito for kanji, kana, and furigana glyph coverage. Weight 400 only at runtime; Latin portions inherit Nunito weights.
 
@@ -72,7 +80,7 @@ font-family: 'Nunito', 'Noto Sans JP', system-ui, sans-serif;
 ### Hierarchy
 
 | Token | Size | Weight | Line Height | Use |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `display-xl` | 36px | 800 | 1.25 | Hero score, streak milestone celebration |
 | `display-lg` | 30px | 800 | 1.25 | Page-level titles (Dashboard, Kanji) |
 | `heading-lg` | 24px | 700 | 1.3 | Section headings, modal titles |
@@ -88,6 +96,7 @@ font-family: 'Nunito', 'Noto Sans JP', system-ui, sans-serif;
 | `number-xl` | 48px | 800 | 1 | Streak count, large score display |
 
 ### Principles
+
 - **Nunito weight 800 only for numbers and hero CTAs.** Overuse of black weight collapses the soft, approachable tone.
 - **Never use font size below 12px.** Japanese characters require legibility headroom; 12px is the absolute floor.
 - **Furigana (ruby text) renders at 50% of the parent kanji size.** For a 20px kanji, ruby sits at 10px — the one accepted exception to the 12px floor, required for authentic Japanese typesetting.
@@ -99,10 +108,11 @@ font-family: 'Nunito', 'Noto Sans JP', system-ui, sans-serif;
 ## Layout
 
 ### Spacing System
+
 Base unit: **4px**.
 
 | Token | Value | Use |
-|---|---|---|
+| --- | --- | --- |
 | `--space-1` | 4px | Icon inner padding, tight inline gaps |
 | `--space-2` | 8px | Between badge and label, checkbox gap |
 | `--space-3` | 12px | Form field internal padding |
@@ -117,15 +127,18 @@ Base unit: **4px**.
 ### Grid & Container
 
 **Dashboard layout** — three named columns in a horizontal flex row:
+
 - Left sidebar: `width: 220px; flex-shrink: 0` — holds StreakCard with Saku-chan
 - Main content: `flex: 1; min-width: 0` — primary learning area
 - Right sidebar: `width: 200px; flex-shrink: 0` — StatCards stack vertically
 
 **Auth layout** — single centered card:
+
 - Max-width 440px, padding 40px, auto horizontal margin.
 - Background white, border-radius 16px, shadow Level 2.
 
 **Exam layout** — no sidebars:
+
 - Max-width 720px centered, progress bar pinned below TopNav.
 
 ### Responsive Strategy
@@ -133,20 +146,23 @@ Base unit: **4px**.
 #### Breakpoints
 
 | Name | Width | Key Changes |
-|---|---|---|
+| --- | --- | --- |
 | Mobile | < 768px | Both sidebars hidden; single column; hamburger nav |
 | Tablet | 768–1199px | Left sidebar hidden; right sidebar optional |
 | Desktop | ≥ 1200px | Full three-column dashboard |
 
 #### Touch Targets
+
 All interactive elements must be at minimum **44 × 44px**. Nav tabs, icon buttons, and checkbox labels meet this threshold via explicit `min-height` or `padding`.
 
 #### Collapsing Strategy
+
 - TopNav tabs: full label+icon row at desktop → icon-only at tablet → hamburger drawer at mobile.
 - Dashboard sidebars: hidden at tablet and below; accessible via slide-in drawer if needed.
 - Quiz answer grid: 2-column at desktop → 1-column at mobile.
 
 #### Image Behaviour
+
 - Saku-chan mascot: transparent PNG centered in content area, no card background behind it. Size via prop: `sm` 80px / `md` 160px / `lg` 300px.
 - Falling petal decoration (optional background detail): small semi-transparent SVG petals, `pointer-events: none`, `position: absolute`, `opacity: 0.12` — used only on dashboard hero area.
 - User avatar: circular crop, 36px in TopNav, 80px in profile page.
@@ -156,7 +172,7 @@ All interactive elements must be at minimum **44 × 44px**. Nav tabs, icon butto
 ## Elevation & Depth
 
 | Level | Treatment | Use |
-|---|---|---|
+| --- | --- | --- |
 | Level 0 — Flat | No shadow, no border | Washi canvas background |
 | Level 1 — Card | `box-shadow: 0 2px 8px rgba(0,0,0,0.07)` | Content cards, input fields on white bg |
 | Level 2 — Raised | `box-shadow: 0 4px 12px rgba(0,0,0,0.10)` | Stat cards, flashcard face, CTA buttons |
@@ -172,7 +188,7 @@ Borders are used only for semantic state — error (red), focus (pink ring), and
 ### Border Radius Scale
 
 | Token | Value | Use |
-|---|---|---|
+| --- | --- | --- |
 | `--radius-sm` | 8px | Quiz answer option buttons, small tag chips |
 | `--radius-md` | 12px | Content cards, form inputs, default panels |
 | `--radius-lg` | 16px | Stat cards, sidebar panels |
@@ -182,6 +198,7 @@ Borders are used only for semantic state — error (red), focus (pink ring), and
 The brand **never uses 0px corners** on any interactive element. Even the most compact chip has `--radius-sm` 8px. The pill shape of primary buttons directly references the oval silhouette of a falling sakura petal.
 
 ### Saku-chan Geometry
+
 - Saku-chan fills a square bounding box; the organic petal silhouette is handled entirely by the illustration — CSS applies no clipping.
 - Rendered as a transparent PNG dropped directly onto the canvas, without a card or coloured background behind it.
 - The petal-crown on Saku-chan's head uses the dedicated crown colour `#E8637A` — a deeper sakura tone, distinct from the brand primary `#E89AAA`. Crown colour must never be changed.
@@ -191,10 +208,12 @@ The brand **never uses 0px corners** on any interactive element. Even the most c
 ## Components
 
 ### TopNav
+
 Height 64px, white background, `border-bottom: 1px solid var(--color-border)`.
 Layout: `[Logo + "SakuJi" wordmark 160px] [Nav tabs — flex centre] [User area — right]`
 
 **`topnav-tab`** — each navigation item:
+
 - Layout: icon (24px) stacked above label (`label-md`, 14px / 600).
 - Inactive: `color: var(--color-text-sub)`.
 - Active: `color: var(--color-primary)` + `border-bottom: 2px solid var(--color-primary)`.
@@ -202,12 +221,14 @@ Layout: `[Logo + "SakuJi" wordmark 160px] [Nav tabs — flex centre] [User area 
 - Padding: 8px 16px.
 
 **`topnav-user`** — right side:
+
 - Email text truncated at 160px, `body-sm`, `color-text-sub`.
 - Avatar 36px circular crop, `border-radius: --radius-full`.
 
 ### Cards
 
 **`streak-card`** — left-sidebar streak panel featuring Saku-chan:
+
 - Background: `linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)`.
 - Border-radius: `--radius-xl`. Padding: 16px.
 - Title "Ngày Streak": white, `heading-sm`.
@@ -216,6 +237,7 @@ Layout: `[Logo + "SakuJi" wordmark 160px] [Nav tabs — flex centre] [User area 
 - Saku-chan `sm` variant (80px): positioned bottom-left, in `happy` state when streak > 0, `idle` when streak = 0.
 
 **`stat-card`** — right-sidebar metric panels:
+
 - `type="words"`: `background: var(--color-accent-bg)`, `border: 2px solid var(--color-accent)`.
 - `type="streak"`: `background: var(--color-secondary-bg)`, `border: 2px solid var(--color-secondary)`.
 - Border-radius: `--radius-lg`. Padding: 16px. Width: 100% within the 200px column.
@@ -223,11 +245,13 @@ Layout: `[Logo + "SakuJi" wordmark 160px] [Nav tabs — flex centre] [User area 
 - Decorative icon: 40px, top-right corner, `opacity: 0.20`.
 
 **`content-card`** — generic white content panel:
+
 - Background: `var(--color-card)`. Border-radius: `--radius-md`. Padding: 24px. Shadow: Level 2.
 
 ### Buttons
 
 **`btn-primary`** — the main action CTA:
+
 - Background: `var(--color-secondary)` (green). Color: white.
 - Label: `button-lg`, uppercase. Border-radius: `--radius-full` (pill).
 - Padding: 14px 48px. Min-width: 180px.
@@ -235,21 +259,25 @@ Layout: `[Logo + "SakuJi" wordmark 160px] [Nav tabs — flex centre] [User area 
 - Disabled: `opacity: 0.60`, `cursor: not-allowed`.
 
 **`btn-secondary`** — outline variant:
+
 - Background: transparent. Border: `2px solid var(--color-primary)`. Color: `var(--color-primary)`.
 - Border-radius: `--radius-full`. Padding: 12px 32px.
 - Hover: `background: var(--color-primary-bg)`.
 
 **`btn-ghost`** — low-emphasis:
+
 - Background: transparent. Color: `var(--color-text-sub)`. No border.
 - Hover: `color: var(--color-text)`.
 
 **`btn-icon`** — 44 × 44px circular icon button:
+
 - Background: white. Shadow: Level 1. Border-radius: `--radius-full`.
 - Hover: `background: var(--color-primary-bg)`.
 
 ### Forms
 
 **`form-input`** — standard text input:
+
 - Background: `#FAF7F4` (washi tint). Border: `1.5px solid var(--color-border)`. Border-radius: `--radius-md`.
 - Height: 48px. Padding: 0 16px. Font: `body-lg`.
 - Focus: `border-color: var(--color-primary)`, `box-shadow: 0 0 0 3px rgba(232,154,170,0.18)`, `background: white`.
@@ -257,11 +285,13 @@ Layout: `[Logo + "SakuJi" wordmark 160px] [Nav tabs — flex centre] [User area 
 - Error focus: `box-shadow: 0 0 0 3px rgba(229,115,115,0.12)`.
 
 **`field-error`** — inline error below input:
+
 - `font-size: 12px`, `color: var(--color-error)`, `margin-top: 4px`.
 
 ### Navigation Chips
 
 **`jlpt-badge`** — level indicator:
+
 - Border-radius: `--radius-full`. Padding: 3px 10px. Font: `label-sm` (12px / 700).
 - Colour pairs: see JLPT Level Colours table above.
 - Used in: course cards, lesson headers, filter tabs, search results.
@@ -269,21 +299,25 @@ Layout: `[Logo + "SakuJi" wordmark 160px] [Nav tabs — flex centre] [User area 
 ### Feedback
 
 **`progress-bar`** — linear progress:
+
 - Track: `height: 8px`, `background: var(--color-border)`, `border-radius: --radius-full`.
 - Fill: `background: var(--color-primary)` (pink) for general learning progress; `var(--color-secondary)` (green) for quiz/exam completion.
 - Transition: `width 0.3s ease`.
 
 **`loading-spinner`** — rotating indicator:
+
 - Sizes: `sm` 20px / `md` 40px / `lg` 60px.
 - Color: `var(--color-primary)`. Animation: `spin 0.8s linear infinite`.
 
 **`empty-state`** — zero-data screens:
+
 - Saku-chan `md` variant (160px) in `thinking` or sleeping pose, centred.
 - Title: `heading-md`. Description: `body-lg`, `color-text-sub`.
 - Optional CTA button below description.
 - **Never show a blank page** — always render this component when a list is empty.
 
 **`toast`** — ephemeral notification:
+
 - Position: top-right fixed, `z-index: 9999`. Width: 320px.
 - Border-radius: `--radius-md`. Shadow: Level 3. Padding: 14px 16px.
 - Variants: success (green left-border), error (red left-border), warning (amber left-border), info (blue left-border).
@@ -292,12 +326,13 @@ Layout: `[Logo + "SakuJi" wordmark 160px] [Nav tabs — flex centre] [User area 
 ### Saku-chan Mascot
 
 **`saku-chan`** — the SakuJi character:
+
 - Rendered as a transparent PNG dropped directly on the canvas — no wrapping card or coloured container.
 - Sizes via prop: `sm` 80px / `md` 160px / `lg` 300px.
 - Animation variants via CSS class:
 
 | Variant | CSS animation | Trigger |
-|---|---|---|
+| --- | --- | --- |
 | `idle` | `sway 3s ease-in-out infinite` (gentle left-right tilt) | Default / no user action |
 | `happy` | `spin-bounce 0.6s ease` then back to idle | Streak milestone, level-up |
 | `correct` | `jump 0.4s ease` + confetti petal overlay | Quiz correct answer |
@@ -312,6 +347,7 @@ Falling petal confetti on `celebrate` variant: 6–8 SVG petal shapes, `position
 ## Do's and Don'ts
 
 ### Do
+
 - Use `var(--color-primary)` sakura pink **only** for accent marks, active indicators, and the streak card gradient. Never fill a large surface with it.
 - Use `var(--color-secondary)` green for the primary action button on every learning and practice screen. Green = "go learn" — it reads as a safe, encouraging signal against the pink brand.
 - Apply `--radius-full` (pill) to every CTA button. The oval pill directly echoes a falling sakura petal — it is the brand's most recognisable interactive shape.
@@ -321,6 +357,7 @@ Falling petal confetti on `celebrate` variant: 6–8 SVG petal shapes, `position
 - Use the washi canvas (`--color-bg` `#FAF7F4`) as the page background — never plain `#FFFFFF` or `#F5F5F5`, which break the warm spring atmosphere.
 
 ### Don't
+
 - Don't use 0px corners on any interactive element — the brand is never harsh or geometric.
 - Don't place Saku-chan inside a card or on a coloured panel — the mascot floats on the canvas with no background behind it.
 - Don't use `var(--color-primary)` sakura pink as a large fill background — it overpowers text and loses its accent function.

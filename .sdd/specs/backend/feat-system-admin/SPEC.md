@@ -1,4 +1,5 @@
 # SPEC — System Administration (Admin Role)
+>
 > **Feature ID:** `feat-system-admin`
 > **UC Coverage:** UC-35 (Login System), UC-36 (View Dashboard), UC-37 (User Management), UC-39 (Settings), UC-40 (Notification Rules)
 > **Version:** 1.0 | **Status:** Draft
@@ -9,9 +10,11 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Để vận hành hệ thống ổn định và an toàn, Quản trị viên cấp cao (Admin) cần một bảng điều khiển trung tâm (Admin Panel) để quản lý cấu hình hệ thống, theo dõi sức khỏe ứng dụng, quản lý phân quyền nhân viên và thiết lập các kịch bản tương tác tự động. Do nắm giữ quyền lực tuyệt đối, tài khoản Admin yêu cầu các hàng rào bảo mật nghiêm ngặt nhất.
 
 ### 1.2 Mục tiêu
+
 - **Đăng nhập bảo mật (UC-35):** Admin đăng nhập bằng Email/Password, nhận JWT trực tiếp.
 - **Dashboard Tổng quan (UC-36):** Hiển thị số liệu thời gian thực về đăng ký người dùng mới, lượng bài thi/quiz thực hiện hàng ngày và trạng thái tài nguyên.
 - **Quản lý phân quyền người dùng (UC-37):** Cấp quyền Admin tạo mới, chỉnh sửa thông tin, đặt lại mật khẩu và chuyển đổi phân quyền giữa các vai trò tài khoản (`admin_users`, `staff_users`, `student_users`).
@@ -19,6 +22,7 @@
 - **Quản lý quy tắc thông báo tự động (UC-40):** Thiết lập các template thông báo và quy tắc kích hoạt tự động (Notification Rules) khi người dùng đạt mốc streak học tập hoặc thi cử.
 
 ### 1.3 Tại sao cần?
+
 Không có cấu hình cài đặt `system_settings` $\rightarrow$ không thể linh hoạt chuyển đổi chế độ bảo trì hoặc thay đổi máy chủ gửi mail mà không cần phải compile lại mã nguồn backend.
 
 ---
@@ -127,11 +131,13 @@ erDiagram
 ## 6. API SPEC
 
 ### `POST /api/auth/login`
+
 **Actor:** Admin | **Auth:** None (Anonymous)
 
 > Dùng chung endpoint với Student/Staff — xem chi tiết tại [UC-35-admin-login.md](./UC-35-admin-login.md).
 
 **Request:**
+
 ```json
 {
   "email": "admin@jlpt.com",
@@ -140,6 +146,7 @@ erDiagram
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -160,9 +167,11 @@ erDiagram
 ---
 
 ### `PUT /api/admin/settings/{settingGroup}/{settingKey}`
+
 **Actor:** Admin | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "settingValue": "smtp.googlemail.com"
@@ -170,6 +179,7 @@ erDiagram
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -185,9 +195,11 @@ erDiagram
 ---
 
 ### `POST /api/admin/notification-rules`
+
 **Actor:** Admin | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "ruleKey": "streak_10_days",
@@ -199,6 +211,7 @@ erDiagram
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "status": 201,

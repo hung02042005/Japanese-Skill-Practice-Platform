@@ -1,4 +1,5 @@
 # SPEC — Dashboard Học Sinh (Student Dashboard)
+>
 > **Feature ID:** `feat-dashboard` | **Page:** `Dashboard`
 > **Route:** `/dashboard` (private — yêu cầu role STUDENT, redirect `/login` nếu chưa auth)
 > **UC Coverage:** UC-19 (Student Progress & Stats)
@@ -61,6 +62,7 @@
 Dashboard là màn hình chính của học sinh sau khi đăng nhập. Mục tiêu: **định hướng hành trình học ngay từ giây đầu tiên** — học sinh nhìn vào biết ngay mình đang ở đâu, học gì tiếp theo, và streak của mình.
 
 **Cấu trúc tổng thể (3 tầng):**
+
 ```
 [1] TopNav     — 64px cố định, chạy full-width
 [2] Dashboard  — flex row, 3 cột bên dưới TopNav
@@ -68,6 +70,7 @@ Dashboard là màn hình chính của học sinh sau khi đăng nhập. Mục ti
 ```
 
 **3 khu vực nội dung:**
+
 ```
 [LEFT  220px]  StreakCard + Saku-chan
 [CENTER flex:1] Hero Banner + Start Here + Lesson List
@@ -75,6 +78,7 @@ Dashboard là màn hình chính của học sinh sau khi đăng nhập. Mục ti
 ```
 
 **File structure:**
+
 ```
 apps/frontend/src/
 ├── components/
@@ -258,6 +262,7 @@ Display: flex, align-items: center, gap: 4px
 ```
 
 **`.topnav-tab`** — mỗi mục điều hướng:
+
 ```
 Layout:  flex, flex-direction: column, align-items: center, gap: 4px
 Padding: 8px 16px
@@ -328,6 +333,7 @@ Box-shadow:    var(--shadow-petal-glow)
 ```
 
 **Cấu trúc nội dung:**
+
 ```
 ┌───────────────────────────────┐
 │  🔥  Ngày Streak              │
@@ -342,6 +348,7 @@ Box-shadow:    var(--shadow-petal-glow)
 ```
 
 **Label "Ngày Streak" — `.streak-label`**
+
 ```
 Display: flex, align-items: center, gap: 6px
 Font:    Nunito 600, 14px
@@ -354,6 +361,7 @@ Color:   rgba(255,255,255,0.85)
 ```
 
 **Số streak — `.streak-number`**
+
 ```
 Font:       Nunito 800, 48px (number-xl)
 Color:      white
@@ -362,6 +370,7 @@ Margin:     8px 0 4px
 ```
 
 **Tiến độ tuần — `.streak-week`**
+
 ```
 Display: flex, gap: 6px, margin: 12px 0
 
@@ -373,6 +382,7 @@ Display: flex, gap: 6px, margin: 12px 0
 ```
 
 **Saku-chan — `.streak-mascot`**
+
 ```
 Position: absolute, bottom: 0, right: -4px
 Width:    80px (sm variant)
@@ -380,6 +390,7 @@ State:    happy khi streak > 0, idle khi streak = 0
 ```
 
 **Petal trang trí — `.streak-petal`**
+
 ```
 Position: absolute, top: 8px, right: 12px
 Width: 32px, opacity: 0.15, pointer-events: none
@@ -405,6 +416,7 @@ Border:        1px solid var(--color-primary-light)
 ```
 
 **Bố cục nội dung:**
+
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │                                         [Saku-chan md 120px]   │
@@ -426,6 +438,7 @@ Border:        1px solid var(--color-primary-light)
 ```
 
 **JLPT Level Badge — `.hero-badge`**
+
 ```
 Dùng màu theo cấp độ (xem DESIGN.md § JLPT Level Colours):
   N5: background #E8F5E9, color #2E7D32
@@ -442,6 +455,7 @@ Display:       inline-block
 ```
 
 **Tiêu đề khóa học — `.hero-title`**
+
 ```
 Font:          Nunito 800, 28px (display-lg)
 Color:         var(--color-text)
@@ -450,6 +464,7 @@ Margin-bottom: 8px
 ```
 
 **Mô tả — `.hero-desc`**
+
 ```
 Font:        Nunito 400, 14px (body-md)
 Color:       var(--color-text-sub)
@@ -459,6 +474,7 @@ Max-width:   380px
 ```
 
 **Progress bar — `.hero-progress`**
+
 ```
 Layout: flex, align-items: center, gap: 12px
 
@@ -482,6 +498,7 @@ Layout: flex, align-items: center, gap: 12px
 ```
 
 **CTA Button — `.hero-cta`**
+
 ```
 Text:          "HỌC TỪ MỚI"
 Background:    var(--color-secondary) — #4CAF50
@@ -500,6 +517,7 @@ Active:  transform: scale(0.97)
 ```
 
 **Saku-chan mascot — `.hero-mascot`**
+
 ```
 Width:    120px (giữa sm 80px và md 160px)
 Position: absolute, right: 28px, bottom: 0
@@ -507,6 +525,7 @@ State:    idle (sway 3s ease-in-out infinite)
 ```
 
 **Petal trang trí — `.hero-petal`**
+
 ```
 Position: absolute
 Fill: var(--color-primary-light), opacity: 0.12
@@ -561,6 +580,7 @@ Mỗi bài học một card ngang. Có 3 trạng thái: **active**, **available*
 ```
 
 **Base styles:**
+
 ```
 Display:        flex, align-items: center, gap: 16px
 Background:     var(--color-card)
@@ -573,6 +593,7 @@ Border:         1.5px solid transparent
 ```
 
 **Hover (available):**
+
 ```
 Box-shadow: var(--shadow-md)
 Transform:  translateY(-1px)
@@ -580,6 +601,7 @@ Border-color: var(--color-primary-light)
 ```
 
 **State Active (bài đang học / được chọn):**
+
 ```
 Border:     1.5px solid var(--color-primary)
 Box-shadow: var(--shadow-petal-glow)    /* 0 2px 10px rgba(232,99,122,0.22) */
@@ -594,6 +616,7 @@ Background: var(--color-card)
 ```
 
 **State Locked:**
+
 ```
 Opacity:   0.55
 Cursor:    default
@@ -629,6 +652,7 @@ Flex: 1, min-width: 0
 ```
 
 **Tiêu đề — `.lesson-title`**
+
 ```
 Font:          Nunito 700, 16px
 Color:         var(--color-text)
@@ -639,6 +663,7 @@ State Locked: color: var(--color-text-disabled)
 ```
 
 **Mô tả — `.lesson-desc`**
+
 ```
 Font:          Nunito 400, 13px
 Color:         var(--color-text-sub)
@@ -647,6 +672,7 @@ Margin-bottom: 8px (chỉ khi có progress bar)
 ```
 
 **Mini progress bar — `.lesson-progress`** (chỉ hiện khi đã bắt đầu bài)
+
 ```
 Height:        4px
 Background:    var(--color-border)
@@ -682,6 +708,7 @@ Mỗi card chức năng nhanh: Flashcard, Mock Exam, Từ điển, Báo cáo.
 ```
 
 **Base styles:**
+
 ```
 Display:        flex, align-items: center, gap: 12px
 Background:     var(--color-card)
@@ -694,12 +721,14 @@ Text-decoration: none
 ```
 
 **Hover:**
+
 ```
 Box-shadow: var(--shadow-md)
 Transform:  translateY(-2px)
 ```
 
 **Icon container — `.qa-icon`**
+
 ```
 Width:         40px, Height: 40px
 Border-radius: var(--radius-md)
@@ -714,6 +743,7 @@ Màu theo loại:
 ```
 
 **Text area — `.qa-content`**
+
 ```
 Flex: 1, min-width: 0
 
@@ -723,6 +753,7 @@ Flex: 1, min-width: 0
 ```
 
 **Arrow — `.qa-arrow`**
+
 ```
 Width: 20px, Height: 20px
 Color: var(--color-text-disabled)
@@ -750,6 +781,7 @@ Display: flex, flex-direction: column, gap: 10px
 Bên dưới Quick Actions, hiển thị 2 stat card nhỏ.
 
 **`type="words"` — số từ đã học:**
+
 ```
 Background: var(--color-accent-bg)   — #FFFDE7
 Border:     2px solid var(--color-accent)
@@ -762,6 +794,7 @@ Padding:    14px 16px
 ```
 
 **`type="days"` — ngày học trong tháng:**
+
 ```
 Background: var(--color-secondary-bg) — #F1F8E9
 Border:     2px solid var(--color-secondary)
@@ -980,6 +1013,7 @@ function Dashboard() {
 | Tải dashboard | `GET` | `/api/students/dashboard` | `{ streak, weekDays[], course{}, lessons[], wordCount, daysThisMonth }` |
 
 **Response shape (tham khảo):**
+
 ```json
 {
   "status": 200,
@@ -1012,6 +1046,7 @@ function Dashboard() {
 ```
 
 **Lesson `status` values:**
+
 - `"completed"` — đã hoàn thành
 - `"active"` — đang học (card nổi bật)
 - `"available"` — mở khóa, chưa bắt đầu

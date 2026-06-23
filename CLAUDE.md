@@ -1,4 +1,5 @@
 # CLAUDE.md — JLPT E-Learning System v2.0
+
 ## Hệ Thống Học Tập & Luyện Thi Tiếng Nhật Cấp Độ N5→N1
 
 > **Mục đích**: Bản đồ địa hình — Kiến trúc, ADR, Lessons Learned, Anti-patterns
@@ -11,12 +12,14 @@
 ### Tech Stack (Xem `CONSTITUTION.md § ĐIỀU 1`)
 
 ### Domain
+
 - **E-learning luyện thi JLPT** tích hợp AI (N5 → N1)
 - **3 Roles**: Student, Staff, Admin
 - **AI Modules**: OCR (Kanji) + Speech Recognition (Shadowing)
 - **Subscription**: VIP subscription management
 
 ### Key Rules
+
 - ✅ DTO Pattern bắt buộc
 - ✅ Soft Delete toàn hệ thống
 - ✅ AI async + fallback
@@ -95,6 +98,7 @@
 ## CORE MODULES
 
 ### Auth & User Module
+
 ```
 ├── Login/Register (Student, Staff, Admin)
 ├── JWT + Refresh Token
@@ -103,6 +107,7 @@
 ```
 
 ### Learning & Content Module
+
 ```
 ├── Course theo JLPT level (N5-N1)
 ├── Lesson types: KANJI, KANA, VOCAB, GRAMMAR
@@ -111,6 +116,7 @@
 ```
 
 ### Testing & AI Module
+
 ```
 ├── Mock Exam (auto-grading)
 ├── Quiz theo chủ đề
@@ -150,6 +156,7 @@ Student → Upload image
 ## ADR (Architecture Decision Records)
 
 ### ADR-001: Spring Boot 3.x + Java 21
+
 **Decision**: Java/Spring Boot cho backend
 **Pros**: Type safety, enterprise ecosystem, mature Security/Data JPA
 **Cons**: Verbose, compile time, harder to microservice later
@@ -158,6 +165,7 @@ Student → Upload image
 ---
 
 ### ADR-002: Monolithic Architecture
+
 **Decision**: Monolith đầu tiên, tách module rõ ràng
 **Pros**: Dễ develop/debug/deploy cho team nhỏ
 **Cons**: Khó scale từng module độc lập
@@ -167,6 +175,7 @@ Student → Upload image
 ---
 
 ### ADR-003: JWT + bcrypt (cost 12)
+
 **Decision**: Stateless JWT + bcrypt
 **Bắt buộc**: bcrypt cost **không dưới 10**
 **Status**: ✅ Active
@@ -174,6 +183,7 @@ Student → Upload image
 ---
 
 ### ADR-004: Soft Delete toàn hệ thống
+
 **Decision**: `is_deleted = true` hoặc `status = INACTIVE`
 **Tuyệt đối**: Không dùng `DELETE FROM`
 **Status**: ✅ Active
@@ -181,6 +191,7 @@ Student → Upload image
 ---
 
 ### ADR-005: DTO Pattern bắt buộc
+
 **Decision**: Controller chỉ nhận/trả DTO
 **Mapping**: Entity ↔ DTO tại Service Layer
 **Tool suggestion**: MapStruct
@@ -189,6 +200,7 @@ Student → Upload image
 ---
 
 ### ADR-006: File Media tại /uploads hoặc S3
+
 **Decision**: Không BLOB trong DB
 **Storage**: Path/URL trong DB, file tại storage
 **Cleanup**: Job xóa orphan files định kỳ
@@ -197,6 +209,7 @@ Student → Upload image
 ---
 
 ### ADR-007: OCR chỉ so sánh Similarity %
+
 **Decision**: OCR trả về similarity % vs ký tự chuẩn
 **Không**: Phân tích stroke order
 **Lý do**: Giảm complexity, tập trung core value
@@ -205,6 +218,7 @@ Student → Upload image
 ---
 
 ### ADR-008: Global Exception Handler
+
 **Decision**: `@ControllerAdvice` bắt tất cả exceptions
 **Format**: `{ status, message, data }`
 **Status**: ✅ Active
@@ -214,6 +228,7 @@ Student → Upload image
 ## LESSONS LEARNED
 
 ### LESSON-001: Tách UI Staff và Admin
+
 **Sai lầm**: Gộp chung màn hình → Staff làm thao tác Admin
 **Giải pháp**: Component/page riêng cho Staff vs Admin
 **Áp dụng**: Mọi màn hình có phân quyền
@@ -221,6 +236,7 @@ Student → Upload image
 ---
 
 ### LESSON-002: Không lưu BLOB trong DB
+
 **Sai lầm**: Lưu audio/image BLOB → DB phình, backup chậm
 **Giải pháp**: File tại `/uploads` (dev) hoặc S3 (prod), chỉ lưu path
 **Áp dụng**: OcrService, SpeechService, UserService (avatar)
@@ -228,6 +244,7 @@ Student → Upload image
 ---
 
 ### LESSON-003: Authorization = Role + Subscription
+
 **Sai lầm**: Chỉ check role → học viên N5 truy cập N2
 **Giải pháp**: Check **both** role AND subscription/level
 **Áp dụng**: Mọi API trả nội dung theo cấp độ
@@ -237,6 +254,7 @@ Student → Upload image
 ---
 
 ### LESSON-005: Quiz câu hỏi phải Lock
+
 **Sai lầm**: Sửa câu hỏi đang thi → điểm không nhất quán
 **Giải pháp**: Khi có attempt → lock, tạo version mới nếu sửa
 **Áp dụng**: QuizService, ExamService
@@ -244,6 +262,7 @@ Student → Upload image
 ---
 
 ### LESSON-006: AI không được Silent Fail
+
 **Sai lầm**: AI timeout → empty response → học viên không biết
 **Giải pháp**: Timeout + retry (3x) + fallback + full logging
 **Áp dụng**: OcrService, SpeechService

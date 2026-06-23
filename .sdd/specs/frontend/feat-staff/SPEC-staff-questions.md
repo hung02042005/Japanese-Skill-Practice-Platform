@@ -1,4 +1,5 @@
 # SPEC — Staff Ngân Hàng Câu Hỏi (Question Bank)
+>
 > **Feature ID:** `feat-staff` | **Page:** `StaffQuestions`
 > **Route:** `/staff/questions`
 > **Version:** 1.0 | **Status:** Draft
@@ -137,7 +138,7 @@ export async function submitQuestionForReview(questionId) {
 | Level | `<JlptBadge level={q.jlptLevel} />` |
 | Loại | MCQ / Điền / Đ-S |
 | Trạng thái | `<ContentStatusBadge>` + 🔒 nếu `isLocked` |
-| Hành động | [Xem] [Sửa]* [Gửi duyệt]* |
+| Hành động | [Xem] [Sửa]*[Gửi duyệt]* |
 
 `*` Ẩn nếu `isLocked === true` — thay bằng nút [Tạo phiên bản mới]
 
@@ -153,11 +154,13 @@ export async function submitQuestionForReview(questionId) {
 | `mixed` | `#F0EDEB` | `#6B625E` |
 
 ### Cột Loại câu hỏi (type pill)
+
 - `multiple_choice` → "Trắc nghiệm" (neutral gray)
 - `fill_blank` → "Điền vào chỗ trống" (blue tint)
 - `true_false` → "Đúng / Sai" (green tint)
 
 ### Locked indicator
+
 Câu hỏi có `isLocked = true`: hiển thị icon 🔒 (SVG inline, 16px) trong cột trạng thái + tooltip "Câu hỏi đã được học viên làm, không thể sửa". Row background nhạt hơn (`opacity: 0.8`).
 
 ---
@@ -192,13 +195,15 @@ Câu hỏi có `isLocked = true`: hiển thị icon 🔒 (SVG inline, 16px) tron
 
 ### Modal width: 600px
 
-### Validation client-side:
+### Validation client-side
+
 - `questionText`: không rỗng
 - `jlptLevel`: phải là N5/N4/N3/N2/N1
 - `skill`: phải chọn 1 kỹ năng
 - Với MCQ: ít nhất A và B phải có giá trị; `correctOption` phải được chọn
 
-### Footer actions:
+### Footer actions
+
 - [Hủy]
 - [Lưu nháp] — `createQuestion()` / `updateQuestion()`
 - [Lưu & Gửi duyệt] — `createQuestion()` rồi `submitQuestionForReview()`
@@ -272,6 +277,7 @@ Hiển thị khi `!isLoading && !error` và lấy từ response API (`totalEleme
 ## 10. LOCKED QUESTION — TẠO PHIÊN BẢN MỚI
 
 Khi click [Tạo phiên bản mới] trên câu hỏi đã locked:
+
 1. Mở `QuestionFormModal` với tất cả fields đã prefill từ câu hỏi gốc
 2. Header modal: "Tạo phiên bản mới từ Câu hỏi #105"
 3. Lưu → `createQuestion()` (tạo câu hỏi mới độc lập, không liên kết câu cũ)

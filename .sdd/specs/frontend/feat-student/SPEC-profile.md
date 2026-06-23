@@ -1,4 +1,5 @@
 # SPEC — Profile (`/profile`)
+>
 > **Sprint:** 1 — Foundation
 > **Prefix:** `prf-` | **activeTab:** `''` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §9.2` | **Backend ref:** `feat-auth/UC-04-user-profile.md`
@@ -90,6 +91,7 @@ const { toasts, addToast, removeToast } = useToast();
 ```
 
 **Khởi tạo form từ Redux/API:**
+
 ```js
 useEffect(() => {
   if (user) {
@@ -129,6 +131,7 @@ useEffect(() => {
 ```
 
 **Thứ tự submit:**
+
 1. Nếu có `avatarFile` → `POST avatar` trước
 2. Sau đó `PUT /api/students/me`
 3. Dispatch update Redux state

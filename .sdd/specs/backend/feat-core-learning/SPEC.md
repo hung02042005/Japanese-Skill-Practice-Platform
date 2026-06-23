@@ -1,4 +1,5 @@
 # SPEC — Core Learning Content
+>
 > **Feature ID:** `feat-core-learning`
 > **UC Coverage:** UC-06 (Grammar), UC-07 (Kanji), UC-08 (Kana), UC-09 (Vocabulary)
 > **Version:** 1.0 | **Status:** Draft
@@ -9,15 +10,18 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Nội dung học tập cốt lõi là trái tim của nền tảng JLPT. Học viên cần học bốn khối kiến thức nền tảng — Ngữ pháp, Kanji, Kana và Từ vựng — được tổ chức theo cấp độ N5→N1 trước khi luyện tập kỹ năng nâng cao.
 
 ### 1.2 Mục tiêu
+
 - Cung cấp nội dung học Ngữ pháp, Kanji, Kana, Từ vựng có cấu trúc theo JLPT level
 - Theo dõi tiến độ học từng mục nội dung của học viên
 - Cho phép đánh dấu "đã học" và thêm vào Flashcard
 - Hiển thị nội dung phong phú: audio, hình ảnh nét viết, câu ví dụ song ngữ
 
 ### 1.3 Tại sao cần?
+
 Không có nội dung học → không có lý do để học viên ở lại nền tảng. Đây là core value proposition của sản phẩm.
 
 ---
@@ -222,9 +226,11 @@ erDiagram
 ## 6. API SPEC
 
 ### `GET /api/grammar-points?level={N5|N4|N3|N2|N1}&page=0&size=20`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -251,9 +257,11 @@ erDiagram
 ---
 
 ### `GET /api/grammar-points/{grammarId}`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -276,9 +284,11 @@ erDiagram
 ---
 
 ### `GET /api/kanji?level={N5}&page=0&size=20`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -302,9 +312,11 @@ erDiagram
 ---
 
 ### `GET /api/kanji/{kanjiId}`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -329,9 +341,11 @@ erDiagram
 ---
 
 ### `GET /api/kana?type={hiragana|katakana}`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -353,9 +367,11 @@ erDiagram
 ---
 
 ### `GET /api/vocabulary?level={N5}&topic={string}&page=0&size=20`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -382,10 +398,12 @@ erDiagram
 ---
 
 ### `POST /api/learning-progress`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Đánh dấu hoàn thành hoặc cập nhật tiến độ một mục nội dung.
 
 **Request:**
+
 ```json
 {
   "contentType": "string — grammar|kanji|kana|vocabulary|lesson",
@@ -396,6 +414,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -413,10 +432,12 @@ erDiagram
 ---
 
 ### `POST /api/flashcards`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Thêm một mục nội dung vào bộ Flashcard cá nhân.
 
 **Request:**
+
 ```json
 {
   "contentType": "string — kanji|vocabulary",
@@ -426,6 +447,7 @@ erDiagram
 ```
 
 **Response (201):**
+
 ```json
 {
   "status": 201,

@@ -1,4 +1,5 @@
 # SPEC — Chứng chỉ (`/certificates`)
+>
 > **Sprint:** 4 — Monetization & Retention
 > **Prefix:** `crt-` | **activeTab:** `''` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §12.5`

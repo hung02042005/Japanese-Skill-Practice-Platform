@@ -1,4 +1,5 @@
 # SPEC — Admin Dashboard (Tổng quan)
+>
 > **Feature ID:** `feat-admin` | **Page:** `AdminDashboard`
 > **Route:** `/admin` (redirect về đây sau login thành công)
 > **Version:** 1.0 | **Status:** Draft
@@ -15,6 +16,7 @@ Dashboard là trang đầu tiên admin thấy sau khi đăng nhập. Mục tiêu
 **Không cần charts phức tạp** — stat cards + activity log là đủ cho giai đoạn này.
 
 **Cấu trúc trang:**
+
 ```
 [1] AdminTopNav      — activeTab="admin-overview"
 [2] AdminPageHeader  — "Bảng Điều Khiển" + SakuChan happy
@@ -24,6 +26,7 @@ Dashboard là trang đầu tiên admin thấy sau khi đăng nhập. Mục tiêu
 ```
 
 **File:**
+
 ```
 apps/frontend/src/pages/admin/
 ├── AdminDashboard.jsx
@@ -93,6 +96,7 @@ margin-bottom: 28px
 ```
 
 Mỗi card là `.adb-stat-card`:
+
 ```
 background: var(--color-card)
 border-radius: var(--radius-lg)
@@ -115,6 +119,7 @@ hover:
 | 4 | Trạng thái | `OK` / `BẢO TRÌ` / `LỖI` | `IcSystemHealth` (mới) | tuỳ trạng thái |
 
 **Card layout bên trong:**
+
 ```
 .adb-stat-left:
   .adb-stat-label — "Tổng người dùng", font: 12px/600, color: --color-text-sub, uppercase
@@ -130,6 +135,7 @@ hover:
 ```
 
 **Card 4 — Trạng thái hệ thống:**
+
 ```
 value text:
   "Bình thường" — color: --color-secondary
@@ -140,6 +146,7 @@ icon-bg: tương ứng màu trạng thái tại opacity 0.12
 ```
 
 **Loading state:** Thay card bằng skeleton pulse (giống pattern SkeletonRow):
+
 ```css
 .adb-stat-skel {
   height: 96px;
@@ -151,6 +158,7 @@ icon-bg: tương ứng màu trạng thái tại opacity 0.12
 ```
 
 **Responsive:**
+
 ```
 ≥ 768px:  4 cột
 < 768px:  2 cột
@@ -171,6 +179,7 @@ padding: 24px
 ```
 
 ### 5.1 Header card
+
 ```
 display: flex, justify-content: space-between, align-items: center
 margin-bottom: 16px
@@ -189,6 +198,7 @@ margin-bottom: 16px
 Hiển thị tối đa 10 bản ghi mới nhất từ `GET /api/admin/audit-log?page=0&size=10`.
 
 Mỗi item `.adb-log-item`:
+
 ```
 display: flex, align-items: flex-start, gap: 12px
 padding: 10px 0
@@ -229,6 +239,7 @@ border-bottom: 1px solid var(--color-border)
 **Loading state:** 5 skeleton rows (giống SkeletonRow nhưng dạng list, không table).
 
 **Empty state:**
+
 ```
 SakuChan variant="thinking" size={80}
 Text: "Chưa có hoạt động nào được ghi nhận"
@@ -249,6 +260,7 @@ padding: 24px
 ```
 
 ### 6.1 Header card
+
 ```
 [Title]: "Truy cập nhanh"
   font: 16px/700, color: --color-text
@@ -264,6 +276,7 @@ display: flex, flex-direction: column, gap: 8px
 ```
 
 Mỗi `.adb-quick-item` (là `<Link>`):
+
 ```
 display: flex, align-items: center, gap: 14px
 padding: 12px 14px
@@ -323,9 +336,11 @@ hover:
 ## 8. API
 
 ### `GET /api/admin/dashboard/summary`
+
 **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -343,9 +358,11 @@ hover:
 ---
 
 ### `GET /api/admin/audit-log?page=0&size=10`
+
 **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

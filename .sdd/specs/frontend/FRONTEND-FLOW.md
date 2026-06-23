@@ -1,4 +1,5 @@
 # FRONTEND-FLOW.md — SakuJi E-learning
+>
 > **Mục đích:** Bản đồ toàn bộ trang frontend — luồng người dùng, logic điều hướng, gap analysis
 > **Version:** 1.1 | **Last Updated:** 2026-06-02
 > **Domain rules:** AGENTS.md §7 (JLPT Domain Rules) · AGENTS.md §5 (Forbidden Patterns) · AGENTS.md §7.1 (Score Rules) · AGENTS.md §7.3 (Subscription)
@@ -48,21 +49,27 @@
 ## 2. ĐÁNH GIÁ LOGIC TỪNG TRANG
 
 ### 2.1 Landing Page (`/`)
+
 **Logic:** ✅ Hợp lý
+
 - Là điểm vào đúng cho khách chưa đăng nhập
 - Tự redirect `/dashboard` khi đã đăng nhập
 - Chứa đủ 5 section: TopBar → Hero → Feature-A → Feature-B → Footer
 - **Vấn đề nhỏ:** Nav links "Tính năng / Bảng giá / Blog" trỏ đến trang chưa có spec. Đề xuất: dùng `href="#features"` (scroll anchor trong cùng trang) thay vì route riêng ở giai đoạn đầu.
 
 ### 2.2 Auth Pages (Login / Register / Forgot / Reset)
+
 **Logic:** ✅ Hợp lý — đã implement
+
 - Login thành công → `/dashboard` ✅
 - Register thành công → success screen (không auto-login) ✅ — bảo mật đúng
 - **Vấn đề:** Sau khi xác nhận email, user phải quay lại `/login`. Chưa có trang "Email Confirmed" trung gian dẫn thẳng vào app.
 - **Thiếu:** Sau login lần đầu (new user), không có bước Onboarding để chọn JLPT level. User vào thẳng Dashboard với dữ liệu trống.
 
 ### 2.3 Dashboard (`/dashboard`)
+
 **Logic:** ✅ Hợp lý — thiết kế tốt
+
 - 3 cột (Streak | Course + Lessons | Quick Actions) phù hợp với thông tin cần thiết nhất
 - Skeleton loading ✅
 - Empty state ✅
@@ -70,7 +77,9 @@
 - **Vấn đề:** Không có CTA hoặc badge cho VIP content bị khoá. User FREE không biết tại sao một số lesson locked (do prerequisites hay do VIP?).
 
 ### 2.4 Các trang học (chưa có spec)
+
 **Logic cần đánh giá sau khi spec được tạo.**
+
 - `/learn/new`: Học từ vựng / bài học mới — cần rõ: hiển thị lesson nào? Theo JLPT level?
 - `/review`: Ôn tập SRS — cần rõ: hiển thị flashcard queue của ngày hôm nay
 - `/kanji`: OCR practice — cần rõ: chọn kanji cần luyện trước hay vẽ tự do?
@@ -189,7 +198,6 @@
 
 > **Domain rules applied (AGENTS.md §7.5):** Kết quả AI phải validate trước khi lưu DB. AI score là `ai_score_suggestion` — Staff có thể override với `final_score`. Lỗi AI phải log đầy đủ + fallbackk response. AI call: timeout 30s + retry max 3 lần. AI call phải **async** (trả `job_id` ngay, poll kết quả). OCR chỉ so sánh **similarity %** — không phân tích stroke order (ADR-007). File ảnh/audio lưu tại /uploads hoặc S3 — KHÔNG lưu BLOB.
 
-
 ```
 [/dashboard] → click "Kanji" tab
   ↓
@@ -224,6 +232,7 @@
 
 
 ```
+
 Trigger 1: User click vào lesson có badge "VIP"
 Trigger 2: User thấy banner "Mở khoá toàn bộ nội dung" trên dashboard
 Trigger 3: User vào menu "Bảng giá" từ TopBar landing
@@ -251,6 +260,7 @@ Trigger 3: User vào menu "Bảng giá" từ TopBar landing
 [/subscription/failed] ← ⚠️ MISSING SPEC
   • Thông báo lỗi + hỗ trợ
   • CTA "Thử lại"
+
 ```
 
 **Gaps:** `/subscription`, `/subscription/success`, `/subscription/failed`
@@ -269,6 +279,7 @@ Trigger 3: User vào menu "Bảng giá" từ TopBar landing
 
 
 ```
+
 [/dashboard] → click QuickActionCard "Thi Thử JLPT"
   ↓ OR click tab "Thi thử" trong TopNav
 [/mock-test] ← ⚠️ MISSING SPEC
@@ -290,6 +301,7 @@ Trigger 3: User vào menu "Bảng giá" từ TopBar landing
   • CTA: "Xem đáp án chi tiết" | "Thi lại" | "Về dashboard"
   ↓
 [/progress] (cập nhật lịch sử thi)
+
 ```
 
 **Gaps:** `/mock-test`, `/mock-test/:id/attempt`, `/mock-test/:id/results`
@@ -306,6 +318,7 @@ Trigger 3: User vào menu "Bảng giá" từ TopBar landing
 ### JOURNEY 7 — Quản lý hồ sơ & Đổi mật khẩu
 
 ```
+
 [/dashboard] → click avatar (góc phải TopNav)
   ↓ dropdown: Hồ sơ / Đổi mật khẩu / Đăng xuất
 [/profile] ← ⚠️ MISSING SPEC
@@ -319,6 +332,7 @@ Trigger 3: User vào menu "Bảng giá" từ TopBar landing
   • POST /auth/change-password
   ↓ thành công → toast "Đổi mật khẩu thành công"
 [/profile]
+
 ```
 
 **Gaps:** `/profile`, `/settings/password`
@@ -328,6 +342,7 @@ Trigger 3: User vào menu "Bảng giá" từ TopBar landing
 ### JOURNEY 8 — Nhận Chứng chỉ (Certificate)
 
 ```
+
 Trigger: User hoàn thành toàn bộ bài trong một JLPT level
 
 [/progress] ← ⚠️ MISSING SPEC
@@ -342,6 +357,7 @@ Trigger: User hoàn thành toàn bộ bài trong một JLPT level
   • CTA: "Tải xuống PDF" | "Chia sẻ LinkedIn" | "Chia sẻ Facebook"
   ↓
 [Certificate Downloaded / Shared]
+
 ```
 
 **Gaps:** `/progress`, `/certificates`
@@ -354,6 +370,7 @@ Trigger: User hoàn thành toàn bộ bài trong một JLPT level
 > **Domain rules applied (AGENTS.md §7.3):** Thay đổi subscription phải có audit log.
 
 ```
+
 [/login] (dùng chung với Student/Staff)
   • Nhập: email + password
   • POST /api/auth/login
@@ -362,6 +379,7 @@ Trigger: User hoàn thành toàn bộ bài trong một JLPT level
   • Quản lý người dùng, khóa học, nội dung
   • Audit log viewer
   • Hệ thống: thanh toán, cấu hình, báo cáo
+
 ```
 
 **Gaps:** /admin/dashboard (spec ở SPEC-admin-dashboard.md)
@@ -369,6 +387,7 @@ Trigger: User hoàn thành toàn bộ bài trong một JLPT level
 ## 4. FLOW TỔNG THỂ — TOÀN BỘ HỆ THỐNG
 
 ```
+
                     ┌──────────────────────────┐
                     │   / (Landing Page)        │
                     │   Public — Guest          │
@@ -413,6 +432,7 @@ Trigger: User hoàn thành toàn bộ bài trong một JLPT level
               │  /subscription → /subscription/success → /subscription/failed
               │  ⚠️MISSING     ⚠️MISSING              │
               └──────────────────────────────────────┘
+
 ```
 
 ---
@@ -465,6 +485,7 @@ Trigger: User hoàn thành toàn bộ bài trong một JLPT level
 ## 6. KIẾN NGHỊ SẮP XẾP THỨ TỰ TRIỂN KHAI
 
 ```
+
 Sprint 1 — Foundation (đã có + gaps blocking)
   ✅ Landing, Login, Register, Forgot/Reset Password
   ▶ /onboarding
@@ -492,9 +513,10 @@ Sprint 4 — Monetization & Retention
   ▶ /certificates
 
 Sprint 5 — Administration
-  ▶ /staff/* (content management, grading)
+  ▶ /staff/*(content management, grading)
   ▶ /admin/* (user management, analytics)
   ▶ /grammar, /dictionary
+
 ```
 
 ---

@@ -1,4 +1,5 @@
 # SPEC — Học Từ Vựng (`/vocabulary`)
+>
 > **UC:** UC-09 — Học Từ vựng theo Level/Topic
 > **Sprint:** 3 — Core Content
 > **Prefix:** `voc-` | **activeTab:** `'vocabulary'` | **Guard:** PrivateRoute (STUDENT)
@@ -122,6 +123,7 @@ Debounce search 400ms. Reset `page → 1` khi `level`, `topic`, `debounced` thay
 ```
 
 API service (`studentService.js`):
+
 ```js
 export async function getVocabularyList({ level, topic, search, page = 0, size = 20 } = {}) {
   const params = { level, page, size };

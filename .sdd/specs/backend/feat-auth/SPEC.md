@@ -1,4 +1,5 @@
 # SPEC — Authentication & Account Management
+>
 > **Feature ID:** `feat-auth`
 > **UC Coverage:** UC-01, UC-02, UC-03, UC-04, UC-05, UC-18
 > **Version:** 1.0 | **Status:** Draft
@@ -9,9 +10,11 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Hệ thống cần xác thực danh tính người dùng (Student) để bảo vệ nội dung học tập và đảm bảo dữ liệu tiến trình cá nhân hóa chính xác. Đây là cổng vào bắt buộc của toàn bộ nền tảng.
 
 ### 1.2 Mục tiêu
+
 - Cung cấp đăng nhập an toàn qua Email/Password và Google OAuth
 - Quản lý phiên làm việc (session) bằng JWT stateless
 - Cho phép đăng ký tài khoản mới với xác minh email
@@ -19,6 +22,7 @@ Hệ thống cần xác thực danh tính người dùng (Student) để bảo v
 - Cho phép xem và chỉnh sửa hồ sơ cá nhân
 
 ### 1.3 Tại sao cần?
+
 Không có xác thực → không thể cá nhân hóa lộ trình học, lưu tiến trình, phân quyền VIP hay bảo vệ nội dung premium. Đây là foundation của toàn bộ hệ thống.
 
 ---
@@ -255,9 +259,11 @@ erDiagram
 ## 6. API SPEC
 
 ### `POST /api/auth/login`
+
 **Actor:** Guest | **Auth:** None
 
 **Request:**
+
 ```json
 {
   "email": "string — địa chỉ email",
@@ -266,6 +272,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -287,9 +294,11 @@ erDiagram
 ---
 
 ### `POST /api/auth/register`
+
 **Actor:** Guest | **Auth:** None
 
 **Request:**
+
 ```json
 {
   "fullName": "string — họ tên đầy đủ",
@@ -300,6 +309,7 @@ erDiagram
 ```
 
 **Response (201):**
+
 ```json
 {
   "status": 201,
@@ -314,14 +324,17 @@ erDiagram
 ---
 
 ### `POST /api/auth/verify-email`
+
 **Actor:** Guest | **Auth:** None
 
 **Request:**
+
 ```json
 { "token": "string — token từ email" }
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -333,14 +346,17 @@ erDiagram
 ---
 
 ### `POST /api/auth/forgot-password`
+
 **Actor:** Guest | **Auth:** None
 
 **Request:**
+
 ```json
 { "email": "string" }
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -352,9 +368,11 @@ erDiagram
 ---
 
 ### `POST /api/auth/reset-password`
+
 **Actor:** Guest | **Auth:** None
 
 **Request:**
+
 ```json
 {
   "token": "string — token từ email reset",
@@ -364,6 +382,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -375,9 +394,11 @@ erDiagram
 ---
 
 ### `GET /api/students/me`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -398,9 +419,11 @@ erDiagram
 ---
 
 ### `PUT /api/students/me`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "fullName": "string|optional",
@@ -411,6 +434,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -422,9 +446,11 @@ erDiagram
 ---
 
 ### `PUT /api/students/me/password`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "currentPassword": "string",
@@ -434,6 +460,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -445,9 +472,11 @@ erDiagram
 ---
 
 ### `POST /api/auth/logout`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -459,14 +488,17 @@ erDiagram
 ---
 
 ### `POST /api/auth/refresh`
+
 **Actor:** Student | **Auth:** None (dùng refresh token)
 
 **Request:**
+
 ```json
 { "refreshToken": "string" }
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -481,10 +513,12 @@ erDiagram
 ---
 
 ### `GET /api/auth/oauth/google`
+
 **Actor:** Guest | **Auth:** None
 > Redirect đến Google OAuth consent screen.
 
 ### `GET /api/auth/oauth/google/callback`
+
 **Actor:** Guest | **Auth:** None (OAuth callback)
 > Nhận authorization code từ Google, xử lý tạo/liên kết tài khoản, redirect về frontend với JWT.
 

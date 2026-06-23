@@ -1,4 +1,5 @@
 # SPEC — Speaking Practice + AI Grading (`/speaking`)
+>
 > **UC:** UC-13 — Luyện Speaking với AI Grading (Async)
 > **Sprint:** 4 — AI Modules
 > **Prefix:** `spk-` | **activeTab:** `'speaking'` | **Guard:** PrivateRoute (STUDENT)
@@ -11,10 +12,12 @@
 ## 1. MÔ TẢ TRANG
 
 Hai màn hình trong cùng route:
+
 1. **Speaking List** — Danh sách bài nói theo level. Mỗi bài có nội dung mẫu cần đọc.
 2. **Speaking Practice** — Chọn bài → nghe mẫu → record audio → submit async → poll kết quả AI (transcript + score).
 
 **Luồng async quan trọng:**
+
 - Submit audio → nhận `{ jobId, status: PENDING }` → poll `/api/speaking/{jobId}` mỗi 3s → hiển thị kết quả khi `status: COMPLETED`.
 - Timeout 60s với error rõ ràng nếu AI không trả về (theo LESSON-006).
 
@@ -23,6 +26,7 @@ Hai màn hình trong cùng route:
 ## 2. MOCKUP
 
 ### 2.1 Speaking List
+
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │  TopNav (activeTab="speaking")                                   │
@@ -46,6 +50,7 @@ Hai màn hình trong cùng route:
 ```
 
 ### 2.2 Speaking Practice (active session)
+
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │  ← Danh sách                                                     │
@@ -97,6 +102,7 @@ components/student/
 ## 4. STATE
 
 ### 4.1 List view
+
 ```js
 const [view,      setView]    = useState('list');   // 'list' | 'practice'
 const [level,     setLevel]   = useState(user?.jlptLevel ?? 'N5');
@@ -106,6 +112,7 @@ const [error,     setError]   = useState('');
 ```
 
 ### 4.2 Practice view
+
 ```js
 const [activeEx,     setActiveEx]   = useState(null);  // exercise object
 const [audioBlob,    setAudioBlob]  = useState(null);  // Blob sau khi ghi xong
@@ -166,6 +173,7 @@ const POLL_TIMEOUT_MS  = 60000;
 ```
 
 API service (`studentService.js`):
+
 ```js
 export async function getSpeakingExercises(level) {
   const res = await api.get('/speaking/exercises', { params: { level } });

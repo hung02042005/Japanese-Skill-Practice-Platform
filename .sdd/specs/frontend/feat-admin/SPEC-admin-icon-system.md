@@ -1,4 +1,5 @@
 # SPEC — Admin Icon System (Hệ thống Icon SVG)
+>
 > **Feature ID:** `feat-admin`
 > **Version:** 1.0 | **Status:** Draft
 > **Author:** Team | **Last Updated:** 2026-06-02
@@ -12,6 +13,7 @@
 ### 1.1 Xuất phát từ brand SakuJi
 
 Logo SakuJi được tạo từ hai hình học cốt lõi:
+
 - **Ellipse nghiêng** — cánh hoa sakura (petal), đặc trưng của mascot Saku-chan
 - **Hình tròn** — mắt Saku-chan, nhụy hoa, crown jewels
 
@@ -29,7 +31,7 @@ Icon admin kế thừa DNA này: các icon **stroke-based** (phác thảo, khôn
 | Color | `currentColor` — kế thừa từ CSS parent |
 | Petal accent | `<ellipse>` fill `currentColor` opacity `0.08–0.22` — trang trí, không semantic |
 | Aria | `aria-hidden="true"` trên mọi icon decorative |
-| Size | Navigation: 20×20 | Actions: 13×13 | Stat: 26×26 | Tab: 16×16 | Header: 14×14 |
+| Size | Navigation: 20×20 \| Actions: 13×13 \| Stat: 26×26 \| Tab: 16×16 \| Header: 14×14 |
 
 ### 1.3 Không được làm
 
@@ -52,6 +54,7 @@ apps/frontend/src/components/admin/ManageUsersIcons.jsx
 Không tạo file icon riêng cho từng trang — tránh phân tán, dễ maintain.
 
 **Import pattern:**
+
 ```jsx
 import {
   // Stat icons
@@ -82,6 +85,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`StatIconUsers`** — `STAT_ICONS.total`
+
 ```svg
 <!--  Hai người chồng lên, ellipse petal nhỏ góc trên phải -->
 <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
@@ -101,6 +105,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`StatIconActive`** — `STAT_ICONS.active`
+
 ```svg
 <!-- Hoa 5 cánh (5 ellipse) + circle tâm + checkmark -->
 <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
@@ -114,11 +119,13 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
   <path d="M10.5 14l2.5 2.5 4.5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 ```
+
 > **Giải thích:** 5 ellipse = 5 cánh hoa sakura đối xứng (DNA petal của SakuJi). Circle tâm + checkmark = "hoạt động tốt". Pattern này lấy cảm hứng từ nhị hoa của bông anh đào.
 
 ---
 
 **`StatIconSuspended`** — `STAT_ICONS.suspended`
+
 ```svg
 <!-- Khóa + ellipse petal góc trên -->
 <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
@@ -134,6 +141,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`StatIconPending`** — `STAT_ICONS.pending`
+
 ```svg
 <!-- Đồng hồ + 3 chấm nhỏ bên dưới (đang chờ) -->
 <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
@@ -153,6 +161,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`IcBan`** — Đình chỉ tài khoản
+
 ```svg
 <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
   <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2.2"/>
@@ -163,6 +172,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`IcCheck`** — Kích hoạt tài khoản
+
 ```svg
 <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
   <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -172,6 +182,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`IcKey`** — Đặt lại mật khẩu
+
 ```svg
 <!-- Chìa khóa: circle (đầu) + path thân + 2 răng -->
 <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
@@ -185,6 +196,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`IcSwap`** — Đổi vai trò
+
 ```svg
 <!-- Hai mũi tên ngược chiều (lên/xuống) -->
 <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
@@ -196,6 +208,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`IcTrash`** — Xóa mềm
+
 ```svg
 <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
   <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -209,6 +222,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`IcAdminChip`** — Crown chip cho AdminPageHeader
+
 ```svg
 <!-- Crown shape đặc trưng SakuJi: 3 đỉnh + base + circle nhụy trên cùng -->
 <svg width="13" height="13" viewBox="0 0 22 18" fill="none">
@@ -221,6 +235,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`IcAddStaff`** — Tạo Staff mới
+
 ```svg
 <!-- Cây đang mọc (+ dưới → lên trên): cách điệu hóa "Staff mới phát triển" -->
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -232,6 +247,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`IcSearchGlass`** — Thanh tìm kiếm
+
 ```svg
 <!-- Kính lúp + hào quang tâm nhỏ (gợi ánh sáng tìm kiếm) -->
 <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
@@ -250,6 +266,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`TAB_ICONS.student`** — Học viên
+
 ```svg
 <!-- Mũ tốt nghiệp + ngọn bên phải (học viên đang lớn lên) -->
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -259,11 +276,13 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
   <ellipse cx="20.5" cy="15.5" rx="1.3" ry="2" fill="currentColor" opacity="0.45" transform="rotate(12 20.5 15.5)"/>
 </svg>
 ```
+
 > Ellipse nghiêng ở đầu gậy = cánh hoa SakuJi accent.
 
 ---
 
 **`TAB_ICONS.staff`** — Nhân viên
+
 ```svg
 <!-- Người + lá (staff như người chăm sóc vườn hoa) -->
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -277,6 +296,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`TAB_ICONS.admin`** — Quản trị
+
 ```svg
 <!-- Ngôi sao 5 cánh + ellipse nhỏ tâm trên (kế thừa crown jewel từ AdminTopNav) -->
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -292,6 +312,7 @@ Dùng trong stat cards của ManageUsers và AdminDashboard. Export qua `STAT_IC
 ---
 
 **`IcBloomCheck`** — Xác nhận thành công (dùng màu cụ thể, không currentColor)
+
 ```svg
 <!-- Hoa 5 cánh đầy đủ + checkmark — cùng pattern với StatIconActive nhưng dùng --color-primary -->
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -487,6 +508,7 @@ Icons trong `AdminTopNav.jsx` là các SVG inline. Chúng theo cùng phong cách
 ## 6. CROWN BADGE (AdminTopNav)
 
 Crown trong badge ADMIN của AdminTopNav:
+
 ```svg
 <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
   <!-- Crown: 3 đỉnh + base -->
@@ -497,6 +519,7 @@ Crown trong badge ADMIN của AdminTopNav:
   <circle cx="10.5" cy="2.5" r="1.5" fill="currentColor"/>
 </svg>
 ```
+
 Color: `var(--color-admin-crown)` = `#E8637A` — deep petal, không thay đổi.
 
 ---

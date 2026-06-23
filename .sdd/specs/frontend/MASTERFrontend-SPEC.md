@@ -1,4 +1,5 @@
 # MASTER-SPEC — Hướng dẫn tạo trang Admin (Frontend)
+>
 > **Phiên bản:** 1.0 | **Cập nhật:** 2026-06-02
 > **Mục đích:** Đọc tài liệu này là đủ để tạo bất kỳ trang admin mới nào mà không cần hỏi thêm.
 > **Design ref:** `DESIGN.md` | **Backend ref:** `.sdd/specs/backend/feat-system-admin/`
@@ -46,16 +47,19 @@ apps/frontend/src/
 ### 1.3 Quy tắc tách component
 
 **Tách ra file riêng khi:**
+
 - Component > 60 dòng JSX
 - Dùng lại ở ≥ 2 nơi
 - Có state/logic riêng biệt hoàn toàn
 
 **Giữ inline (trong cùng file) khi:**
+
 - Component < 30 dòng
 - Chỉ render UI thuần, không có state
 - Là helper nhỏ (icon, skeleton row đơn giản)
 
 **Quy tắc page file:** Page JSX chỉ chứa:
+
 1. Imports
 2. State management + data fetching
 3. Return JSX: `AdminTopNav` + `AdminPageHeader` + `<main>` gọi components
@@ -214,6 +218,7 @@ export default function AdminMyPage() {
 | `AdminPageHeader` | `components/admin/AdminPageHeader` | `chipIcon`, `chipLabel`, `title`, `subtitle`, `mascotVariant`, `mascotSize` |
 
 **activeTab values** (phải khớp với ADMIN_TABS trong AdminTopNav.jsx):
+
 ```
 'admin-overview'  → /admin
 'manage-users'    → /admin/users
@@ -223,6 +228,7 @@ export default function AdminMyPage() {
 ```
 
 **mascotVariant values:** `'idle'` | `'happy'` | `'thinking'` | `'correct'` | `'wrong'` | `'celebrate'`
+
 - Loading → `'thinking'`
 - Xong xuôi → `'happy'`
 - Trang tĩnh → `'idle'`
@@ -243,12 +249,14 @@ export default function AdminMyPage() {
 | `ToastContainer` | `components/common/Toast` | `toasts`, `onRemove` |
 
 **StatCard variants:** `'total'` | `'active'` | `'banned'` | `'new'`
+
 - `total`  → border primary-light, icon bg primary-bg
 - `active` → border secondary,     icon bg secondary-bg
 - `banned` → border error,         icon bg #FEF2F2
 - `new`    → border accent,        icon bg accent-bg
 
 **addToast usage:**
+
 ```js
 addToast('success', 'Thành công rồi!');
 addToast('error',   'Có lỗi xảy ra: ' + err.message);
@@ -261,6 +269,7 @@ addToast('info',    'Đang xử lý...');
 import { ConfirmModal, SuspendModal, CreateStaffModal, ChangeStaffRoleModal }
   from '../../components/admin/UserModals';
 ```
+
 CSS của các modal này nằm trong `ManageUsers.css`, dùng các class `mu-overlay`, `mu-modal`, v.v.
 
 ### 4.4 Icons — `ManageUsersIcons.jsx`
@@ -294,6 +303,7 @@ import {
 ```
 
 **Quy tắc icon:**
+
 - Không import từ thư viện ngoài (lucide-react, heroicons, v.v.)
 - Thêm icon mới → thêm vào `ManageUsersIcons.jsx`, export named
 - Mọi icon `aria-hidden="true"` — văn bản mô tả nằm trong `aria-label` của button cha
@@ -936,23 +946,28 @@ Dùng cho `JlptBadge` và filter UI:
 Khi nhận yêu cầu tạo một trang admin mới:
 
 **Bước 1 — Chuẩn bị:**
+
 - [ ] Xác định `activeTab` string cho AdminTopNav
 - [ ] Xác định prefix CSS (3 chữ cái, ví dụ `rpt-`)
 - [ ] Xác định mascot variant phù hợp với context trang
 - [ ] Xác định API endpoints cần (CRUD gì?)
 
 **Bước 2 — Thêm API:**
+
 - [ ] Thêm functions vào `api/adminService.js`
 
 **Bước 3 — Tạo file:**
+
 - [ ] `pages/admin/AdminXxx.jsx` — page shell
 - [ ] `pages/admin/AdminXxx.css` — CSS đầy đủ
 - [ ] `components/admin/XxxComponent.jsx` — mỗi section lớn = 1 file
 
 **Bước 4 — Đăng ký route:**
+
 - [ ] Thêm `<Route path="/admin/xxx" element={<AdminRoute><AdminXxx /></AdminRoute>} />` vào `App.jsx`
 
 **Bước 5 — Kiểm tra:**
+
 - [ ] 3 trạng thái: loading skeleton / error banner / empty state
 - [ ] Responsive 3 breakpoint
 - [ ] Accessibility checklist (§12)
@@ -975,6 +990,7 @@ States:     courses[], isLoading, error, currentPage, totalPages, search, jlptFi
 ```
 
 Page file (`AdminContent.jsx`) chỉ có:
+
 ```jsx
 export default function AdminContent() {
   // state + fetch

@@ -1,4 +1,5 @@
 # SPEC — AI Skills (Speaking Practice & Handwriting OCR)
+>
 > **Feature ID:** `feat-ai-skills`
 > **UC Coverage:** UC-13 (Speaking + AI Grading), UC-20 (AI Handwriting Practice)
 > **Version:** 1.0 | **Status:** Draft
@@ -9,15 +10,18 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Kỹ năng nói và viết là hai kỹ năng khó luyện nhất khi học ngôn ngữ mà không có gia sư. Nền tảng tích hợp AI để cung cấp phản hồi tức thì: AI chấm phát âm qua Speech Recognition (UC-13) và AI nhận diện chữ viết tay Kanji/Kana qua OCR (UC-20).
 
 ### 1.2 Mục tiêu
+
 - Cho phép học viên ghi âm và nhận phản hồi phát âm từ AI (Shadowing method)
 - Cho phép học viên vẽ Kanji/Kana trên Canvas và nhận kết quả nhận diện OCR
 - Thực thi async pattern: trả `job_id` ngay, poll kết quả sau
 - Staff có thể override điểm AI bằng điểm thủ công (final_score)
 
 ### 1.3 Tại sao cần?
+
 Không có AI feedback → học viên không biết phát âm sai ở đâu hoặc viết sai nét nào. AI biến nền tảng từ "đọc nội dung" thành "luyện tập tích cực."
 
 ---
@@ -166,10 +170,12 @@ erDiagram
 ## 6. API SPEC
 
 ### `GET /api/lessons/{lessonId}/speaking`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Lấy thông tin bài luyện nói (lesson_type = 'speaking').
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -186,16 +192,19 @@ erDiagram
 ---
 
 ### `POST /api/submissions/speaking`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Nộp bài ghi âm — async, trả ngay submission ID.
 
 **Request:** `multipart/form-data`
+
 ```
 lessonId: long
 audioFile: File (mp3/wav/webm, max 10MB)
 ```
 
 **Response (202 Accepted):**
+
 ```json
 {
   "status": 202,
@@ -210,10 +219,12 @@ audioFile: File (mp3/wav/webm, max 10MB)
 ---
 
 ### `GET /api/submissions/{submissionId}/result`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Poll kết quả AI.
 
 **Response (200) — Khi đang xử lý:**
+
 ```json
 {
   "status": 200,
@@ -227,6 +238,7 @@ audioFile: File (mp3/wav/webm, max 10MB)
 ```
 
 **Response (200) — Khi có kết quả:**
+
 ```json
 {
   "status": 200,
@@ -250,10 +262,12 @@ audioFile: File (mp3/wav/webm, max 10MB)
 ---
 
 ### `POST /api/submissions/handwriting`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Nộp ảnh viết tay Canvas — async.
 
 **Request:** `multipart/form-data`
+
 ```
 targetType: string (kanji|kana)
 targetId: long (kanjiId or kanaId)
@@ -262,6 +276,7 @@ imageFile: File (png/jpg, max 5MB)
 ```
 
 **Response (202 Accepted):**
+
 ```json
 {
   "status": 202,
@@ -274,6 +289,7 @@ imageFile: File (png/jpg, max 5MB)
 ```
 
 **Poll result (200) — Khi có kết quả:**
+
 ```json
 {
   "status": 200,
@@ -294,10 +310,12 @@ imageFile: File (png/jpg, max 5MB)
 ---
 
 ### `GET /api/submissions?type={speaking|handwriting}&page=0&size=10`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Lịch sử bài nộp của Student.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

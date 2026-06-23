@@ -1,4 +1,5 @@
 # SPEC — Chi tiết bài học (`/lessons/:id`)
+>
 > **Sprint:** 2 — Core Learning Loop
 > **Prefix:** `lsn-` | **activeTab:** `'learn'` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §10.1` | **Backend ref:** `feat-core-learning/SPEC.md`

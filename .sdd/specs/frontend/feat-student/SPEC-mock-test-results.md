@@ -1,4 +1,5 @@
 # SPEC — Kết quả thi (`/mock-test/:id/results`)
+>
 > **Sprint:** 3 — Assessment Loop
 > **Prefix:** `mxr-` | **activeTab:** `'mock-test'` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §11.3` | **Backend ref:** `feat-assessment/SPEC.md`

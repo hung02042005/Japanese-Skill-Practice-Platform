@@ -1,4 +1,5 @@
 # SPEC — Test Strategy & Specification (Toàn Dự Án)
+>
 > **Feature ID:** `feat-testing`
 > **UC Coverage:** Tất cả UC (UC-01 → UC-40) — phủ 14 feature modules
 > **Version:** 1.0 | **Status:** Draft
@@ -48,6 +49,7 @@ Không có test → không có refactoring an toàn → technical debt tích lũ
 ## 3. FUNCTIONAL REQUIREMENTS (EARS)
 
 > **EARS Syntax:**
+>
 > - `WHEN [trigger] THE TEST SHALL [verify]`
 > - `IF [condition] THEN THE TEST SHALL [assert]`
 > - `THE TEST SUITE SHALL [invariant requirement]`
@@ -381,6 +383,7 @@ public class TestClockConfig {
 ### 6.1 Mock AI Engine (Speaking & OCR)
 
 **Speaking Analysis Mock — Success:**
+
 ```
 POST /ai/speech/analyze
 Response (200):
@@ -394,6 +397,7 @@ Response (200):
 ```
 
 **Speaking Analysis Mock — Timeout (for retry tests):**
+
 ```
 POST /ai/speech/analyze
 → WireMock: delay 35000ms (simulates 35s timeout)
@@ -401,6 +405,7 @@ POST /ai/speech/analyze
 ```
 
 **OCR Mock — Correct Character:**
+
 ```
 POST /ai/ocr/recognize
 Body: { "image_base64": "..." }
@@ -412,6 +417,7 @@ Response (200):
 ```
 
 **OCR Mock — Wrong Character:**
+
 ```
 POST /ai/ocr/recognize
 Response (200):
@@ -466,6 +472,7 @@ Response (200):
 ```
 
 **Coverage Gate Script (GitHub Actions):**
+
 ```yaml
 - name: Check Coverage Gate
   run: |

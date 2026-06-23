@@ -22,6 +22,7 @@
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 // Clock fixed tại 2026-05-30T08:00:00Z
 StudentUser user = aStudent().withEmail("active@test.com").withStatus("active").build();
@@ -30,9 +31,11 @@ when(tokenRepository.countByStudentIdAndTokenTypeAndCreatedAtAfter(...)).thenRet
 ```
 
 **Steps:**
+
 1. Gọi `authService.forgotPassword("active@test.com", "127.0.0.1")`
 
 **Expected:**
+
 - `tokenRepository.save()` được gọi với:
   - `tokenType = "password_reset"`
   - `expiresAt = 2026-05-30T08:15:00Z` (NOW + 15 phút)
@@ -53,14 +56,17 @@ when(tokenRepository.countByStudentIdAndTokenTypeAndCreatedAtAfter(...)).thenRet
 | **Ưu tiên** | P0 (Security — chống email enumeration) |
 
 **Setup:**
+
 ```java
 when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 ```
 
 **Steps:**
+
 1. Gọi `authService.forgotPassword("ghost@test.com", "127.0.0.1")`
 
 **Expected:**
+
 - KHÔNG ném exception
 - `tokenRepository.save()` KHÔNG được gọi
 - `emailService` KHÔNG được gọi
@@ -78,6 +84,7 @@ when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 AuthToken oldToken = buildValidPasswordResetToken(studentId);
 when(tokenRepository.findValidByStudentAndType(studentId, "password_reset"))
@@ -85,9 +92,11 @@ when(tokenRepository.findValidByStudentAndType(studentId, "password_reset"))
 ```
 
 **Steps:**
+
 1. Gọi `authService.forgotPassword("active@test.com", "127.0.0.1")`
 
 **Expected:**
+
 - Verify call order: `tokenRepository.revokeAll(oldTokens)` được gọi TRƯỚC `tokenRepository.save(newToken)`
 - Chỉ có một token mới hợp lệ sau đó
 
@@ -103,6 +112,7 @@ when(tokenRepository.findValidByStudentAndType(studentId, "password_reset"))
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 AuthToken token = buildValidToken("password_reset", studentId, /* expires = NOW+5min */);
 when(tokenRepository.findByTokenValueAndTokenType("valid-tok", "password_reset"))
@@ -113,9 +123,11 @@ when(passwordEncoder.matches("NewPass12", user.getPasswordHash())).thenReturn(fa
 ```
 
 **Steps:**
+
 1. Gọi `authService.resetPassword("valid-tok", "NewPass12", "NewPass12")`
 
 **Expected:**
+
 - `userRepository.save()` được gọi với:
   - `passwordHash` = hash của `"NewPass12"` (KHÔNG phải cũ)
   - `passwordChangedAt ≈ NOW()`
@@ -134,6 +146,7 @@ when(passwordEncoder.matches("NewPass12", user.getPasswordHash())).thenReturn(fa
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 // Clock fixed tại 2026-05-30T08:00:00Z
 AuthToken token = new AuthToken();
@@ -142,9 +155,11 @@ token.setRevokedAt(null);
 ```
 
 **Steps:**
+
 1. Gọi `authService.resetPassword("expired-tok", "NewPass12", "NewPass12")`
 
 **Expected:**
+
 - Ném `InvalidTokenException` (HTTP 400 / `INVALID_TOKEN`)
 - `userRepository.save()` KHÔNG được gọi
 - `tokenRepository.revokeAll()` KHÔNG được gọi
@@ -162,6 +177,7 @@ token.setRevokedAt(null);
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 AuthToken usedToken = new AuthToken();
 usedToken.setRevokedAt(Instant.now().minus(5, ChronoUnit.MINUTES)); // đã dùng 5 phút trước
@@ -169,9 +185,11 @@ usedToken.setExpiresAt(Instant.now().plus(10, ChronoUnit.MINUTES)); // chưa h�
 ```
 
 **Steps:**
+
 1. Gọi `authService.resetPassword("used-tok", "NewPass12", "NewPass12")`
 
 **Expected:**
+
 - Ném `InvalidTokenException`
 - Mật khẩu KHÔNG thay đổi
 
@@ -187,15 +205,18 @@ usedToken.setExpiresAt(Instant.now().plus(10, ChronoUnit.MINUTES)); // chưa h�
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 StudentUser user = aStudent().withPasswordHash(bcrypt("OldPass12")).build();
 when(passwordEncoder.matches("OldPass12", user.getPasswordHash())).thenReturn(true); // mật khẩu mới = cũ
 ```
 
 **Steps:**
+
 1. Gọi `authService.resetPassword("valid-tok", "OldPass12", "OldPass12")`
 
 **Expected:**
+
 - Ném exception với `errorCode = "SAME_PASSWORD"` (HTTP 422)
 - Mật khẩu KHÔNG thay đổi
 - Token KHÔNG bị thu hồi (validation thất bại trước khi commit)
@@ -212,9 +233,11 @@ when(passwordEncoder.matches("OldPass12", user.getPasswordHash())).thenReturn(tr
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Gọi `authService.resetPassword("valid-tok", "abc", "abc")`
 
 **Expected:**
+
 - Ném `ValidationException` (HTTP 422 / `WEAK_PASSWORD`)
 - Token KHÔNG bị thu hồi (validation xảy ra trước khi query token)
 
@@ -230,10 +253,12 @@ when(passwordEncoder.matches("OldPass12", user.getPasswordHash())).thenReturn(tr
 | **Ưu tiên** | P0 (Security) |
 
 **Steps:**
+
 1. Gọi `authService.forgotPassword("user@test.com", "127.0.0.1")` (với email tồn tại)
 2. Capture tất cả log output
 
 **Expected:**
+
 - Không có log nào chứa giá trị `tokenValue` (sensitive token)
 - Không có log nào chứa URL dạng `https://...?token=...`
 
@@ -249,15 +274,18 @@ when(passwordEncoder.matches("OldPass12", user.getPasswordHash())).thenReturn(tr
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 when(tokenRepository.countByStudentIdAndTokenTypeAndCreatedAtAfter(
     studentId, "password_reset", NOW_MINUS_1_HOUR)).thenReturn(3L); // đã đủ 3 lần
 ```
 
 **Steps:**
+
 1. Gọi `authService.forgotPassword("active@test.com", "127.0.0.1")`
 
 **Expected:**
+
 - Ném `RateLimitExceededException` (HTTP 429)
 - `emailService` KHÔNG được gọi
 
@@ -279,12 +307,14 @@ when(tokenRepository.countByStudentIdAndTokenTypeAndCreatedAtAfter(
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Seed user với `password_hash = bcrypt("OldPass12")`
 2. Seed token `password_reset` hợp lệ
 3. Gọi `authService.resetPassword(tokenValue, "NewPass12", "NewPass12")`
 4. Reload user từ DB
 
 **Expected:**
+
 - `BCrypt.checkpw("NewPass12", newHash)` = true
 - `BCrypt.checkpw("OldPass12", newHash)` = false
 - `password_changed_at` được đặt
@@ -301,11 +331,13 @@ when(tokenRepository.countByStudentIdAndTokenTypeAndCreatedAtAfter(
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Seed user + 2 session tokens (revoked_at = NULL) + 1 password_reset token hợp lệ
 2. Gọi `authService.resetPassword(tokenValue, "NewPass12", "NewPass12")`
 3. Query tất cả `auth_tokens` của user
 
 **Expected:**
+
 - Tất cả token với `token_type = "session"` có `revoked_at` IS NOT NULL
 - Token `password_reset` có `revoked_at` IS NOT NULL
 - Đăng nhập bằng `"NewPass12"` thành công
@@ -329,11 +361,13 @@ when(tokenRepository.countByStudentIdAndTokenTypeAndCreatedAtAfter(
 | **Ưu tiên** | P0 |
 
 **Request:**
+
 ```json
 { "email": "active@test.com" }
 ```
 
 **Expected:**
+
 ```
 HTTP 200
 { "message": "Nếu email tồn tại, bạn sẽ nhận được liên kết..." }
@@ -351,14 +385,17 @@ HTTP 200
 | **Ưu tiên** | P0 |
 
 **Request:**
+
 ```json
 { "email": "ghost@test.com" }
 ```
 
 **Expected:**
+
 ```
 HTTP 200
 ```
+
 - Response body **giống hệt** với TC-A-03-01 (cùng status code, cùng message structure)
 - Response KHÔNG chứa thông tin về việc email có tồn tại hay không
 
@@ -374,11 +411,13 @@ HTTP 200
 | **Ưu tiên** | P1 |
 
 **Request:**
+
 ```json
 { "email": "not-email" }
 ```
 
 **Expected:**
+
 ```
 HTTP 400
 { "errorCode": "VALIDATION_FAILED" }
@@ -396,6 +435,7 @@ HTTP 400
 | **Ưu tiên** | P0 |
 
 **Request:**
+
 ```json
 { "token": "valid-token", "newPassword": "NewPass12", "confirmPassword": "NewPass12" }
 ```
@@ -403,6 +443,7 @@ HTTP 400
 **Mock:** `authService.resetPassword()` thành công
 
 **Expected:**
+
 ```
 HTTP 200
 ```
@@ -421,6 +462,7 @@ HTTP 200
 **Mock:** `authService.resetPassword()` ném `InvalidTokenException("EXPIRED")`
 
 **Expected:**
+
 ```
 HTTP 400
 { "errorCode": "INVALID_TOKEN" }
@@ -438,11 +480,13 @@ HTTP 400
 | **Ưu tiên** | P1 |
 
 **Request:**
+
 ```json
 { "token": "valid-token", "newPassword": "abc", "confirmPassword": "abc" }
 ```
 
 **Expected:**
+
 ```
 HTTP 422
 { "errorCode": "WEAK_PASSWORD" }
@@ -462,6 +506,7 @@ HTTP 422
 **Mock:** `authService.resetPassword()` ném `SamePasswordException`
 
 **Expected:**
+
 ```
 HTTP 422
 { "errorCode": "SAME_PASSWORD", "message": "Mật khẩu mới không được giống mật khẩu cũ" }
@@ -479,11 +524,13 @@ HTTP 422
 | **Ưu tiên** | P1 |
 
 **Request:**
+
 ```json
 { "token": "", "newPassword": "NewPass12", "confirmPassword": "NewPass12" }
 ```
 
 **Expected:**
+
 ```
 HTTP 400
 { "errorCode": "VALIDATION_FAILED", "errors": [{ "field": "token", "message": "Token là bắt buộc" }] }
@@ -520,11 +567,13 @@ HTTP 400
 | **Ưu tiên** | P0 — CRITICAL |
 
 **Steps:**
+
 1. Gửi `POST /api/auth/forgot-password` với email tồn tại, capture response body và HTTP code
 2. Gửi `POST /api/auth/forgot-password` với email không tồn tại, capture response body và HTTP code
 3. So sánh
 
 **Expected:**
+
 - HTTP status code GIỐNG NHAU (đều 200)
 - Response body structure GIỐNG NHAU
 - Thời gian response KHÔNG khác biệt quá 200ms (timing attack prevention)
@@ -541,12 +590,14 @@ HTTP 400
 | **Ưu tiên** | P0 — CRITICAL |
 
 **Steps:**
+
 1. Enable log capture
 2. Gọi `authService.forgotPassword(existingEmail, ip)`
 3. Capture token value được tạo
 4. Search toàn bộ log output cho token value đó
 
 **Expected:**
+
 - Token value KHÔNG xuất hiện trong bất kỳ log level nào (DEBUG, INFO, WARN, ERROR)
 
 ---

@@ -1,4 +1,5 @@
 # SPEC — Học Kana (`/kana`)
+>
 > **UC:** UC-08 — Học Hiragana / Katakana
 > **Sprint:** 3 — Core Content
 > **Prefix:** `kna-` | **activeTab:** `'kana'` | **Guard:** PrivateRoute (STUDENT)
@@ -71,6 +72,7 @@ const [isSaving,    setSaving]  = useState(false);
 ```
 
 `KanaChar`:
+
 ```js
 {
   kanaId: number,
@@ -121,6 +123,7 @@ const [isSaving,    setSaving]  = useState(false);
 ```
 
 API service (`studentService.js`):
+
 ```js
 export async function getKanaList(script) {
   const res = await api.get('/kana', { params: { script } });

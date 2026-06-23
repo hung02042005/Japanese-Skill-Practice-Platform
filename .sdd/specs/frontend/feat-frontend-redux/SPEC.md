@@ -1,4 +1,5 @@
 # SPEC — Frontend Architecture (React + Redux Toolkit)
+>
 > **Feature ID:** `feat-frontend-redux`
 > **UC Coverage:** UC-01, UC-02, UC-03, UC-18
 > **Version:** 2.0 | **Status:** Implemented
@@ -9,9 +10,11 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Frontend React 18 của hệ thống JLPT E-learning cần kiến trúc state management nhất quán để các component không bị prop-drill, API call không bị duplicate, và loading/error được xử lý đồng bộ. Đã migrate từ Zustand sang Redux Toolkit.
 
 ### 1.2 Mục tiêu
+
 - Định nghĩa luồng dữ liệu một chiều: API → Redux Slice → Component
 - Chuẩn hoá cách gọi API qua Axios instance duy nhất với interceptor
 - Quản lý auth state (user, token) nhất quán xuyên suốt app

@@ -1,4 +1,5 @@
 # SPEC — Learning Analytics & Reports
+>
 > **Feature ID:** `feat-learning-analytics`
 > **UC Coverage:** UC-19 (Learning Progress & Stats), UC-32 (View Quiz Results), UC-38 (Report Screen)
 > **Version:** 1.0 | **Status:** Draft
@@ -9,14 +10,17 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Để học tập hiệu quả, học viên cần theo dõi trực quan tiến độ học và điểm số qua các kỳ thi thử. Đồng thời, Nhân viên (Staff) và Quản trị viên (Admin) cần những báo cáo phân tích tổng hợp để đánh giá chất lượng học liệu và sự phát triển của hệ thống.
 
 ### 1.2 Mục tiêu
+
 - **Cho Student (UC-19):** Hiển thị thống kê số lượng bài học hoàn thành, biểu đồ radar năng lực kỹ năng, chuỗi học tập hàng ngày (streak) và lịch sử điểm số thi thử JLPT.
 - **Cho Staff (UC-32):** Cung cấp giao diện phân tích kết quả làm bài Quiz/Exam của từng học viên và tỷ lệ trả lời đúng/sai của từng câu hỏi trong hệ thống.
 - **Cho Admin (UC-38):** Cung cấp Dashboard quản trị báo cáo tổng quát về tăng trưởng người dùng, phân phối phổ điểm thi thử JLPT, và hỗ trợ xuất dữ liệu ra PDF/CSV/Excel.
 
 ### 1.3 Tại sao cần?
+
 Không có thống kê tiến độ $\rightarrow$ học viên thiếu động lực duy trì chuỗi học và khó tự nhận biết kỹ năng còn yếu. Không có báo cáo quản trị $\rightarrow$ hệ thống mất kiểm soát về chất lượng đề thi, sự tương tác và sức khỏe tổng quát của nền tảng.
 
 ---
@@ -150,9 +154,11 @@ erDiagram
 ## 6. API SPEC
 
 ### `GET /api/analytics/my-progress`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -181,9 +187,11 @@ erDiagram
 ---
 
 ### `GET /api/analytics/quizzes/{quizId}/stats`
+
 **Actor:** Staff | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -215,9 +223,11 @@ erDiagram
 ---
 
 ### `GET /api/analytics/admin/reports?startDate=2026-05-01&endDate=2026-05-28`
+
 **Actor:** Admin | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -239,9 +249,11 @@ erDiagram
 ---
 
 ### `GET /api/analytics/admin/reports/export?startDate=2026-05-01&endDate=2026-05-28&format=xlsx`
+
 **Actor:** Admin | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

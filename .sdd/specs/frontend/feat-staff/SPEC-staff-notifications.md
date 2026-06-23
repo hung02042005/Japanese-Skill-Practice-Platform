@@ -1,4 +1,5 @@
 # SPEC — Staff Gửi Thông Báo (Notifications)
+>
 > **Feature ID:** `feat-staff` | **Page:** `StaffNotifications`
 > **Route:** `/staff/notifications`
 > **Version:** 1.0 | **Status:** Draft
@@ -192,7 +193,8 @@ useEffect(() => {
 }, [form.targetAll, form.targetLevel]);
 ```
 
-### Validation client-side:
+### Validation client-side
+
 - `title`: 1–255 ký tự
 - `content`: không rỗng
 - Nếu `scheduleNow = false`: `scheduledDate` và `scheduledTime` phải là tương lai

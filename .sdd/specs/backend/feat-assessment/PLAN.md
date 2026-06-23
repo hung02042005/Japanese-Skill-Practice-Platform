@@ -49,7 +49,7 @@ Triển khai module **Quiz & Practice** cho phép học viên làm bài kiểm t
 | DTO | Fields |
 |-----|--------|
 | `SubmitQuizRequest` | `attemptId: Long`, `answers: List<AnswerRequest>` |
-| `AnswerRequest` | `questionId: Long`, `selectedOption: String|null`, `answerText: String|null` |
+| `AnswerRequest` | `questionId: Long`, `selectedOption: String\|null`, `answerText: String\|null` |
 
 **Response DTOs** (không bao giờ chứa `correct_option` trước khi nộp bài):
 

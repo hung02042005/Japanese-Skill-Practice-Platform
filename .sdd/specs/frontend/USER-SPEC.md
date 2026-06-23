@@ -1,4 +1,5 @@
 # USER-SPEC — Hướng dẫn tạo trang Student (Frontend)
+>
 > **Phiên bản:** 1.0 | **Cập nhật:** 2026-06-02
 > **Mục đích:** Đọc tài liệu này là đủ để tạo bất kỳ trang student mới nào mà không cần hỏi thêm.
 > **Design ref:** `DESIGN.md` | **Admin ref:** `MASTER-SPEC.md` | **Flow ref:** `FRONTEND-FLOW.md`
@@ -236,6 +237,7 @@ export default function MyPage() {
 Giống MASTER-SPEC §3 — dùng cùng CSS variables. Xem `DESIGN.md` hoặc `MASTER-SPEC.md §3`.
 
 **Bổ sung cho student pages:**
+
 ```css
 /* VIP badge */
 --color-vip:     #F7C948   /* gold accent */
@@ -253,6 +255,7 @@ Giống MASTER-SPEC §3 — dùng cùng CSS variables. Xem `DESIGN.md` hoặc `M
 | `TopNav` | `components/layout/TopNav` | `activeTab: string` |
 
 **activeTab values** (phải khớp với `NAV_TABS` trong `TopNav.jsx`):
+
 ```
 ''            → /dashboard (không active tab nào)
 'review'      → /review
@@ -282,7 +285,7 @@ Giống MASTER-SPEC §3 — dùng cùng CSS variables. Xem `DESIGN.md` hoặc `M
 | `Pagination` | `components/common/Pagination` | `currentPage` (1-based), `totalPages`, `onChange(page)` |
 | `ProgressBar` | `components/common/ProgressBar` | `value` (0–100), `variant` |
 | `StatusBadge` | `components/common/Badges` | `status` |
-| `JlptBadge` | `components/common/Badges` | `level: 'N5'|'N4'|'N3'|'N2'|'N1'` |
+| `JlptBadge` | `components/common/Badges` | `level: 'N5'\|'N4'\|'N3'\|'N2'\|'N1'` |
 | `UserAvatar` | `components/common/UserAvatar` | `src`, `name`, `size` |
 | `useToast` + `ToastContainer` | `components/common/Toast` | — |
 
@@ -405,6 +408,7 @@ Xem MASTER-SPEC §6 — dùng lại hoàn toàn.
 **Thêm cho student pages:**
 
 ### 6.1 Flashcard queue rỗng (trạng thái đặc biệt)
+
 ```jsx
 {!isLoading && dueCards.length === 0 && (
   <EmptyState
@@ -487,6 +491,7 @@ Bước 3: Kỹ năng ưu tiên (Kanji / Vocab / Grammar / Tất cả) — multi
 ```
 
 **State:**
+
 ```js
 const [step,           setStep]    = useState(1);   // 1|2|3
 const [jlptGoal,       setJlpt]    = useState('N5');
@@ -496,6 +501,7 @@ const [isSubmitting,   setSubmit]  = useState(false);
 ```
 
 **API:** `POST /api/students/onboarding` → `{ jlptGoal, dailyMinutes, focusSkills[] }`
+
 - Thành công → `navigate('/dashboard')`
 - Lỗi → toast `error`
 
@@ -519,6 +525,7 @@ const [isSubmitting,   setSubmit]  = useState(false);
 ```
 
 **State:**
+
 ```js
 const { user } = useAppSelector((s) => s.auth);   // từ Redux
 const [form,        setForm]    = useState({ fullName: '', phone: '', dateOfBirth: '', bio: '' });
@@ -528,11 +535,13 @@ const [avatarPreview, setPreview] = useState(null);
 ```
 
 **API:**
+
 - `GET /api/students/me` — prefill form (dùng dữ liệu Redux nếu đủ)
 - `PUT /api/students/me` — save
 - `POST /api/students/me/avatar` — multipart upload, nhận `avatarUrl`
 
 **Validation (client):**
+
 - `fullName`: 2–100 ký tự
 - `phone`: regex `^\d{9,15}$` hoặc rỗng
 - `bio`: tối đa 500 ký tự
@@ -559,6 +568,7 @@ Tái dùng `EyeIcon` và `PasswordStrengthBar` từ `components/auth/`.
 **State:** form fields + `isSaving`
 
 **API:** `POST /api/auth/change-password` → `{ currentPassword, newPassword }`
+
 - 200 → toast success + `dispatch(logoutThunk())` + `navigate('/login')`
 - 401 → "Mật khẩu hiện tại không đúng"
 
@@ -573,6 +583,7 @@ Tái dùng `EyeIcon` và `PasswordStrengthBar` từ `components/auth/`.
 **Layout:** Trang trung tâm, single card 480px.
 
 **Logic:**
+
 ```js
 const [token] = useSearchParams();   // ?token=xxx
 const [state, setState] = useState('verifying'); // 'verifying'|'success'|'error'|'expired'
@@ -587,6 +598,7 @@ useEffect(() => {
 ```
 
 **4 states:**
+
 - `verifying`: spinner + "Đang xác nhận tài khoản..."
 - `success`: mascot `'celebrate'` + "Tài khoản đã xác nhận!" + CTA "Đăng nhập"
 - `expired`: mascot `'thinking'` + "Link đã hết hạn" + button "Gửi lại email"
@@ -631,6 +643,7 @@ export default function NotFound() {
 **Prefix:** `lsn-` | **activeTab:** `'learn'`
 
 **Layout:**
+
 ```
 [Breadcrumb: Dashboard > Khoá học > Tên bài]
 
@@ -644,6 +657,7 @@ export default function NotFound() {
 ```
 
 **State:**
+
 ```js
 const { id }          = useParams();
 const [lesson,        setLesson]  = useState(null);
@@ -654,6 +668,7 @@ const [error,         setError]   = useState('');
 ```
 
 **API:**
+
 - `GET /api/lessons/:id` — lấy nội dung bài học
 - `POST /api/learning-progress` — `{ contentType: 'lesson', contentId: id, status: 'completed', progressPercent: 100 }`
 - `POST /api/flashcards` — khi click "Thêm vào Flashcard" trên từ vựng/kanji
@@ -661,6 +676,7 @@ const [error,         setError]   = useState('');
 **VIP check:** Nếu `lesson.isVipOnly && !user.isVip` → redirect `/subscription`.
 
 **Domain rules:**
+
 - `progressPercent` chỉ tăng — không gửi giảm.
 - Lesson locked (bài trước chưa xong) → hiển thị overlay lock, disable footer buttons.
 
@@ -675,6 +691,7 @@ const [error,         setError]   = useState('');
 **Logic:** Lấy bài học tiếp theo chưa hoàn thành trong JLPT level của user. Nếu không có → EmptyState "Hoàn thành khoá học!".
 
 **Layout:**
+
 ```
 [PageHeader: "Học Từ Mới" + jlptLevel badge]
 
@@ -710,6 +727,7 @@ const [error,         setError]   = useState('');
 ```
 
 **State:**
+
 ```js
 const [queue,       setQueue]   = useState([]);   // flashcard[]
 const [currentIdx,  setIdx]     = useState(0);
@@ -720,11 +738,13 @@ const [done,        setDone]    = useState(false);
 ```
 
 **API:**
+
 - `GET /api/flashcards?dueOnly=true&size=50` — lấy queue
 - `GET /api/flashcards/:id/reveal` — khi flip
 - `POST /api/flashcards/:id/review` → `{ rating: 'easy'|'hard'|'wrong' }`
 
 **Flip animation:**
+
 ```css
 .rev-card-inner {
   transition: transform 0.4s ease;
@@ -747,6 +767,7 @@ const [done,        setDone]    = useState(false);
 **Prefix:** `fls-` | **activeTab:** `''`
 
 **Layout:**
+
 ```
 [Header: "Bộ Thẻ Của Tôi" | [+ Tạo bộ thẻ mới]]
 
@@ -758,6 +779,7 @@ const [done,        setDone]    = useState(false);
 ```
 
 **State:**
+
 ```js
 const [decks,       setDecks]   = useState([]);
 const [activeDecks, setActive]  = useState(null);
@@ -768,6 +790,7 @@ const [isLoading,   setLoading] = useState(true);
 ```
 
 **API:**
+
 - `GET /api/flashcard-decks`
 - `GET /api/flashcards?deckName={name}`
 - `POST /api/flashcard-decks` → `{ deckName }`
@@ -784,6 +807,7 @@ const [isLoading,   setLoading] = useState(true);
 **Prefix:** `mkt-` | **activeTab:** `'mock-test'`
 
 **Layout:**
+
 ```
 [Header: "Thi Thử JLPT"]
 
@@ -805,6 +829,7 @@ const [isLoading,   setLoading] = useState(true);
 **Prefix:** `mxa-` | **Không dùng TopNav** — dùng `ExamTopBar` riêng.
 
 **Layout đặc biệt (fullscreen):**
+
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │  ExamTopBar: [Logo SakuJi]  [⏱ 89:23]  [Nộp bài (primary)]        │
@@ -824,6 +849,7 @@ const [isLoading,   setLoading] = useState(true);
 ```
 
 **State:**
+
 ```js
 const { id }          = useParams();
 const [exam,          setExam]     = useState(null);
@@ -837,6 +863,7 @@ const timerRef = useRef(null);
 ```
 
 **Timer (client display only):**
+
 ```js
 useEffect(() => {
   if (!exam) return;
@@ -852,6 +879,7 @@ useEffect(() => {
 ```
 
 **API:**
+
 - `GET /api/assessments/:id` — load đề thi + câu hỏi (không có `correct_option`)
 - `POST /api/quiz-attempts` → `{ assessmentId, answers: [{ questionId, selectedOption }] }`
   - Thành công → `navigate(`/mock-test/${id}/results?attemptId=${result.attemptId}`)`
@@ -859,6 +887,7 @@ useEffect(() => {
 **localStorage backup:** dùng pattern §5.3.
 
 **Domain rules:**
+
 - Không gửi `score` từ client.
 - Timer chạy client-side chỉ để hiển thị; backend validate thời gian.
 - Mất mạng → hiển thị toast warning "Mất kết nối, đang thử lại..." + retry POST khi reconnect.
@@ -872,6 +901,7 @@ useEffect(() => {
 **Prefix:** `mxr-` | **activeTab:** `'mock-test'`
 
 **Layout:**
+
 ```
 [ResultHero: Điểm xx/100 | PASSED/FAILED badge | Ngày thi]
 
@@ -889,6 +919,7 @@ useEffect(() => {
 **API:** `GET /api/quiz-attempts/:attemptId` (từ query param `?attemptId=xxx`)
 
 **Domain rules:**
+
 - Kết quả bất biến — không có nút "Sửa".
 - `section_scores` parse từ JSON field trong response.
 
@@ -899,6 +930,7 @@ useEffect(() => {
 **Prefix:** `prg-` | **activeTab:** `''`
 
 **Layout:**
+
 ```
 [Header: "Tiến Độ Của Tôi"]
 
@@ -917,14 +949,17 @@ useEffect(() => {
 **Dùng `SkillRadarChart`** — component mới cần tạo (dùng `<svg>` thuần, không import chart library ngoài).
 
 **API:**
+
 - `GET /api/students/me/stats` — streak, wordCount, completions, radarData
 - `GET /api/quiz-attempts/me?page=0&size=10` — lịch sử bài thi
 
 **Empty states:**
+
 - Radar: hiển thị chart rỗng (tất cả 0%) với label.
 - ExamHistory: mascot `'thinking'`, "Chưa có bài thi nào. Thử sức với đề thi thử ngay!"
 
 **SkillRadarChart spec (SVG thuần):**
+
 ```
 5 kỹ năng = 5 đỉnh polygon. Giá trị 0–100.
 Màu fill: rgba(232, 154, 170, 0.25) — sakura pink tint.
@@ -942,6 +977,7 @@ Labels: font 12px, color var(--color-text-sub).
 **Prefix:** `sub-` | **activeTab:** `''`
 
 **Layout:**
+
 ```
 [Header: "Nâng Cấp VIP" + subtitle so sánh FREE vs VIP]
 
@@ -954,6 +990,7 @@ Labels: font 12px, color var(--color-text-sub).
 ```
 
 **State:**
+
 ```js
 const [plans,       setPlans]   = useState([]);
 const [currentPlan, setCurrent] = useState(null);   // null nếu FREE
@@ -963,6 +1000,7 @@ const [isRedirecting, setRedirect] = useState(false);
 ```
 
 **API:**
+
 - `GET /api/subscriptions/plans`
 - `POST /api/subscriptions/checkout` → `{ planId }` → response `{ paymentUrl }`
   - `window.location.href = paymentUrl` để redirect sang gateway
@@ -994,6 +1032,7 @@ const [isRedirecting, setRedirect] = useState(false);
 **Prefix:** `knj-` | **activeTab:** `'kanji'`
 
 **Layout:**
+
 ```
 [Header: "Kanji" + JLPT Level Filter tabs]
 
@@ -1006,6 +1045,7 @@ const [isRedirecting, setRedirect] = useState(false);
 ```
 
 **State:**
+
 ```js
 const [level,       setLevel]  = useState('N5');  // default level của user
 const [kanji,       setKanji]  = useState([]);
@@ -1017,6 +1057,7 @@ const [totalPages,  setTotal]  = useState(1);
 **API:** `GET /api/kanji?level=N5&page=0&size=50`
 
 **Completed styling:**
+
 ```css
 .knj-cell--completed {
   background: var(--color-primary-bg);
@@ -1036,6 +1077,7 @@ const [totalPages,  setTotal]  = useState(1);
 **Prefix:** `koc-` | **activeTab:** `'kanji'`
 
 **Layout:**
+
 ```
 [KanjiHeader: character (80px), onyomi, kunyomi, meaning, strokeCount]
 [StrokeOrderImage: static URL]
@@ -1058,6 +1100,7 @@ const [totalPages,  setTotal]  = useState(1);
 ```
 
 **State:**
+
 ```js
 const { id }        = useParams();
 const [kanji,       setKanji]    = useState(null);
@@ -1070,10 +1113,12 @@ const pollRef = useRef(null);
 ```
 
 **API (OCR async):**
+
 1. `POST /api/ai/ocr/submit` → `{ kanjiId, imageFile: multipart }` → `{ jobId }`
 2. Poll `GET /api/ai/ocr/:jobId` mỗi 1s, timeout 30s (§5.4)
 
 **SimilarityGauge:**
+
 ```
 ≥ 80%:  Xuất sắc (green)
 60–79%: Tốt (accent gold)
@@ -1081,6 +1126,7 @@ const pollRef = useRef(null);
 ```
 
 **Domain rules:**
+
 - File upload → multipart, không base64 BLOB.
 - `ai_score_suggestion` chỉ hiển thị — không có override cho student.
 - Fallback message sau timeout: "Không thể phân tích ngay lúc này. Vui lòng thử lại sau."
@@ -1092,6 +1138,7 @@ const pollRef = useRef(null);
 **Prefix:** `crt-` | **activeTab:** `''`
 
 **Layout:**
+
 ```
 [Header: "Chứng Chỉ Của Tôi"]
 
@@ -1104,6 +1151,7 @@ const pollRef = useRef(null);
 ```
 
 **API:**
+
 - `GET /api/certificates/me` — danh sách chứng chỉ đã đạt
 - `GET /api/certificates/me/progress` — tiến độ các level chưa đạt
 - `GET /api/certificates/:id/download` → `{ pdfUrl }` → `window.open(pdfUrl)`
@@ -1201,23 +1249,28 @@ Ngoài admin checklist (MASTER-SPEC §12), thêm cho student:
 Khi nhận yêu cầu tạo một trang student mới:
 
 **Bước 1 — Chuẩn bị:**
+
 - [ ] Xác định `activeTab` string cho TopNav
 - [ ] Xác định prefix CSS (3 chữ cái)
 - [ ] Xác định dùng Redux hay local state
 - [ ] Xác định API endpoints cần (từ `studentService.js`)
 
 **Bước 2 — Thêm API:**
+
 - [ ] Thêm functions vào `api/studentService.js`
 
 **Bước 3 — Tạo file:**
+
 - [ ] `pages/[feature]/[PageName].jsx` — page shell
 - [ ] `pages/[feature]/[PageName].css` — CSS đầy đủ
 - [ ] `components/student/[Component].jsx` — nếu cần component mới > 60 dòng
 
 **Bước 4 — Đăng ký route:**
+
 - [ ] Thêm vào `App.jsx`: `<Route path="/[path]" element={<PrivateRoute><MyPage /></PrivateRoute>} />`
 
 **Bước 5 — Kiểm tra:**
+
 - [ ] 3 trạng thái: loading skeleton / error banner / empty state
 - [ ] VIP lock check nếu trang có nội dung VIP
 - [ ] Domain rules checklist (§8) áp dụng đúng
@@ -1244,6 +1297,7 @@ Domain:     Đánh giá do backend tính SM-2, frontend chỉ gửi 'easy'|'hard
 ```
 
 Page file (`Review.jsx`) chỉ có:
+
 ```jsx
 export default function Review() {
   // queue state + fetch

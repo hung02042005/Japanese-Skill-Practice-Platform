@@ -1,4 +1,5 @@
 # SPEC — Staff Hỗ Trợ Học Viên (Support Tickets)
+>
 > **Feature ID:** `feat-staff` | **Page:** `StaffTickets`
 > **Route:** `/staff/tickets`
 > **Version:** 1.0 | **Status:** Draft
@@ -153,6 +154,7 @@ Mỗi tab có badge số (lấy từ response count).
 ```
 
 Priority dot colors:
+
 - `urgent` → `var(--color-error)` 🔴
 - `high` → `var(--color-warning)` 🟠
 - `normal` → `var(--color-secondary)` 🟢
@@ -219,10 +221,12 @@ Active ticket (đang xem): background `var(--color-primary-bg)`, border-left `3p
 ```
 
 **Layout bubbles:**
+
 - Student: avatar trái + bubble trái, background `var(--color-bg)`, border `var(--color-border)`
 - Staff: bubble phải, background `var(--color-primary-bg)`, border `var(--color-primary-light)`
 
 Auto-scroll to bottom sau mỗi lần load detail và sau khi gửi reply:
+
 ```js
 useEffect(() => {
   threadBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -254,6 +258,7 @@ useEffect(() => {
 "Đổi trạng thái" dropdown: cho phép chọn trạng thái mới khi gửi reply. Nếu không chọn → giữ nguyên (backend tự đổi sang `in_progress`).
 
 **Submit flow:**
+
 1. `replyTicket(selectedId, replyText)` → thêm reply vào thread local
 2. Nếu `newStatus` khác rỗng → `updateTicketStatus(selectedId, newStatus)` → cập nhật header
 3. Reset `replyText`, `newStatus`
@@ -261,11 +266,13 @@ useEffect(() => {
 5. Cập nhật ticket card trong list (last_reply_at, status)
 
 **Disabled khi:**
+
 - `replyText.trim() === ''`
 - `isSending === true`
 - Ticket status = `closed`
 
 **Closed ticket banner:**
+
 ```jsx
 {detail.ticket.status === 'closed' && (
   <div className="tkt-closed-banner" role="alert">

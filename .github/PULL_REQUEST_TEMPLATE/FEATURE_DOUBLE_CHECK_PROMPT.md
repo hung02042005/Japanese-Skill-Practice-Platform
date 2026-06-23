@@ -1,4 +1,5 @@
 # FEATURE DOUBLE-CHECK PROMPT
+>
 > Dùng sau mỗi sprint / sau khi code xong một feature mới.
 > Mục tiêu: Verify từng feature mới KHÔNG bị broken, KHÔNG làm hỏng feature cũ.
 
@@ -41,18 +42,21 @@ Tạo bảng phạm vi:
 Với MỖI feature mới, kiểm tra:
 
 #### 1.1 Happy Path
+
 - [ ] Chức năng chính hoạt động đúng theo spec?
 - [ ] Tất cả required fields được validate?
 - [ ] Response trả đúng shape và HTTP status code?
 - [ ] Data được lưu/cập nhật/xóa đúng trong DB?
 
 #### 1.2 Error Path
+
 - [ ] Input không hợp lệ → trả 400 với message rõ ràng?
 - [ ] Resource không tồn tại → trả 404?
 - [ ] Unauthorized → trả 401? Forbidden → trả 403?
 - [ ] Server error → KHÔNG expose stack trace ra ngoài?
 
 #### 1.3 Boundary Cases
+
 - [ ] Empty string / null / undefined inputs?
 - [ ] Số âm, số 0, số rất lớn?
 - [ ] String quá dài (vượt DB column limit)?
@@ -94,6 +98,7 @@ Liệt kê TẤT CẢ feature cũ có thể bị ảnh hưởng và verify từn
 #### 2.3 Database Migration Safety
 
 Nếu có migration mới:
+
 - [ ] Migration UP chạy được không?
 - [ ] Migration DOWN (rollback) có safe không?
 - [ ] Migration có idempotent không (chạy 2 lần không bị lỗi)?
@@ -118,6 +123,7 @@ Với MỖI endpoint mới hoặc bị sửa đổi:
 |---------|--------------|------------|-------------------------------|-------------------------------|
 
 **Mỗi field trong response phải verify:**
+
 - Tên field: đúng chính xác (case-sensitive)?
 - Kiểu dữ liệu: string/number/boolean/object/array?
 - Nullable: có thể null không, frontend handle null chưa?
@@ -142,11 +148,13 @@ SAU:   { "id": 1, "user": { "name": "John" } }
 Tập trung vào feature mới, không audit lại toàn bộ hệ thống:
 
 #### 4.1 Authentication & Authorization
+
 - [ ] Endpoint mới có yêu cầu auth không? Có bị bỏ sót `@AuthGuard` / `@Secured` không?
 - [ ] Role-based access đúng không? (Admin endpoint có ai dùng được không?)
 - [ ] JWT/token validation có được áp dụng không?
 
 #### 4.2 Ownership / IDOR
+
 - [ ] User A có thể xem/sửa/xóa data của User B không?
 - [ ] ID trong request có được kiểm tra ownership không?
 
@@ -161,11 +169,13 @@ if (order == null) throw new ForbiddenException();
 ```
 
 #### 4.3 Input Injection
+
 - [ ] Query có dùng parameterized statement không (không string concatenation)?
 - [ ] Input có được sanitize trước khi render HTML không?
 - [ ] File upload có validate type/size/extension không?
 
 #### 4.4 Sensitive Data
+
 - [ ] Response có leak password hash, token, PII không cần thiết không?
 - [ ] Log có ghi sensitive data (password, credit card, token) không?
 
@@ -187,12 +197,14 @@ Severity Matrix:
 Chỉ kiểm tra phần frontend liên quan đến feature mới:
 
 #### 5.1 API Call Correctness
+
 - [ ] URL đúng không? (typo trong path, missing slash)
 - [ ] Method đúng không? (POST thay vì PUT, GET thay vì DELETE)
 - [ ] Headers có đính kèm auth token không?
 - [ ] Request body match với backend DTO không?
 
 #### 5.2 Response Handling
+
 - [ ] Frontend đọc đúng field name từ response?
 - [ ] Loading state được handle (spinner, disable button)?
 - [ ] Error state được handle (show message, không crash)?
@@ -200,6 +212,7 @@ Chỉ kiểm tra phần frontend liên quan đến feature mới:
 - [ ] Null/undefined được guard (optional chaining `?.`)?
 
 #### 5.3 UX Completeness
+
 - [ ] Form validation có chạy ở client-side trước khi gửi request?
 - [ ] Sau khi thành công có feedback cho user (toast, redirect, refresh data)?
 - [ ] Double-submit được prevent (button disable khi đang loading)?
@@ -256,6 +269,7 @@ Legend: ✅ Pass | ⚠️ Warning (cần fix nhưng không block) | ❌ Fail (ph
 ### Critical Issues (PHẢI FIX TRƯỚC KHI DEPLOY)
 
 Mỗi issue phải có:
+
 ```
 [CRITICAL] Tên issue
 File: path/to/file.ts, line: XX

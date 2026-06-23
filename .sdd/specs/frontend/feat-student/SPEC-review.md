@@ -1,4 +1,5 @@
 # SPEC — Ôn tập Flashcard SRS (`/review`)
+>
 > **Sprint:** 2 — Core Learning Loop
 > **Prefix:** `rev-` | **activeTab:** `'review'` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §10.3` | **Backend ref:** `feat-flashcard-srs/SPEC.md`

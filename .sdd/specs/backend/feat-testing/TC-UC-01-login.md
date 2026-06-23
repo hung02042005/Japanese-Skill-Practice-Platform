@@ -22,6 +22,7 @@
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 StudentUser user = aStudent()
     .withEmail("student@test.com")
@@ -35,9 +36,11 @@ when(jwtService.generateRefreshToken()).thenReturn("refresh-token-value");
 ```
 
 **Steps:**
+
 1. Gọi `authService.loginWithPassword("student@test.com", "Abcdef12", "192.168.1.1")`
 
 **Expected:**
+
 - Trả về `LoginResponse` chứa `accessToken` != null và `refreshToken` != null
 - `student.loginAttempts` được đặt về 0 (gọi `userRepository.save()` với `loginAttempts = 0`)
 - `student.lastLoginAt` được cập nhật (≈ NOW())
@@ -57,6 +60,7 @@ when(jwtService.generateRefreshToken()).thenReturn("refresh-token-value");
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 StudentUser user = aStudent().withLoginAttempts(0).build();
 when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
@@ -64,9 +68,11 @@ when(passwordEncoder.matches("wrong", user.getPasswordHash())).thenReturn(false)
 ```
 
 **Steps:**
+
 1. Gọi `authService.loginWithPassword("student@test.com", "wrong", "127.0.0.1")`
 
 **Expected:**
+
 - Ném `InvalidCredentialsException`
 - `userRepository.save()` được gọi với `user.loginAttempts = 1`
 - Không tạo token nào (`tokenRepository.save()` không được gọi)
@@ -83,6 +89,7 @@ when(passwordEncoder.matches("wrong", user.getPasswordHash())).thenReturn(false)
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 StudentUser user = aStudent().withLoginAttempts(4).build(); // lần này là lần thứ 5
 when(passwordEncoder.matches(any(), any())).thenReturn(false);
@@ -91,9 +98,11 @@ Clock fixedClock = Clock.fixed(Instant.parse("2026-05-30T08:00:00Z"), ZoneOffset
 ```
 
 **Steps:**
+
 1. Gọi `authService.loginWithPassword("student@test.com", "wrong", "127.0.0.1")`
 
 **Expected:**
+
 - Ném `AccountLockedException` (HTTP 429 equivalent)
 - `user.loginAttempts` = 5
 - `user.lockedUntil` = `2026-05-30T08:15:00Z` (NOW + 15 phút)
@@ -111,6 +120,7 @@ Clock fixedClock = Clock.fixed(Instant.parse("2026-05-30T08:00:00Z"), ZoneOffset
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 Instant now = Instant.parse("2026-05-30T08:00:00Z");
 Instant lockedUntil = now.plus(10, ChronoUnit.MINUTES); // còn 10 phút
@@ -122,9 +132,11 @@ when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
 ```
 
 **Steps:**
+
 1. Gọi `authService.loginWithPassword("student@test.com", "CorrectPass12", "127.0.0.1")`
 
 **Expected:**
+
 - Ném `AccountLockedException` với `remainingMinutes = 10`
 - `passwordEncoder.matches()` **KHÔNG được gọi** (kiểm tra lock trước)
 - `user.loginAttempts` KHÔNG thay đổi (vẫn = 5)
@@ -142,6 +154,7 @@ when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 StudentUser user = aStudent()
     .withStatus("suspended")
@@ -151,9 +164,11 @@ when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
 ```
 
 **Steps:**
+
 1. Gọi `authService.loginWithPassword("student@test.com", "Abcdef12", "127.0.0.1")`
 
 **Expected:**
+
 - Ném `AccountSuspendedException` với message chứa `"Vi phạm quy chế"`
 - HTTP equivalent: 403 / `ACCOUNT_SUSPENDED`
 - `passwordEncoder.matches()` KHÔNG được gọi
@@ -170,15 +185,18 @@ when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 StudentUser user = aStudent().withStatus("pending").build();
 when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
 ```
 
 **Steps:**
+
 1. Gọi `authService.loginWithPassword("student@test.com", "Abcdef12", "127.0.0.1")`
 
 **Expected:**
+
 - Ném `EmailNotVerifiedException`
 - HTTP equivalent: 403 / `EMAIL_NOT_VERIFIED`
 - `passwordEncoder.matches()` KHÔNG được gọi
@@ -195,14 +213,17 @@ when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 ```
 
 **Steps:**
+
 1. Gọi `authService.loginWithPassword("ghost@test.com", "anyPass", "127.0.0.1")`
 
 **Expected:**
+
 - Ném `InvalidCredentialsException` (CÙNG exception như sai mật khẩu — không phân biệt)
 - Message KHÔNG chứa "email không tồn tại" hay tương tự
 - Message chứa "Email hoặc mật khẩu không đúng"
@@ -219,10 +240,12 @@ when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 | **Ưu tiên** | P0 (Security) |
 
 **Steps:**
+
 1. Capture log output trong quá trình login thất bại với mật khẩu `"Secret@123"`
 2. Kiểm tra tất cả log entries
 
 **Expected:**
+
 - Không có log nào chứa chuỗi `"Secret@123"` (plaintext)
 - Không có log nào chứa chuỗi bcrypt hash của mật khẩu
 
@@ -238,15 +261,18 @@ when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 StudentUser user = aStudent().withLoginAttempts(3).withStatus("active").build();
 when(passwordEncoder.matches("Abcdef12", any())).thenReturn(true);
 ```
 
 **Steps:**
+
 1. Gọi `authService.loginWithPassword("student@test.com", "Abcdef12", "127.0.0.1")`
 
 **Expected:**
+
 - `user.loginAttempts` được reset về 0
 - Không ném exception
 - Token được tạo thành công
@@ -263,15 +289,18 @@ when(passwordEncoder.matches("Abcdef12", any())).thenReturn(true);
 | **Ưu tiên** | P0 (Security) |
 
 **Setup:**
+
 ```java
 String expectedState = "abc123";
 oauthService.storeState(expectedState, sessionId);
 ```
 
 **Steps:**
+
 1. Gọi `oauthService.handleCallback(code="valid_code", state="tampered_state", sessionId)`
 
 **Expected:**
+
 - Ném `OAuthStateException` (CSRF detected)
 - `oauthService.exchangeCode()` KHÔNG được gọi
 
@@ -294,11 +323,13 @@ oauthService.storeState(expectedState, sessionId);
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Seed `student_users` với user hợp lệ
 2. Tạo `auth_tokens` record với `tokenType = "refresh"`, `studentId = 1`
 3. Query `tokenRepository.findByTokenValue(tokenValue, "refresh")`
 
 **Expected:**
+
 - Record tìm thấy với đúng `studentId`, `tokenType`, `expiresAt`
 - `revokedAt` = NULL
 
@@ -314,9 +345,11 @@ oauthService.storeState(expectedState, sessionId);
 | **Ưu tiên** | P0 (Security) |
 
 **Steps:**
+
 1. Thực hiện INSERT vào `auth_tokens` với cả `student_id = 1` VÀ `admin_id = 1` không NULL
 
 **Expected:**
+
 - `DataIntegrityViolationException` được ném (vi phạm `CK_auth_token_actor`)
 
 ---
@@ -331,11 +364,13 @@ oauthService.storeState(expectedState, sessionId);
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Seed user với `login_attempts = 4`
 2. Gọi `userRepository.save(user)` sau khi cập nhật `loginAttempts = 5` và `lockedUntil = NOW() + 15min`
 3. Reload entity từ DB: `userRepository.findById(1)`
 
 **Expected:**
+
 - `loginAttempts = 5` trong DB
 - `lockedUntil ≈ NOW() + 15 phút` (sai số < 2 giây)
 
@@ -358,6 +393,7 @@ oauthService.storeState(expectedState, sessionId);
 | **Ưu tiên** | P0 |
 
 **Request:**
+
 ```
 POST /api/auth/login
 Content-Type: application/json
@@ -368,6 +404,7 @@ Content-Type: application/json
 **Mock:** `authService.loginWithPassword()` trả về `LoginResponse(accessToken="...", refreshToken="...")`
 
 **Expected:**
+
 ```
 HTTP 200
 {
@@ -380,6 +417,7 @@ HTTP 200
   }
 }
 ```
+
 - Response body KHÔNG chứa key `passwordHash`
 - Response body KHÔNG chứa key `loginAttempts`
 
@@ -397,6 +435,7 @@ HTTP 200
 **Mock:** `authService.loginWithPassword()` ném `InvalidCredentialsException`
 
 **Expected:**
+
 ```
 HTTP 401
 { "errorCode": "INVALID_CREDENTIALS", "message": "Email hoặc mật khẩu không đúng" }
@@ -416,6 +455,7 @@ HTTP 401
 **Mock:** `authService.loginWithPassword()` ném `AccountLockedException(remainingMinutes=10)`
 
 **Expected:**
+
 ```
 HTTP 429
 { "errorCode": "TOO_MANY_REQUESTS", "message": "...10 phút..." }
@@ -435,6 +475,7 @@ HTTP 429
 **Mock:** `authService.loginWithPassword()` ném `AccountSuspendedException("Vi phạm quy chế")`
 
 **Expected:**
+
 ```
 HTTP 403
 { "errorCode": "ACCOUNT_SUSPENDED", "message": "...Vi phạm quy chế..." }
@@ -454,6 +495,7 @@ HTTP 403
 **Mock:** `authService.loginWithPassword()` ném `EmailNotVerifiedException`
 
 **Expected:**
+
 ```
 HTTP 403
 { "errorCode": "EMAIL_NOT_VERIFIED" }
@@ -471,15 +513,18 @@ HTTP 403
 | **Ưu tiên** | P1 |
 
 **Request:**
+
 ```json
 { "email": "", "password": "Abcdef12" }
 ```
 
 **Expected:**
+
 ```
 HTTP 400
 { "errorCode": "VALIDATION_FAILED", "errors": [{ "field": "email", "message": "Email là bắt buộc" }] }
 ```
+
 - `authService.loginWithPassword()` KHÔNG được gọi
 
 ---
@@ -494,11 +539,13 @@ HTTP 400
 | **Ưu tiên** | P1 |
 
 **Request:**
+
 ```json
 { "email": "not-an-email", "password": "Abcdef12" }
 ```
 
 **Expected:**
+
 ```
 HTTP 400
 { "errorCode": "VALIDATION_FAILED", "errors": [{ "field": "email", "message": "Email không hợp lệ" }] }
@@ -516,11 +563,13 @@ HTTP 400
 | **Ưu tiên** | P1 |
 
 **Request:**
+
 ```json
 { "email": "student@test.com", "password": "" }
 ```
 
 **Expected:**
+
 ```
 HTTP 400
 { "errorCode": "VALIDATION_FAILED", "errors": [{ "field": "password", "message": "Mật khẩu là bắt buộc" }] }
@@ -538,9 +587,11 @@ HTTP 400
 | **Ưu tiên** | P0 |
 
 **Steps:**
+
 1. Gọi `POST /api/auth/login` không có header `Authorization`
 
 **Expected:**
+
 - Không nhận HTTP 401 (endpoint là public)
 - Request được xử lý bình thường
 
@@ -556,10 +607,12 @@ HTTP 400
 | **Ưu tiên** | P0 (Security) |
 
 **Steps:**
+
 1. Gửi 5 request `POST /api/auth/login` liên tiếp từ cùng IP (`X-Forwarded-For: 10.0.0.1`)
 2. Gửi request thứ 6 từ cùng IP
 
 **Expected:**
+
 - Request 1–5: xử lý bình thường (200 hoặc 401)
 - Request thứ 6: HTTP 429
 
@@ -581,10 +634,12 @@ HTTP 400
 | **Ưu tiên** | P0 — CRITICAL |
 
 **Steps:**
+
 1. Gọi `POST /api/auth/login` với credentials hợp lệ
 2. Parse toàn bộ JSON response (đệ quy qua tất cả keys)
 
 **Expected:**
+
 - Không có key nào tên `password`, `passwordHash`, `password_hash` trong response
 - Không có key `twoFactorSecret`, `loginAttempts`, `lockedUntil`
 
@@ -600,10 +655,12 @@ HTTP 400
 | **Ưu tiên** | P0 — CRITICAL |
 
 **Steps:**
+
 1. Thực hiện login thành công
 2. Kiểm tra bảng `auth_tokens` trong DB
 
 **Expected:**
+
 - Trong `auth_tokens`, chỉ có bản ghi với `token_type = "refresh"`
 - Không có bản ghi với `token_type = "access"` hoặc `token_type = "jwt"`
 
@@ -625,11 +682,13 @@ HTTP 400
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Render `<LoginForm />`
 2. Để trống email, điền password = `"Abcdef12"`
 3. Click nút "Đăng nhập"
 
 **Expected:**
+
 - Hiển thị validation error "Email là bắt buộc"
 - `POST /api/auth/login` KHÔNG được gọi (verify axios mock)
 
@@ -647,10 +706,12 @@ HTTP 400
 **Setup:** Mock API `POST /api/auth/login` → 401 `{ errorCode: "INVALID_CREDENTIALS" }`
 
 **Steps:**
+
 1. Điền email + password hợp lệ về format
 2. Click "Đăng nhập"
 
 **Expected:**
+
 - Hiển thị message lỗi "Email hoặc mật khẩu không đúng" trong DOM
 - Form KHÔNG bị ẩn
 
@@ -668,9 +729,11 @@ HTTP 400
 **Setup:** Mock API → 200 `{ accessToken: "...", refreshToken: "..." }`
 
 **Steps:**
+
 1. Điền email + password → click "Đăng nhập"
 
 **Expected:**
+
 - `navigate("/dashboard")` hoặc `router.push("/dashboard")` được gọi
 - Token được lưu vào memory/store (KHÔNG vào `localStorage` nếu design dùng memory)
 
@@ -686,10 +749,12 @@ HTTP 400
 | **Ưu tiên** | P2 |
 
 **Steps:**
+
 1. Render `<LoginForm />`
 2. Click "Đăng nhập với Google"
 
 **Expected:**
+
 - Browser hoặc mocked navigation đến `/api/auth/oauth/google` (hoặc có redirect header về Google)
 
 ---
@@ -698,11 +763,11 @@ HTTP 400
 
 | Fixture | Email | Status | login_attempts | locked_until |
 |:---|:---|:---|:---|:---|
-| `activeStudent` | student@test.com | active | 0 | NULL |
-| `almostLockedStudent` | almost@test.com | active | 4 | NULL |
-| `lockedStudent` | locked@test.com | active | 5 | NOW+10m |
-| `suspendedStudent` | suspended@test.com | suspended | 0 | NULL |
-| `pendingStudent` | pending@test.com | pending | 0 | NULL |
+| `activeStudent` | <student@test.com> | active | 0 | NULL |
+| `almostLockedStudent` | <almost@test.com> | active | 4 | NULL |
+| `lockedStudent` | <locked@test.com> | active | 5 | NOW+10m |
+| `suspendedStudent` | <suspended@test.com> | suspended | 0 | NULL |
+| `pendingStudent` | <pending@test.com> | pending | 0 | NULL |
 
 ---
 

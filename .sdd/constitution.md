@@ -178,6 +178,7 @@ test(quiz): add unit test for score calculation
 ### 5.3. CI Enforcement
 
 > ❌ **KHÔNG merge** nếu:
+>
 > - Coverage < 80%
 > - Tests fail
 > - Breaking existing tests
@@ -204,6 +205,7 @@ test(quiz): add unit test for score calculation
 ### 6.3. AI Output Validation
 
 Trước khi commit, verify:
+
 - [ ] Domain Rules (AGENTS.md § 7) không bị vi phạm
 - [ ] Security Rules (ĐIỀU 3) được tuân thủ
 - [ ] Không có TODO comments

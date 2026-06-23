@@ -22,6 +22,7 @@
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 String sessionTokenA = "session-token-device-A"; // thiết bị đang logout
 String sessionTokenB = "session-token-device-B"; // thiết bị khác
@@ -37,9 +38,11 @@ when(tokenRepository.findByTokenValueAndTokenType(sessionTokenA, "session"))
 ```
 
 **Steps:**
+
 1. Gọi `authService.logout(1L, sessionTokenA, null)`
 
 **Expected:**
+
 - `tokenRepository.save()` được gọi với `tokenA.revokedAt ≈ NOW()`
 - `tokenRepository.findByTokenValueAndTokenType(sessionTokenB, ...)` KHÔNG được gọi
 - Session token B KHÔNG bị thu hồi
@@ -57,6 +60,7 @@ when(tokenRepository.findByTokenValueAndTokenType(sessionTokenA, "session"))
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 AuthToken sessionToken = buildToken("session", studentId, "access-token-abc");
 AuthToken refreshToken = buildToken("refresh", studentId, "refresh-token-xyz");
@@ -68,9 +72,11 @@ when(tokenRepository.findByTokenValueAndTokenType("refresh-token-xyz", "refresh"
 ```
 
 **Steps:**
+
 1. Gọi `authService.logout(1L, "access-token-abc", "refresh-token-xyz")`
 
 **Expected:**
+
 - `sessionToken.revokedAt` được đặt (thu hồi)
 - `refreshToken.revokedAt` được đặt (thu hồi)
 - `tokenRepository.save()` được gọi 2 lần (một cho mỗi token)
@@ -87,16 +93,19 @@ when(tokenRepository.findByTokenValueAndTokenType("refresh-token-xyz", "refresh"
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 ArgumentCaptor<String> logCaptor = ArgumentCaptor.forClass(String.class);
 // hoặc dùng log appender mock
 ```
 
 **Steps:**
+
 1. Gọi `authService.logout(studentId=1L, sessionToken, refreshToken=null)`
 2. Capture log output
 
 **Expected:**
+
 - Log entry với level INFO chứa tất cả: `studentId = 1`, timestamp, IP (nếu có), `"LOGOUT_SUCCESS"`
 
 ---
@@ -111,6 +120,7 @@ ArgumentCaptor<String> logCaptor = ArgumentCaptor.forClass(String.class);
 | **Ưu tiên** | P2 |
 
 **Setup:**
+
 ```java
 AuthToken alreadyRevokedToken = new AuthToken();
 alreadyRevokedToken.setRevokedAt(Instant.now().minus(5, ChronoUnit.MINUTES)); // đã thu hồi
@@ -119,9 +129,11 @@ when(tokenRepository.findByTokenValueAndTokenType("old-token", "session"))
 ```
 
 **Steps:**
+
 1. Gọi `authService.logout(1L, "old-token", null)`
 
 **Expected:**
+
 - Xử lý thành công (KHÔNG ném exception)
 - `revokedAt` không được cập nhật lại (đã có giá trị)
 - Hoặc có thể idempotent: cập nhật không gây hại
@@ -138,15 +150,18 @@ when(tokenRepository.findByTokenValueAndTokenType("old-token", "session"))
 | **Ưu tiên** | P2 |
 
 **Setup:**
+
 ```java
 when(tokenRepository.findByTokenValueAndTokenType("orphan-token", "session"))
     .thenReturn(Optional.empty()); // token không tồn tại trong DB
 ```
 
 **Steps:**
+
 1. Gọi `authService.logout(1L, "orphan-token", null)`
 
 **Expected:**
+
 - KHÔNG ném exception (graceful handling)
 - Log warning: "Token không tìm thấy khi logout" (optional)
 
@@ -168,11 +183,13 @@ when(tokenRepository.findByTokenValueAndTokenType("orphan-token", "session"))
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Seed user + 2 session tokens (A và B), cả hai `revoked_at = NULL`
 2. Gọi `authService.logout(studentId, tokenA_value, null)`
 3. Query `auth_tokens` từ DB
 
 **Expected:**
+
 - Token A: `revoked_at` IS NOT NULL (≈ NOW())
 - Token B: `revoked_at` = NULL (KHÔNG thay đổi)
 
@@ -188,11 +205,13 @@ when(tokenRepository.findByTokenValueAndTokenType("orphan-token", "session"))
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Login → nhận `sessionTokenA`
 2. Logout với `sessionTokenA`
 3. Gọi `GET /api/students/me` với `Authorization: Bearer <JWT từ sessionTokenA>`
 
 **Expected:**
+
 - Nhận HTTP 401
 - (Nếu có blacklist/revocation check: JWT bị từ chối vì refresh token/session đã bị revoke)
 
@@ -214,6 +233,7 @@ when(tokenRepository.findByTokenValueAndTokenType("orphan-token", "session"))
 | **Ưu tiên** | P0 |
 
 **Request:**
+
 ```
 POST /api/auth/logout
 Authorization: Bearer <valid-jwt>
@@ -223,10 +243,12 @@ Cookie: refreshToken=<refresh-token-value>
 **Mock:** `authService.logout()` thành công
 
 **Expected:**
+
 ```
 HTTP 200
 { "message": "Đăng xuất thành công" }
 ```
+
 - Response header chứa `Set-Cookie: refreshToken=; Max-Age=0` (xóa cookie)
 
 ---
@@ -241,9 +263,11 @@ HTTP 200
 | **Ưu tiên** | P0 |
 
 **Steps:**
+
 1. Gửi `POST /api/auth/logout` không có header `Authorization`
 
 **Expected:**
+
 ```
 HTTP 401
 ```
@@ -260,12 +284,15 @@ HTTP 401
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Gửi `POST /api/auth/logout` với JWT đã hết hạn
 
 **Expected:**
+
 ```
 HTTP 401
 ```
+
 - (Frontend sẽ nhận 401 và tự cleanup local state — xem TC-F-18-02)
 
 ---
@@ -280,9 +307,11 @@ HTTP 401
 | **Ưu tiên** | P0 |
 
 **Steps:**
+
 1. Gửi `POST /api/auth/logout` với JWT role `STUDENT`
 
 **Expected:**
+
 - `POST /api/auth/logout` được xử lý bình thường (200) — đây là endpoint student
 - Staff/Admin endpoints sẽ trả 403 với Student JWT
 
@@ -298,6 +327,7 @@ HTTP 401
 | **Ưu tiên** | P2 |
 
 **Request:**
+
 ```
 POST /api/auth/logout
 Authorization: Bearer <valid-jwt>
@@ -307,6 +337,7 @@ Authorization: Bearer <valid-jwt>
 **Mock:** `authService.logout()` thành công (với refreshToken = null)
 
 **Expected:**
+
 ```
 HTTP 200
 ```
@@ -327,11 +358,13 @@ HTTP 200
 | **Ưu tiên** | P0 — CRITICAL |
 
 **Steps:**
+
 1. Login lấy `refreshToken_A`
 2. Logout (thu hồi `refreshToken_A`)
 3. Thử `POST /api/auth/refresh` với `refreshToken_A`
 
 **Expected:**
+
 - HTTP 401 (refresh token bị thu hồi, không thể lấy access token mới)
 
 ---
@@ -346,11 +379,13 @@ HTTP 200
 | **Ưu tiên** | P0 — CRITICAL |
 
 **Steps:**
+
 1. Seed user với 3 session tokens (A, B, C) — đều active
 2. Logout session A
 3. Thực hiện API call với session B và C
 
 **Expected:**
+
 - Session A: bị thu hồi → API calls thất bại (401)
 - Session B: vẫn active → API calls thành công (200)
 - Session C: vẫn active → API calls thành công (200)
@@ -375,10 +410,12 @@ HTTP 200
 **Mock:** `POST /api/auth/logout` → 200
 
 **Steps:**
+
 1. Render component có nút "Đăng xuất" với user đã đăng nhập
 2. Click "Đăng xuất"
 
 **Expected:**
+
 - `POST /api/auth/logout` được gọi
 - Access token bị xóa khỏi memory/store
 - Thông tin user bị xóa khỏi state
@@ -398,9 +435,11 @@ HTTP 200
 **Mock:** `POST /api/auth/logout` → 401 (JWT đã hết hạn)
 
 **Steps:**
+
 1. Click "Đăng xuất" với JWT đã hết hạn
 
 **Expected:**
+
 - Nhận 401 từ server
 - Frontend vẫn xóa token và state cục bộ
 - Vẫn chuyển hướng về `/login`
@@ -420,9 +459,11 @@ HTTP 200
 **Mock:** `POST /api/auth/logout` → 500 (server error)
 
 **Steps:**
+
 1. Click "Đăng xuất" khi server lỗi
 
 **Expected:**
+
 - Bất kể server trả gì, frontend xóa local state và redirect về `/login`
 - KHÔNG bị kẹt trạng thái
 
@@ -438,11 +479,13 @@ HTTP 200
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Login → navigate tới `/dashboard`
 2. Logout
 3. Thử navigate về `/dashboard`
 
 **Expected:**
+
 - Redirect về `/login` (route guard hoạt động)
 - KHÔNG thể truy cập protected routes khi không có token
 

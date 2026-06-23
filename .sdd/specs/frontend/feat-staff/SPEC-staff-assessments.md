@@ -1,4 +1,5 @@
 # SPEC — Staff Quản Lý Quiz & Đề Thi (Assessments)
+>
 > **Feature ID:** `feat-staff` | **Page:** `StaffAssessments`
 > **Route:** `/staff/assessments`
 > **Version:** 1.0 | **Status:** Draft
@@ -187,6 +188,7 @@ Hành động:
 ```
 
 **Validation:**
+
 - `passScore` ≤ `totalScore`
 - `durationMin` ≥ 5
 
@@ -293,6 +295,7 @@ Click [🗑] → confirm dialog ngắn → `removeAssignment()` → cập nhật
 ### Nút "Gửi duyệt"
 
 Disabled khi:
+
 - `totalAssigned !== assessment.totalScore`
 - `assignments.length === 0`
 - `assessment.status === 'published'` (đề đã xuất bản — full readonly)
@@ -326,6 +329,7 @@ Modal cho phép chọn câu hỏi từ ngân hàng để thêm vào đề:
 ```
 
 **Logic:**
+
 - Câu hỏi đã có trong đề hiển thị ✅ (disabled, không chọn được)
 - Multi-select bằng checkbox
 - Khi click [Thêm vào đề →] → gọi `assignQuestions()` với toàn bộ câu đã chọn
@@ -336,6 +340,7 @@ Modal cho phép chọn câu hỏi từ ngân hàng để thêm vào đề:
 ## 10. PUBLISHED LOCK STATE
 
 Khi `assessment.status === 'published'`:
+
 - Builder page hiển thị banner: "Đề thi đã xuất bản — danh sách câu hỏi không thể thay đổi."
 - Ẩn nút [🗑], [+ Thêm câu hỏi], drag handle
 - Ẩn nút [Gửi duyệt]

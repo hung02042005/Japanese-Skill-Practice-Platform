@@ -22,6 +22,7 @@
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 StudentUser user = aStudent()
     .withStudentId(1L)
@@ -36,9 +37,11 @@ when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 ```
 
 **Steps:**
+
 1. Gọi `studentService.getMyProfile(1L)`
 
 **Expected:**
+
 - Trả về `StudentProfileResponse` chứa: `studentId`, `fullName`, `email`, `phone`, `avatarUrl`, `currentJlptLevel`, `targetJlptLevel`, `createdAt`
 - Response KHÔNG có field `passwordHash`
 - Response KHÔNG có field `loginAttempts`
@@ -57,6 +60,7 @@ when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 StudentUser user = aStudent()
     .withFullName("Nguyễn Văn A")
@@ -68,9 +72,11 @@ request.setFullName("Trần Thị B"); // chỉ cập nhật fullName
 ```
 
 **Steps:**
+
 1. Gọi `studentService.updateMyProfile(1L, request)`
 
 **Expected:**
+
 - `user.fullName` = `"Trần Thị B"`
 - `user.phone` = `"0901234567"` (KHÔNG thay đổi)
 - `userRepository.save()` được gọi với entity đã cập nhật
@@ -87,6 +93,7 @@ request.setFullName("Trần Thị B"); // chỉ cập nhật fullName
 | **Ưu tiên** | P0 — CRITICAL |
 
 **Setup:**
+
 ```java
 StudentUser user = aStudent().withEmail("original@test.com").build();
 UpdateProfileRequest request = new UpdateProfileRequest();
@@ -94,9 +101,11 @@ request.setEmail("hacked@evil.com"); // thử thay đổi email
 ```
 
 **Steps:**
+
 1. Gọi `studentService.updateMyProfile(1L, request)`
 
 **Expected:**
+
 - `user.email` vẫn = `"original@test.com"` (KHÔNG thay đổi)
 - `userRepository.save()` có thể được gọi nhưng email entity KHÔNG bị modify
 
@@ -112,6 +121,7 @@ request.setEmail("hacked@evil.com"); // thử thay đổi email
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 StudentUser user = aStudent().withCurrentJlptLevel("N4").build();
 UpdateProfileRequest request = new UpdateProfileRequest();
@@ -119,9 +129,11 @@ request.setCurrentJlptLevel("N2"); // thử thay đổi currentJlptLevel
 ```
 
 **Steps:**
+
 1. Gọi `studentService.updateMyProfile(1L, request)`
 
 **Expected:**
+
 - `user.currentJlptLevel` vẫn = `"N4"`
 - `targetJlptLevel` có thể thay đổi nếu có trong request (khác với `currentJlptLevel`)
 
@@ -137,15 +149,18 @@ request.setCurrentJlptLevel("N2"); // thử thay đổi currentJlptLevel
 | **Ưu tiên** | P0 — CRITICAL |
 
 **Setup:**
+
 ```java
 // JWT của student_id = 1
 // Thử gọi với studentId = 99 (không phải của mình)
 ```
 
 **Steps:**
+
 1. `studentService.getMyProfile(studentId)` — studentId được lấy từ JWT, không từ URL/body
 
 **Verify (Architecture check):**
+
 - Controller KHÔNG nhận `id` từ path parameter cho endpoint `/api/students/me`
 - `student_id` chỉ được lấy từ `SecurityContextHolder` / JWT claims
 - Service method nhận `studentId` từ controller đã xác thực, không từ request body
@@ -162,6 +177,7 @@ request.setCurrentJlptLevel("N2"); // thử thay đổi currentJlptLevel
 | **Ưu tiên** | P0 — Security |
 
 **Setup:**
+
 ```java
 // File có extension .jpg nhưng content thực sự là .exe (magic bytes sai)
 byte[] fakeContent = new byte[]{ 0x4D, 0x5A, 0x90, 0x00 }; // MZ header (Windows EXE)
@@ -169,9 +185,11 @@ MockMultipartFile fakeFile = new MockMultipartFile("file", "malicious.jpg", "ima
 ```
 
 **Steps:**
+
 1. Gọi `studentService.uploadAvatar(1L, fakeFile)`
 
 **Expected:**
+
 - Ném `ValidationException` với message "File không phải là ảnh hợp lệ"
 - `fileStorageService.store()` KHÔNG được gọi
 - `userRepository.updateAvatarUrl()` KHÔNG được gọi
@@ -188,15 +206,18 @@ MockMultipartFile fakeFile = new MockMultipartFile("file", "malicious.jpg", "ima
 | **Ưu tiên** | P0 — Architecture Invariant |
 
 **Setup:**
+
 ```java
 // File JPG hợp lệ 1MB
 when(fileStorageService.store(any(), any())).thenReturn("https://storage.example.com/1_uuid.jpg");
 ```
 
 **Steps:**
+
 1. Gọi `studentService.uploadAvatar(1L, validJpgFile)`
 
 **Expected:**
+
 - `userRepository.save()` được gọi với `avatarUrl = "https://..."` (URL string, không phải byte[])
 - `fileStorageService.store()` được gọi (file được lưu ra ngoài DB)
 - Entity `avatarUrl` là String (KHÔNG phải `byte[]` hay `Blob`)
@@ -213,15 +234,18 @@ when(fileStorageService.store(any(), any())).thenReturn("https://storage.example
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 ArgumentCaptor<String> fileNameCaptor = ArgumentCaptor.forClass(String.class);
 ```
 
 **Steps:**
+
 1. Gọi `studentService.uploadAvatar(1L, validJpgFile)`
 2. Verify: `fileStorageService.store(any(), fileNameCaptor.capture())`
 
 **Expected:**
+
 - `fileName` khớp pattern: `"1_[a-f0-9-]{36}\\.(jpg|jpeg|png|webp|gif)"` (studentId + UUID + ext)
 - `fileName` KHÔNG chứa tên file gốc từ client (chống path traversal)
 
@@ -243,11 +267,13 @@ ArgumentCaptor<String> fileNameCaptor = ArgumentCaptor.forClass(String.class);
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Seed user với `avatar_url = NULL`
 2. Gọi `userRepository.updateAvatarUrl(1L, "https://cdn.example.com/new-avatar.jpg")`
 3. Reload entity
 
 **Expected:**
+
 - `avatar_url = "https://cdn.example.com/new-avatar.jpg"` trong DB
 - `updated_at` được cập nhật
 
@@ -263,11 +289,13 @@ ArgumentCaptor<String> fileNameCaptor = ArgumentCaptor.forClass(String.class);
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Seed user với `full_name="Cũ", phone="0901234567"`
 2. Gọi update với chỉ `fullName = "Mới"`
 3. Reload entity
 
 **Expected:**
+
 - `full_name = "Mới"`
 - `phone = "0901234567"` (giữ nguyên)
 
@@ -289,9 +317,11 @@ ArgumentCaptor<String> fileNameCaptor = ArgumentCaptor.forClass(String.class);
 | **Ưu tiên** | P0 |
 
 **Steps:**
+
 1. Gửi `GET /api/students/me` không có header `Authorization`
 
 **Expected:**
+
 ```
 HTTP 401
 { "errorCode": "UNAUTHORIZED" }
@@ -311,6 +341,7 @@ HTTP 401
 **Mock:** `studentService.getMyProfile(1L)` trả về `StudentProfileResponse`
 
 **Expected:**
+
 ```
 HTTP 200
 {
@@ -320,6 +351,7 @@ HTTP 200
   "currentJlptLevel": "N3"
 }
 ```
+
 - Response body KHÔNG chứa `passwordHash`, `loginAttempts`, `lockedUntil`, `oauthProviderId`
 
 ---
@@ -334,6 +366,7 @@ HTTP 200
 | **Ưu tiên** | P0 |
 
 **Request:**
+
 ```json
 { "fullName": "Trần Thị B", "targetJlptLevel": "N3" }
 ```
@@ -341,9 +374,11 @@ HTTP 200
 **Mock:** `studentService.updateMyProfile()` thành công, trả về updated profile
 
 **Expected:**
+
 ```
 HTTP 200
 ```
+
 - Response chứa dữ liệu đã được cập nhật
 
 ---
@@ -358,11 +393,13 @@ HTTP 200
 | **Ưu tiên** | P1 |
 
 **Request:**
+
 ```json
 { "targetJlptLevel": "N6" }
 ```
 
 **Expected:**
+
 ```
 HTTP 400
 { "errorCode": "VALIDATION_FAILED", "errors": [{ "field": "targetJlptLevel", "message": "Cấp độ JLPT không hợp lệ..." }] }
@@ -384,10 +421,12 @@ HTTP 400
 **Mock:** `studentService.uploadAvatar()` trả về `AvatarUploadResponse(avatarUrl = "https://...")`
 
 **Expected:**
+
 ```
 HTTP 200
 { "avatarUrl": "https://..." }
 ```
+
 - `avatarUrl` bắt đầu bằng `"https://"`
 
 ---
@@ -404,6 +443,7 @@ HTTP 200
 **Mock:** `studentService.uploadAvatar()` ném `FileTooLargeException`
 
 **Expected:**
+
 ```
 HTTP 400
 { "errorCode": "VALIDATION_FAILED", "message": "File quá lớn. Kích thước tối đa là 5 MB" }
@@ -425,6 +465,7 @@ HTTP 400
 **Mock:** `studentService.uploadAvatar()` ném `InvalidFileTypeException`
 
 **Expected:**
+
 ```
 HTTP 400
 { "errorCode": "VALIDATION_FAILED", "message": "Định dạng ảnh không được hỗ trợ..." }
@@ -442,9 +483,11 @@ HTTP 400
 | **Ưu tiên** | P0 |
 
 **Steps:**
+
 1. Gửi `GET /api/students/me` với JWT của role `STAFF`
 
 **Expected:**
+
 ```
 HTTP 403
 ```
@@ -478,10 +521,12 @@ HTTP 403
 | **Ưu tiên** | P0 — CRITICAL |
 
 **Steps:**
+
 1. Gọi `GET /api/students/me` với JWT hợp lệ
 2. Parse toàn bộ JSON response (đệ quy)
 
 **Expected:**
+
 - KHÔNG có key nào tên: `password`, `passwordHash`, `password_hash`
 - KHÔNG có key nào tên: `loginAttempts`, `login_attempts`, `lockedUntil`, `oauthProviderId`
 
@@ -497,10 +542,12 @@ HTTP 403
 | **Ưu tiên** | P0 — CRITICAL |
 
 **Steps:**
-1. Gọi `PUT /api/students/me` với `{ "email": "hacked@evil.com" }` (JWT của student@test.com)
+
+1. Gọi `PUT /api/students/me` với `{ "email": "hacked@evil.com" }` (JWT của <student@test.com>)
 2. Reload dữ liệu user từ DB
 
 **Expected:**
+
 - `email` trong DB vẫn là `"student@test.com"`
 - Email không thể bị thay đổi qua endpoint này
 
@@ -524,9 +571,11 @@ HTTP 403
 **Mock:** API → HTTP 401
 
 **Steps:**
+
 1. Render `<ProfilePage />` khi không có token trong state
 
 **Expected:**
+
 - Chuyển hướng đến `/login`
 - Token state được xóa
 
@@ -544,11 +593,13 @@ HTTP 403
 **Mock:** `GET /api/students/me` → `{ fullName: "Trần Thị A", email: "a@test.com", ... }`
 
 **Steps:**
+
 1. Render `<ProfilePage />`
 
 **Expected:**
+
 - "Trần Thị A" xuất hiện trong DOM
-- "a@test.com" xuất hiện trong DOM
+- "<a@test.com>" xuất hiện trong DOM
 - Không hiển thị loading state sau khi data loaded
 
 ---

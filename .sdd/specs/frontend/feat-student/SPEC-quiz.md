@@ -1,4 +1,5 @@
 # SPEC — Quiz & Luyện Tập (`/quiz`)
+>
 > **UC:** UC-11 — Quiz luyện tập theo chủ đề (không phải thi Mock Exam)
 > **Sprint:** 3 — Core Content
 > **Prefix:** `qz-` | **activeTab:** `'quiz'` | **Guard:** PrivateRoute (STUDENT)
@@ -11,6 +12,7 @@
 ## 1. MÔ TẢ TRANG
 
 Hai màn hình trong cùng route:
+
 1. **Quiz List** — Danh sách bộ quiz lọc theo level / kỹ năng. Click → chuyển sang Quiz Attempt.
 2. **Quiz Attempt** — Làm bài quiz trong cùng page (không route mới). Hiển thị câu hỏi tuần tự, submit cuối → xem kết quả.
 
@@ -19,6 +21,7 @@ Hai màn hình trong cùng route:
 ## 2. MOCKUP
 
 ### 2.1 Quiz List
+
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │  TopNav (activeTab="quiz")                                       │
@@ -44,6 +47,7 @@ Hai màn hình trong cùng route:
 ```
 
 ### 2.2 Quiz Attempt
+
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │  ← Danh sách quiz      Quiz Từ vựng N5 – Gia đình               │
@@ -67,6 +71,7 @@ Hai màn hình trong cùng route:
 ```
 
 ### 2.3 Quiz Result (inline, sau câu cuối)
+
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │  🎉 Hoàn thành Quiz!                                            │
@@ -100,6 +105,7 @@ components/student/
 ## 4. STATE
 
 ### 4.1 Quiz List state
+
 ```js
 const [view,       setView]    = useState('list');  // 'list' | 'attempt' | 'result'
 const [level,      setLevel]   = useState(user?.jlptLevel ?? 'N5');
@@ -110,6 +116,7 @@ const [error,      setError]   = useState('');
 ```
 
 ### 4.2 Quiz Attempt state
+
 ```js
 const [activeQuiz,  setActiveQuiz] = useState(null);  // quiz object từ list
 const [questions,   setQuestions]  = useState([]);    // Question[]
@@ -187,6 +194,7 @@ const [isLoadingQ,  setLoadingQ]   = useState(false);
 ```
 
 API service (`studentService.js`):
+
 ```js
 export async function getQuizList({ level, skill, page = 0, size = 20 } = {}) {
   const params = { level, page, size };

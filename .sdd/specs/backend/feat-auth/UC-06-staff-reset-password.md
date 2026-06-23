@@ -416,17 +416,20 @@ erDiagram
 ## 8. API Spec
 
 ### `POST /api/auth/check-account-type`
+
 **Actor:** Guest (trang đăng nhập chung) | **Auth:** None
 
 > Endpoint dùng chung, được gọi trước khi phân nhánh sang UC-03 (Student) hoặc UC-06 (Staff).
 > Rate limit: 10 request/phút/IP.
 
 **Request:**
+
 ```json
 { "email": "string — email nhập trên trang đăng nhập chung" }
 ```
 
 **Response (200 — luôn trả 200):**
+
 ```json
 {
   "status": 200,
@@ -444,16 +447,19 @@ erDiagram
 ---
 
 ### `POST /api/staff/auth/forgot-password`
+
 **Actor:** Staff (unauthenticated) | **Auth:** None
 
 > Chỉ được gọi từ trang `/staff/forgot-password` sau khi đã qua `check-account-type`.
 
 **Request:**
+
 ```json
 { "email": "string — địa chỉ email Staff đã xác nhận" }
 ```
 
 **Response (200 — luôn trả về dù email có hay không):**
+
 ```json
 {
   "status": 200,
@@ -465,11 +471,13 @@ erDiagram
 ---
 
 ### `GET /api/admin/staff/reset-requests`
+
 **Actor:** Admin | **Auth:** Bearer JWT | **Role:** ADMIN
 
 **Query Params:** `status=pending|completed|expired` (optional, default: `pending`)
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -491,14 +499,17 @@ erDiagram
 ---
 
 ### `POST /api/admin/staff/{staffId}/issue-temp-password`
+
 **Actor:** Admin | **Auth:** Bearer JWT | **Role:** ADMIN
 
 **Request:**
+
 ```json
 { "requestId": "long — ID yêu cầu cần xử lý" }
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -516,9 +527,11 @@ erDiagram
 ---
 
 ### `POST /api/staff/auth/change-temp-password`
+
 **Actor:** Staff | **Auth:** Bearer JWT (`limited_session` token) | **Role:** STAFF
 
 **Request:**
+
 ```json
 {
   "newPassword":     "string — mật khẩu mới (≥8 ký tự, ≥1 hoa, ≥1 số)",
@@ -527,6 +540,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -540,6 +554,7 @@ erDiagram
 ### `POST /api/staff/auth/login` (bổ sung so với login bình thường)
 
 **Response khi `must_change_password = 1` (200):**
+
 ```json
 {
   "status": 200,

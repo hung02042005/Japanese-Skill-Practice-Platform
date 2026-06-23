@@ -228,6 +228,7 @@ sequenceDiagram
 **Actor:** Guest (tất cả role) | **Auth:** None
 
 **Request:**
+
 ```json
 {
   "email": "admin@jlpt.com",
@@ -236,6 +237,7 @@ sequenceDiagram
 ```
 
 **Response — Admin (200 OK, Login Complete):**
+
 ```json
 {
   "status": 200,
@@ -254,6 +256,7 @@ sequenceDiagram
 ```
 
 **Response — Student/Staff (200 OK, Login Complete):**
+
 ```json
 {
   "status": 200,

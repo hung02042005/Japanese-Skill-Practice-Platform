@@ -1,4 +1,5 @@
 # SPEC — Nâng cấp VIP (`/subscription`)
+>
 > **Sprint:** 4 — Monetization & Retention
 > **Prefix:** `sub-` | **activeTab:** `''` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §12.1`

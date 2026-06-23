@@ -1,4 +1,5 @@
 # SPEC — Học từ mới (`/learn/new`)
+>
 > **Sprint:** 2 — Core Learning Loop
 > **Prefix:** `lnw-` | **activeTab:** `'learn'` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §10.2` | **Backend ref:** `feat-core-learning/SPEC.md`

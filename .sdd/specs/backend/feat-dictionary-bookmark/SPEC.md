@@ -1,8 +1,11 @@
 # SPEC — Dictionary & Bookmarks
+<<<<<<< Updated upstream
 > ⚠️ **DEPRECATED (2026-06-21).** Mô tả bookmark qua `student_content_progress` trong file này **không còn
 > đúng với code**: cơ chế bookmark đã được thay bằng sổ "Từ cần ôn lại" (review deck). Tham chiếu spec
 > hiện hành: [`docs/specs/SPEC_BACKEND_FLASHCARD_NOTEBOOK_DICTIONARY.md`](../../../../docs/specs/SPEC_BACKEND_FLASHCARD_NOTEBOOK_DICTIONARY.md).
 > Giữ lại để tra lịch sử; KHÔNG dùng làm nguồn chuẩn.
+=======
+>>>>>>> Stashed changes
 >
 > **Feature ID:** `feat-dictionary-bookmark`
 > **UC Coverage:** UC-16 (Dictionary & Search), UC-17 (Bookmark Learning)
@@ -14,15 +17,18 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Trong quá trình học tiếng Nhật, khả năng tra cứu nhanh chóng và lưu trữ các kiến thức quan trọng để ôn tập lại là vô cùng cần thiết. Học viên cần một công cụ tra cứu từ điển tích hợp sẵn toàn diện (từ vựng, ngữ pháp, Kanji) và tính năng đánh dấu (bookmark) bài học để cá nhân hóa lộ trình tự ôn tập.
 
 ### 1.2 Mục tiêu
+
 - Cung cấp thanh tìm kiếm thông minh giúp tra cứu toàn hệ thống (từ vựng, Kanji, ngữ pháp, bài học) bằng từ khóa (Hiragana, Romaji, Kanji, tiếng Việt).
 - Cung cấp giao diện tra cứu từ điển chi tiết với đầy đủ cách đọc Furigana, âm Hán Việt, âm Onyomi/Kunyomi, dịch nghĩa, câu ví dụ song ngữ và audio phát âm.
 - Cho phép đánh dấu (bookmark) bất kỳ mục nội dung nào kèm ghi chú cá nhân và thời gian đánh dấu.
 - Hỗ trợ xem danh sách bookmarks được phân loại rõ ràng (Kanji, ngữ pháp, từ vựng, bài học) và bộ lọc theo cấp độ JLPT.
 
 ### 1.3 Tại sao cần?
+
 Không có từ điển tích hợp $\rightarrow$ học viên phải sử dụng các bên thứ ba, làm ngắt quãng trải nghiệm học. Không có bookmark $\rightarrow$ học viên dễ quên các phần kiến thức khó và không thể gom nhóm nội dung cần ôn tập trọng tâm.
 
 ---
@@ -210,9 +216,11 @@ erDiagram
 ## 6. API SPEC
 
 ### `GET /api/dictionary/search?q={query}&page=0&size=20`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -258,9 +266,11 @@ erDiagram
 ---
 
 ### `POST /api/bookmarks`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "contentType": "vocabulary",
@@ -270,6 +280,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -288,9 +299,11 @@ erDiagram
 ---
 
 ### `DELETE /api/bookmarks/{progressId}`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -302,9 +315,11 @@ erDiagram
 ---
 
 ### `GET /api/bookmarks?type={vocabulary|kanji|grammar|lesson|kana}&page=0&size=20`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

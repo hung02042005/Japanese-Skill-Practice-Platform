@@ -1,4 +1,5 @@
 # SPEC — Staff Chấm Điểm Bài Nói (Speaking Grading)
+>
 > **Feature ID:** `feat-staff` | **Page:** `StaffGrading`
 > **Route:** `/staff/grading`
 > **Version:** 1.0 | **Status:** Draft
@@ -265,21 +266,25 @@ AI Score bars (mini progress bars):
 ```
 
 **Real-time preview điểm kết quả:**
+
 ```js
 const previewFinalScore = manualScore !== '' ? parseFloat(manualScore) : detail?.aiOverallScore;
 ```
 
 **Validation client-side:**
+
 - `manualScore` phải là số trong [0, 100] hoặc rỗng
 - `feedback` không rỗng (bắt buộc khi lưu điểm thủ công)
 
 **Nút "Lưu điểm" disabled khi:**
+
 - `isSaving`
 - `feedback.trim() === ''`
 - `manualScore !== ''` && (`parseFloat(manualScore) < 0` || `parseFloat(manualScore) > 100`)
 - `detail.status === 'graded'` (đã chấm rồi — chỉ được xem)
 
 **Submit flow:**
+
 1. Gọi `gradeSubmission(selectedId, { manualScore, manualFeedback: feedback })`
 2. Update detail local: `status = 'graded'`, `finalScore = result.finalScore`
 3. Update card trong list: status → `graded`
@@ -288,6 +293,7 @@ const previewFinalScore = manualScore !== '' ? parseFloat(manualScore) : detail?
 6. Tự động chọn submission tiếp theo trong list (nếu có)
 
 **Đã chấm — readonly mode:**
+
 ```
 Điểm thủ công: 85.5 / 100
 Phản hồi: "Phát âm từ 'おはよう' rất tốt..."
@@ -300,6 +306,7 @@ Chấm lúc: 01/06/2026 16:22:00
 ## 8. EMPTY STATES
 
 **Không chọn submission (panel phải rỗng):**
+
 ```jsx
 <div className="grd-empty-panel">
   <SakuChan variant="idle" size={80} aria-hidden="true" />
@@ -308,6 +315,7 @@ Chấm lúc: 01/06/2026 16:22:00
 ```
 
 **Danh sách chờ chấm rỗng:**
+
 ```jsx
 <EmptyState
   title="Không còn bài nào chờ chấm"

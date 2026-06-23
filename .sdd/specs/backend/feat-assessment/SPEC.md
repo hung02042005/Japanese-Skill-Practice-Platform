@@ -1,4 +1,5 @@
 # SPEC — Assessment & Testing (Quiz & JLPT Mock Exam)
+>
 > **Feature ID:** `feat-assessment`
 > **UC Coverage:** UC-10 (JLPT Mock Test), UC-11 (Quiz & Practice)
 > **Version:** 1.0 | **Status:** Draft
@@ -9,15 +10,18 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Học viên cần kiểm tra kiến thức qua hai hình thức: (1) Quiz ngắn theo bài học/kỹ năng để luyện tập hàng ngày, và (2) Đề thi thử JLPT đầy đủ giả lập cấu trúc thi thật với đồng hồ đếm ngược.
 
 ### 1.2 Mục tiêu
+
 - Cung cấp quiz 10-20 câu với chấm điểm tức thì và giải thích chi tiết
 - Cung cấp đề thi thử JLPT đầy đủ 3 phần với timer server-side
 - Đảm bảo điểm số chỉ được tính server-side, không tin tưởng client
 - Mỗi lần nộp bài tạo một bản ghi mới (bất biến)
 
 ### 1.3 Tại sao cần?
+
 Kiểm tra là cách duy nhất học viên biết họ đang ở đâu trong lộ trình. Mock test giả lập trải nghiệm thi thật giúp giảm lo lắng và cải thiện kết quả.
 
 ---
@@ -205,9 +209,11 @@ erDiagram
 ## 6. API SPEC
 
 ### `GET /api/assessments?type={quiz|exam}&level={N3}&page=0&size=10`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -234,10 +240,12 @@ erDiagram
 ---
 
 ### `POST /api/assessments/{assessmentId}/start`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Bắt đầu bài thi, server ghi lại `started_at`.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -271,9 +279,11 @@ erDiagram
 ---
 
 ### `POST /api/assessments/{assessmentId}/submit`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "attemptId": "long",
@@ -288,6 +298,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -318,10 +329,12 @@ erDiagram
 ---
 
 ### `GET /api/test-attempts?assessmentId={id}&page=0&size=10`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Lịch sử làm bài của Student.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

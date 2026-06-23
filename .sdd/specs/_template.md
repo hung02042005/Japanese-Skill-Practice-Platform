@@ -1,4 +1,5 @@
 # SPEC — [FEATURE_NAME]
+>
 > **Feature ID:** `feat-[id]`
 > **UC Coverage:** UC-XX, UC-YY
 > **Version:** 1.0 | **Status:** Draft
@@ -9,12 +10,15 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 [Mô tả vấn đề / nhu cầu nghiệp vụ feature này giải quyết]
 
 ### 1.2 Mục tiêu
+
 [Mục tiêu cụ thể, đo lường được]
 
 ### 1.3 Tại sao cần?
+
 [Business value, lý do ưu tiên]
 
 ---
@@ -30,6 +34,7 @@
 ## 3. FUNCTIONAL REQUIREMENTS (EARS)
 
 > **EARS Syntax:**
+>
 > - `WHEN [trigger] THE SYSTEM SHALL [behavior]`
 > - `WHILE [state] THE SYSTEM SHALL [behavior]`
 > - `IF [condition] THEN THE SYSTEM SHALL [response]`
@@ -73,6 +78,7 @@ TABLE_NAME (
 ```
 
 ### 5.2 Quan hệ
+
 [Mermaid ER hoặc mô tả quan hệ giữa các bảng]
 
 ---
@@ -82,6 +88,7 @@ TABLE_NAME (
 ### `METHOD /api/[resource]`
 
 **Request:**
+
 ```json
 {
   "field": "type — mô tả"
@@ -89,6 +96,7 @@ TABLE_NAME (
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

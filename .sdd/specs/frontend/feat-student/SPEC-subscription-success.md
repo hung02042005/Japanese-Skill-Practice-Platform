@@ -1,4 +1,5 @@
 # SPEC — Thanh toán thành công (`/subscription/success`)
+>
 > **Sprint:** 4 — Monetization & Retention
 > **Prefix:** `sus-` | **activeTab:** `''` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §12.2`

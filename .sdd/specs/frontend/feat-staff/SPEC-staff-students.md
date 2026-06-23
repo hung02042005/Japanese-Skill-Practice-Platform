@@ -1,4 +1,5 @@
 # SPEC — Staff Quản Lý Học Viên (`/staff/students`)
+>
 > **UC:** UC-21 (Danh sách học viên), UC-22 (Xem tiến độ học viên), UC-23 (Suspend/Activate tài khoản)
 > **Sprint:** 5 — Staff Tools
 > **Prefix:** `sst-` | **activeTab:** `'staff-students'` | **Guard:** `<StaffRoute>`
@@ -11,6 +12,7 @@
 ## 1. MÔ TẢ TRANG
 
 Ba sub-view trong cùng route:
+
 1. **Student List** — Bảng học viên với filter level/status. Click tên → xem chi tiết tiến độ.
 2. **Student Detail** — Tiến độ học của 1 học viên: stats tổng quan, lịch sử quiz, streak, subscription.
 3. **Confirm Modal** — Xác nhận Suspend / Activate trước khi thực thi.
@@ -20,6 +22,7 @@ Ba sub-view trong cùng route:
 ## 2. MOCKUP
 
 ### 2.1 Student List
+
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │  StaffTopNav  activeTab="staff-students"                         │
@@ -39,6 +42,7 @@ Ba sub-view trong cùng route:
 ```
 
 ### 2.2 Student Detail
+
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │  ← Danh sách học viên                                            │
@@ -59,6 +63,7 @@ Ba sub-view trong cùng route:
 ```
 
 ### 2.3 Confirm Modal
+
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                  ⚠️ Xác nhận Suspend                            │
@@ -90,6 +95,7 @@ components/staff/
 ## 4. STATE
 
 ### 4.1 List view
+
 ```js
 const [view,        setView]      = useState('list');   // 'list' | 'detail'
 const [search,      setSearch]    = useState('');
@@ -107,6 +113,7 @@ const PAGE_SIZE = 20;
 ```
 
 ### 4.2 Detail view
+
 ```js
 const [activeStudent, setActiveStudent] = useState(null);  // StudentSummary
 const [detail,        setDetail]        = useState(null);  // StudentDetail
@@ -114,6 +121,7 @@ const [isLoadingDetail, setLoadingDetail] = useState(false);
 ```
 
 ### 4.3 Confirm Modal
+
 ```js
 const [confirmModal, setConfirmModal] = useState(null);
 // { student, action: 'suspend'|'activate' }
@@ -185,6 +193,7 @@ const [isActioning,  setActioning]    = useState(false);
 ```
 
 API service (`staffService.js`):
+
 ```js
 export async function getStaffStudents({ search, level, status, page = 0, size = 20 } = {}) {
   const params = { page, size };

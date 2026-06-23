@@ -1,4 +1,5 @@
 # SPEC — Đổi mật khẩu (`/settings/password`)
+>
 > **Sprint:** 1 — Foundation
 > **Prefix:** `pwd-` | **activeTab:** `''` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §9.3` | **Backend ref:** `feat-auth/UC-05-change-password.md`

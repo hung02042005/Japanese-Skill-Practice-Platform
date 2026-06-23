@@ -1,4 +1,5 @@
 # SPEC — Reading & Listening Practice
+>
 > **Feature ID:** `feat-reading-listening`
 > **UC Coverage:** UC-14 (Reading Practice), UC-15 (Listening Practice)
 > **Version:** 1.0 | **Status:** Draft
@@ -9,14 +10,17 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Đọc hiểu và nghe hiểu là hai kỹ năng chiếm tỉ trọng lớn trong kỳ thi JLPT. Học viên cần luyện tập với ngữ liệu thực tế (đoạn văn + audio) kết hợp câu hỏi trắc nghiệm, nhận phản hồi ngay sau khi nộp bài.
 
 ### 1.2 Mục tiêu
+
 - Cung cấp bài luyện đọc hiểu với đoạn văn tiếng Nhật và câu hỏi trắc nghiệm
 - Cung cấp bài luyện nghe hiểu với audio và câu hỏi trắc nghiệm (phát lại được)
 - Chấm điểm tức thì, hiển thị transcript (nghe) và giải thích đáp án
 
 ### 1.3 Tại sao cần?
+
 Reading và Listening chiếm ~2/3 điểm JLPT. Luyện tập thường xuyên với ngữ liệu đa dạng là cách duy nhất để cải thiện hai kỹ năng này.
 
 ---
@@ -183,9 +187,11 @@ erDiagram
 ## 6. API SPEC
 
 ### `GET /api/lessons?type={reading|listening}&level={N3}&page=0&size=10`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -210,9 +216,11 @@ erDiagram
 ---
 
 ### `GET /api/lessons/{lessonId}/reading`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -241,9 +249,11 @@ erDiagram
 ---
 
 ### `GET /api/lessons/{lessonId}/listening`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -272,10 +282,12 @@ erDiagram
 ---
 
 ### `POST /api/lessons/{lessonId}/submit`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Nộp bài đọc hoặc nghe.
 
 **Request:**
+
 ```json
 {
   "attemptType": "string — reading|listening",
@@ -290,6 +302,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

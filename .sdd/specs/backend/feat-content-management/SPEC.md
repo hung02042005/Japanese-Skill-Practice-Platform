@@ -1,4 +1,5 @@
 # SPEC — Content & Question Bank Management (Staff Role)
+>
 > **Feature ID:** `feat-content-management`
 > **UC Coverage:** UC-24 (Manage Question Bank), UC-25 (Manage Grammar Content), UC-26 (Manage Quiz), UC-27 (Manage Learning Content), UC-28 (Manage JLPT Mock Exams)
 > **Version:** 1.0 | **Status:** Draft
@@ -9,15 +10,18 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Chất lượng và tính phong phú của nội dung bài học là yếu tố then chốt thu hút và giữ chân học viên ôn thi JLPT. Các Nhân viên soạn thảo nội dung (Staff) cần có các công cụ nghiệp vụ chuyên dụng để xây dựng hệ thống bài học (khóa học, bài giảng, Kanji, từ vựng, ngữ pháp) và thiết lập các bài đánh giá (Quiz trắc nghiệm, ngân hàng câu hỏi, đề thi thử JLPT).
 
 ### 1.2 Mục tiêu
+
 - **Quản lý học liệu (UC-25, UC-27):** Cho phép Staff thêm mới, sửa đổi, ẩn/hiện các khóa học (`courses`), bài giảng (`lessons`), điểm ngữ pháp (`grammar_points`), từ vựng (`vocabulary`), và chữ Hán (`kanji`) ở trạng thái nháp (`draft`).
 - **Quản lý ngân hàng câu hỏi (UC-24):** Xây dựng kho câu hỏi trắc nghiệm (`questions`) được gắn nhãn theo kỹ năng và trình độ. Hỗ trợ khóa sửa đổi khi câu hỏi đã được làm bài (`is_locked`).
 - **Xây dựng đánh giá (UC-26, UC-28):** Cho phép gán các câu hỏi từ ngân hàng vào bài trắc nghiệm nhanh (`quiz`) hoặc cấu trúc đề thi thử JLPT phức tạp (`exam`) chia theo các phần thi cụ thể.
 - **Quy trình chất lượng:** Mọi nội dung do Staff tạo ra phải đi qua trạng thái chờ duyệt (`pending_review`) và chỉ hiển thị công khai cho học viên sau khi được Quản lý (StaffManager) xuất bản (`published`).
 
 ### 1.3 Tại sao cần?
+
 Nếu không quản lý tập trung và phân tách trạng thái kiểm duyệt $\rightarrow$ các bài học bị lỗi chính tả, sai kiến thức sư phạm hoặc đề thi không cân đối điểm số sẽ hiển thị trực tiếp đến học viên, làm giảm uy tín thương hiệu. Cơ chế khóa câu hỏi (`is_locked`) ngăn chặn việc thay đổi nội dung câu hỏi làm sai lệch dữ liệu lịch sử làm bài trước đây.
 
 ---
@@ -205,9 +209,11 @@ erDiagram
 ## 6. API SPEC
 
 ### `POST /api/staff/questions`
+
 **Actor:** Staff | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "questionText": "N5 Kanji: '水' đọc là gì?",
@@ -224,6 +230,7 @@ erDiagram
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "status": 201,
@@ -239,9 +246,11 @@ erDiagram
 ---
 
 ### `PUT /api/staff/questions/{questionId}`
+
 **Actor:** Staff | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "questionText": "N5 Kanji: '水' (Water) đọc là gì?",
@@ -257,6 +266,7 @@ erDiagram
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -271,9 +281,11 @@ erDiagram
 ---
 
 ### `POST /api/staff/assessments`
+
 **Actor:** Staff | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "assessmentType": "quiz",
@@ -288,6 +300,7 @@ erDiagram
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "status": 201,
@@ -302,9 +315,11 @@ erDiagram
 ---
 
 ### `POST /api/staff/assessments/{assessmentId}/assign-questions`
+
 **Actor:** Staff | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "assignments": [
@@ -319,6 +334,7 @@ erDiagram
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -330,9 +346,11 @@ erDiagram
 ---
 
 ### `POST /api/staff/contents/submit-review`
+
 **Actor:** Staff | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "contentType": "question",
@@ -341,6 +359,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

@@ -1,0 +1,47 @@
+{
+  // markdownlint config — JLPT Platform
+  // Docs: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+
+  "default": true,
+
+  // MD013 — Line length: tắt vì ASCII art diagram và bảng dài
+  "MD013": false,
+
+  // MD025 — Single H1: tắt vì AGENTS.md dùng 2 dòng H1 làm title block
+  "MD025": false,
+
+  // MD033 — Inline HTML: tắt vì một số spec file dùng HTML
+  "MD033": false,
+
+  // MD040 — Fenced code language: tắt vì nhiều block ASCII art không có language
+  "MD040": false,
+
+  // MD046 — Code block style: tắt vì markdownlint báo false positive với indented
+  //          content bên trong fenced code block (ASCII art diagrams)
+  "MD046": false,
+
+  // MD060 — Table column style: tắt vì project mix compact/spaced style trong docs
+  //          (rule mới trong markdownlint v0.36+, chỉ có trong VS Code extension)
+  "MD060": false,
+
+  // MD041 — First line H1: tắt vì một số doc dùng H2 làm tiêu đề đầu tiên
+  "MD041": false,
+
+  // MD036 — Emphasis as heading: tắt vì một số spec dùng **bold** làm label
+  "MD036": false,
+
+  // MD024 — Duplicate headings: chỉ cấm trùng trong cùng cấp cha (siblings only)
+  "MD024": {
+    "siblings_only": true
+  },
+
+  // MD007 — Unordered list indent: dùng 2 spaces thay vì mặc định 4
+  "MD007": {
+    "indent": 2
+  },
+
+  // MD029 — Ordered list style: cho phép tự tăng số thứ tự
+  "MD029": {
+    "style": "ordered"
+  }
+}

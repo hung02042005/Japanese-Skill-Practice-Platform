@@ -1,4 +1,5 @@
 # SPEC — Frontend Design System
+>
 > **Feature ID:** `feat-frontend-design`
 > **Version:** 1.1 | **Status:** Draft
 > **Author:** Team | **Last Updated:** 2026-05-31
@@ -8,17 +9,20 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Frontend hiện có: React 18 + Vite, React Router DOM, Redux Toolkit, Axios, Tailwind CSS.
 Auth pages (login, register, forgot-password, reset-password) đã dựng với màu blue (`#2563eb`).
 Cần định nghĩa Design System để các feature tiếp theo (dashboard, learning, quiz, kanji…) xây nhất quán theo thương hiệu MochiKanji (màu cam, phong cách kawaii).
 
 ### 1.2 Mục tiêu
+
 - Định nghĩa Design Tokens dùng CSS variables trong `index.css`
 - Chuẩn hóa pattern: mỗi page có `PageName.jsx` + `PageName.css` trong `pages/<feature>/`
 - Xác định thư mục `components/` tối thiểu cần tạo
 - Thống nhất cách dùng Redux Toolkit slice + Axios service cho các feature mới
 
 ### 1.3 Lưu ý tương thích
+
 Auth pages hiện dùng màu blue — **không thay đổi** trong scope này. Design system mới áp dụng cho các page mới (dashboard trở đi).
 
 ---
@@ -174,6 +178,7 @@ apps/frontend/src/
 ```
 
 **Quy tắc đặt file:**
+
 - Sub-component chỉ dùng trong 1 page → đặt cùng thư mục với page đó
 - Sub-component dùng ở nhiều page → đặt vào `components/`
 - Mỗi `.jsx` có file `.css` cùng tên, cùng thư mục
@@ -184,6 +189,7 @@ apps/frontend/src/
 ## 5. PATTERN CHUẨN
 
 ### 5.1 Page Component
+
 ```jsx
 // pages/dashboard/Dashboard.jsx
 import { useEffect } from 'react';
@@ -228,6 +234,7 @@ export default Dashboard;
 ```
 
 ### 5.2 Redux Slice
+
 ```js
 // store/slices/studentSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
@@ -271,6 +278,7 @@ export default studentSlice.reducer;
 ```
 
 ### 5.3 API Service
+
 ```js
 // api/studentService.js — theo pattern của authService.js
 import api from './authService'; // dùng lại axios instance đã có interceptor
@@ -282,6 +290,7 @@ export async function getDashboard() {
 ```
 
 ### 5.4 Route Registration
+
 ```jsx
 // App.jsx — thêm route mới vào đây
 import Dashboard from './pages/dashboard/Dashboard';
@@ -317,6 +326,7 @@ Responsive:
 ```
 
 **CSS class pattern:**
+
 ```css
 /* DashboardLayout.css */
 .dashboard-layout { display: flex; flex-direction: column; min-height: 100vh; }
@@ -327,9 +337,11 @@ Responsive:
 ```
 
 ### 6.2 Auth Layout (đã có — không thay đổi)
+
 Centered card, max-width 440px, màu blue hiện tại.
 
 ### 6.3 Exam Layout (fullscreen, không sidebar)
+
 ```
 TopNav tối giản (chỉ logo + timer)
 Progress bar toàn chiều rộng
@@ -341,6 +353,7 @@ Content area centered, max-width 720px
 ## 7. COMPONENT SPECS
 
 ### 7.1 TopNav
+
 ```
 File: components/layout/TopNav.jsx + TopNav.css
 Class prefix: .topnav-
@@ -360,6 +373,7 @@ Structure:
 ```
 
 ### 7.2 StreakCard
+
 ```
 File: pages/dashboard/StreakCard.jsx + (style trong Dashboard.css)
 Class prefix: .streak-
@@ -375,6 +389,7 @@ Khi streak > 0: flame icon sáng + animation pulse 2s infinite
 ```
 
 ### 7.3 StatCard
+
 ```
 File: pages/dashboard/StatCard.jsx
 Props: type ('words' | 'streak'), value (number)
@@ -388,6 +403,7 @@ Padding: 16px
 ```
 
 ### 7.4 Button (shared)
+
 ```
 File: components/common/Button.jsx + Button.css
 Class prefix: .btn-
@@ -404,6 +420,7 @@ Loading: show spinner, disabled pointer-events
 ```
 
 ### 7.5 LoadingSpinner (shared)
+
 ```
 File: components/common/LoadingSpinner.jsx
 Props: size ('sm'|'md'|'lg')
@@ -414,6 +431,7 @@ Animation: spin 0.8s linear infinite
 ```
 
 ### 7.6 EmptyState (shared)
+
 ```
 File: components/common/EmptyState.jsx
 Props: mascotVariant, title, description, ctaLabel, onCta
@@ -496,6 +514,7 @@ Dùng khi list rỗng, OCR chưa upload, v.v.
 ```
 
 **PrivateRoute** — component cần tạo tại `components/layout/PrivateRoute.jsx`:
+
 - Đọc token từ Redux `state.auth`
 - Nếu chưa đăng nhập → redirect `/login`
 - Nếu sai role → redirect `/403`

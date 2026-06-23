@@ -1,4 +1,5 @@
 # SPEC — Trang Đăng Nhập (Login)
+>
 > **Feature ID:** `feat-auth` | **Page:** `Login`
 > **Route:** `/login` (public, redirect về `/dashboard` nếu đã auth)
 > **Version:** 1.0 | **Status:** Draft
@@ -13,10 +14,12 @@
 Trang đăng nhập dành cho học viên. Mục tiêu: **xác thực danh tính và đưa người dùng vào Dashboard nhanh nhất**. Thiết kế đơn giản, không sidebar, một card trung tâm trên nền washi.
 
 **Hai luồng đăng nhập:**
+
 1. **Email + Mật khẩu** — form truyền thống
 2. **Google OAuth** — một cú nhấn
 
 **Cấu trúc trang:**
+
 ```
 [1] AuthTopBar    — Logo + link về trang chủ
 [2] AuthCard      — Toàn bộ form đăng nhập (card trắng giữa màn hình)
@@ -24,6 +27,7 @@ Trang đăng nhập dành cho học viên. Mục tiêu: **xác thực danh tính
 ```
 
 **File structure:**
+
 ```
 apps/frontend/src/
 ├── pages/
@@ -87,6 +91,7 @@ Display:    flex, flex-direction: column
 ```
 
 **Bố cục dọc:**
+
 ```
 ┌──────────────────────────────────────────────┐
 │  [AuthTopBar — 64px]                         │
@@ -104,6 +109,7 @@ Display:    flex, flex-direction: column
 ```
 
 **Main area — `.auth-main`**
+
 ```
 flex: 1
 display: flex
@@ -128,6 +134,7 @@ Display:    flex, align-items: center, justify-content: space-between
 ```
 
 **Logo — `.auth-topbar-logo`**
+
 ```
 Layout: flex, align-items: center, gap: 10px
 Icon:   Saku-chan mini SVG (28×28px)
@@ -139,6 +146,7 @@ Hover:  opacity 0.85
 ```
 
 **Back link — `.auth-topbar-back`**
+
 ```
 Text:   "← Trang chủ"
 Font:   Nunito 600, 14px
@@ -181,6 +189,7 @@ Position:      relative, z-index: 1
 ### 6.1 Mascot + Header
 
 **Saku-chan — `.auth-mascot`**
+
 ```
 Size:      80px (sm variant)
 State:     idle (gentle sway) khi trang vừa load
@@ -194,6 +203,7 @@ Animation: sway 3s ease-in-out infinite (idle state)
 ```
 
 **Tiêu đề — `.auth-title`**
+
 ```
 Text:       "Chào mừng trở lại"
 Font:       Nunito 700, 24px (heading-lg)
@@ -203,6 +213,7 @@ Margin-bottom: 4px
 ```
 
 **Mô tả phụ — `.auth-subtitle`**
+
 ```
 Text:       "Đăng nhập để tiếp tục hành trình học tiếng Nhật"
 Font:       Nunito 400, 14px (body-md)
@@ -240,6 +251,7 @@ Display:        flex, flex-direction: column, gap: 20px
 ```
 
 **Field Email — `.form-field`**
+
 ```
 [Label]:
   Text:   "Email"
@@ -278,6 +290,7 @@ Display:        flex, flex-direction: column, gap: 20px
 ```
 
 **Field Mật Khẩu — `.form-field`**
+
 ```
 [Label row]:
   Display: flex, justify-content: space-between, align-items: center

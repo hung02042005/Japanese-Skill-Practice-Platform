@@ -1,4 +1,5 @@
 # AGENTS.md — Dự án: Hệ Thống Học Tiếng Nhật JLPT
+
 # Phiên bản: 2.0.0 | Cập nhật: 2026-05-27 | Tác giả: [Team]
 
 ## 1. PROJECT OVERVIEW
@@ -14,6 +15,7 @@
 **Mục tiêu chính**: Xây dựng hệ thống học tiếng Nhật hỗ trợ lộ trình từ N5 đến N1 với các tính năng chuyên sâu: Kanji, Kana, Ngữ pháp, Từ vựng, và luyện tập AI (OCR & Speech Recognition); đảm bảo lộ trình học, tính điểm, phân quyền, và trải nghiệm người dùng được thực thi chính xác và có audit trail đầy đủ.
 
 **Đọc theo thứ tự**:
+
 1. `CONSTITUTION.md` — Tech stack, Security, Code Standards, Git Workflow
 2. `CLAUDE.md` — Kiến trúc hệ thống, ADR, Lessons Learned, Anti-patterns
 3. File này — Domain Rules, Forbidden Patterns, Golden Patterns
@@ -27,11 +29,13 @@
 > Xem chi tiết sơ đồ: `CLAUDE.md § KIẾN TRÚC HỆ THỐNG`
 
 ### 2.1. API Design
+
 - REST style với prefix `/api/[resource]`
 - Luôn trả JSON chuẩn: `{ "status": 200, "message": "...", "data": ... }`
 - Xử lý lỗi tập trung qua `@ControllerAdvice`
 
 ### 2.2. DTO Pattern (BẮT BUỘC)
+
 ```
 Entity (JPA)  ──mapping──►  DTO (Request/Response)  ──►  API
        │                          ▲
@@ -39,6 +43,7 @@ Entity (JPA)  ──mapping──►  DTO (Request/Response)  ──►  API
 ```
 
 ### 2.3. Logging
+
 - **MUST** dùng SLF4J Logger — **KHÔNG BAO GIỜ** `System.out.println()` / `console.log()`
 - Log format: `[LEVEL] timestamp [class] message {context}`
 
@@ -46,19 +51,22 @@ Entity (JPA)  ──mapping──►  DTO (Request/Response)  ──►  API
 
 > ⚠️ Vi phạm nguyên tắc này là lỗi nghiêm trọng — mọi logic quan trọng phải nằm ở backend.
 
-#### Backend chịu trách nhiệm TOÀN BỘ:
+#### Backend chịu trách nhiệm TOÀN BỘ
+
 - **Business logic**: tính điểm, kiểm tra điều kiện mở khóa bài, xử lý tiến trình học
 - **Authorization**: kiểm tra Role + Subscription trước khi trả data
 - **Validation**: validate input, business rule (score range, level access, v.v.)
 - **State quan trọng**: thời gian làm bài, kết quả thi, trạng thái subscription
 
-#### Frontend CHỈ được phép:
+#### Frontend CHỈ được phép
+
 - Render/hiển thị data nhận từ API
 - Gọi API và xử lý response (loading, error state)
 - Validation UX cục bộ (format email, required field) — **KHÔNG thay thế** backend validation
 - Quản lý UI state (modal open/close, tab active, v.v.)
 
-#### Cấm tuyệt đối ở Frontend:
+#### Cấm tuyệt đối ở Frontend
+
 | ❌ Không được | ✅ Thay bằng |
 |--------------|-------------|
 | Tính điểm quiz ở client | Gửi answers lên API, nhận score về |
@@ -442,6 +450,7 @@ public class GlobalExceptionHandler {
 ### 9.2. High-Risk Operations
 
 Trước khi sửa flow điểm số, tiến trình học, xác thực:
+
 - Đọc code liên quan trong `CLAUDE.md`
 - Đọc spec hiện hành
 - Kiểm tra module lân cận
@@ -458,6 +467,7 @@ Trước khi sửa flow điểm số, tiến trình học, xác thực:
 Trước khi báo cáo hoàn thành task, tự kiểm tra:
 
 ### Code Quality
+
 - [ ] Unit tests viết xong và passing (min 80% coverage)
 - [ ] Integration tests cho API endpoints (happy + error path)
 - [ ] Không có linting/type errors
@@ -466,16 +476,19 @@ Trước khi báo cáo hoàn thành task, tự kiểm tra:
 - [ ] Không có TODO comments
 
 ### Domain Rules
+
 - [ ] Luật điểm số (score >= 0, score <= max_score)
 - [ ] Luật question lock (quiz đã thi không sửa được)
 - [ ] Luật subscription (VIP check)
 
 ### Security & Authorization
+
 - [ ] Phân quyền theo Role VÀ subscription/level
 - [ ] Input validation với @Valid / Jakarta annotations
 - [ ] Không có secret/key hardcode
 
 ### Database
+
 - [ ] Có Flyway/Liquibase migration cho schema changes
 - [ ] Soft delete được sử dụng đúng
 - [ ] Audit columns có mặt

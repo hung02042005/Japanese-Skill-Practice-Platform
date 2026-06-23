@@ -1,4 +1,5 @@
 # SPEC — Danh sách Kanji (`/kanji`)
+>
 > **Sprint:** 4 — Monetization & Retention
 > **Prefix:** `knj-` | **activeTab:** `'kanji'` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §12.3` | **Backend ref:** `feat-core-learning/SPEC.md UC-07`

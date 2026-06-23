@@ -1,4 +1,5 @@
 # SPEC — Support, Notifications & Manual Grading (Staff Role)
+>
 > **Feature ID:** `feat-support`
 > **UC Coverage:** UC-29 (Respond to Student Support), UC-30 (Send Notifications), UC-31 (Grade Speaking Submission)
 > **Version:** 1.0 | **Status:** Draft
@@ -9,14 +10,17 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Để đảm bảo trải nghiệm người dùng tối ưu, học viên cần được hỗ trợ kịp thời khi gặp sự cố kỹ thuật hoặc thắc mắc học tập qua hệ thống Ticket. Đồng thời, Nhân viên (Staff) cần có các công cụ để điều phối thông báo hệ thống và thực hiện chấm điểm thủ công đối với các bài nói Speaking mà trí tuệ nhân tạo (AI) chưa thể tự quyết định chính xác 100%.
 
 ### 1.2 Mục tiêu
+
 - **Hỗ trợ người dùng (UC-29):** Thiết lập hệ thống Ticket hỗ trợ hai chiều cho phép học viên gửi thắc mắc và Staff theo dõi, phản hồi, thay đổi trạng thái ticket (`open` $\rightarrow$ `in_progress` $\rightarrow$ `resolved` $\rightarrow$ `closed`).
 - **Gửi thông báo (UC-30):** Cho phép Staff soạn thảo và gửi thông báo hệ thống (In-app, Email) hướng tới toàn bộ học viên hoặc nhóm học viên được chọn lọc cụ thể theo cấp độ JLPT.
 - **Chấm điểm thủ công bài luyện nói (UC-31):** Cho phép Staff nghe bài nộp nói (`student_submissions` với `submission_type = 'speaking'`) của học viên, ghi nhận điểm số thực tế (`manual_score`) và phản hồi chi tiết để ghi đè điểm đề xuất của AI (`ai_overall_score`).
 
 ### 1.3 Tại sao cần?
+
 Không có hệ thống ticket $\rightarrow$ yêu cầu hỗ trợ của học viên bị thất lạc và không có chỉ số SLA phản hồi. Không có chấm bài thủ công $\rightarrow$ AI có thể đánh giá sai lệch giọng điệu/âm điệu của học viên mà không có cơ chế sửa đổi, làm giảm tính khách quan của hệ thống chấm điểm kỹ năng.
 
 ---
@@ -202,9 +206,11 @@ erDiagram
 ## 6. API SPEC
 
 ### `POST /api/staff/tickets/{ticketId}/reply`
+
 **Actor:** Staff | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "message": "Chào bạn, lỗi phát âm trong bài tập Shadowing bài 2 đã được ghi nhận. Bạn vui lòng kiểm tra micro của mình xem đã cấp quyền đầy đủ chưa nhé."
@@ -212,6 +218,7 @@ erDiagram
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -226,9 +233,11 @@ erDiagram
 ---
 
 ### `POST /api/staff/notifications`
+
 **Actor:** Staff | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "title": "Bảo trì định kỳ hệ thống tối 29/05",
@@ -240,6 +249,7 @@ erDiagram
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "status": 201,
@@ -253,9 +263,11 @@ erDiagram
 ---
 
 ### `POST /api/staff/submissions/{submissionId}/grade`
+
 **Actor:** Staff | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "manualScore": 85.50,
@@ -264,6 +276,7 @@ erDiagram
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,

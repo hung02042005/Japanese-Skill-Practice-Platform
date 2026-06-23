@@ -141,6 +141,7 @@ Bước X  [Backend]:   Trả về HTTP 422 — WEAK_PASSWORD
 | `confirmPassword` | Khớp với `newPassword` | "Mật khẩu xác nhận không khớp" |
 
 > **Thứ tự kiểm tra được khuyến nghị:**
+>
 > 1. Validate cấu trúc (required, format, strength)
 > 2. Verify mật khẩu hiện tại (DB check)
 > 3. Kiểm tra mật khẩu mới ≠ cũ (DB check)

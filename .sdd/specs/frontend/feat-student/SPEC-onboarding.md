@@ -1,4 +1,5 @@
 # SPEC — Onboarding (`/onboarding`)
+>
 > **Sprint:** 1 — Foundation
 > **Prefix:** `onb-` | **activeTab:** `''` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §9.1` | **Backend ref:** `feat-auth/UC-04-user-profile.md`

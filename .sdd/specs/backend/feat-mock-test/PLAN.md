@@ -30,6 +30,7 @@ Triển khai module **JLPT Mock Exam** cho phép học viên thi thử đề thi
 ### 3.1. Entities & Repositories (dùng chung với `feat-assessment`)
 
 Dùng lại entities và repositories từ `feat-assessment`:
+
 - `Assessment`, `Question`, `QuestionAssignment`, `TestAttempt`, `AttemptAnswer`
 - Cần bổ sung query:
   - `AssessmentRepository.findExamByIdAndStatus(id, 'published')` — assert `assessment_type = 'exam'`

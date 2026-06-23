@@ -1,4 +1,5 @@
 # SPEC — Student Management (Staff Role)
+>
 > **Feature ID:** `feat-student-management`
 > **UC Coverage:** UC-21 (View Student Progress), UC-22 (Manage Student Accounts), UC-23 (Suspend or Activate Account)
 > **Version:** 1.0 | **Status:** Draft
@@ -9,14 +10,17 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Để đảm bảo môi trường học tập lành mạnh và hỗ trợ học viên kịp thời, các Nhân viên hỗ trợ (Staff) cần có các công cụ giám sát tiến độ và quản lý tài khoản học viên. Nếu phát hiện học viên vi phạm quy chế hoặc gian lận, Nhân viên phải có khả năng đình chỉ tài khoản ngay lập tức.
 
 ### 1.2 Mục tiêu
+
 - **Xem tiến độ học viên (UC-21):** Cho phép Staff tra cứu và xem báo cáo tiến trình học tập chi tiết của từng Student để hỗ trợ học tập trực tiếp.
 - **Quản lý danh sách tài khoản (UC-22):** Hỗ trợ tìm kiếm, lọc danh sách tài khoản Student theo trạng thái (`active`, `suspended`, `pending`, `deleted`) và cấp độ JLPT.
 - **Khóa/Mở tài khoản (UC-23):** Cấp quyền cho Staff đình chỉ (suspend) tài khoản Student vi phạm (bắt buộc điền lý do) và tự động đăng xuất Student khỏi mọi thiết bị. Cho phép kích hoạt lại khi hết hạn kỷ luật.
 
 ### 1.3 Tại sao cần?
+
 Không có sự quản lý của Staff $\rightarrow$ không thể xử lý các trường hợp spam bài đăng, gian lận làm đề thi hoặc các hành vi vi phạm điều khoản sử dụng. Việc ngắt toàn bộ phiên làm việc tức thì khi khóa tài khoản là yêu cầu bảo mật bắt buộc để ngăn chặn truy cập trái phép.
 
 ---
@@ -144,9 +148,11 @@ erDiagram
 ## 6. API SPEC
 
 ### `GET /api/staff/students?q={query}&status={active|suspended}&page=0&size=20`
+
 **Actor:** Staff | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -171,9 +177,11 @@ erDiagram
 ---
 
 ### `GET /api/staff/students/{studentId}/progress`
+
 **Actor:** Staff | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -197,9 +205,11 @@ erDiagram
 ---
 
 ### `POST /api/staff/students/{studentId}/suspend`
+
 **Actor:** Staff | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 {
   "reason": "Sử dụng công cụ hack để tăng điểm số thi thử một cách bất thường."
@@ -207,6 +217,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -223,9 +234,11 @@ erDiagram
 ---
 
 ### `POST /api/staff/students/{studentId}/activate`
+
 **Actor:** Staff | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

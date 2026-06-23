@@ -1,4 +1,5 @@
 # SPEC — Flashcard Learning with SRS Algorithm
+>
 > **Feature ID:** `feat-flashcard-srs`
 > **UC Coverage:** UC-12 (Flashcard Learning)
 > **Version:** 2.1 | **Status:** Active
@@ -20,14 +21,17 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Ghi nhớ từ vựng và Kanji đòi hỏi ôn tập đúng thời điểm. Thuật toán Spaced Repetition System (SRS) — cụ thể là SM-2 — tự động lên lịch ôn tập dựa trên mức độ ghi nhớ của học viên, giúp ghi nhớ lâu hơn với thời gian ôn ít hơn.
 
 ### 1.2 Mục tiêu
+
 - Hiển thị flashcard từ bộ thẻ cá nhân hoặc bộ thẻ hệ thống
 - Thực thi thuật toán SM-2 để tính `interval_days` và `ease_factor` sau mỗi đánh giá
 - Ưu tiên hiển thị các thẻ đến hạn ôn tập hôm nay (`next_review_date <= TODAY`)
 
 ### 1.3 Tại sao cần?
+
 SRS là công cụ học ngôn ngữ hiệu quả nhất về mặt khoa học nhận thức. Không có SRS, học viên sẽ ôn tập ngẫu nhiên và quên nhanh hơn nhiều.
 
 ---
@@ -259,9 +263,11 @@ erDiagram
 ## 6. API SPEC
 
 ### `GET /api/flashcard-decks`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -281,9 +287,11 @@ erDiagram
 ---
 
 ### `GET /api/flashcards?deckName={name}&dueOnly=true&page=0&size=20`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -308,10 +316,12 @@ erDiagram
 ---
 
 ### `GET /api/flashcards/{flashcardId}/reveal`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Lật thẻ — trả về mặt sau (answer side).
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -334,10 +344,12 @@ erDiagram
 ---
 
 ### `POST /api/flashcards/{flashcardId}/review`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > `rating` chấp nhận không phân biệt hoa/thường (`easy|hard|wrong`). Với thẻ **từ vựng dạng trắc nghiệm**, client gửi `selectedOptionId` thay cho `rating` — server tự chấm đúng/sai và suy ra rating (FR-FC-55/56). `isLastCardInSession=true` kích hoạt gợi ý "Từ cần ôn lại" (FR-FC-81).
 
 **Request:**
+
 ```json
 {
   "rating": "string|null — easy|hard|wrong (lật thẻ kanji/grammar/custom)",
@@ -347,6 +359,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -364,14 +377,17 @@ erDiagram
 ---
 
 ### `POST /api/flashcard-decks`
+
 **Actor:** Student | **Auth:** Bearer JWT
 
 **Request:**
+
 ```json
 { "deckName": "string — max 100 chars" }
 ```
 
 **Response (201):**
+
 ```json
 {
   "status": 201,
@@ -382,7 +398,12 @@ erDiagram
 
 ---
 
+<<<<<<< Updated upstream
 ### `PATCH /api/flashcard-decks/{deckId}`
+=======
+### `DELETE /api/flashcard-decks/{deckName}`
+
+>>>>>>> Stashed changes
 **Actor:** Student | **Auth:** Bearer JWT
 > Sửa metadata sổ tay cá nhân (name/description/jlptLevel/topic/color). System deck → 403.
 
@@ -398,6 +419,7 @@ erDiagram
 > Xóa bằng `deckId` (deck first-class từ migration V9). Soft delete deck + toàn bộ thẻ.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

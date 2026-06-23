@@ -1,4 +1,5 @@
 # SPEC — Xác nhận Email (`/verify-email`)
+>
 > **Sprint:** 1 — Foundation
 > **Prefix:** `vem-` | **activeTab:** `''` | **Guard:** Public (không cần đăng nhập)
 > **Phụ thuộc:** `USER-SPEC.md §9.4` | **Backend ref:** `feat-auth/UC-02-register.md`

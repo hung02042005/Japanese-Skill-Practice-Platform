@@ -1,4 +1,5 @@
 # SPEC — Staff Quản Lý Học Liệu (Content Management)
+>
 > **Feature ID:** `feat-staff` | **Page:** `StaffContent`
 > **Route:** `/staff/content`
 > **Version:** 1.0 | **Status:** Draft
@@ -238,45 +239,53 @@ function ContentStatusActions({ item, contentType, onEdit, onSubmit }) {
 Modal tạo mới / sửa nội dung. Form fields thay đổi theo `contentType`:
 
 ### Fields chung tất cả loại
+
 - `title` / `character` — text input (bắt buộc)
 - `jlptLevel` — select N5/N4/N3/N2/N1 (bắt buộc)
 
 ### Fields riêng theo loại
 
 **Khóa học (course):**
+
 ```
 title (bắt buộc), description (textarea), jlptLevel, is_vip_only (checkbox), thumbnail_url (upload)
 ```
 
 **Bài học (lesson):**
+
 ```
 title, lesson_type (select: lesson|reading|listening|speaking), course_id (select từ danh sách),
 jlptLevel, content_text (textarea), video_url, audio_url, explanation (textarea)
 ```
 
 **Từ vựng (vocabulary):**
+
 ```
 word (bắt buộc), reading (hiragana/katakana), meaning (bắt buộc), jlptLevel,
 part_of_speech (danh từ/động từ/...), example_sentence, audio_url
 ```
 
 **Ngữ pháp (grammar_points):**
+
 ```
 pattern (cấu trúc, bắt buộc), meaning (bắt buộc), jlptLevel,
 formation (cách chia), example_sentences[] (có thể thêm nhiều)
 ```
 
 **Kanji:**
+
 ```
 character (1 ký tự, bắt buộc), onyomi, kunyomi, meaning (bắt buộc), jlptLevel,
 stroke_count (number), example_words[] (word + reading)
 ```
 
 **Modal header:**
+
 - Tạo mới: "Tạo [Loại] Mới"
 - Sửa: "Sửa [Tên item]"
 
 **Modal footer:**
+
 - [Hủy] + [Lưu nháp] + [Lưu và gửi duyệt]
 
 "Lưu nháp" → `createContent()` / `updateContent()` với `status = 'draft'`

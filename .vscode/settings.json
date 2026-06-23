@@ -1,3 +1,8 @@
 {
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.compile.nullAnalysis.mode": "automatic",
+    "markdownlint.ignore": [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/target/**"
+    ]
 }

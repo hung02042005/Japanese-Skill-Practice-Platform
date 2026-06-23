@@ -1,4 +1,5 @@
 # SPEC — Tiến độ học tập (`/progress`)
+>
 > **Sprint:** 3 — Assessment Loop
 > **Prefix:** `prg-` | **activeTab:** `''` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §11.4` | **Backend ref:** `feat-learning-analytics/SPEC.md`

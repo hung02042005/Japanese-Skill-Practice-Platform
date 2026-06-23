@@ -1,4 +1,5 @@
 # SPEC — Admin Settings (Cài đặt & Thông báo)
+>
 > **Feature ID:** `feat-admin` | **Page:** `AdminSettings`
 > **Route:** `/admin/settings`
 > **Version:** 1.0 | **Status:** Draft
@@ -13,6 +14,7 @@
 Trang cài đặt tổng hợp UC-39 (System Settings) và UC-40 (Notification Rules) vào một giao diện tab-based. Admin cấu hình SMTP, tham số bảo mật, chế độ bảo trì và quy tắc thông báo tự động.
 
 **Cấu trúc trang:**
+
 ```
 [1] AdminTopNav       — activeTab="settings"
 [2] AdminPageHeader   — "Cài đặt hệ thống" + SakuChan idle
@@ -22,6 +24,7 @@ Trang cài đặt tổng hợp UC-39 (System Settings) và UC-40 (Notification R
 ```
 
 **File:**
+
 ```
 apps/frontend/src/pages/admin/
 ├── AdminSettings.jsx
@@ -54,6 +57,7 @@ margin-bottom: 28px
 ```
 
 Mỗi `.ast-tab`:
+
 ```
 display: flex, align-items: center, gap: 8px
 padding: 10px 20px
@@ -105,6 +109,7 @@ border-left: 4px solid var(--color-warning)    ← khi maintenance = true
 ```
 
 **Layout bên trong:**
+
 ```
 display: flex, align-items: flex-start, justify-content: space-between, gap: 20px
 
@@ -169,6 +174,7 @@ padding: 24px
 ```
 
 **Card header:**
+
 ```
 [Title]: "Cấu hình SMTP" — font 18px/700
 [Desc]:  "Máy chủ gửi email cho đặt lại mật khẩu, xác minh email và thông báo hệ thống."
@@ -184,6 +190,7 @@ gap: 20px
 ```
 
 Mỗi `.ast-field`:
+
 ```
 display: flex, flex-direction: column, gap: 6px
 
@@ -219,6 +226,7 @@ display: flex, flex-direction: column, gap: 6px
 | `smtp_from_name` | Tên hiển thị | text | `SakuJi Platform` | ✅ |
 
 **Password field:**
+
 ```
 - Hiển thị `••••••••` (không trả về giá trị thật từ backend — NFR-ADMIN-03)
 - Icon toggle hiện/ẩn (giống PasswordInput ở login)
@@ -227,6 +235,7 @@ display: flex, flex-direction: column, gap: 6px
 ```
 
 **Footer form:**
+
 ```
 display: flex, justify-content: space-between, align-items: center
 margin-top: 24px
@@ -261,6 +270,7 @@ overflow: hidden
 ```
 
 Mỗi setting row `.ast-setting-row`:
+
 ```
 display: grid
 grid-template-columns: 1fr auto
@@ -300,6 +310,7 @@ hover: background: var(--color-bg)
 | `jwt_expiry_minutes` | Thời hạn JWT (phút) | Phiên đăng nhập hết hạn sau N phút | integer | 15 |
 
 **Validation phía client:**
+
 - `max_login_attempts`: 3–20 (integer)
 - `lockout_duration_minutes`: 5–1440 (integer)
 - `jwt_expiry_minutes`: 5–1440 (integer)
@@ -345,6 +356,7 @@ hover: box-shadow: var(--shadow-raised)
 ```
 
 **Nội dung:**
+
 ```
 [Left]:
   [.ast-rule-header]:
@@ -378,6 +390,7 @@ hover: box-shadow: var(--shadow-raised)
 ```
 
 **Empty state khi chưa có rule:**
+
 ```
 SakuChan variant="thinking" size={120}
 [Title]:  "Chưa có quy tắc thông báo"
@@ -429,6 +442,7 @@ max-width: 500px, width: 100%
 ```
 
 **Footer:**
+
 ```
 display: flex, gap: 10px, justify-content: flex-end
 
@@ -438,6 +452,7 @@ display: flex, gap: 10px, justify-content: flex-end
 ```
 
 **Validation:**
+
 - Milestone: bắt buộc
 - Tiêu đề: bắt buộc, 1–150 ký tự
 - Nội dung: bắt buộc, 1–500 ký tự
@@ -514,6 +529,7 @@ function AdminSettings() {
 ```
 
 **Sub-components (tạo trong cùng file hoặc tách nhỏ):**
+
 - `SystemTab` — maintenance toggle
 - `EmailTab` — SMTP form
 - `SecurityTab` — setting rows

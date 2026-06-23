@@ -1,4 +1,5 @@
 # MASTER-SPEC — Hướng dẫn tạo trang Student & Staff (Frontend)
+>
 > **Phiên bản:** 1.0 | **Cập nhật:** 2026-06-02
 > **Mục đích:** Đọc tài liệu này là đủ để tạo bất kỳ trang student/staff mới mà không cần hỏi thêm.
 > **Admin ref:** `.sdd/specs/frontend/MASTERFrontend-SPEC.md` | **Backend ref:** `.sdd/specs/backend/`
@@ -82,16 +83,19 @@ apps/frontend/src/
 ### 1.3 Quy tắc tách component
 
 **Tách ra file riêng khi:**
+
 - Component > 60 dòng JSX
 - Dùng lại ở ≥ 2 nơi
 - Có animation hoặc interaction phức tạp (flip card, timer, v.v.)
 
 **Giữ inline khi:**
+
 - Component < 30 dòng
 - Chỉ render UI thuần, không có state
 - Là skeleton hoặc helper nhỏ
 
 **Quy tắc page file:** Page JSX chỉ chứa:
+
 1. Imports
 2. Redux dispatch + selector (hoặc local state nếu trang không cần global state)
 3. Return JSX: `TopNav` + `<div className="xxx-body">` gọi components
@@ -218,6 +222,7 @@ export default function MyReduxPage() {
 ```
 
 **Khi nào dùng Redux vs local state:**
+
 - **Redux**: Dữ liệu dùng ở nhiều component / nhiều trang (dashboard stats, user info, streak)
 - **Local state + `useCallback`**: Dữ liệu chỉ dùng trong 1 trang (flashcard session, exam answers)
 
@@ -314,6 +319,7 @@ export default function MyReduxPage() {
 ```
 
 **Màu thêm cho Student UI:**
+
 ```css
 /* Streak / Achievement */
 --color-streak:        #FF6B35   /* cam đậm — streak flame */
@@ -336,6 +342,7 @@ export default function MyReduxPage() {
 | `TopNav` | `components/layout/TopNav` | `activeTab: string` |
 
 **activeTab values** (phải khớp với `NAV_TABS` trong `TopNav.jsx`):
+
 ```
 'review'      → /review          (Ôn tập)
 'learn'       → /learn/new       (Học từ mới)
@@ -387,12 +394,14 @@ import SakuChan from '../../components/auth/SakuChan';
 ```
 
 **variant values:** `'idle'` | `'happy'` | `'thinking'` | `'correct'` | `'wrong'` | `'celebrate'`
+
 - Trang đang tải → `'thinking'`
 - Đúng / hoàn thành → `'correct'` hoặc `'celebrate'`
 - Sai / lỗi → `'wrong'`
 - Mặc định → `'idle'`
 
 **addToast usage:**
+
 ```js
 addToast('success', 'Hoàn thành bài học!');
 addToast('error',   'Có lỗi: ' + err.message);
@@ -411,6 +420,7 @@ Student và Staff pages **không có file icon riêng**. Dùng inline SVG trực
 ```
 
 **Quy tắc:**
+
 - Không import từ thư viện ngoài (lucide-react, heroicons, v.v.)
 - SVG inline, `aria-hidden="true"`, `currentColor` cho stroke/fill
 - Size chuẩn: 20px cho icon trong nội dung, 22px cho icon nav, 16px cho icon nhỏ
@@ -433,6 +443,7 @@ useEffect(() => { dispatch(fetchDashboardThunk()); }, [dispatch]);
 ```
 
 **Các state có sẵn trong `studentSlice`:**
+
 ```
 state.student.streak          — số ngày streak
 state.student.weekDays        — mảng bool 7 ngày
@@ -974,6 +985,7 @@ components/layout/StaffTopNav.css
 ```
 
 Tabs dự kiến cho StaffTopNav:
+
 ```
 'staff-dashboard' → /staff
 'staff-content'   → /staff/content      (quản lý bài học, từ vựng)
@@ -1085,24 +1097,29 @@ Dùng cho `JlptBadge` và filter UI (giống admin):
 ### Student page
 
 **Bước 1 — Chuẩn bị:**
+
 - [ ] Xác định `activeTab` string cho TopNav (xem §4.1)
 - [ ] Xác định prefix CSS (3 chữ cái, ví dụ `fc-`)
 - [ ] Xác định: dùng Redux hay local state? (xem §5.1 vs §5.2)
 - [ ] Xác định API endpoints cần (thêm vào `studentService.js`)
 
 **Bước 2 — Thêm API:**
+
 - [ ] Thêm functions vào `api/studentService.js`
 - [ ] Nếu cần Redux: thêm thunk vào `store/slices/studentSlice.js`
 
 **Bước 3 — Tạo file:**
+
 - [ ] `pages/student/[Name].jsx` — page shell
 - [ ] `pages/student/[Name].css` — CSS đầy đủ
 - [ ] `components/student/[Name]Component.jsx` — mỗi section lớn = 1 file
 
 **Bước 4 — Đăng ký route:**
+
 - [ ] Thêm `<Route path="/[path]" element={<PrivateRoute><MyPage /></PrivateRoute>} />` vào `App.jsx`
 
 **Bước 5 — Kiểm tra:**
+
 - [ ] 3 trạng thái: loading skeleton / error banner / empty state
 - [ ] Responsive 3 breakpoint
 - [ ] Accessibility checklist (§13)
@@ -1112,6 +1129,7 @@ Dùng cho `JlptBadge` và filter UI (giống admin):
 ### Staff page
 
 Giống Student, ngoài ra:
+
 - [ ] Dùng `<StaffRoute>` thay `<PrivateRoute>` (tạo nếu chưa có)
 - [ ] Thêm API vào `staffService.js` (tạo nếu chưa có)
 - [ ] Nếu là trang staff thứ 3+: tạo `StaffTopNav.jsx`

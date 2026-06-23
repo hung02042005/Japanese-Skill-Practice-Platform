@@ -175,6 +175,7 @@ Bảng này chứa cả speaking, handwriting, AI grading, OCR và manual gradin
 | | `graded_at` | Thời điểm Staff chấm. |
 
 **Luồng trạng thái:**
+
 ```
 pending ──► ai_graded ──► graded
                      └──► rejected

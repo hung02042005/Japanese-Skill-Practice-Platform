@@ -1,4 +1,5 @@
 # SPEC — Trang Quên Mật Khẩu (Forgot Password)
+>
 > **Feature ID:** `feat-auth` | **Page:** `ForgotPassword`
 > **Route:** `/forgot-password` (public, redirect về `/dashboard` nếu đã auth)
 > **Version:** 1.0 | **Status:** Draft
@@ -15,6 +16,7 @@ Trang quên mật khẩu cho phép học viên yêu cầu gửi link đặt lạ
 Thiết kế không sidebar, một card trung tâm trên nền washi — dùng chung layout với Login và Register.
 
 **Hai trạng thái của trang:**
+
 ```
 [State 1] Form nhập email     — mặc định khi vào trang
 [State 2] Thông báo gửi email — sau khi submit (thay thế form trong cùng AuthCard, không điều hướng)
@@ -24,6 +26,7 @@ Thiết kế không sidebar, một card trung tâm trên nền washi — dùng c
 > Frontend hiển thị thông báo thành công trong cả hai trường hợp.
 
 **File structure:**
+
 ```
 apps/frontend/src/
 └── pages/
@@ -72,6 +75,7 @@ Display:    flex, flex-direction: column
 ```
 
 **`.auth-main`**
+
 ```
 flex: 1
 display: flex
@@ -113,6 +117,7 @@ Position:      relative, z-index: 1
 ### 7.1 Mascot + Header
 
 **Saku-chan — `.auth-mascot`**
+
 ```
 Size:      80px (sm variant)
 State:     idle   — khi trang vừa load (sway 3s ease-in-out infinite)
@@ -121,6 +126,7 @@ Display:   block, margin: 0 auto 16px
 ```
 
 **Tiêu đề — `.auth-title`**
+
 ```
 Text:          "Quên mật khẩu?"
 Font:          Nunito 700, 24px (heading-lg)
@@ -130,6 +136,7 @@ Margin-bottom: 4px
 ```
 
 **Mô tả phụ — `.auth-subtitle`**
+
 ```
 Text:          "Nhập email đã đăng ký, chúng tôi sẽ gửi link đặt lại mật khẩu cho bạn."
 Font:          Nunito 400, 14px (body-md)
@@ -168,6 +175,7 @@ Display:        flex, flex-direction: column, gap: 20px
 ```
 
 **Field Email — `.form-field`**
+
 ```
 [Label]:
   Text:          "Email"
@@ -294,6 +302,7 @@ Transition: opacity 0 → 1, translateY(8px → 0), 300ms ease
 ```
 
 **Icon thành công — `.fp-icon-success`**
+
 ```
 SVG 48×48:
   Nền:  <rect width="48" height="48" rx="24" fill="#E8F5E9"/>
@@ -304,6 +313,7 @@ Display: block, margin: 0 auto 16px
 ```
 
 **Tiêu đề — `.fp-card-title`**
+
 ```
 Text:          "Kiểm tra email của bạn"
 Font:          Nunito 700, 24px
@@ -313,6 +323,7 @@ Margin-bottom: 12px
 ```
 
 **Mô tả — `.fp-card-desc`**
+
 ```
 Nội dung: "Nếu email " + <strong>{email}</strong> +
           " tồn tại trong hệ thống, bạn sẽ nhận được
@@ -330,6 +341,7 @@ Max-width:   340px, margin: 0 auto 20px
 ```
 
 **Gửi lại — `.fp-card-hint`**
+
 ```
 Layout: text-align center, font Nunito 400 14px, color var(--color-text-sub)
 
@@ -347,6 +359,7 @@ Layout: text-align center, font Nunito 400 14px, color var(--color-text-sub)
 ```
 
 **Link quay lại — `.fp-back-link`**
+
 ```
 Text:            "Quay lại đăng nhập"
 Display:         block, text-align: center

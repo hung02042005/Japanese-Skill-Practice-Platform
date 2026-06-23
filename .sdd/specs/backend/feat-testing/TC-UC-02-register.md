@@ -22,15 +22,18 @@
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 when(userRepository.existsByEmail("new@test.com")).thenReturn(false);
 when(passwordEncoder.encode("Abcdef12")).thenReturn("$2a$10$hashed");
 ```
 
 **Steps:**
+
 1. Gọi `authService.registerStudent(RegisterRequest("Nguyễn Văn A", "new@test.com", "Abcdef12", "Abcdef12"))`
 
 **Expected:**
+
 - `userRepository.save()` được gọi với entity có `status = "pending"`
 - `entity.emailVerifiedAt` = NULL
 - `entity.passwordHash` = `"$2a$10$hashed"` (KHÔNG phải plaintext)
@@ -52,6 +55,7 @@ when(passwordEncoder.encode("Abcdef12")).thenReturn("$2a$10$hashed");
 | **Ưu tiên** | P0 — CRITICAL |
 
 **Setup:**
+
 ```java
 when(userRepository.existsByEmail(any())).thenReturn(false);
 // Dùng BCryptPasswordEncoder thật (không mock) để kiểm tra
@@ -60,9 +64,11 @@ authService = new AuthService(userRepository, encoder, ...);
 ```
 
 **Steps:**
+
 1. Gọi `authService.registerStudent(...)` với password = `"TestPass12"`
 
 **Expected:**
+
 - Giá trị được lưu vào `passwordHash` bắt đầu bằng `"$2a$10$"` (bcrypt format)
 - `passwordHash` ≠ `"TestPass12"`
 - `BCrypt.checkpw("TestPass12", storedHash)` = true
@@ -80,14 +86,17 @@ authService = new AuthService(userRepository, encoder, ...);
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 when(userRepository.existsByEmail("existing@test.com")).thenReturn(true);
 ```
 
 **Steps:**
+
 1. Gọi `authService.registerStudent(...)` với email `"existing@test.com"`
 
 **Expected:**
+
 - Ném `EmailExistsException` (HTTP 409)
 - `userRepository.save()` KHÔNG được gọi
 - `emailService` KHÔNG được gọi
@@ -104,6 +113,7 @@ when(userRepository.existsByEmail("existing@test.com")).thenReturn(true);
 | **Ưu tiên** | P0 — CRITICAL |
 
 **Setup:**
+
 ```java
 AuthToken token = new AuthToken();
 token.setTokenValue("valid-token-abc");
@@ -116,9 +126,11 @@ when(tokenRepository.findByTokenValueAndTokenType("valid-token-abc", "email_veri
 ```
 
 **Steps:**
+
 1. Gọi `authService.verifyEmail("valid-token-abc")`
 
 **Expected:**
+
 - Ném `InvalidTokenException`
 - `userRepository.updateStatus()` KHÔNG được gọi
 
@@ -134,6 +146,7 @@ when(tokenRepository.findByTokenValueAndTokenType("valid-token-abc", "email_veri
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 // Fixed clock tại 2026-05-30T08:00:00Z
 AuthToken token = new AuthToken();
@@ -142,9 +155,11 @@ token.setExpiresAt(Instant.parse("2026-05-29T08:00:00Z")); // đã hết hạn h
 ```
 
 **Steps:**
+
 1. Gọi `authService.verifyEmail("expired-token")`
 
 **Expected:**
+
 - Ném `InvalidTokenException` với message chứa "hết hạn"
 - `userRepository.updateStatus()` KHÔNG được gọi
 
@@ -160,6 +175,7 @@ token.setExpiresAt(Instant.parse("2026-05-29T08:00:00Z")); // đã hết hạn h
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 AuthToken token = validEmailVerificationToken();
 when(tokenRepository.findByTokenValueAndTokenType("valid-tok", "email_verification"))
@@ -169,9 +185,11 @@ when(userRepository.findById(token.getStudentId())).thenReturn(Optional.of(pendi
 ```
 
 **Steps:**
+
 1. Gọi `authService.verifyEmail("valid-tok")`
 
 **Expected:**
+
 - `userRepository.save()` được gọi với `status = "active"`, `emailVerifiedAt ≈ NOW()`
 - `tokenRepository.save()` được gọi với `revokedAt ≈ NOW()`
 - Không ném exception
@@ -188,6 +206,7 @@ when(userRepository.findById(token.getStudentId())).thenReturn(Optional.of(pendi
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 // Giả sử đã có 3 token 'email_verification' được tạo trong 1 giờ qua
 when(tokenRepository.countByStudentIdAndTokenTypeAndCreatedAtAfter(
@@ -195,9 +214,11 @@ when(tokenRepository.countByStudentIdAndTokenTypeAndCreatedAtAfter(
 ```
 
 **Steps:**
+
 1. Gọi `authService.resendVerificationEmail("pending@test.com")`
 
 **Expected:**
+
 - Ném `RateLimitExceededException` (HTTP 429)
 - `emailService` KHÔNG được gọi
 
@@ -213,6 +234,7 @@ when(tokenRepository.countByStudentIdAndTokenTypeAndCreatedAtAfter(
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 when(tokenRepository.countByStudentIdAndTokenTypeAndCreatedAtAfter(...)).thenReturn(0L);
 List<AuthToken> oldTokens = List.of(buildOldValidToken(), buildOldValidToken());
@@ -221,9 +243,11 @@ when(tokenRepository.findValidByStudentAndType(studentId, "email_verification"))
 ```
 
 **Steps:**
+
 1. Gọi `authService.resendVerificationEmail("pending@test.com")`
 
 **Expected:**
+
 - `tokenRepository.revokeAll(oldTokens)` được gọi TRƯỚC khi tạo token mới
 - `tokenRepository.save(newToken)` được gọi một lần
 - `emailService.sendVerificationEmail()` được gọi
@@ -240,14 +264,17 @@ when(tokenRepository.findValidByStudentAndType(studentId, "email_verification"))
 | **Ưu tiên** | P0 (Security) |
 
 **Setup:**
+
 ```java
 when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 ```
 
 **Steps:**
+
 1. Gọi `authService.resendVerificationEmail("ghost@test.com")`
 
 **Expected:**
+
 - KHÔNG ném exception
 - `emailService` KHÔNG được gọi
 - Trả về "thành công" chung chung (HTTP 200 equivalent)
@@ -270,10 +297,12 @@ when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Gọi `authService.registerStudent(...)` với email chưa tồn tại
 2. Query `userRepository.findByEmail("new@test.com")`
 
 **Expected:**
+
 - Record tìm thấy với `status = "pending"`, `emailVerifiedAt = NULL`
 - `passwordHash` có format bcrypt (`$2a$10$...`)
 - `createdAt` được đặt
@@ -290,11 +319,13 @@ when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Seed user `status = "pending"` và token `email_verification` hợp lệ
 2. Gọi `authService.verifyEmail(tokenValue)`
 3. Query lại DB
 
 **Expected:**
+
 - `student_users.status = "active"`
 - `student_users.email_verified_at` IS NOT NULL
 - `auth_tokens.revoked_at` IS NOT NULL (token đã bị thu hồi)
@@ -317,6 +348,7 @@ when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 | **Ưu tiên** | P0 |
 
 **Request:**
+
 ```json
 {
   "fullName": "Nguyễn Văn A",
@@ -327,10 +359,12 @@ when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 ```
 
 **Expected:**
+
 ```
 HTTP 201
 { "studentId": <number>, "email": "new@test.com" }
 ```
+
 - Response KHÔNG chứa `passwordHash`
 
 ---
@@ -347,6 +381,7 @@ HTTP 201
 **Mock:** `authService.registerStudent()` ném `EmailExistsException`
 
 **Expected:**
+
 ```
 HTTP 409
 { "errorCode": "EMAIL_EXISTS" }
@@ -364,11 +399,13 @@ HTTP 409
 | **Ưu tiên** | P1 |
 
 **Request:**
+
 ```json
 { "fullName": "Test", "email": "t@t.com", "password": "abc", "confirmPassword": "abc" }
 ```
 
 **Expected:**
+
 ```
 HTTP 422
 { "errorCode": "WEAK_PASSWORD" }
@@ -386,11 +423,13 @@ HTTP 422
 | **Ưu tiên** | P1 |
 
 **Request:**
+
 ```json
 { "fullName": "Test", "email": "t@t.com", "password": "Abcdef12", "confirmPassword": "Abcdef99" }
 ```
 
 **Expected:**
+
 ```
 HTTP 400
 { "errorCode": "PASSWORD_MISMATCH" }
@@ -408,11 +447,13 @@ HTTP 400
 | **Ưu tiên** | P1 |
 
 **Request:**
+
 ```json
 { "fullName": "", "email": "t@t.com", "password": "Abcdef12", "confirmPassword": "Abcdef12" }
 ```
 
 **Expected:**
+
 ```
 HTTP 400
 { "errorCode": "VALIDATION_FAILED", "errors": [{ "field": "fullName", "message": "Họ tên là bắt buộc" }] }
@@ -430,11 +471,13 @@ HTTP 400
 | **Ưu tiên** | P2 |
 
 **Request:**
+
 ```json
 { "fullName": "A", "email": "t@t.com", "password": "Abcdef12", "confirmPassword": "Abcdef12" }
 ```
 
 **Expected:**
+
 ```
 HTTP 400
 { "errors": [{ "field": "fullName", "message": "Họ tên phải có ít nhất 2 ký tự" }] }
@@ -454,6 +497,7 @@ HTTP 400
 **Mock:** `authService.verifyEmail()` thành công
 
 **Expected:**
+
 ```
 HTTP 200
 ```
@@ -472,6 +516,7 @@ HTTP 200
 **Mock:** `authService.verifyEmail()` ném `InvalidTokenException("EXPIRED")`
 
 **Expected:**
+
 ```
 HTTP 400
 { "errorCode": "INVALID_TOKEN" }
@@ -491,9 +536,11 @@ HTTP 400
 **Mock:** `authService.resendVerificationEmail()` xử lý không ném exception
 
 **Expected:**
+
 ```
 HTTP 200
 ```
+
 - Response body KHÔNG phân biệt giữa "email tồn tại" và "email không tồn tại"
 
 ---
@@ -510,6 +557,7 @@ HTTP 200
 **Mock:** `authService.resendVerificationEmail()` ném `RateLimitExceededException`
 
 **Expected:**
+
 ```
 HTTP 429
 { "errorCode": "TOO_MANY_REQUESTS" }
@@ -553,10 +601,12 @@ HTTP 429
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Render `<RegisterForm />`
 2. Click submit không điền gì
 
 **Expected:**
+
 - Hiển thị lỗi cho các trường: fullName, email, password, confirmPassword
 - `POST /api/auth/register` KHÔNG được gọi
 
@@ -574,9 +624,11 @@ HTTP 429
 **Mock:** `POST /api/auth/register` → 201
 
 **Steps:**
+
 1. Điền form hợp lệ → submit
 
 **Expected:**
+
 - Hiển thị message "Kiểm tra email để xác minh" (hoặc tương tự)
 - Form đăng ký KHÔNG còn hiển thị
 

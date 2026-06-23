@@ -1,4 +1,5 @@
 # SPEC — Luyện viết Kanji OCR (`/kanji/:id`)
+>
 > **Sprint:** 4 — Monetization & Retention
 > **Prefix:** `koc-` | **activeTab:** `'kanji'` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §12.4` | **Backend ref:** `feat-core-learning/SPEC.md`, `feat-ai-skills/SPEC.md`

@@ -1,4 +1,5 @@
 # SPEC — Landing Page (Home)
+>
 > **Feature ID:** `feat-landing-page`
 > **Route:** `/` (public, không cần auth)
 > **Version:** 1.0 | **Status:** Draft
@@ -22,6 +23,7 @@ Trang chủ công khai (không cần đăng nhập). Mục tiêu duy nhất: **c
 ```
 
 **File structure:**
+
 ```
 apps/frontend/src/
 ├── pages/
@@ -90,6 +92,7 @@ Lấy từ `DESIGN.md` — chỉ ghi lại giá trị dùng trong landing page:
 ## 3. SECTION 1 — TOPBAR
 
 ### Layout
+
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │ [🌸 SakuJi logo]      [Tính năng][Bảng giá][Blog]    [Đăng nhập][Get started▶]│
@@ -107,6 +110,7 @@ Padding:   0 max(24px, calc((100vw - 1200px)/2))
 ```
 
 **Logo — `.topbar-logo`**
+
 ```
 Layout: flex align-center gap-10px
 Icon:   Saku-chan mini SVG (28×28px) — cánh hoa hồng tròn mắt chấm
@@ -119,6 +123,7 @@ Hover:  subtle scale(1.02) trên toàn logo block
 ```
 
 **Nav links — `.topbar-nav`**
+
 ```
 Items: Tính năng / Bảng giá / Blog
 Font:  Nunito 600, 15px, color: var(--color-text-sub)
@@ -128,6 +133,7 @@ Transition: color 150ms ease
 ```
 
 **Actions — `.topbar-actions`**
+
 ```
 [Đăng nhập] — btn-ghost, font 600 14px, color var(--color-text-sub)
 [Get started →] — btn-primary nhỏ:
@@ -142,6 +148,7 @@ Transition: color 150ms ease
 ```
 
 **Responsive:**
+
 - `< 768px`: nav links ẩn → hamburger icon (☰) góc phải. Drawer slide-in từ trái.
 
 ---
@@ -149,6 +156,7 @@ Transition: color 150ms ease
 ## 4. SECTION 2 — HERO
 
 ### Layout tổng thể
+
 ```
 Background: linear-gradient(160deg, #FFF8FA 0%, #FAF7F4 60%, #F0FAF0 100%)
             → chuyển sắc nhẹ từ hồng → ivory → xanh lá rất nhạt
@@ -180,6 +188,7 @@ Max-width:  1200px, centered
 ### LEFT column — `.hero-content`
 
 **Tag chip — `.hero-tag`**
+
 ```
 Text:       "🌸 Học tiếng Nhật theo cách của bạn"
 Background: var(--color-primary-bg)
@@ -192,6 +201,7 @@ Display:    inline-flex, margin-bottom: 24px
 ```
 
 **Headline — `.hero-headline`**
+
 ```
 Text (2 dòng):
   Line 1: "Memorize 1000 Kanji"
@@ -205,6 +215,7 @@ Margin-bottom: 20px
 ```
 
 **Sub-text — `.hero-sub`**
+
 ```
 Text:   "Phương pháp Thời Điểm Vàng giúp bạn nhớ lâu hơn,
          học ít hơn, và đạt JLPT N1 nhanh hơn bao giờ hết."
@@ -216,6 +227,7 @@ Margin-bottom: 36px
 ```
 
 **CTA group — `.hero-cta`**
+
 ```
 Layout: flex, flex-direction: column, gap: 12px, align-items: flex-start
 
@@ -243,6 +255,7 @@ Layout: flex, flex-direction: column, gap: 12px, align-items: flex-start
 ```
 
 **Stats row — `.hero-stats`**
+
 ```
 Layout: flex, gap: 32px, margin-top: 48px
 Items (3):
@@ -264,6 +277,7 @@ Display:  flex, align-items: center, justify-content: center
 ```
 
 **Saku-chan hero — `.hero-mascot`**
+
 ```
 File:     assets/saku-chan-hero.svg
 Width:    clamp(280px, 35vw, 420px)
@@ -283,6 +297,7 @@ Saku-chan hero variant (mô tả illustration):
 ```
 
 **Floating kanji cards — `.hero-kanji-card` (×5)**
+
 ```
 Mỗi card:
   Background: white
@@ -308,6 +323,7 @@ Animation: floatCard 3s ease-in-out infinite
 ```
 
 **Background sakura petals — `.hero-petals`**
+
 ```
 SVG petals (6–8 chiếc):
   Fill: var(--color-primary-light) opacity 0.18
@@ -319,6 +335,7 @@ SVG petals (6–8 chiếc):
 ```
 
 **Background blob — `.hero-blob`**
+
 ```
 SVG blob hữu cơ (không tròn đều, không vuông — giống "amíp"):
   Fill: var(--color-primary-bg) opacity 0.6
@@ -330,6 +347,7 @@ SVG blob hữu cơ (không tròn đều, không vuông — giống "amíp"):
 ```
 
 **Responsive Hero:**
+
 ```
 < 1024px: 2 col → 1 col; illustration above text
 < 768px:  mascot width 200px; headline font-size 32px; stats 2-up grid
@@ -340,12 +358,14 @@ SVG blob hữu cơ (không tròn đều, không vuông — giống "amíp"):
 ## 5. SECTION 3 — FEATURE-A "Bạn học tiếng Nhật như thế nào?"
 
 ### Layout tổng thể
+
 ```
 Background: var(--color-bg) — washi #FAF7F4
 Padding:    100px max(24px, calc((100vw-1200px)/2))
 ```
 
 **Section header — `.feat-a-header`**
+
 ```
 Text:       "Bạn học tiếng Nhật như thế nào?"
 Font:       Nunito 800, clamp(28px, 4vw, 44px)
@@ -368,6 +388,7 @@ Max-width:  640px, margin: 0 auto 72px
 ```
 
 **LEFT — `.feat-a-illus`**
+
 ```
 Position: relative
 Height: 480px
@@ -407,6 +428,7 @@ Height: 480px
 ```
 
 **RIGHT — `.feat-a-text`**
+
 ```
 Display: flex, flex-direction: column, justify-content: center
 Padding-left: 48px
@@ -467,6 +489,7 @@ Bố cục **đảo ngược** so với Row 1.
 ```
 
 **RIGHT — `.feat-a-phone`**
+
 ```
 Position: relative
 Height: 520px
@@ -500,6 +523,7 @@ Display: flex, align-items: center, justify-content: center
 ```
 
 **LEFT — `.feat-a-text` (row 2)**
+
 ```
 [Tag nhãn]:
   Text: "Flashcard thông minh 📱"
@@ -524,6 +548,7 @@ Display: flex, align-items: center, justify-content: center
 **Gap giữa Row 1 và Row 2:** `margin-top: 96px`
 
 **Responsive Feature-A:**
+
 ```
 < 1024px: mỗi row → 1 col (illustration trên, text dưới)
 < 768px: padding giảm, font-size responsive
@@ -534,12 +559,14 @@ Display: flex, align-items: center, justify-content: center
 ## 6. SECTION 4 — FEATURE-B "Ngoài Kanji, bạn sẽ được học"
 
 ### Layout tổng thể
+
 ```
 Background: var(--color-cream) — #F7F4E6
 Padding:    100px max(24px, calc((100vw-1200px)/2))
 ```
 
 **Section header — `.feat-b-header`**
+
 ```
 Text:       "Ngoài Kanji, bạn sẽ được học"
 Font:       Nunito 800, clamp(26px, 4vw, 42px)
@@ -553,6 +580,7 @@ Sub-text (optional):
 ```
 
 ### 3 Feature Cards — `.feat-b-grid`
+
 ```
 Display: grid
 Grid-template-columns: repeat(3, 1fr)
@@ -561,6 +589,7 @@ Max-width: 1100px, margin: 0 auto
 ```
 
 **Card chung — `.feat-b-card`**
+
 ```
 Background:     var(--color-card) — white
 Border-radius:  var(--radius-xl) — 24px
@@ -577,6 +606,7 @@ Hover:          translateY(-6px), shadow: 0 12px 36px rgba(0,0,0,0.10)
 **Card 1 — Từ vựng hội thoại (`.feat-b-card--vocab`)**
 
 *Illustration description:*
+
 ```
 [Illustration — assets/feat-vocab.svg]:
   Height: 180px
@@ -610,6 +640,7 @@ Margin-top: 10px
 **Card 2 — Giao tiếp quốc tế (`.feat-b-card--globe`)**
 
 *Illustration description:*
+
 ```
 [Illustration — assets/feat-globe.svg]:
   Height: 180px
@@ -641,6 +672,7 @@ Margin-top: 10px
 **Card 3 — Từ điển tích hợp (`.feat-b-card--dict`)**
 
 *Illustration description:*
+
 ```
 [Illustration — assets/feat-dictionary.svg]:
   Height: 180px
@@ -669,6 +701,7 @@ Margin-top: 10px
 ```
 
 **Responsive Feature-B:**
+
 ```
 < 1024px: grid 3→2 col
 < 640px:  grid 2→1 col; card padding 24px
@@ -679,6 +712,7 @@ Margin-top: 10px
 ## 7. SECTION 5 — FOOTER
 
 ### Layout tổng thể
+
 ```
 Background: #2D2D2D   ← var(--color-text) — màu ink đậm, ấm
 Color:      #FFFFFF
@@ -698,6 +732,7 @@ Padding:    64px max(24px, calc((100vw-1200px)/2)) 40px
 ```
 
 ### Top area — `.footer-top`
+
 ```
 Display: grid
 Grid-template-columns: 2fr 1fr 1fr 1fr
@@ -707,6 +742,7 @@ Border-bottom: 1px solid rgba(255,255,255,0.10)
 ```
 
 **Column 1 — Brand — `.footer-brand`**
+
 ```
 [Logo block]:
   Icon Saku-chan mini (28px) + Text "SakuJi"
@@ -742,6 +778,7 @@ Border-bottom: 1px solid rgba(255,255,255,0.10)
 ```
 
 **Columns 2–4 — Link groups — `.footer-links`**
+
 ```
 [Column heading]:
   Font: Nunito 700, 13px
@@ -759,6 +796,7 @@ Border-bottom: 1px solid rgba(255,255,255,0.10)
 ```
 
 ### Bottom area — `.footer-bottom`
+
 ```
 Display: flex
 Justify-content: space-between
@@ -783,6 +821,7 @@ Padding-top: 24px
 ```
 
 **Responsive Footer:**
+
 ```
 < 1024px: grid 4→2 col (brand+product | resource+company)
 < 640px:  grid 2→1 col; social icons centered; brand centered
