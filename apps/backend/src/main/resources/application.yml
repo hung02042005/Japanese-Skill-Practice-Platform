@@ -31,7 +31,7 @@ spring:
     host: ${SMTP_HOST:smtp.gmail.com}
     port: ${SMTP_PORT:587}
     username: ${SMTP_USERNAME:jlptelearningplatform@gmail.com}
-    password: ${SMTP_PASSWORD:tqap zdsq fsdj afyu}
+    password: ${SMTP_PASSWORD:oraa uupv azgs tjnk}
     properties:
       mail:
         smtp:

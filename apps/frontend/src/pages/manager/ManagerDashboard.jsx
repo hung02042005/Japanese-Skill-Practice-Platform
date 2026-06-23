@@ -1,30 +1,12 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../store/hooks';
 import ManagerTopNav from '../../components/layout/ManagerTopNav';
 import StaffPageHero from '../../components/staff/StaffPageHero';
+import { fetchReviewQueueThunk } from '../../store/slices/managerReviewSlice';
+import { fetchPublishedContentsThunk } from '../../store/slices/publishedContentSlice';
 import './ManagerDashboard.css';
-
-const MOCK_STATS = {
-  pendingReviewCount: 8,
-  publishedThisMonth: 23,
-  activeStaffCount: 5,
-  totalStudents: 312,
-};
-
-const MOCK_RECENT_ACTIVITY = [
-  { id: 1, staffName: 'Staff Lan', action: 'Gửi duyệt', contentType: 'Bài học', title: 'Kanji N5 — Bài 3', time: '03/06/2026 09:00', status: 'pending_review' },
-  { id: 2, staffName: 'Manager', action: 'Đã duyệt', contentType: 'Câu hỏi', title: "N5 Kanji: 'おはよう'", time: '02/06/2026 16:20', status: 'approved' },
-  { id: 3, staffName: 'Staff Minh', action: 'Gửi duyệt', contentType: 'Từ vựng', title: 'Nhóm từ gia đình N4', time: '02/06/2026 11:00', status: 'pending_review' },
-  { id: 4, staffName: 'Manager', action: 'Từ chối', contentType: 'Ngữ pháp', title: '～ことができる (lỗi ví dụ)', time: '01/06/2026 14:00', status: 'rejected' },
-  { id: 5, staffName: 'Staff Bình', action: 'Gửi duyệt', contentType: 'Đề thi', title: 'Mock Test N4 Vol.2', time: '01/06/2026 10:00', status: 'pending_review' },
-];
-
-const STATUS_MAP = {
-  pending_review: { label: 'Chờ duyệt', className: 'mgd-status--pending' },
-  approved: { label: 'Đã duyệt', className: 'mgd-status--approved' },
-  rejected: { label: 'Từ chối', className: 'mgd-status--rejected' },
-};
 
 function IconStamp() {
   return (
@@ -49,33 +31,30 @@ function IconPublish() {
   );
 }
 
-function IconStaff() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="9" cy="6" r="2.5"/>
-      <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
-      <circle cx="18" cy="9" r="2"/>
-      <path d="M15 21v-1.5a3 3 0 0 1 6 0V21"/>
-    </svg>
-  );
-}
-
-function IconStudents() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-      <circle cx="9" cy="7" r="4"/>
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-    </svg>
-  );
-}
-
 function ManagerDashboard() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useAppSelector((state) => state.auth);
-  const [stats] = useState(MOCK_STATS);
-  const [activity] = useState(MOCK_RECENT_ACTIVITY);
+  const { totalElements: pendingReviewCount, status: reviewStatus } = useAppSelector(
+    (state) => state.managerReview
+  );
+  const { totalElements: publishedTotal, status: publishedStatus } = useAppSelector(
+    (state) => state.publishedContent
+  );
+  const isLoading =
+    reviewStatus === 'idle' || reviewStatus === 'loading' || publishedStatus === 'idle' || publishedStatus === 'loading';
+
+  useEffect(() => {
+    dispatch(fetchReviewQueueThunk({ size: 1 }));
+    dispatch(fetchPublishedContentsThunk({ size: 1 }));
+  }, [dispatch]);
+
+  const today = new Date().toLocaleDateString('vi-VN', {
+    weekday: 'long',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
 
   return (
     <div className="mgd-page">
@@ -98,7 +77,7 @@ function ManagerDashboard() {
 
         <div className="mgd-header">
           <h1 className="mgd-greeting">Xin chào, {user?.fullName ?? 'Manager'} 👋</h1>
-          <span className="mgd-date">Thứ Tư, 04/06/2026</span>
+          <span className="mgd-date">{today}</span>
         </div>
 
         {/* Stat row */}
@@ -114,7 +93,7 @@ function ManagerDashboard() {
               <IconStamp />
             </div>
             <div>
-              <span className="mgd-stat-value">{stats.pendingReviewCount}</span>
+              <span className="mgd-stat-value">{isLoading ? '—' : pendingReviewCount}</span>
               <span className="mgd-stat-label">Chờ phê duyệt</span>
             </div>
           </div>
@@ -130,40 +109,8 @@ function ManagerDashboard() {
               <IconPublish />
             </div>
             <div>
-              <span className="mgd-stat-value">{stats.publishedThisMonth}</span>
-              <span className="mgd-stat-label">Xuất bản tháng này</span>
-            </div>
-          </div>
-
-          <div
-            className="mgd-stat-card mgd-stat-card--staff"
-            onClick={() => navigate('/manager/staff-performance')}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && navigate('/manager/staff-performance')}
-          >
-            <div className="mgd-stat-icon mgd-stat-icon--indigo">
-              <IconStaff />
-            </div>
-            <div>
-              <span className="mgd-stat-value">{stats.activeStaffCount}</span>
-              <span className="mgd-stat-label">Staff đang hoạt động</span>
-            </div>
-          </div>
-
-          <div
-            className="mgd-stat-card mgd-stat-card--students"
-            onClick={() => navigate('/manager/reports')}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && navigate('/manager/reports')}
-          >
-            <div className="mgd-stat-icon mgd-stat-icon--pink">
-              <IconStudents />
-            </div>
-            <div>
-              <span className="mgd-stat-value">{stats.totalStudents.toLocaleString()}</span>
-              <span className="mgd-stat-label">Tổng học viên</span>
+              <span className="mgd-stat-value">{isLoading ? '—' : publishedTotal}</span>
+              <span className="mgd-stat-label">Tổng đã xuất bản</span>
             </div>
           </div>
         </div>
@@ -177,7 +124,9 @@ function ManagerDashboard() {
             </div>
             <div>
               <p className="mgd-action-title">Duyệt Nội Dung</p>
-              <p className="mgd-action-desc">{stats.pendingReviewCount} mục đang chờ phê duyệt</p>
+              <p className="mgd-action-desc">
+                {isLoading ? 'Đang tải...' : `${pendingReviewCount} mục đang chờ phê duyệt`}
+              </p>
             </div>
           </Link>
 
@@ -222,40 +171,6 @@ function ManagerDashboard() {
               <p className="mgd-action-desc">Phân tích nội dung và học viên</p>
             </div>
           </Link>
-        </div>
-
-        {/* Recent activity */}
-        <p className="mgd-section-title">Hoạt động gần đây</p>
-        <div className="mgd-activity-wrap">
-          <table className="mgd-table">
-            <thead>
-              <tr>
-                <th>Staff</th>
-                <th>Hành động</th>
-                <th>Loại</th>
-                <th>Nội dung</th>
-                <th>Thời gian</th>
-                <th>Trạng thái</th>
-              </tr>
-            </thead>
-            <tbody>
-              {activity.map((item) => {
-                const s = STATUS_MAP[item.status] ?? { label: item.status, className: '' };
-                return (
-                  <tr key={item.id}>
-                    <td className="mgd-td-staff">{item.staffName}</td>
-                    <td>{item.action}</td>
-                    <td className="mgd-td-type">{item.contentType}</td>
-                    <td className="mgd-td-title">{item.title}</td>
-                    <td className="mgd-td-time">{item.time}</td>
-                    <td>
-                      <span className={`mgd-status ${s.className}`}>{s.label}</span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
         </div>
       </main>
     </div>

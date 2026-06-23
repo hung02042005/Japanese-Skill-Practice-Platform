@@ -28,7 +28,7 @@ public class SystemSetting {
     @Column(name = "setting_value", columnDefinition = "NVARCHAR(MAX)")
     private String settingValue;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ValueTypeConverter.class)
     @Column(name = "value_type", nullable = false, length = 20)
     @Builder.Default
     private ValueType valueType = ValueType.STRING;
