@@ -114,6 +114,7 @@ ease_factor = MAX(1.3, ease_factor)
 > Mục tiêu: không để học viên gặp quá nhiều thẻ MỚI liên tiếp, và cho thẻ trả lời chưa chắc xuất hiện lại **trong cùng phiên** để củng cố. Cadence được điều khiển bởi **kích thước hàng đợi ÔN TẬP** (v2.1): mặc định phục vụ thẻ MỚI; khi hàng đợi REVIEW dồn đủ `REVIEW_TRIGGER = 5` thẻ (gồm thẻ đến hạn SRS + thẻ bị đẩy lại từ learning-steps), hệ thống **xả một loạt `REVIEW_BURST = 3` thẻ ÔN TẬP** rồi quay lại thẻ MỚI. Vòng lặp "learning steps" đẩy thẻ vừa trả lời chưa chắc trở lại hàng đợi REVIEW, nhờ đó backlog tăng và kích hoạt burst một cách tự nhiên.
 >
 > **Lưu ý phân biệt 2 lớp lịch ôn:**
+>
 > - **Lịch SRS (ngày)** — `next_review_date`, do SM-2 quyết định, lưu bền (§3.3). Không đổi.
 > - **Learning steps (trong phiên)** — thẻ được đưa lại hàng đợi sau N *lượt thẻ* (đếm theo số thẻ đã xem, không theo thời gian thực). Đây là trạng thái **tạm thời của phiên**, KHÔNG ghi vào DB ngoài kết quả SM-2 cuối cùng của thẻ.
 
@@ -399,8 +400,11 @@ erDiagram
 ---
 
 <<<<<<< Updated upstream
+
 ### `PATCH /api/flashcard-decks/{deckId}`
+
 =======
+
 ### `DELETE /api/flashcard-decks/{deckName}`
 
 >>>>>>> Stashed changes
@@ -408,6 +412,7 @@ erDiagram
 > Sửa metadata sổ tay cá nhân (name/description/jlptLevel/topic/color). System deck → 403.
 
 **Request:**
+
 ```json
 { "name": "string|null", "description": "string|null", "jlptLevel": "string|null", "topic": "string|null", "color": "string|null" }
 ```
@@ -415,6 +420,7 @@ erDiagram
 ---
 
 ### `DELETE /api/flashcard-decks/{deckId}`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Xóa bằng `deckId` (deck first-class từ migration V9). Soft delete deck + toàn bộ thẻ.
 
@@ -431,11 +437,13 @@ erDiagram
 ---
 
 ### `POST /api/flashcards/session?deckId={id}` or `?level={N5}&topic={topic}&newLimit={n}`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Xây hàng đợi phiên trộn NEW + REVIEW theo nhịp §3.6. `queue` đã được xếp thứ tự sẵn; thẻ `REVIEW` KHÔNG kèm đáp án đúng (FR-FC-55).
 > Dùng POST (không phải GET) vì build phiên có side-effect: tạo deck/thẻ MỚI cho các từ được chọn. Tham số vẫn truyền qua query string.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -461,6 +469,7 @@ erDiagram
   }
 }
 ```
+
 > `learn` chỉ có cho `stage = NEW`; `quiz` chỉ có cho `stage = REVIEW`.
 
 ---

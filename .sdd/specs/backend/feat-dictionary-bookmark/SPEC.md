@@ -1,4 +1,5 @@
 # SPEC — Dictionary & Bookmarks
+
 <<<<<<< Updated upstream
 > ⚠️ **DEPRECATED (2026-06-21).** Mô tả bookmark qua `student_content_progress` trong file này **không còn
 > đúng với code**: cơ chế bookmark đã được thay bằng sổ "Từ cần ôn lại" (review deck). Tham chiếu spec

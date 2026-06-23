@@ -11,6 +11,7 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Sau khi học liệu (`courses`, `lessons`, `grammar_points`, `vocabulary`, `kanji`, `questions`, `assessments`) đã được StaffManager phê duyệt ở UC-33 và chuyển sang `status = 'published'`, nội dung đó hiển thị công khai cho học viên qua các Student-facing API (trang học, tìm kiếm, sinh đề luyện tập ngẫu nhiên, đề thi thử).
 
 Trong quá trình vận hành, nội dung đã xuất bản có thể trở nên lỗi thời, sai sót, hoặc cần gỡ tạm để chỉnh sửa. **UC-34** trao cho **StaffManager** quyền điều phối **vòng đời sau xuất bản** của nội dung: **Unpublish** (thu hồi tạm, đưa về `draft`), **Archive** (lưu trữ), **Delete** (xóa mềm — trạng thái cuối), và **Restore** (khôi phục nội dung đã `archived` về `published`).
@@ -18,6 +19,7 @@ Trong quá trình vận hành, nội dung đã xuất bản có thể trở nên
 Tất cả các thao tác này là **soft delete** (chỉ cập nhật cột `status`, không xóa vật lý bản ghi) và phải bảo toàn toàn vẹn tham chiếu: không được phép ẩn một câu hỏi đang nằm trong **đề thi đã published** vì sẽ gây lỗi tính điểm / NPE cho học viên đang làm bài (LESSON-005, Domain Rule §7.1).
 
 ### 1.2 Mục tiêu
+
 - Cho phép StaffManager **xem danh sách phân trang** mọi nội dung đang `published` trên tất cả bảng học liệu, có lọc theo loại nội dung và cấp độ JLPT.
 - Cho phép StaffManager **xem chi tiết** một mục nội dung đã xuất bản (kèm danh sách tài nguyên đang tham chiếu) trước khi đổi trạng thái.
 - Cho phép StaffManager **Unpublish / Archive / Delete** nội dung đã xuất bản bằng cơ chế **soft delete** (chỉ đổi `status`).
@@ -28,6 +30,7 @@ Tất cả các thao tác này là **soft delete** (chỉ cập nhật cột `st
 - Ghi **audit log** đầy đủ cho mọi hành động đổi trạng thái vào `admin_audit_logs`.
 
 ### 1.3 Tại sao cần?
+
 Nếu nội dung đã xuất bản không có cơ chế thu hồi/lưu trữ có kiểm soát, các bài học sai hoặc đề thi lỗi thời vẫn hiển thị cho học viên, ảnh hưởng chất lượng đào tạo và tính chính xác điểm số. Quan trọng hơn, **unpublish đột ngột một câu hỏi đang nằm trong đề thi thử đang mở** sẽ phá vỡ tham chiếu (`question_assignments` → `assessments`) và gây lỗi nghiêm trọng khi học viên nộp bài. Rule chặn `RESOURCE_IN_USE` (FR-34-12..15) và nguyên tắc chỉ soft delete (ADR-004) bảo vệ tính toàn vẹn dữ liệu và trải nghiệm học viên.
 
 ---
@@ -42,6 +45,7 @@ Nếu nội dung đã xuất bản không có cơ chế thu hồi/lưu trữ có
 | **Hệ thống (System)** | Xác thực phân quyền, kiểm tra ràng buộc tham chiếu, đổi trạng thái, ghi audit log | — |
 
 **Postconditions:**
+
 - **Thành công (Unpublish):** `status = 'draft'`; `published_at` được giữ nguyên hoặc đặt `NULL` theo quy ước; reason ghi vào `admin_audit_logs.description`; audit log được ghi.
 - **Thành công (Archive):** `status = 'archived'`; bản ghi được bảo toàn; reason ghi audit; audit log được ghi.
 - **Thành công (Delete):** `status = 'deleted'`; bản ghi **không** bị xóa vật lý; reason ghi audit; audit log được ghi.
@@ -160,6 +164,7 @@ CHECK (status IN ('draft','pending_review','rejected','published','archived','de
 ```
 
 > **Quy ước trạng thái cho UC-34:**
+>
 > - `Unpublish` → `status = 'draft'` (trả về vùng làm việc của Staff để sửa).
 > - `Archive`  → `status = 'archived'` (có thể Restore).
 > - `Delete`   → `status = 'deleted'` (**trạng thái cuối** — không Restore — Rule 8).
@@ -280,6 +285,7 @@ erDiagram
 | `size` | int | Không | Mặc định 20, tối đa 100 |
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -306,6 +312,7 @@ erDiagram
 **Query params:** `contentType` (bắt buộc) — xác định bảng nguồn của `contentId`.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -327,6 +334,7 @@ erDiagram
 ### 6.3 `PUT /api/manager/contents/{contentId}/status` — Unpublish / Archive / Delete
 
 **Request:**
+
 ```json
 {
   "contentType": "assessment",
@@ -342,6 +350,7 @@ erDiagram
 | `reason` | string | ✅ | **Bắt buộc** (FR-34-11), 10–500 ký tự |
 
 **Response (200) — thành công:**
+
 ```json
 {
   "status": 200,
@@ -351,6 +360,7 @@ erDiagram
 ```
 
 **Response (409) — bị chặn vì đang được tham chiếu (FR-34-14, FR-34-16):**
+
 ```json
 {
   "status": 409,
@@ -368,6 +378,7 @@ erDiagram
 ### 6.4 `POST /api/manager/contents/{contentId}/restore` — Khôi phục
 
 **Request:**
+
 ```json
 {
   "contentType": "assessment"
@@ -379,6 +390,7 @@ erDiagram
 | `contentType` | enum | ✅ | Bảng nguồn |
 
 **Response (200) — thành công:**
+
 ```json
 {
   "status": 200,
@@ -388,6 +400,7 @@ erDiagram
 ```
 
 **Response (409) — cố khôi phục nội dung đã `deleted` (FR-34-19):**
+
 ```json
 {
   "status": 409,

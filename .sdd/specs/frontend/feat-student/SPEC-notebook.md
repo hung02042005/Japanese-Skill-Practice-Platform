@@ -1,4 +1,5 @@
 # SPEC — Sổ Tay "Từ cần ôn lại" (`/notebook`)
+>
 > **Sprint:** 2 — Core Learning Loop
 > **Prefix:** `ntb-` | **activeTab:** `''` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §10` · `DESIGN.md` (Hanami Theme) | **Backend ref:** `feat-flashcard-srs/SPEC.md` (FR-FC-81, §3.4/3.5) · `feat-dictionary-bookmark/SPEC.md`
@@ -136,6 +137,7 @@ export async function removeFlashcardCard(flashcardId) {
 `navigate('/review?deckId=' + reviewDeckId)` (phiên trộn NEW+REVIEW theo `POST /api/flashcards/session?deckId=...`, xem `SPEC-review.md`).
 
 > **2 điểm cần xác nhận với backend trước khi code:**
+>
 > 1. **Định danh deck "Từ cần ôn lại"** — đang giả định nhận diện qua `deckName`/`isSystem`. Tốt hơn nếu API trả cờ riêng (vd `deckType: 'review'`).
 > 2. **Gỡ 1 thẻ** — `DELETE /api/flashcards/{id}` chưa thấy trong `studentService.js`; cần bổ sung hoặc thống nhất endpoint.
 

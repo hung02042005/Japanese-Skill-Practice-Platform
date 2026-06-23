@@ -1,5 +1,7 @@
 # SPEC CHUNG — Flashcard SRS + Dictionary + Bookmark
+
 ## feat-flashcard-srs · feat-dictionary-bookmark
+
 ### Người thực hiện: Người 4 | Ngày: 2026-06-09
 
 ---
@@ -150,9 +152,11 @@ Person 4 CUNG CẤP:
 ## 9. PAGINATION
 
 Tất cả API trả danh sách đều hỗ trợ:
+
 ```
 ?page=0&size=20&sort=nextReviewDate,asc
 ```
+
 Trả về `Page<T>` wrapped trong `ApiResponse<Page<DTO>>`.
 
 ---

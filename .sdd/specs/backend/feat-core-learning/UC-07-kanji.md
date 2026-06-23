@@ -3,7 +3,7 @@
 > **Feature:** `feat-core-learning` | **Phiên bản:** 1.0 | **Trạng thái:** Draft
 > **Tham chiếu FR:** FR-LEARN-10, FR-LEARN-11, FR-LEARN-12, FR-LEARN-13, FR-LEARN-14, FR-LEARN-40, FR-LEARN-41, FR-LEARN-42
 > **Cập nhật:** 2026-06-16
-
+>
 > 📌 **Đây là spec tổng quan.** Spec chuyên sâu (lọc theo số nét/bộ thủ, đầy đủ API/Error/AC) nằm tại [`feat-kanji/SPEC.md`](../feat-kanji/SPEC.md). File này mô tả UC-07 ở mức use case theo cùng cấu trúc với các UC khác trong `feat-core-learning`, không lặp lại chi tiết đã có ở `feat-kanji`.
 
 ---

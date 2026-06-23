@@ -1,4 +1,5 @@
 # ALGO — Xếp thứ tự thẻ ÔN trong phiên (tăng cường §3.6)
+>
 > **Thuộc:** `feat-flashcard-srs` | **Quan hệ:** **TĂNG CƯỜNG** `SPEC.md §3.6` cadence v2.1 — KHÔNG thay mô hình nhịp.
 > **Quyết định:** Phương án **(b)** — giữ nguyên cadence **gate-theo-backlog** (`REVIEW_TRIGGER=5 → REVIEW_BURST`), learning-steps (FR-FC-73..76), caps (FR-FC-78/79), điều kiện kết thúc (FR-FC-80/81). Bổ sung **2 thứ**: (1) **thứ tự thẻ ÔN theo điểm ưu tiên đa yếu tố** thay cho `next_review_date ASC`; (2) **trải đều độ khó** khi xả burst.
 > **Vị trí impl:** Backend — `FlashcardSrsService.getSession` (giữ FR-FC-55: không gửi đáp án đúng về client).
@@ -107,13 +108,16 @@ chooseBurst(reviewQ, newQ):
 ## 6. GHI CHÚ TRIỂN KHAI
 
 ### 6.1 Đổi tối thiểu trong `FlashcardSrsService.getSession`
+
 1. Thay sắp xếp `reviewQ` từ `ORDER BY next_review_date ASC` → tính `priority` (§3) trong bộ nhớ rồi sort DESC.
 2. Nạp `correct_rate`/`difficulty` từ `last_rating`/`ease_factor` (không truy vấn thêm bảng).
 3. Thêm `popForBurst` (chống 2 hard liền nhau) và `chooseBurst` (3–4).
 4. `rampByDifficulty(newQ)` khi nạp thẻ mới.
+
 > Không migration, không cột mới, không đổi SM-2/learning-steps/caps.
 
 ### 6.2 Đường nâng cấp `correct_rate` (tùy chọn, sau)
+
 Thêm `times_seen INT`, `times_correct INT` vào `flashcards` (migration mới) ⇒ `correct_rate = times_correct / NULLIF(times_seen,0)`. Khi có, thay hàm xấp xỉ. Ngoài phạm vi bản này.
 
 ---

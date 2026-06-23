@@ -1,4 +1,5 @@
 # SPEC (Backend) — Sổ Tay "Từ cần ôn lại" (review deck)
+>
 > **Thuộc:** `feat-flashcard-srs` | **Bổ sung:** `SPEC.md` (định nghĩa `FR-FC-43..46` mà `FR-FC-81` tham chiếu)
 > **Frontend ref:** `frontend/feat-student/SPEC-notebook.md`, `SPEC-dictionary.md`
 > **Trạng thái:** Draft — chốt contract đầu vào/ra cho Sổ tay.
@@ -8,6 +9,7 @@
 ## 1. CONTEXT
 
 "Từ cần ôn lại" là **một deck hệ thống** của riêng mỗi học viên (`flashcard_decks.is_system = 1`, `deck_name = 'Từ cần ôn lại'`), đóng vai trò **Sổ Tay** ở frontend. Thẻ trong deck đến từ 2 nguồn:
+
 1. **Tự động** — cuối phiên học, các từ VOCABULARY trả lời `wrong`/`again` được thêm vào deck (`FR-FC-81`).
 2. **Thủ công** — học viên bấm "Lưu vào sổ tay" ở Từ điển / danh sách từ vựng.
 
@@ -33,15 +35,18 @@ Học từ Sổ tay = mở phiên Flashcard theo `deckId` của deck này (đã 
 ## 3. API SPEC
 
 ### 3.1 `POST /api/flashcards/review-deck/add`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Thêm 1..N từ vào deck "Từ cần ôn lại" (idempotent theo `(contentType, contentId)`). Lazily tạo deck nếu chưa có (FR-FC-43).
 
 **Request:**
+
 ```json
 { "items": [ { "contentType": "VOCABULARY", "contentId": 12 } ] }
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -59,10 +64,12 @@ Học từ Sổ tay = mở phiên Flashcard theo `deckId` của deck này (đã 
 ---
 
 ### 3.2 `GET /api/flashcards?deckId={reviewDeckId}&page=0&size=200`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Liệt kê thẻ trong Sổ tay (FR-FC-45). Mở rộng item so với listing chuẩn §6 với metadata nguồn cho FE hiển thị cột "Nguồn".
 
 **Response (200):** như `GET /api/flashcards` chuẩn, mỗi item bổ sung:
+
 ```json
 {
   "flashcardId": 501, "contentType": "VOCABULARY", "contentId": 12,
@@ -73,15 +80,18 @@ Học từ Sổ tay = mở phiên Flashcard theo `deckId` của deck này (đã 
   "sourceLevel": "N5"              // nullable
 }
 ```
+
 > `addedReason`/`sourceTopic`/`sourceLevel` là **tùy chọn** — nếu chưa lưu được, trả `null`; FE ẩn dòng meta nguồn.
 
 ---
 
 ### 3.3 `DELETE /api/flashcards/{flashcardId}`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Gỡ 1 từ khỏi Sổ tay (soft-delete, FR-FC-46).
 
 **Response (200):**
+
 ```json
 { "status": 200, "message": "Đã gỡ khỏi Sổ tay", "data": null }
 ```
@@ -89,11 +99,14 @@ Học từ Sổ tay = mở phiên Flashcard theo `deckId` của deck này (đã 
 ---
 
 ### 3.4 Định danh deck "Từ cần ôn lại"
+
 `GET /api/flashcard-decks` (đã có) trả deck này như một system deck. **Khuyến nghị bổ sung cờ** để FE không phải so khớp tên:
+
 ```json
 { "deckId": 7, "deckName": "Từ cần ôn lại", "isSystem": true, "deckType": "review",
   "totalCards": 12, "dueToday": 3, "nextReviewDate": "2026-06-18" }
 ```
+
 > Nếu chưa thêm `deckType`, FE tạm so khớp `deckName === 'Từ cần ôn lại'` (đã ghi `SPEC-notebook.md §12`).
 
 ---
@@ -101,6 +114,7 @@ Học từ Sổ tay = mở phiên Flashcard theo `deckId` của deck này (đã 
 ## 4. DATA MODEL (không cột bắt buộc mới)
 
 Dùng bảng `flashcards` + `flashcard_decks` sẵn có. `addedReason`/`sourceTopic`/`sourceLevel` là **tùy chọn**:
+
 - Nếu muốn lưu bền → thêm cột `added_reason NVARCHAR(20) NULL` vào `flashcards` (migration mới, nhỏ). `sourceTopic/sourceLevel` resolve live từ `vocabulary.topic/jlpt_level` khi list (không cần cột).
 - Nếu **không** thêm cột → `addedReason = null`, FE ẩn meta. **Mặc định khuyến nghị:** thêm `added_reason` (rẻ, hữu ích cho UX "Nguồn").
 
@@ -132,6 +146,7 @@ Dùng bảng `flashcards` + `flashcard_decks` sẵn có. `addedReason`/`sourceTo
 ---
 
 ## OUT OF SCOPE
+
 - ❌ Thêm KANJI/GRAMMAR vào Sổ tay (chỉ VOCABULARY — FR-FC-48).
 - ❌ Ghi chú cá nhân trên từng từ trong Sổ tay (khác bookmark `bookmark_note` ở `feat-dictionary-bookmark`).
 - ❌ Export/chia sẻ Sổ tay.

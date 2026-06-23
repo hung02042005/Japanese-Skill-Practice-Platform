@@ -11,11 +11,13 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Bài trắc nghiệm (`quiz`) là hình thức đánh giá ngắn, gắn với một bài học (`lesson`) hoặc một chủ đề (`topic`), giúp học viên tự kiểm tra kiến thức ngay sau khi học. Trong mô hình dữ liệu, quiz và đề thi thử JLPT (`exam`) dùng chung bảng `assessments`, phân biệt bằng `assessment_type`. Một quiz **không tự chứa câu hỏi** mà **tham chiếu** đến các câu hỏi có sẵn trong Ngân hàng câu hỏi (`questions`, xem UC-24) thông qua bảng nối `question_assignments`.
 
 Nhân viên soạn thảo (Staff) cần quy trình nghiệp vụ để: (1) tạo khung quiz (`assessment_type = 'quiz'`) ở trạng thái nháp, (2) chọn và gán câu hỏi từ ngân hàng vào quiz kèm thứ tự hiển thị (`display_order`) và điểm từng câu (`score`), và (3) gửi quiz sang hàng đợi kiểm duyệt (`pending_review`). Vì điểm quiz ảnh hưởng trực tiếp đến tiến trình học viên, hệ thống phải bảo đảm **tổng điểm các câu hỏi gán vào bằng `total_score`** trước khi cho gửi duyệt, và **khóa danh sách câu hỏi** đối với quiz đã xuất bản.
 
 ### 1.2 Mục tiêu
+
 - Cho phép Staff tạo quiz mới với `assessment_type = 'quiz'`, `status = 'draft'` và đầy đủ metadata (`title`, `lesson_id`/`topic`, `jlpt_level`, `duration_min`, `pass_score`, `total_score`).
 - Cho phép Staff xem danh sách / chi tiết quiz của mình và cập nhật metadata khi chưa xuất bản.
 - Cho phép Staff gán câu hỏi từ ngân hàng vào quiz, lưu `display_order` và `score` cho từng câu.
@@ -24,6 +26,7 @@ Nhân viên soạn thảo (Staff) cần quy trình nghiệp vụ để: (1) tạ
 - Khóa thay đổi danh sách câu hỏi của quiz đã `published` để bảo toàn tính nhất quán điểm số lịch sử.
 
 ### 1.3 Tại sao cần?
+
 Nếu tổng điểm câu hỏi không khớp `total_score` → thang điểm quiz sai lệch, điểm học viên không phản ánh đúng kết quả (vi phạm Domain Rule §7.1 và Forbidden Pattern #4). Nếu sửa danh sách câu hỏi của quiz đã có người làm → điểm đã chấm trở nên vô nghĩa (LESSON-005, FR-CONTENT-13). Tách trạng thái kiểm duyệt và cấm Staff tự publish (Rule 9) bảo đảm chất lượng nội dung trước khi đến học viên.
 
 ---
@@ -37,6 +40,7 @@ Nếu tổng điểm câu hỏi không khớp `total_score` → thang điểm qu
 | **Hệ thống (System)** | Validate nghiệp vụ, gán trạng thái, kiểm tra bất biến tổng điểm, ghi audit log | — |
 
 **Postconditions:**
+
 - **Thành công:** Bản ghi `assessments` (type=quiz) được tạo/cập nhật/chuyển trạng thái; các bản ghi `question_assignments` được tạo/thay thế đúng; mọi thao tác được ghi log (`created_by`, `updated_at`).
 - **Thất bại:** Không thay đổi dữ liệu; trả về mã lỗi rõ ràng; giao dịch được rollback toàn bộ.
 
@@ -178,6 +182,7 @@ CREATE INDEX IX_assign_parent ON question_assignments (parent_type, parent_id);
 ```
 
 **Bảng phụ thuộc (chỉ đọc trong UC-26):**
+
 - `questions` — nguồn câu hỏi để gán; chỉ câu hỏi `status = 'published'` mới được gán (FR-26-21). Soạn thảo câu hỏi thuộc UC-24.
 - `lessons` — gắn quiz vào bài học (`lesson_id`); kiểm tra tồn tại (FR-26-06).
 - `staff_users` — chủ sở hữu quiz (`created_by`), kiểm tra quyền (FR-26-31).
@@ -223,6 +228,7 @@ erDiagram
 ### 6.1 `POST /api/staff/assessments` — Tạo quiz
 
 **Request:**
+
 ```json
 {
   "assessmentType": "quiz",
@@ -237,6 +243,7 @@ erDiagram
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "status": 201,
@@ -260,6 +267,7 @@ erDiagram
 > Endpoint này chỉ trả `assessment_type = 'quiz'`.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -290,6 +298,7 @@ erDiagram
 ### 6.3 `GET /api/staff/assessments/{assessmentId}` — Chi tiết quiz
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -320,6 +329,7 @@ erDiagram
 ### 6.4 `PUT /api/staff/assessments/{assessmentId}` — Cập nhật metadata quiz
 
 **Request:**
+
 ```json
 {
   "title": "Trắc nghiệm Kanji N5 bài 2 (cập nhật)",
@@ -333,6 +343,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -346,6 +357,7 @@ erDiagram
 > Replace semantics (FR-26-23): tập gửi lên là tập đầy đủ mong muốn của quiz.
 
 **Request:**
+
 ```json
 {
   "assignments": [
@@ -356,6 +368,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -367,11 +380,13 @@ erDiagram
 ### 6.6 `POST /api/staff/contents/submit-review` — Gửi duyệt quiz
 
 **Request:**
+
 ```json
 { "contentType": "assessment", "contentId": 24 }
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

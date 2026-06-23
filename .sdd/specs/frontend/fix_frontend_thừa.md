@@ -1,4 +1,5 @@
 # SPEC — UI Cleanup: Bỏ UI Thừa Staff & Manager
+>
 > **Feature ID:** `feat-ui-cleanup-staff-manager`
 > **Version:** 1.0 | **Status:** Draft
 > **Author:** Team | **Last Updated:** 2026-06-15
@@ -62,6 +63,7 @@ Qua rà soát frontend, phát hiện 4 nhóm vấn đề UI không nhất quán 
 | [App.jsx](../../apps/frontend/src/App.jsx) line 55 | Xóa import `StaffReviewQueue` |
 
 **Verify:** URL `/staff/review-queue` phải trả về trang 404.
+
 ### 3.2 Xóa nút Suspend khỏi `StaffStudents`
 
 **Lý do:** Theo LESSON-001 (`CLAUDE.md`), màn hình Staff và Admin phải tách biệt. Khóa tài khoản học viên là quyền quản lý (Manager/Admin), không phải hỗ trợ (Staff). Staff chỉ cần xem thông tin để hỗ trợ học viên qua ticket.

@@ -19,6 +19,7 @@ Tài liệu này đặc tả **code backend đã hiện thực** của 3 module 
 | **Sổ tay (Notebook)** | Tập các "sổ" (deck) cá nhân; sổ hệ thống đặc biệt **"Từ cần ôn lại"** gom từ sai + từ lưu thủ công | `com.jlpt.feature.flashcard` (deck = first-class) |
 
 **Ranh giới (theo memory dự án):**
+
 - **Từ điển = tra cứu.** Từ Từ điển, học viên bấm "Lưu" → đẩy vào sổ "Từ cần ôn lại" (`reason = manual`).
 - **Sổ tay = các deck.** Mỗi deck có id riêng (first-class từ V9). Sổ "Từ cần ôn lại" là deck hệ thống tự sinh per-student (`is_review_deck = 1`), nuôi bởi: (a) từ vựng bị chấm SAI trong phiên ôn (`reason = wrong`); (b) lưu thủ công từ Từ điển (`reason = manual`).
 - **Flashcard = Quizlet theo chủ đề.** Phiên học sinh từ `topicId` (giáo trình) hoặc `deckId` (sổ tay), trộn "học rồi kiểm tra".
@@ -181,11 +182,13 @@ Thẻ tích hợp **không copy** mặt trước/sau vào DB. Khi đọc (list/r
 > Base: `/api` · Auth: Bearer JWT · `@PreAuthorize("hasRole('STUDENT')")` · Bọc `ApiResponse<T> { status, message, data }`.
 
 ### 4.1 Từ điển
+
 | Method | Path | Mô tả |
 |:---|:---|:---|
 | GET | `/api/dictionary/search?q=&jlptLevel=&type=` | Tìm kiếm đa nhóm (vocab/kanji/grammar/lesson). |
 
 ### 4.2 Sổ tay (deck)
+
 | Method | Path | Mô tả |
 |:---|:---|:---|
 | GET | `/api/flashcard-decks` | Danh sách deck + `totalCards` + `dueToday`. |
@@ -194,6 +197,7 @@ Thẻ tích hợp **không copy** mặt trước/sau vào DB. Khi đọc (list/r
 | DELETE | `/api/flashcard-decks/{deckId}` | Soft-delete deck + thẻ. |
 
 ### 4.3 Thẻ & phiên học
+
 | Method | Path | Mô tả |
 |:---|:---|:---|
 | GET | `/api/flashcards?deckId=&dueOnly=&q=&page=&size=` | Danh sách thẻ (resolve live, paging). |
@@ -205,15 +209,21 @@ Thẻ tích hợp **không copy** mặt trước/sau vào DB. Khi đọc (list/r
 | POST | `/api/flashcards/review-deck/add` | Thêm từ vào sổ "Từ cần ôn lại". |
 
 ### 4.4 Ví dụ — `POST /api/flashcards/{id}/review`
+
 **Request (trắc nghiệm vocab):**
+
 ```json
 { "selectedOptionId": 12, "isLastCardInSession": true }
 ```
+
 **Request (lật thẻ kanji/grammar/custom):**
+
 ```json
 { "rating": "easy" }
 ```
+
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -270,4 +280,5 @@ Thẻ tích hợp **không copy** mặt trước/sau vào DB. Khi đọc (list/r
 - ❌ Chia sẻ sổ tay giữa học viên.
 - ❌ Bookmark qua `student_content_progress` (đã thay bằng sổ "Từ cần ôn lại").
 - ❌ Phân tích thứ tự nét (stroke order) — ADR-007.
+
 ```

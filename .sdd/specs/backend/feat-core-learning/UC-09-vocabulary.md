@@ -3,7 +3,7 @@
 > **Feature:** `feat-core-learning` | **Phiên bản:** 1.0 | **Trạng thái:** Draft
 > **Tham chiếu FR:** FR-LEARN-30, FR-LEARN-31, FR-LEARN-32, FR-LEARN-33, FR-LEARN-34, FR-LEARN-40, FR-LEARN-41, FR-LEARN-42
 > **Cập nhật:** 2026-06-16
-
+>
 > 📌 **Đây là spec tổng quan.** Spec chuyên sâu (lọc theo level + topic, tìm kiếm, đầy đủ API/Error/AC) nằm tại [`feat-vocabulary/SPEC.md`](../feat-vocabulary/SPEC.md). File này mô tả UC-09 ở mức use case theo cùng cấu trúc với các UC khác trong `feat-core-learning`, không lặp lại chi tiết đã có ở `feat-vocabulary`.
 
 ---

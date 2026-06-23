@@ -11,11 +11,13 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Học liệu (`courses`, `lessons`, `grammar_points`, `vocabulary`, `kanji`, `questions`, `assessments`) do Nhân viên soạn thảo (Staff) tạo ra **không bao giờ được xuất bản trực tiếp** cho học viên. Mọi nội dung sau khi Staff hoàn thiện sẽ được chuyển sang trạng thái `pending_review` và phải đi qua một bộ lọc chất lượng bắt buộc do **StaffManager** kiểm duyệt.
 
 UC-33 thiết lập màn hình **Hàng đợi duyệt (Review Queue)** tập trung, nơi StaffManager xem toàn bộ nội dung đang `pending_review`, mở chi tiết để đối chiếu, rồi thực hiện một trong ba hành động: **Approve** (phê duyệt & xuất bản), **Reject** (từ chối), hoặc **Request Changes** (yêu cầu chỉnh sửa).
 
 ### 1.2 Mục tiêu
+
 - Cho phép StaffManager xem **danh sách phân trang** mọi nội dung đang `pending_review` trên tất cả bảng học liệu, có lọc theo loại nội dung và cấp độ.
 - Cho phép StaffManager xem **chi tiết** một mục nội dung bất kỳ trước khi quyết định.
 - Cho phép StaffManager **Approve** nội dung hợp lệ → chuyển sang `published`, ghi `approved_by`, `published_at`.
@@ -25,6 +27,7 @@ UC-33 thiết lập màn hình **Hàng đợi duyệt (Review Queue)** tập tru
 - Ghi **audit log** đầy đủ cho mọi hành động kiểm duyệt.
 
 ### 1.3 Tại sao cần?
+
 Không có vai trò kiểm duyệt độc lập → Staff có thể tự phê duyệt và xuất bản học liệu của chính mình mà không có kiểm tra chéo, dẫn đến nội dung sai lệch hiển thị trực tiếp cho học viên và ảnh hưởng điểm số (vi phạm Domain Rule §7.1 và LESSON-005). Việc cấm tự duyệt (Rule 8) và phát hiện xử lý đồng thời (Rule 9) đảm bảo chất lượng nội dung và tính nhất quán dữ liệu trước khi đến học viên.
 
 ---
@@ -33,12 +36,12 @@ Không có vai trò kiểm duyệt độc lập → Staff có thể tự phê du
 
 | Actor | Role | Điều kiện tiền quyết (Precondition) |
 |:---|:---|:---|
-| **StaffManager** | Xem hàng đợi, xem chi tiết, Approve / Reje
-ct / Request Changes nội dung `pending_review` | Đã đăng nhập JWT hợp lệ, vai trò Staff với phân quyền `staff_manager`, `status = 'active'` |
+| **StaffManager** | Xem hàng đợi, xem chi tiết, Approve / Reject / Request Changes nội dung `pending_review` | Đã đăng nhập JWT hợp lệ, vai trò Staff với phân quyền `staff_manager`, `status = 'active'` |
 | **Staff** | (Tham chiếu) Người soạn thảo & gửi duyệt nội dung; nhận lại feedback để sửa | Ngoài phạm vi UC-33 — xem UC-24..UC-28 |
 | **Hệ thống (System)** | Xác thực phân quyền, kiểm tra quy tắc nghiệp vụ, đổi trạng thái, ghi audit log | — |
 
 **Postconditions:**
+
 - **Thành công (Approve):** Bản ghi nội dung có `status = 'published'`, `approved_by = StaffManagerId`, `published_at = now`; audit log được ghi.
 - **Thành công (Reject / Request Changes):** `status = 'rejected'` (hoặc `'draft'` với Request Changes); feedback được lưu vào `admin_audit_logs.description`; audit log được ghi.
 - **Thất bại:** Không thay đổi dữ liệu; giao dịch rollback; trả mã lỗi rõ ràng.
@@ -228,6 +231,7 @@ erDiagram
 | `size` | int | Không | Mặc định 20, tối đa 100 |
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -255,6 +259,7 @@ erDiagram
 **Query params:** `contentType` (bắt buộc) — xác định bảng nguồn của `contentId`.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -281,6 +286,7 @@ erDiagram
 ### 6.3 `POST /api/manager/reviews` — Approve / Reject
 
 **Request:**
+
 ```json
 {
   "contentType": "question",
@@ -298,6 +304,7 @@ erDiagram
 | `feedback` | string | ⚠️ | **Bắt buộc** khi `action = 'REJECT'` (FR-33-14); tùy chọn khi `APPROVE` |
 
 **Response (200) — Approve:**
+
 ```json
 {
   "status": 200,
@@ -307,6 +314,7 @@ erDiagram
 ```
 
 **Response (200) — Reject:**
+
 ```json
 {
   "status": 200,
@@ -318,6 +326,7 @@ erDiagram
 ### 6.4 `POST /api/manager/reviews/request-changes` — Yêu cầu chỉnh sửa
 
 **Request:**
+
 ```json
 {
   "contentType": "question",
@@ -335,6 +344,7 @@ erDiagram
 | `feedback` | string | ✅ | **Bắt buộc** (FR-33-14) |
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

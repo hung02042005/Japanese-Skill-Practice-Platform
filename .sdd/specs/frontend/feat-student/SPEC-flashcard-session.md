@@ -1,4 +1,5 @@
 # SPEC — Phiên học Flashcard Quizlet (NEW + REVIEW)
+>
 > **Sprint:** 2 — Core Learning Loop
 > **Prefix:** `fss-` | **activeTab:** `''` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §10` · `DESIGN.md` (Hanami Theme) | **Backend ref:** `feat-flashcard-srs/SPEC.md` (§3.5/§3.6, `ALGO-session-ordering.md`, `SPEC-review-deck.md`)
@@ -11,6 +12,7 @@
 Phiên học **kiểu Quizlet** trên một phạm vi (theo **`deckId`** hoặc **`level + topic`**). Backend dựng sẵn **hàng đợi trộn** thẻ MỚI và thẻ ÔN TẬP theo nhịp §3.6 + điểm ưu tiên (`ALGO-session-ordering.md`); frontend chỉ **trình bày theo thứ tự queue trả về**, không tự sắp xếp.
 
 Hai dạng thẻ trong cùng một phiên:
+
 - **NEW (lật thẻ)** — học nghĩa: mặt trước là từ, lật ra xem nghĩa/ví dụ/audio, rồi tự đánh giá **Không nhớ / Khó / Dễ**.
 - **REVIEW (trắc nghiệm)** — củng cố: hiện từ + 2–4 lựa chọn nghĩa; **server chấm đúng/sai** (FR-FC-55/56), không lộ đáp án.
 
@@ -415,6 +417,7 @@ export default function QuizCard({ card, picked, verdict, disabled, onPick }) {
 ---
 
 ## OUT OF SCOPE
+
 - ❌ Sắp xếp/nhịp phiên ở client — hoàn toàn backend (`ALGO-session-ordering.md`).
 - ❌ Thẻ ÔN dạng tự luận / nhập đáp án — bản này chỉ trắc nghiệm chọn nghĩa.
 - ❌ Undo sau khi đánh giá/chọn — record đã ghi SM-2.

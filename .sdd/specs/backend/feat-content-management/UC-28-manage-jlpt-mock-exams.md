@@ -23,11 +23,13 @@ Tuân `AGENTS.md §9.1` (spec không khớp schema → nêu rõ, không tự đo
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Đề thi thử JLPT (`assessment_type = 'exam'`) giả lập cấu trúc kỳ thi thật từ **N5 đến N1**, giúp học viên luyện tập trong điều kiện gần với thi thực tế (đồng hồ đếm ngược server-side, chia phần thi, điểm đạt/không đạt). Trong mô hình dữ liệu, đề thi **không tự chứa câu hỏi** mà **tham chiếu** đến các câu hỏi có sẵn trong Ngân hàng câu hỏi (`questions`, xem UC-24) thông qua bảng nối `question_assignments`.
 
 Nhân viên soạn thảo (Staff) cần một quy trình nghiệp vụ để: (1) tạo khung đề thi ở trạng thái nháp, (2) **chia đề thành các phần** (vocabulary / grammar / kanji / reading / listening) và **gán câu hỏi** từ ngân hàng vào từng phần kèm thứ tự hiển thị (`display_order`) và điểm từng câu (`score`), và (3) gửi đề sang hàng đợi kiểm duyệt (`pending_review`). Vì điểm thi thử ảnh hưởng trực tiếp đến đánh giá năng lực học viên, hệ thống phải bảo đảm **tổng điểm các câu hỏi gán vào bằng `total_score`** trước khi cho gửi duyệt, và **khóa danh sách câu hỏi** đối với đề đã xuất bản.
 
 ### 1.2 Mục tiêu
+
 - Cho phép Staff tạo đề thi thử mới với `assessment_type = 'exam'`, `status = 'draft'` và đầy đủ metadata (`title`, `jlpt_level`, `duration_min`, `pass_score`, `total_score`).
 - Cho phép Staff chia đề thành nhiều phần (`section_name`) và gán câu hỏi đã xuất bản từ ngân hàng vào từng phần, lưu `display_order` và `score`.
 - Cho phép Staff xem danh sách / chi tiết đề thi của mình (gom nhóm theo section) và cập nhật metadata khi chưa xuất bản.
@@ -36,6 +38,7 @@ Nhân viên soạn thảo (Staff) cần một quy trình nghiệp vụ để: (1
 - Khóa thay đổi danh sách câu hỏi của đề đã `published` để bảo toàn tính nhất quán điểm số lịch sử (Rule 9, LESSON-005).
 
 ### 1.3 Tại sao cần?
+
 Nếu tổng điểm câu hỏi không khớp `total_score` → thang điểm đề sai lệch, kết quả thi thử không phản ánh đúng năng lực (vi phạm Domain Rule `AGENTS.md §7.1` và Forbidden Pattern #4). Nếu sửa danh sách câu hỏi của đề đã có người làm → điểm đã chấm trở nên vô nghĩa (LESSON-005, FR-ASSESS-20). Tách trạng thái kiểm duyệt và cấm Staff tự publish (Rule 10) bảo đảm chất lượng nội dung trước khi đến học viên; lẫn lộn cấp độ N1–N5 trong cùng một đề là lỗi nghiêm trọng (`AGENTS.md §5 #5`).
 
 ---
@@ -50,6 +53,7 @@ Nếu tổng điểm câu hỏi không khớp `total_score` → thang điểm đ
 | Admin / Student | Không tham gia | Ngoài phạm vi UC-28 |
 
 **Postconditions:**
+
 - **Thành công:** Bản ghi `assessments` (type=exam) được tạo/cập nhật/chuyển trạng thái; các bản ghi `question_assignments` được tạo/thay thế đúng theo section; mọi thao tác ghi được log (`created_by`, `updated_at`).
 - **Thất bại:** Không thay đổi dữ liệu; trả về mã lỗi rõ ràng; giao dịch được rollback toàn bộ.
 
@@ -198,6 +202,7 @@ CREATE INDEX IX_assign_parent ON question_assignments (parent_type, parent_id);
 > **Lưu ý NV:** Nhiều cột của `assessments` (`jlpt_level`, `duration_min`, `pass_score`, `total_score`) là NULL-able trong DB, nhưng Rule 3 yêu cầu bắt buộc → **enforce ở Service layer** (không sửa schema). Tương tự, `section_name` NULL-able trong DB nhưng Rule 6 bắt buộc với exam → enforce ở Service.
 
 **Bảng phụ thuộc (chỉ đọc trong UC-28):**
+
 - `questions` — nguồn câu hỏi để gán; chỉ câu hỏi `status = 'published'` và cùng `jlpt_level` với đề mới được gán (FR-28-24/25). Soạn thảo câu hỏi thuộc UC-24.
 - `staff_users` — chủ sở hữu đề (`created_by`), kiểm tra `status = 'active'` và quyền (FR-28-34).
 
@@ -255,6 +260,7 @@ assessment (exam, N3)
 ### 6.1 `POST /api/staff/assessments` — Tạo đề thi thử (201)
 
 **Request (CreateExamRequest):**
+
 ```json
 {
   "assessmentType": "exam",
@@ -268,6 +274,7 @@ assessment (exam, N3)
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "status": 201,
@@ -289,6 +296,7 @@ assessment (exam, N3)
 | `size` | int | Không | Mặc định 20, tối đa 100 |
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -317,6 +325,7 @@ assessment (exam, N3)
 ### 6.3 `GET /api/staff/assessments/{assessmentId}` — Chi tiết đề thi (gom theo section) (200)
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -360,6 +369,7 @@ assessment (exam, N3)
 > Chỉ cho phép khi `status ∈ {draft, rejected}` (FR-28-17). **Không** chứa `status`/`assessmentType`.
 
 **Request (UpdateExamRequest):**
+
 ```json
 {
   "title": "Đề thi thử JLPT N3 - Tháng 6 (cập nhật)",
@@ -372,6 +382,7 @@ assessment (exam, N3)
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -385,6 +396,7 @@ assessment (exam, N3)
 > Replace semantics (FR-28-27): tập gửi lên là **tập đầy đủ mong muốn** của đề. Mỗi item **bắt buộc** `sectionName` (Rule 6).
 
 **Request (AssignQuestionsRequest):**
+
 ```json
 {
   "assignments": [
@@ -398,6 +410,7 @@ assessment (exam, N3)
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -421,11 +434,13 @@ assessment (exam, N3)
 ### 6.6 `POST /api/staff/contents/submit-review` — Gửi duyệt đề thi (200)
 
 **Request (SubmitReviewRequest):**
+
 ```json
 { "contentType": "assessment", "contentId": 51 }
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,

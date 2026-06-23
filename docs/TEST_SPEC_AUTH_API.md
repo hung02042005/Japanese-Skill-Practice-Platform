@@ -1,4 +1,5 @@
 # Test Specification — Authentication API
+
 ## JLPT E-Learning Platform
 
 **Phạm vi**: `/api/auth/**` và `/api/staff/auth/**`
@@ -33,11 +34,13 @@
 ## 1. Quy ước chung
 
 ### Response format chuẩn
+
 ```json
 { "status": 200, "message": "...", "data": { ... } }
 ```
 
 ### Error format chuẩn
+
 ```json
 { "status": 4xx, "message": "...", "errorCode": "ERROR_CODE", "data": null }
 ```
@@ -46,15 +49,16 @@
 
 | Role    | Email                       | Password       | Status   |
 |---------|-----------------------------|----------------|----------|
-| Student | student@test.com            | Student@123    | ACTIVE   |
-| Staff   | staff@test.com              | Staff@123      | ACTIVE   |
-| Admin   | admin@test.com              | Admin@123456   | ACTIVE   |
-| Student | pending@test.com            | Pending@123    | PENDING  |
-| Student | suspended@test.com          | Suspend@123    | SUSPENDED|
-| Staff   | newstaff@test.com           | (setup pending)| PENDING  |
-| Staff   | mustchange@test.com         | Temp@123456    | ACTIVE, mustChangePassword=true |
+| Student | <student@test.com>            | Student@123    | ACTIVE   |
+| Staff   | <staff@test.com>              | Staff@123      | ACTIVE   |
+| Admin   | <admin@test.com>              | Admin@123456   | ACTIVE   |
+| Student | <pending@test.com>            | Pending@123    | PENDING  |
+| Student | <suspended@test.com>          | Suspend@123    | SUSPENDED|
+| Staff   | <newstaff@test.com>           | (setup pending)| PENDING  |
+| Staff   | <mustchange@test.com>         | Temp@123456    | ACTIVE, mustChangePassword=true |
 
 ### Password policy (cho tất cả reset/setup endpoints)
+
 - Tối thiểu 8 ký tự
 - Ít nhất 1 chữ HOA (A-Z)
 - Ít nhất 1 chữ số (0-9)
@@ -301,7 +305,7 @@
 | SLG-04 | Email không tồn tại | 401 | `INVALID_CREDENTIALS` |
 | SLG-05 | Tài khoản SUSPENDED | 403 | `ACCOUNT_SUSPENDED` |
 | SLG-06 | Tài khoản bị khóa | 429 | `TOO_MANY_REQUESTS` |
-| SLG-07 | Sai mật khẩu 5 lần → locked | 5 lần sai | 429 (lần 6) | `TOO_MANY_REQUESTS` + `lockedUntil` được set |
+| SLG-07 | Sai mật khẩu 5 lần → locked (5 lần sai) | 429 (lần 6) | `TOO_MANY_REQUESTS` + `lockedUntil` được set |
 
 ### 12.3 Security
 

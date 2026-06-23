@@ -1,4 +1,5 @@
 # SPEC — Học Kanji (Kanji)
+>
 > **Feature ID:** `feat-kanji`
 > **UC Coverage:** UC-07 (Học Kanji theo Level)
 > **Version:** 1.0 | **Status:** Draft
@@ -11,17 +12,20 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Kanji (漢字) là khối kiến thức nền tảng khó nhất với học viên JLPT — mỗi cấp độ bổ sung hàng trăm ký tự với cách đọc âm On (onyomi) / âm Kun (kunyomi), số nét và nghĩa khác nhau. Học viên cần kho Kanji được tổ chức **theo cấp độ N5→N1** (tương tự Từ vựng), kèm thông tin chi tiết để học có hệ thống: ký tự, số nét, ảnh thứ tự nét (static), các âm đọc, nghĩa Tiếng Việt và từ ví dụ.
 
 Spec này tách riêng khỏi `feat-core-learning` để mô tả **chuyên sâu** luồng học Kanji phía học viên: liệt kê & lọc theo level (+ lọc phụ theo số nét / bộ thủ), xem chi tiết, đánh dấu đã học, và thêm vào Flashcard. Mô hình **song song với `feat-vocabulary`** nhưng đặc thù theo các thuộc tính của Kanji.
 
 ### 1.2 Mục tiêu
+
 - Cung cấp danh sách Kanji `published` lọc theo **`jlpt_level`**, có phân trang, tìm kiếm và lọc phụ theo **số nét (`stroke_count`)** / **bộ thủ (`radical`)**.
 - Hiển thị chi tiết một Kanji: `character_value`, `stroke_count`, `stroke_order_url` (ảnh tĩnh), `onyomi`, `kunyomi`, `meaning` (Tiếng Việt), và từ ví dụ (`example_word` + `example_reading` + `example_meaning`).
 - Theo dõi tiến độ học từng Kanji qua `student_content_progress` với `content_type = 'kanji'` (upsert, không giảm thủ công).
 - Cho phép "Thêm vào Flashcard" để tạo bản ghi `flashcards`.
 
 ### 1.3 Tại sao cần?
+
 Kanji là rào cản lớn nhất khiến học viên bỏ cuộc. Tổ chức theo level + thông tin chi tiết + liên kết Flashcard/SRS giúp học viên chinh phục đúng phạm vi thi của từng cấp độ và ghi nhớ lâu hơn. Đây là core value của nền tảng (xem `AGENTS.md §1`).
 
 ---
@@ -41,6 +45,7 @@ Kanji là rào cản lớn nhất khiến học viên bỏ cuộc. Tổ chức t
 ## 3. FUNCTIONAL REQUIREMENTS (EARS)
 
 > **EARS Syntax:**
+>
 > - `WHEN [trigger] THE SYSTEM SHALL [behavior]`
 > - `WHILE [state] THE SYSTEM SHALL [behavior]`
 > - `IF [condition] THEN THE SYSTEM SHALL [response]`
@@ -194,10 +199,12 @@ erDiagram
 > Prefix `/api/kanji` (kebab-case, plural — `AGENTS.md §3.3`). Auth: Bearer JWT, Role STUDENT.
 
 ### `GET /api/kanji?level={N5}&strokeMin={int}&strokeMax={int}&search={kw}&page=0&size=20`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Danh sách Kanji lọc theo level (bắt buộc) + số nét + search (tùy chọn), phân trang.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -228,10 +235,12 @@ erDiagram
 ---
 
 ### `GET /api/kanji/radicals?level={N5}`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Danh sách bộ thủ khả dụng (có ≥1 Kanji `published`) tại level — dựng bộ lọc phụ.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -246,10 +255,12 @@ erDiagram
 ---
 
 ### `GET /api/kanji/{kanjiId}`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Chi tiết một Kanji.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -277,10 +288,12 @@ erDiagram
 ---
 
 ### `POST /api/learning-progress`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Đánh dấu hoàn thành / cập nhật tiến độ một Kanji (upsert). Dùng chung endpoint của `feat-core-learning`.
 
 **Request:**
+
 ```json
 {
   "contentType": "string — phải là 'kanji'",
@@ -291,6 +304,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -308,10 +322,12 @@ erDiagram
 ---
 
 ### `POST /api/flashcards`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Thêm Kanji vào bộ Flashcard cá nhân.
 
 **Request:**
+
 ```json
 {
   "contentType": "string — 'kanji'",
@@ -321,6 +337,7 @@ erDiagram
 ```
 
 **Response (201):**
+
 ```json
 {
   "status": 201,

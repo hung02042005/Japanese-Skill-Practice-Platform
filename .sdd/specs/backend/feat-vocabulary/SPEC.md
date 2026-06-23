@@ -1,4 +1,5 @@
 # SPEC — Học Từ Vựng (Vocabulary)
+>
 > **Feature ID:** `feat-vocabulary`
 > **UC Coverage:** UC-09 (Học Từ vựng theo Level/Topic)
 > **Version:** 1.0 | **Status:** Draft
@@ -11,11 +12,13 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Từ vựng (語彙) là một trong bốn khối kiến thức nền tảng của lộ trình JLPT (cùng Kanji, Kana, Ngữ pháp). Học viên cần một kho từ vựng được tổ chức **theo cấp độ N5→N1** và **theo chủ đề (topic)** — ví dụ: Gia đình, Đồ ăn, Du lịch, Thời gian, Cơ thể — để học có hệ thống thay vì học rời rạc. Mô hình tổ chức này **tương tự module Kanji** (lọc theo `jlpt_level`), nhưng bổ sung thêm trục **topic** cho phép lọc đa chiều.
 
 Spec này tách riêng khỏi `feat-core-learning` để mô tả **chuyên sâu** luồng học từ vựng phía học viên: liệt kê, lọc theo level + topic + từ khóa, xem chi tiết, phát âm, đánh dấu đã học, và thêm vào Flashcard.
 
 ### 1.2 Mục tiêu
+
 - Cung cấp danh sách từ vựng `published` lọc đồng thời theo **`jlpt_level`** và **`topic`**, có phân trang và tìm kiếm.
 - Hiển thị chi tiết một từ: `word`, `furigana`, `meaning` (Tiếng Việt), `word_type`, `audio_url`, câu ví dụ song ngữ (JP + VI).
 - Theo dõi tiến độ học từng từ qua `student_content_progress` với `content_type = 'vocabulary'` (upsert, không giảm thủ công).
@@ -23,6 +26,7 @@ Spec này tách riêng khỏi `feat-core-learning` để mô tả **chuyên sâu
 - Cung cấp danh sách topic khả dụng theo level để dựng bộ lọc.
 
 ### 1.3 Tại sao cần?
+
 Từ vựng là khối kiến thức có khối lượng lớn nhất (mỗi level hàng trăm tới hàng nghìn từ). Tổ chức theo level + topic giúp học viên **học đúng phạm vi thi**, theo dõi được tiến độ, và liên kết trực tiếp sang Flashcard/SRS — tăng tỉ lệ ghi nhớ và giữ chân người học. Đây là core value của nền tảng (xem `AGENTS.md §1`).
 
 ---
@@ -42,6 +46,7 @@ Từ vựng là khối kiến thức có khối lượng lớn nhất (mỗi lev
 ## 3. FUNCTIONAL REQUIREMENTS (EARS)
 
 > **EARS Syntax:**
+>
 > - `WHEN [trigger] THE SYSTEM SHALL [behavior]`
 > - `WHILE [state] THE SYSTEM SHALL [behavior]`
 > - `IF [condition] THEN THE SYSTEM SHALL [response]`
@@ -201,10 +206,12 @@ erDiagram
 > Prefix `/api/vocabulary` (kebab-case, plural — `AGENTS.md §3.3`). Auth: Bearer JWT, Role STUDENT.
 
 ### `GET /api/vocabulary?level={N5}&topic={slug}&search={kw}&page=0&size=20`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Danh sách từ vựng lọc theo level (bắt buộc) + topic + search (tùy chọn), phân trang.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -236,10 +243,12 @@ erDiagram
 ---
 
 ### `GET /api/vocabulary/topics?level={N5}`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Danh sách topic khả dụng (có ≥1 từ `published`) tại level — dựng bộ lọc.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -254,10 +263,12 @@ erDiagram
 ---
 
 ### `GET /api/vocabulary/{vocabId}`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Chi tiết một từ vựng.
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -283,10 +294,12 @@ erDiagram
 ---
 
 ### `POST /api/learning-progress`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Đánh dấu hoàn thành / cập nhật tiến độ một từ vựng (upsert). Dùng chung endpoint của `feat-core-learning`.
 
 **Request:**
+
 ```json
 {
   "contentType": "string — phải là 'vocabulary'",
@@ -297,6 +310,7 @@ erDiagram
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": 200,
@@ -314,10 +328,12 @@ erDiagram
 ---
 
 ### `POST /api/flashcards`
+
 **Actor:** Student | **Auth:** Bearer JWT
 > Thêm từ vựng vào bộ Flashcard cá nhân.
 
 **Request:**
+
 ```json
 {
   "contentType": "string — 'vocabulary'",
@@ -327,6 +343,7 @@ erDiagram
 ```
 
 **Response (201):**
+
 ```json
 {
   "status": 201,

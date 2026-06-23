@@ -15,9 +15,11 @@
 ## 1. CONTEXT & GOAL
 
 ### 1.1 Bối cảnh
+
 Học liệu (learning content) là phần lõi sư phạm của nền tảng luyện thi JLPT. Bảng `lessons` đóng vai trò đơn vị học liệu trung tâm — chứa nội dung văn bản, video, audio và tài liệu đính kèm theo từng `lesson_type` và trình độ N5→N1 — được bổ trợ bởi kho từ vựng (`vocabulary`) và chữ Hán (`kanji`). Nhân viên soạn thảo (Staff) cần bộ công cụ nghiệp vụ để **tạo và chỉnh sửa** các học liệu này ở trạng thái nháp rồi **gửi duyệt** cho StaffManager. Vì nội dung sau khi xuất bản hiển thị trực tiếp cho học viên và ảnh hưởng tới lộ trình học, quy trình soạn thảo phải tách bạch trạng thái (`draft` → `pending_review` → `published`) và Staff **không được tự xuất bản**.
 
 ### 1.2 Mục tiêu
+
 - Cho phép Staff **tạo và cập nhật** lesson, vocabulary, kanji ở trạng thái `draft`.
 - Bắt buộc đầy đủ trường nghiệp vụ và cấp độ JLPT hợp lệ trước khi lưu/gửi duyệt.
 - Lưu file audio/image/video/đính kèm dưới dạng **URL** trong DB (ADR-006), không lưu BLOB.
@@ -26,6 +28,7 @@ Học liệu (learning content) là phần lõi sư phạm của nền tảng lu
 - Chỉ cho sửa nội dung khi `status ∈ {draft, rejected}`.
 
 ### 1.3 Tại sao cần?
+
 Nếu không quản lý tập trung và không tách trạng thái kiểm duyệt → bài học sai chính tả/kiến thức, từ vựng sai nghĩa, hoặc Kanji sai âm đọc sẽ đến trực tiếp học viên, làm giảm uy tín và sai lệch lộ trình học. Việc cấm Staff tự publish (Rule 9, ADR-005) và lưu media qua URL (ADR-006, LESSON-002) bảo đảm chất lượng nội dung và sức khỏe cơ sở dữ liệu.
 
 ---
@@ -39,6 +42,7 @@ Nếu không quản lý tập trung và không tách trạng thái kiểm duyệ
 | **Hệ thống (System)** | Validate nghiệp vụ, gán trạng thái, ghi audit log | — |
 
 **Postconditions:**
+
 - **Thành công:** Bản ghi `lessons`/`vocabulary`/`kanji` được tạo/cập nhật/chuyển trạng thái; mọi thao tác ghi được log (`created_by`, `updated_at`).
 - **Thất bại:** Không thay đổi dữ liệu; trả mã lỗi rõ ràng; giao dịch rollback.
 
@@ -187,6 +191,7 @@ erDiagram
 ### 6.1 `POST /api/staff/lessons` — Tạo học liệu (lesson / khóa học)
 
 **Request:**
+
 ```json
 {
   "title": "Bài 1: Kanji N5 cơ bản",
@@ -200,6 +205,7 @@ erDiagram
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "status": 201,
@@ -211,6 +217,7 @@ erDiagram
 ### 6.2 `PUT /api/staff/lessons/{lessonId}` — Cập nhật học liệu
 
 **Request:**
+
 ```json
 {
   "title": "Bài 1: Kanji N5 cơ bản (rev.2)",
@@ -222,6 +229,7 @@ erDiagram
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,
@@ -233,6 +241,7 @@ erDiagram
 ### 6.3 `POST /api/staff/vocabulary` — Tạo từ vựng
 
 **Request:**
+
 ```json
 {
   "word": "水",
@@ -249,6 +258,7 @@ erDiagram
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "status": 201,
@@ -260,6 +270,7 @@ erDiagram
 ### 6.4 `POST /api/staff/kanji` — Tạo chữ Kanji
 
 **Request:**
+
 ```json
 {
   "characterValue": "水",
@@ -276,6 +287,7 @@ erDiagram
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "status": 201,
@@ -287,6 +299,7 @@ erDiagram
 ### 6.5 `POST /api/staff/contents/submit-review` — Gửi duyệt
 
 **Request:**
+
 ```json
 { "contentType": "lesson", "contentId": 88 }
 ```
@@ -294,6 +307,7 @@ erDiagram
 > `contentType` ∈ {`lesson`, `vocabulary`, `kanji`}.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": 200,

@@ -1,5 +1,7 @@
 # SPEC CHI TIẾT — Người 4: Flashcard SRS + Dictionary + Bookmark
+
 ## JLPT E-Learning System v2.0
+
 ### Ngày: 2026-06-09 | Branch: feat-flashcard-srs, feat-dictionary-bookmark
 
 > **Đọc trước:** `SPEC_CHUNG_FLASHCARD_SRS.md` — phân tích DB, SM-2 algorithm, security rules
@@ -12,18 +14,22 @@
 ### Kết luận kiểm tra
 
 **✅ Ý tưởng "flashcard chia theo topic"** — KHÔNG xung đột
+
 - `Vocabulary.topic` (VARCHAR 100) đã tồn tại, đủ dữ liệu để nhóm deck
 - `Flashcard.deckName` (VARCHAR 255) lưu pattern `"{level}_{topic}"` — không cần field mới
 
 **✅ Ý tưởng "lấy flashcard từ kho vocab"** — KHÔNG xung đột
+
 - `Flashcard.contentType` (KANJI/VOCABULARY/GRAMMAR/CUSTOM) + `contentId` là polymorphic ref đủ mạnh
 - Không cần join table hay foreign key mới
 
 **✅ Ý tưởng "gợi ý bookmark khi trả lời sai"** — KHÔNG xung đột
+
 - `StudentContentProgress.isBookmarked` + `bookmarkNote` + `bookmarkedAt` đã đủ để lưu bookmark
 - Không cần bảng `bookmarks` riêng — BookmarkService sẽ thao tác trên `StudentContentProgress`
 
 **⚠️ Lưu ý nhỏ — ContentType mismatch**
+
 - `Flashcard.ContentType` có `CUSTOM` (không có trong `StudentContentProgress.ContentType`)
 - `StudentContentProgress.ContentType` có `LESSON`, `KANA` (không có trong `Flashcard.ContentType`)
 - **Giải pháp:** BookmarkService chỉ xử lý VOCABULARY, KANJI, GRAMMAR — không bookmark CUSTOM/KANA qua endpoint này
@@ -55,6 +61,7 @@
 ## PHẦN 2 — DTO SPECIFICATION
 
 ### 2.1 FlashcardResponse.java
+
 ```java
 // GET /api/flashcards — card list item (front chỉ)
 public record FlashcardResponse(
@@ -72,6 +79,7 @@ public record FlashcardResponse(
 ```
 
 ### 2.2 FlashcardRevealResponse.java
+
 ```java
 // GET /api/flashcards/{id}/reveal — mặt sau card
 public record FlashcardRevealResponse(
@@ -88,6 +96,7 @@ public record FlashcardRevealResponse(
 ```
 
 ### 2.3 ReviewRequest.java
+
 ```java
 // POST /api/flashcards/{id}/review
 public record ReviewRequest(
@@ -100,6 +109,7 @@ public record ReviewRequest(
 ```
 
 ### 2.4 ReviewResultResponse.java
+
 ```java
 // Response sau khi submit review
 public record ReviewResultResponse(
@@ -121,6 +131,7 @@ public record ReviewResultResponse(
 ```
 
 ### 2.5 DeckSummaryResponse.java
+
 ```java
 // GET /api/flashcard-decks — deck listing
 public record DeckSummaryResponse(
@@ -134,6 +145,7 @@ public record DeckSummaryResponse(
 ```
 
 ### 2.6 SearchResponse.java
+
 ```java
 // GET /api/dictionary/search?q=...
 public record SearchResponse(
@@ -162,6 +174,7 @@ public record SearchResponse(
 ```
 
 ### 2.7 BookmarkRequest.java
+
 ```java
 // POST /api/bookmarks
 public record BookmarkRequest(
@@ -178,6 +191,7 @@ public record BookmarkRequest(
 ```
 
 ### 2.8 BookmarkResponse.java
+
 ```java
 // GET /api/bookmarks — list item
 public record BookmarkResponse(
@@ -362,6 +376,7 @@ public class DictionaryService {
 ```
 
 **Query rules cho DictionaryService:**
+
 - Vocabulary: tìm trong `word`, `furigana`, `meaning` — LIKE `%q%`
 - Kanji: tìm trong `characterValue`, `meaning`, `onyomi`, `kunyomi`
 - GrammarPoint: tìm trong `structure`, `meaning`
@@ -568,9 +583,11 @@ public class StudentBookmarkController {
 ## PHẦN 8 — CHECKLIST IMPLEMENTATION
 
 ### Repository
+
 - [ ] `FlashcardRepository` — 5 methods: `findDeckSummaries`, `findByDeck`, `existsByIdAndStudentId`, `findWrongCardsInSession`, `existsByStudentIdAndContentTypeAndContentId`
 
 ### Service
+
 - [ ] `FlashcardSrsService.getDecks()` — list decks với due count
 - [ ] `FlashcardSrsService.getCards()` — paginated card list
 - [ ] `FlashcardSrsService.revealCard()` — security check + enrich từ source
@@ -582,11 +599,13 @@ public class StudentBookmarkController {
 - [ ] `BookmarkService.listBookmarks()` — paginated + enrich displayText
 
 ### Controller
+
 - [ ] `StudentFlashcardController` — 5 endpoints
 - [ ] `StudentDictionaryController` — 1 endpoint
 - [ ] `StudentBookmarkController` — 3 endpoints
 
 ### DTO
+
 - [ ] `FlashcardResponse`
 - [ ] `FlashcardRevealResponse`
 - [ ] `ReviewRequest` + `@Valid` annotations
@@ -598,6 +617,7 @@ public class StudentBookmarkController {
 - [ ] `AddFlashcardRequest` (cần thêm vào danh sách — chưa có trong spec gốc)
 
 ### Security / Validation
+
 - [ ] Tất cả endpoint có `@PreAuthorize("hasRole('STUDENT')")`
 - [ ] Mọi query filter `student_id = currentStudentId`
 - [ ] `revealCard` + `submitReview` check `existsByIdAndStudentId` trước

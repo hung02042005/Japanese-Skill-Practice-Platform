@@ -22,6 +22,7 @@
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 Long managerId = 10L;
 Question content = aQuestion().withId(105L).withCreatedBy(7L).withStatus("pending_review").build();
@@ -31,9 +32,11 @@ when(questionRepository.updateStatusIfPending(105L, "published", managerId, any(
 ```
 
 **Steps:**
+
 1. Gọi `service.approve(new ReviewActionRequest(QUESTION, 105L, "APPROVE", "OK"), managerId)`
 
 **Expected:**
+
 - Trả `ReviewResultResponse` với `status = "published"`, `approvedAt` != null
 - `updateStatusIfPending(...)` được gọi với `status="published"`, `approved_by=10`, `published_at≈NOW()`
 - `reviewAuditService.log("approve_content", 10, "questions", 105, ...)` được gọi đúng 1 lần
@@ -51,6 +54,7 @@ when(questionRepository.updateStatusIfPending(105L, "published", managerId, any(
 | **Ưu tiên** | P0 (Correctness) |
 
 **Setup:**
+
 ```java
 Long managerId = 7L;
 Question content = aQuestion().withId(105L).withCreatedBy(7L).withStatus("pending_review").build();
@@ -58,9 +62,11 @@ when(questionRepository.findById(105L)).thenReturn(Optional.of(content));
 ```
 
 **Steps:**
+
 1. Gọi `service.approve(new ReviewActionRequest(QUESTION, 105L, "APPROVE", null), 7L)`
 
 **Expected:**
+
 - Ném `SelfReviewNotAllowedException` (HTTP 403 / `SELF_REVIEW_DENIED`)
 - `updateStatusIfPending(...)` **KHÔNG được gọi**
 - `reviewAuditService.log(...)` **KHÔNG được gọi**
@@ -78,6 +84,7 @@ when(questionRepository.findById(105L)).thenReturn(Optional.of(content));
 | **Ưu tiên** | P0 (Concurrency) |
 
 **Setup:**
+
 ```java
 Question content = aQuestion().withId(105L).withCreatedBy(7L).withStatus("pending_review").build();
 when(questionRepository.findById(105L)).thenReturn(Optional.of(content));
@@ -85,9 +92,11 @@ when(questionRepository.updateStatusIfPending(eq(105L), any(), any(), any())).th
 ```
 
 **Steps:**
+
 1. Gọi `service.approve(new ReviewActionRequest(QUESTION, 105L, "APPROVE", "OK"), 10L)`
 
 **Expected:**
+
 - Ném `ConcurrentReviewException` (HTTP 409 / `CONCURRENT_REVIEW`)
 - `reviewAuditService.log(...)` **KHÔNG được gọi** (không ghi đè)
 
@@ -103,15 +112,18 @@ when(questionRepository.updateStatusIfPending(eq(105L), any(), any(), any())).th
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 Question content = aQuestion().withId(105L).withCreatedBy(7L).withStatus("pending_review").build();
 when(questionRepository.findById(105L)).thenReturn(Optional.of(content));
 ```
 
 **Steps:**
+
 1. Gọi `service.reject(new ReviewActionRequest(QUESTION, 105L, "REJECT", "   "), 10L)`
 
 **Expected:**
+
 - Ném `FeedbackRequiredException` (HTTP 400 / `FEEDBACK_REQUIRED`)
 - `updateStatusIfPending(...)` KHÔNG được gọi; status không đổi
 
@@ -127,6 +139,7 @@ when(questionRepository.findById(105L)).thenReturn(Optional.of(content));
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 Question content = aQuestion().withId(105L).withCreatedBy(7L).withStatus("pending_review").build();
 when(questionRepository.findById(105L)).thenReturn(Optional.of(content));
@@ -134,9 +147,11 @@ when(questionRepository.updateStatusIfPending(105L, "rejected", null, null)).the
 ```
 
 **Steps:**
+
 1. Gọi `service.reject(new ReviewActionRequest(QUESTION, 105L, "REJECT", "Sai đáp án D"), 10L)`
 
 **Expected:**
+
 - `status = "rejected"`
 - `reviewAuditService.log("reject_content", 10, "questions", 105, "Sai đáp án D")` được gọi
 - `description` trong audit = "Sai đáp án D"
@@ -153,6 +168,7 @@ when(questionRepository.updateStatusIfPending(105L, "rejected", null, null)).the
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 Question content = aQuestion().withId(105L).withCreatedBy(7L).withStatus("pending_review").build();
 when(questionRepository.findById(105L)).thenReturn(Optional.of(content));
@@ -160,9 +176,11 @@ when(questionRepository.updateStatusIfPending(105L, "draft", null, null)).thenRe
 ```
 
 **Steps:**
+
 1. Gọi `service.requestChanges(new RequestChangesRequest(QUESTION, 105L, "draft", "Bổ sung giải thích"), 10L)`
 
 **Expected:**
+
 - `status = "draft"`; audit `action = "request_changes_content"`, `description = "Bổ sung giải thích"`
 
 ---
@@ -177,9 +195,11 @@ when(questionRepository.updateStatusIfPending(105L, "draft", null, null)).thenRe
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Gọi `service.requestChanges(new RequestChangesRequest(QUESTION, 105L, "published", "x"), 10L)`
 
 **Expected:**
+
 - Ném `ValidationException` (HTTP 400 / `VALIDATION_FAILED`) — `targetStatus` chỉ chấp nhận {draft, rejected}
 - Không đổi status
 
@@ -195,14 +215,17 @@ when(questionRepository.updateStatusIfPending(105L, "draft", null, null)).thenRe
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 when(questionRepository.findById(999L)).thenReturn(Optional.empty());
 ```
 
 **Steps:**
+
 1. Gọi `service.getContentDetail(QUESTION, 999L)`
 
 **Expected:**
+
 - Ném `ContentNotFoundException` (HTTP 404 / `CONTENT_NOT_FOUND`)
 
 ---
@@ -217,6 +240,7 @@ when(questionRepository.findById(999L)).thenReturn(Optional.empty());
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 when(questionRepository.findById(105L)).thenReturn(Optional.of(aQuestion().withCreatedBy(7L).withStatus("pending_review").build()));
 when(questionRepository.updateStatusIfPending(any(), any(), any(), any())).thenReturn(1);
@@ -224,9 +248,11 @@ doThrow(new RuntimeException("DB down")).when(reviewAuditService).log(any(), any
 ```
 
 **Steps:**
+
 1. Gọi `service.approve(req, 10L)` trong ngữ cảnh transaction
 
 **Expected:**
+
 - Exception lan ra → transaction rollback (`@Transactional`); đổi status không được commit
 - Verify: phương thức ném exception, không nuốt lỗi
 
@@ -249,10 +275,12 @@ doThrow(new RuntimeException("DB down")).when(reviewAuditService).log(any(), any
 | **Ưu tiên** | P0 |
 
 **Steps:**
+
 1. Seed `questions`: 3 bản ghi `pending_review`, 5 bản ghi `published`, 2 `draft`
 2. Gọi `questionRepository.findByStatus("pending_review", PageRequest.of(0, 20))`
 
 **Expected:**
+
 - Trả đúng 3 bản ghi; tất cả có `status = "pending_review"`; không lẫn `published`/`draft`
 
 ---
@@ -267,11 +295,13 @@ doThrow(new RuntimeException("DB down")).when(reviewAuditService).log(any(), any
 | **Ưu tiên** | P0 (Concurrency) |
 
 **Steps:**
+
 1. Seed question ID 105 `status = "pending_review"`
 2. Luồng A: `updateStatusIfPending(105, "published", 10, NOW)` → trả 1
 3. Luồng B (sau đó): `updateStatusIfPending(105, "published", 11, NOW)` → trả 0
 
 **Expected:**
+
 - Lần gọi đầu: 1 dòng ảnh hưởng, `status` chuyển `published`, `approved_by = 10`
 - Lần gọi thứ hai: **0 dòng** ảnh hưởng (WHERE status='pending_review' không khớp) → Service sẽ ném 409
 
@@ -287,10 +317,12 @@ doThrow(new RuntimeException("DB down")).when(reviewAuditService).log(any(), any
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Gọi `reviewAuditService.log("approve_content", 10L, "questions", 105L, "OK")`
 2. Query `admin_audit_logs` mới nhất
 
 **Expected:**
+
 - `staff_actor_id = 10`, `action = "approve_content"`, `target_table = "questions"`, `target_id = 105`, `description = "OK"`, `created_at ≈ NOW()`
 
 ---
@@ -316,6 +348,7 @@ doThrow(new RuntimeException("DB down")).when(reviewAuditService).log(any(), any
 **Mock:** `service.getReviewQueue(...)` trả 1 item
 
 **Expected:**
+
 ```
 HTTP 200
 { "status": 200, "message": "...", "data": { "content": [ { "contentId": 105, "contentType": "question", ... } ], "totalElements": 1 } }
@@ -335,10 +368,12 @@ HTTP 200
 **Request:** `GET /api/manager/review-queue` + `@WithMockUser(authorities="STAFF")`
 
 **Expected:**
+
 ```
 HTTP 403
 { "status": 403, "message": "Tài khoản không có thẩm quyền kiểm duyệt", ... }  // FORBIDDEN
 ```
+
 - `service.getReviewQueue(...)` KHÔNG được gọi
 
 ---
@@ -368,6 +403,7 @@ HTTP 403
 | **Ưu tiên** | P0 |
 
 **Request:**
+
 ```json
 POST /api/manager/reviews
 { "contentType": "question", "contentId": 105, "action": "APPROVE", "feedback": "OK" }
@@ -376,6 +412,7 @@ POST /api/manager/reviews
 **Mock:** `service.approve(...)` → `ReviewResultResponse(105, "published", "2026-06-12T09:44:00Z")`
 
 **Expected:**
+
 ```
 HTTP 200
 { "status": 200, "message": "Phê duyệt nội dung thành công", "data": { "contentId": 105, "status": "published", "approvedAt": "..." } }
@@ -395,6 +432,7 @@ HTTP 200
 **Mock:** `service.approve(...)` ném `SelfReviewNotAllowedException`
 
 **Expected:**
+
 ```
 HTTP 403
 { "status": 403, "message": "Nguyên tắc chéo: Không thể tự phê duyệt nội dung của chính mình", ... }  // SELF_REVIEW_DENIED
@@ -414,6 +452,7 @@ HTTP 403
 **Mock:** `service.approve(...)` ném `ConcurrentReviewException`
 
 **Expected:**
+
 ```
 HTTP 409
 { "status": 409, "message": "Nội dung này đã được xử lý bởi một StaffManager khác", ... }  // CONCURRENT_REVIEW
@@ -431,11 +470,13 @@ HTTP 409
 | **Ưu tiên** | P0 |
 
 **Request:**
+
 ```json
 { "contentType": "question", "contentId": 105, "action": "REJECT", "feedback": "" }
 ```
 
 **Expected:**
+
 ```
 HTTP 400
 { "status": 400, "message": "Phải nhập lý do khi từ chối hoặc yêu cầu chỉnh sửa", ... }  // FEEDBACK_REQUIRED
@@ -453,6 +494,7 @@ HTTP 400
 | **Ưu tiên** | P1 |
 
 **Request:**
+
 ```json
 { "contentType": "question", "contentId": 105, "targetStatus": "draft", "feedback": "Bổ sung ví dụ" }
 ```
@@ -460,6 +502,7 @@ HTTP 400
 **Mock:** `service.requestChanges(...)` → `status="draft"`
 
 **Expected:**
+
 ```
 HTTP 200
 { "status": 200, "message": "Yêu cầu chỉnh sửa nội dung thành công", "data": { "contentId": 105, "status": "draft" } }
@@ -494,10 +537,12 @@ HTTP 200
 | **Ưu tiên** | P0 |
 
 **Steps:**
+
 1. Gọi `GET /api/manager/contents/105?contentType=question`
 2. Parse đệ quy toàn bộ JSON
 
 **Expected:**
+
 - Response là DTO; có `contentId`, `contentType`, `titleOrText`, `status`, `submittedBy`
 - KHÔNG có key Hibernate nội bộ (`hibernateLazyInitializer`, `handler`) hay trường nhạy cảm không khai báo trong DTO
 

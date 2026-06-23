@@ -55,6 +55,7 @@
 ### Backend — `apps/backend/.env`
 
 Tạo file từ template:
+
 ```bash
 cp apps/backend/.env.example apps/backend/.env
 ```
@@ -74,8 +75,9 @@ cp apps/backend/.env.example apps/backend/.env
 | `PAYMENT_GATEWAY_KEY` | ⬜ | — | Cổng thanh toán (VIP subscription) |
 
 > **Bảo mật**: Không commit file `.env` vào Git. File này đã có trong `.gitignore`.
-
+>
 > **Sinh JWT_SECRET an toàn**:
+>
 > ```bash
 > openssl rand -hex 32
 > ```
@@ -83,6 +85,7 @@ cp apps/backend/.env.example apps/backend/.env
 ### Frontend — `apps/frontend/.env`
 
 Tạo file từ template:
+
 ```bash
 cp apps/frontend/.env.example apps/frontend/.env
 ```
@@ -107,11 +110,14 @@ cd Japanese-Skill-Practice-Platform
 
 1. Cài và khởi động SQL Server 2019+
 2. Tạo database:
+
    ```sql
    CREATE DATABASE JLPT_LearningDB;
    ```
+
 3. Flyway sẽ tự chạy migration khi backend khởi động lần đầu.
 4. (Tùy chọn) Seed dữ liệu mẫu:
+
    ```bash
    # Chạy file seed trong SQL Server Management Studio
    database/seeds/
@@ -152,6 +158,7 @@ npm run dev
 Frontend sẵn sàng tại: `http://localhost:3000`
 
 > **Shortcut**: Dùng script tổng hợp tại gốc dự án:
+>
 > ```bash
 > run_project.bat   # Windows
 > ```
@@ -424,6 +431,7 @@ docker compose down
 ### Flyway — Tự Động Migration
 
 Flyway chạy tự động khi backend khởi động. File migration đặt tại:
+
 ```
 apps/backend/src/main/resources/db/migration/
 └── V1__init_schema.sql
@@ -583,6 +591,7 @@ sqlcmd -S localhost -U sa -P <password> -Q "SELECT 1"
 ```
 
 **Nguyên nhân thường gặp:**
+
 - Sai `DATABASE_URL` hoặc `DATABASE_PASSWORD`
 - SQL Server chưa khởi động
 - Port 8080 đã bị chiếm: `lsof -i :8080`
@@ -604,6 +613,7 @@ Nginx phải có `try_files $uri $uri/ /index.html;` trong location `/` — xem 
 ### CORS lỗi khi gọi API
 
 Kiểm tra `app.cors.allowed-origins` trong `application.yml` phải chứa domain frontend:
+
 ```yaml
 app:
   cors:

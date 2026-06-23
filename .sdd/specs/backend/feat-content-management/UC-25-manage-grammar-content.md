@@ -19,16 +19,20 @@ Tuân `AGENTS.md §9.1` (spec không khớp → nêu rõ, không tự đoán):
 ## 1. Context and Goal
 
 ### 1.1. Bối cảnh
+
 Hệ thống JLPT E-Learning cung cấp nội dung học theo 4 loại: KANJI, KANA, VOCAB, **GRAMMAR**. Staff là người sản xuất nội dung; nội dung phải đi qua vòng đời biên tập trước khi đến học viên. UC-25 đặc tả phần nghiệp vụ **soạn và quản lý điểm ngữ pháp (grammar points)** do Staff thực hiện.
 
 ### 1.2. Mục tiêu
+
 Cho phép Staff **tạo, xem, chỉnh sửa, liên kết và gửi duyệt** các điểm ngữ pháp JLPT, đảm bảo:
+
 - Nội dung mới luôn ở trạng thái nháp (`draft`), không bao giờ tự lên `published`.
 - Toàn vẹn dữ liệu cấp độ JLPT (`AGENTS.md §5 Forbidden #5`).
 - Tách bạch quyền Staff vs Admin (`CLAUDE.md LESSON-001`).
 - Vòng đời nội dung có kiểm soát: chỉ Staff Manager/Admin (UC khác) mới được `publish`.
 
 ### 1.3. Giả định & Ràng buộc nền tảng
+
 - Backend Spring Boot 3.x, REST `/api/...`, response chuẩn `{ status, message, data }` (`AGENTS.md §6`).
 - Mọi endpoint yêu cầu JWT hợp lệ + role `staff`/`staff_manager` (`CONSTITUTION.md §3`).
 - DTO Pattern bắt buộc, **không** trả Entity ra API (`ADR-005`, `AGENTS.md §5 #9`).
@@ -55,6 +59,7 @@ Cho phép Staff **tạo, xem, chỉnh sửa, liên kết và gửi duyệt** cá
 > Quy ước EARS: **Ubiquitous** (THE SYSTEM SHALL) · **Event** (WHEN … THE SYSTEM SHALL) · **State** (WHILE …) · **Conditional** (IF … THEN THE SYSTEM SHALL) · **Optional** (WHERE …).
 
 ### 3.1. Tạo grammar (POST)
+
 - **FR-01 (Event):** WHEN một Staff đã xác thực gửi yêu cầu tạo grammar hợp lệ, THE SYSTEM SHALL tạo bản ghi mới trong `grammar_points` với `status = 'draft'`.
 - **FR-02 (Ubiquitous):** THE SYSTEM SHALL tự gán `created_by` = `staff_id` của người gọi và `created_at`/`updated_at` = thời gian server; THE SYSTEM SHALL bỏ qua mọi giá trị `status`, `created_by`, `approved_by`, `published_at` do client gửi lên.
 - **FR-03 (Ubiquitous):** THE SYSTEM SHALL bắt buộc các trường: `structure` (title/pattern), `meaning`, `usage_explanation` (explanation), ít nhất một câu ví dụ (`example_sentence_jp`), và `jlpt_level`.
@@ -62,18 +67,22 @@ Cho phép Staff **tạo, xem, chỉnh sửa, liên kết và gửi duyệt** cá
 - **FR-05 (Conditional):** IF bất kỳ trường bắt buộc nào thiếu/rỗng, THEN THE SYSTEM SHALL từ chối với 400 và liệt kê field lỗi.
 
 ### 3.2. Liên kết lesson (Optional)
+
 - **FR-06 (Optional/Where):** WHERE Staff cung cấp `lessonId`, THE SYSTEM SHALL gán `grammar_points.lesson_id` sau khi xác minh lesson tồn tại và chưa bị xóa.
 - **FR-07 (Conditional):** IF `lessonId` được cung cấp nhưng không tồn tại (hoặc `status='deleted'`), THEN THE SYSTEM SHALL từ chối với 404.
 - **FR-08 (Conditional):** IF `lessonId` tồn tại nhưng `lessons.jlpt_level` ≠ `grammar.jlpt_level`, THEN THE SYSTEM SHALL từ chối với 422 (chống lẫn lộn cấp độ — `AGENTS.md §5 #5`).
+
 > *Ghi chú:* Liên kết "course" theo đề bài **không khả thi** ở schema hiện tại (không có bảng `courses`); xem §9 Out of Scope.
 
 ### 3.3. Xem grammar (GET)
+
 - **FR-09 (Event):** WHEN Staff yêu cầu danh sách grammar, THE SYSTEM SHALL trả về danh sách phân trang các grammar **do chính Staff đó tạo** (`created_by = caller`), hỗ trợ lọc theo `jlpt_level` và `status`.
 - **FR-10 (Event):** WHEN Staff yêu cầu chi tiết theo `grammarId`, THE SYSTEM SHALL trả về bản ghi tương ứng dưới dạng DTO.
 - **FR-11 (Ubiquitous):** THE SYSTEM SHALL loại trừ bản ghi có `status='deleted'` khỏi mọi kết quả đọc.
 - **FR-12 (Conditional):** IF `grammarId` không tồn tại hoặc đã `deleted`, THEN THE SYSTEM SHALL trả 404.
 
 ### 3.4. Chỉnh sửa grammar (PUT)
+
 - **FR-13 (State):** WHILE `status ∈ {draft, rejected}`, THE SYSTEM SHALL cho phép Staff cập nhật các trường nội dung và `lesson_id`.
 - **FR-14 (Conditional):** IF `status = 'published'`, THEN THE SYSTEM SHALL từ chối chỉnh sửa trực tiếp với 422 và yêu cầu tạo phiên bản mới (Rule #6).
 - **FR-15 (Conditional):** IF `status ∈ {pending_review, archived}`, THEN THE SYSTEM SHALL từ chối chỉnh sửa với 422.
@@ -81,17 +90,21 @@ Cho phép Staff **tạo, xem, chỉnh sửa, liên kết và gửi duyệt** cá
 - **FR-17 (Conditional):** IF người gọi không phải `created_by` của bản ghi (và không có quyền cao hơn), THEN THE SYSTEM SHALL trả 403.
 
 ### 3.5. Gửi duyệt (Submit review)
+
 - **FR-18 (Event):** WHEN Staff gửi yêu cầu submit-review cho grammar đang ở `status ∈ {draft, rejected}`, THE SYSTEM SHALL chuyển `status` → `pending_review` và cập nhật `updated_at`.
 - **FR-19 (Conditional):** IF grammar không ở `draft`/`rejected`, THEN THE SYSTEM SHALL từ chối chuyển trạng thái với 422.
 - **FR-20 (Conditional):** IF grammar thiếu trường bắt buộc (FR-03), THEN THE SYSTEM SHALL chặn submit với 422 (không cho gửi duyệt nội dung chưa hoàn chỉnh).
 
 ### 3.6. Ràng buộc phân quyền publish
+
 - **FR-21 (Ubiquitous):** THE SYSTEM SHALL **không** cung cấp cho Staff bất kỳ phương tiện nào để đặt `status='published'` (Rule #8); chuyển sang `published` chỉ thực hiện bởi UC duyệt nội dung của Staff Manager/Admin.
 
 ### 3.7. Audit
+
 - **FR-22 (Ubiquitous):** THE SYSTEM SHALL ghi log có cấu trúc (SLF4J) cho các sự kiện `GRAMMAR_CREATED`, `GRAMMAR_UPDATED`, `GRAMMAR_SUBMITTED` kèm `staff_id` và `grammar_id`.
 
 ### 3.8. State Machine (tham chiếu)
+
 ```
 [draft] ──submit──► [pending_review] ──(approve: UC khác)──► [published]
    ▲                      │
@@ -144,6 +157,7 @@ Cho phép Staff **tạo, xem, chỉnh sửa, liên kết và gửi duyệt** cá
 > **Lưu ý NV:** `usage_explanation` và `example_sentence_jp` ở DB là NULL-able, nhưng Rule #2 yêu cầu bắt buộc → **enforce ở Service layer** (không sửa schema, tuân `ADR-004`/migration policy).
 
 ### 5.2. Quan hệ
+
 ```
 staff_users (1) ──< created_by ──  grammar_points  ── lesson_id >── (0..1) lessons
 staff_users (1) ──< approved_by ── grammar_points
@@ -151,6 +165,7 @@ lessons (1) ── jlpt_level phải khớp ── grammar_points.jlpt_level  (e
 ```
 
 ### 5.3. Bảng liên quan (read-only trong UC-25)
+
 - `lessons` — kiểm tra tồn tại + khớp `jlpt_level` khi liên kết.
 - `staff_users` — nguồn `created_by`, kiểm tra `status='active'`.
 - ~~`courses`~~ — **không tồn tại** trong schema (xem §9).
@@ -162,7 +177,9 @@ lessons (1) ── jlpt_level phải khớp ── grammar_points.jlpt_level  (e
 > Prefix theo `AGENTS.md §3.3`. Mọi response bọc `{ status, message, data }`. Auth: `Bearer <JWT>` (role staff).
 
 ### 6.1. POST `/api/staff/grammar` — Tạo grammar (201)
+
 **Request (CreateGrammarRequest):**
+
 ```json
 {
   "structure": "～たことがある",
@@ -175,30 +192,39 @@ lessons (1) ── jlpt_level phải khớp ── grammar_points.jlpt_level  (e
   "lessonId": 12
 }
 ```
+
 **Response 201:**
+
 ```json
 { "status": 201, "message": "Grammar created",
   "data": { "grammarId": 101, "status": "draft", "jlptLevel": "N5", "createdBy": 7, "createdAt": "2026-06-12T03:00:00Z" } }
 ```
 
 ### 6.2. GET `/api/staff/grammar` — Danh sách của Staff (200)
+
 **Query:** `?page=0&size=20&jlptLevel=N5&status=draft`
 **Response 200:** `data: { content: [GrammarSummaryResponse...], page, size, totalElements, totalPages }`
 Chỉ trả grammar `created_by = caller`, loại `deleted`.
 
 ### 6.3. GET `/api/staff/grammar/{grammarId}` — Chi tiết (200)
+
 **Response 200:** `data: GrammarDetailResponse` (toàn bộ field + `lesson` rút gọn). 404 nếu không tồn tại/deleted/không thuộc quyền.
 
 ### 6.4. PUT `/api/staff/grammar/{grammarId}` — Cập nhật (200)
+
 **Request (UpdateGrammarRequest):** giống Create nhưng **không** có `status`. Chỉ cho phép khi `status ∈ {draft, rejected}` (FR-13/14/15).
 **Response 200:** `data: GrammarDetailResponse` (đã cập nhật, `updatedAt` mới).
 
 ### 6.5. POST `/api/staff/contents/submit-review` — Gửi duyệt (200)
+
 **Request (SubmitReviewRequest):**
+
 ```json
 { "contentType": "GRAMMAR", "contentId": 101 }
 ```
+
 **Response 200:**
+
 ```json
 { "status": 200, "message": "Submitted for review",
   "data": { "grammarId": 101, "status": "pending_review" } }

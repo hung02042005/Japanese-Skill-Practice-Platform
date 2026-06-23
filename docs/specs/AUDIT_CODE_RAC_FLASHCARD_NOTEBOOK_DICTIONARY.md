@@ -46,6 +46,7 @@ java.util.Set<Long> findVocabContentIdsByStudent(Long studentId, Flashcard.Conte
 **File:** [`DeckSummaryResponse.java:5-7`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/dto/DeckSummaryResponse.java)
 
 `displayName` **luôn** được gán cùng giá trị với `deckName` tại mọi nơi tạo DTO:
+
 - `getDecks` → `FlashcardSrsService.java:102-103`: truyền `(String) r[1]` hai lần.
 - `createDeck` → `:122`: `deckName, deckName`.
 - `updateDeck` → `:146-147`: `deck.getName(), deck.getName()`.
@@ -150,6 +151,7 @@ Chuỗi nghiệp vụ hard-code rải rác. **Đề xuất:** đưa lên `privat
 ```java
 public record WrongWord(String contentType, Long contentId, String frontText) {}
 ```
+
 Service gán `new WrongWord("vocabulary", id, v.getWord())` → field tên `frontText` nhưng chứa `word`. Gây nhầm khi đọc.
 
 **Đề xuất:** Đổi tên field thành `word` cho khớp ngữ nghĩa (cập nhật FE).

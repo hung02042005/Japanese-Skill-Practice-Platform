@@ -1,4 +1,5 @@
 # SPEC — Danh sách Khoá học (Course List — chọn cấp độ JLPT)
+>
 > **Feature ID:** `feat-student` | **Page:** `CourseList`
 > **Route:** `/courses` — private, role STUDENT, redirect `/login` nếu chưa auth
 > **UC Coverage:** UC-09 (Học theo Level), UC-08 (Chọn khoá học theo cấp độ JLPT)
@@ -6,7 +7,7 @@
 > **Author:** Team | **Last Updated:** 2026-06-20
 > **Design ref:** `feat-student/SPEC-vocab-home.md` — **SakuJi · Hanami** theme (sakura-pink). Dùng chung token & TopNav.
 > **Backend ref:** `.sdd/specs/backend/feat-core-learning/SPEC.md` (Course theo `jlpt_level` N5→N1, `is_vip_only`)
-
+>
 > **Bối cảnh:** Trang này là đích đến của nút **"Course List"** ở right sidebar trang Từ vựng (`SPEC-vocab-home.md FR-VH-09 / §8.2 CourseListCard → navigate('/courses')`). Khi Student bấm "Course List" sẽ mở trang này, hiển thị **các khoá học theo cấp độ JLPT (N5, N4, N3, N2, N1)** dưới dạng lưới thẻ. Chọn một cấp → quay lại trang Từ vựng đã đổi sang cấp đó.
 > **Quan hệ spec:** Bổ sung mục **"Course list page (/courses)"** vốn nằm trong OUT OF SCOPE của `SPEC-vocab-home.md §17`.
 
@@ -76,6 +77,7 @@
 Trang **chọn khoá học theo cấp độ JLPT** của **SakuJi**. Student vào từ nút "Course List" trên trang Từ vựng. Mỗi cấp độ (N5→N1) là một **khoá học** hiển thị dạng thẻ trong lưới; chọn một cấp → đổi ngữ cảnh học sang cấp đó (quay về `/vocabulary?level=…`).
 
 **Cấu trúc tổng thể (dưới TopNav, 1 cột nội dung canh giữa):**
+
 ```
 [TopNav]      — full-width: logo SakuJi + tabs + user (dùng chung toàn app)
 [Header]      — breadcrumb "Từ vựng / Khoá học" + tiêu đề "Khoá học theo cấp độ"
@@ -84,6 +86,7 @@ Trang **chọn khoá học theo cấp độ JLPT** của **SakuJi**. Student và
 ```
 
 **File structure:**
+
 ```
 apps/frontend/src/
 ├── components/layout/
@@ -134,6 +137,7 @@ apps/frontend/src/
 ```
 
 > **Màu nhãn cấp (level badge):** mỗi cấp một sắc thái nhẹ để dễ phân biệt, vẫn trong palette sakura/Hanami:
+>
 > - N5 → `--color-secondary` (green, nhập môn)
 > - N4 → `#42A5F5` (xanh dương nhạt)
 > - N3 → `--color-primary` (sakura)
@@ -146,6 +150,7 @@ apps/frontend/src/
 ## 3. LAYOUT TỔNG THỂ
 
 ### 3.1 Page Shell
+
 ```
 .cl-page
   min-height: 100vh
@@ -155,6 +160,7 @@ apps/frontend/src/
 ```
 
 ### 3.2 Content container
+
 ```
 .cl-content
   max-width: 1040px
@@ -164,6 +170,7 @@ apps/frontend/src/
 ```
 
 ### 3.3 CourseGrid (desktop ≥ 1024px)
+
 ```
 .cl-grid
   display: grid
@@ -172,6 +179,7 @@ apps/frontend/src/
 ```
 
 ### 3.4 Sơ đồ bố cục
+
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
 │  TopNav (sticky 64px) — [🌸 SakuJi]  Ôn tập  Học mới  Kanji  …  [avatar◯]  │
@@ -206,6 +214,7 @@ Tái dùng `components/layout/TopNav.jsx` với `activeTab="vocabulary"`. Chi ti
 ## 5. HEADER
 
 ### 5.1 Breadcrumb — `.cl-breadcrumb`
+
 ```
 Font: Nunito 600, 13px, color var(--color-text-sub)
 "Từ vựng" là <button>/<Link> → navigate('/vocabulary')  (FR-CL-09)
@@ -213,6 +222,7 @@ Dạng: [Từ vựng] › Khoá học   (mục cuối không bấm được, col
 ```
 
 ### 5.2 Tiêu đề — `.cl-title`
+
 ```
 <h1> Font: Nunito 800, 26px, color var(--color-text)
 Text: "Khoá học theo cấp độ"
@@ -225,12 +235,15 @@ Margin: 4px 0 20px
 ## 6. COURSEGRID + COURSECARD
 
 ### 6.1 CourseGrid — `.cl-grid`
+
 Lưới responsive (xem §3.3 + §10). Render lần lượt theo thứ tự cấp N5→N1 (BE đã sort, FE giữ nguyên thứ tự `courses`).
 
 ### 6.2 CourseCard — `.cl-card`
+
 2 trạng thái chính: **available** (mở) và **locked** (khoá VIP). Cấp đang học có chip "Đang học".
 
 **Layout:**
+
 ```
 ┌─────────────────────────────────────────┐
 │  [N5]                          [VIP?]    │ ← level badge + badge VIP (góc phải)
@@ -242,6 +255,7 @@ Lưới responsive (xem §3.3 + §10). Render lần lượt theo thứ tự cấ
 ```
 
 **Base styles:**
+
 ```
 Display: flex, flex-direction: column, gap: 10px
 Background: var(--color-card)
@@ -255,6 +269,7 @@ Min-height: 180px
 ```
 
 **Hover (available) — FR-CL-12:**
+
 ```
 Transform: scale(1.02)
 Box-shadow: var(--shadow-md)
@@ -262,6 +277,7 @@ Border-color: var(--color-primary-light)
 ```
 
 **State `locked` (FR-CL-05):**
+
 ```
 Opacity: 0.7, cursor: not-allowed
 Trailing icon → lock, color var(--color-text-disabled)
@@ -271,6 +287,7 @@ KHÔNG áp hiệu ứng hover scale
 ```
 
 #### 6.2.1 Level badge — `.cl-card-level`
+
 ```
 Chip bo tròn var(--radius-full), padding 2px 10px
 Font: Nunito 800, 13px
@@ -278,6 +295,7 @@ Màu theo §2 (mỗi cấp một sắc thái; nền alpha ~12%, chữ đậm mà
 ```
 
 #### 6.2.2 Title / Description
+
 ```
 [Title] .cl-card-title: Nunito 800, 17px, color var(--color-text), ellipsis 1 dòng
 [Desc]  .cl-card-desc:  Nunito 600, 13px, color var(--color-text-sub),
@@ -285,6 +303,7 @@ Màu theo §2 (mỗi cấp một sắc thái; nền alpha ~12%, chữ đậm mà
 ```
 
 #### 6.2.3 Progress — `.cl-card-progress`
+
 ```
 Track:  height 8px, background var(--color-border), border-radius var(--radius-full)
 Fill:   width = completedLessons/totalLessons*100% (0% nếu totalLessons=0 — tránh chia 0)
@@ -293,6 +312,7 @@ Label:  Nunito 600, 12px, color sub — "{completed}/{total} bài"
 ```
 
 #### 6.2.4 Footer — chip "Đang học" + trailing
+
 ```
 [Chip "Đang học"] .cl-card-current: chỉ render WHERE jlptLevel === currentLevel (FR-CL-08)
    nền var(--color-primary-bg), text var(--color-primary-dark), Nunito 700 12px, dot ●
@@ -301,6 +321,7 @@ Label:  Nunito 600, 12px, color sub — "{completed}/{total} bài"
 ```
 
 #### 6.2.5 Badge VIP — `.cl-card-vip`
+
 ```
 Chỉ render WHERE vipOnly === true
 Chip nền var(--color-accent-bg), border 1px var(--color-accent), text "VIP",
@@ -315,6 +336,7 @@ Nunito 800 11px, color #8A6D00, góc phải-trên
 CourseGrid: render 5 .cl-skel--card (180px height, radius var(--radius-lg)) trong cùng lưới
 Tiêu đề:    skeleton 240×30px (tuỳ chọn)
 ```
+
 Dùng lại lớp shimmer `.vh-skel` của `SPEC-vocab-home.md §9` (đổi tiền tố `cl-skel`) để đồng nhất animation.
 
 ---
@@ -509,6 +531,7 @@ export default function CourseCard({ course, isCurrent, isVip, onOpen, onUpgrade
 | Tải danh sách khoá | `GET` | `/api/students/courses` | `{ currentLevel, subscription, courses[] }` |
 
 **Response shape (tham khảo):**
+
 ```json
 {
   "status": 200,
@@ -552,6 +575,7 @@ export default function CourseCard({ course, isCurrent, isVip, onOpen, onUpgrade
 ## 15. STYLE GUARDRAILS
 
 Theo phong cách SakuJi Hanami (cute, friendly), TUYỆT ĐỐI tránh:
+
 - ❌ Harsh shadows → chỉ soft shadow `rgba(0,0,0,0.07–0.10)`
 - ❌ Dark UI → nền washi sáng `#FAF7F4`
 - ❌ Sharp edges → mọi góc bo ≥ 12px
@@ -567,4 +591,5 @@ Theo phong cách SakuJi Hanami (cute, friendly), TUYỆT ĐỐI tránh:
 - ❌ Subscription/payment flow (`/subscription`)
 - ❌ Quản lý/CRUD khoá học (Staff/Admin)
 - ❌ Dark mode
+
 ```

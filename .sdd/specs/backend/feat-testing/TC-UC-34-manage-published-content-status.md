@@ -22,6 +22,7 @@
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 Long managerId = 10L;
 Assessment content = anAssessment().withId(24L).withStatus("published").build();
@@ -32,9 +33,11 @@ when(assessmentRepository.updateStatusFrom(24L, "published", "archived")).thenRe
 ```
 
 **Steps:**
+
 1. Gọi `service.updateStatus(24L, new UpdateContentStatusRequest(ASSESSMENT, "archived", "Đề cũ 2024"), managerId)`
 
 **Expected:**
+
 - Trả `ContentStatusResultResponse` với `status = "archived"`
 - `updateStatusFrom(24L, "published", "archived")` được gọi đúng 1 lần (chỉ đổi `status`, KHÔNG `DELETE FROM`)
 - `auditService.log("archive_content", 10, "assessments", 24, "Đề cũ 2024")` được gọi đúng 1 lần
@@ -52,6 +55,7 @@ when(assessmentRepository.updateStatusFrom(24L, "published", "archived")).thenRe
 | **Ưu tiên** | P0 (Data Integrity) |
 
 **Setup:**
+
 ```java
 Question content = aQuestion().withId(1L).withStatus("published").build();
 when(questionRepository.findById(1L)).thenReturn(Optional.of(content));
@@ -60,9 +64,11 @@ when(referenceChecker.findBlockingReferences(QUESTION, 1L)).thenReturn(List.of(
 ```
 
 **Steps:**
+
 1. Gọi `service.updateStatus(1L, new UpdateContentStatusRequest(QUESTION, "archived", "Lý do hợp lệ"), 10L)`
 
 **Expected:**
+
 - Ném `ResourceInUseException` (HTTP 409 / `RESOURCE_IN_USE`)
 - Exception chứa `references = [{assessment, 2, "Đề thi thử N5 - Tháng 6"}]`
 - `updateStatusFrom(...)` **KHÔNG được gọi**; `auditService.log(...)` **KHÔNG được gọi**
@@ -79,15 +85,18 @@ when(referenceChecker.findBlockingReferences(QUESTION, 1L)).thenReturn(List.of(
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 Question content = aQuestion().withId(9L).withStatus("published").build();
 when(questionRepository.findById(9L)).thenReturn(Optional.of(content));
 ```
 
 **Steps:**
+
 1. Gọi `service.updateStatus(9L, new UpdateContentStatusRequest(QUESTION, "unpublished", "   "), 10L)`
 
 **Expected:**
+
 - Ném `ReasonRequiredException` (HTTP 400 / `REASON_REQUIRED`)
 - `referenceChecker` / `updateStatusFrom(...)` KHÔNG được gọi; status không đổi
 
@@ -103,6 +112,7 @@ when(questionRepository.findById(9L)).thenReturn(Optional.of(content));
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 Question content = aQuestion().withId(9L).withStatus("published").build();
 when(questionRepository.findById(9L)).thenReturn(Optional.of(content));
@@ -111,9 +121,11 @@ when(questionRepository.updateStatusFrom(9L, "published", "draft")).thenReturn(1
 ```
 
 **Steps:**
+
 1. Gọi `service.updateStatus(9L, new UpdateContentStatusRequest(QUESTION, "unpublished", "Sai đáp án"), 10L)`
 
 **Expected:**
+
 - `status = "draft"`; audit `action = "unpublish_content"`, `description = "Sai đáp án"`
 - `updateStatusFrom(9L, "published", "draft")` được gọi
 
@@ -129,6 +141,7 @@ when(questionRepository.updateStatusFrom(9L, "published", "draft")).thenReturn(1
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 Lesson content = aLesson().withId(5L).withStatus("published").build();
 when(lessonRepository.findById(5L)).thenReturn(Optional.of(content));
@@ -137,9 +150,11 @@ when(lessonRepository.updateStatusFrom(5L, "published", "deleted")).thenReturn(1
 ```
 
 **Steps:**
+
 1. Gọi `service.updateStatus(5L, new UpdateContentStatusRequest(LESSON, "deleted", "Trùng nội dung"), 10L)`
 
 **Expected:**
+
 - `status = "deleted"`; `auditService.log("delete_content", 10, "lessons", 5, "Trùng nội dung")` được gọi
 - Verify: KHÔNG gọi `repository.delete(...)` / `deleteById(...)` — chỉ guarded update
 
@@ -155,6 +170,7 @@ when(lessonRepository.updateStatusFrom(5L, "published", "deleted")).thenReturn(1
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 Assessment content = anAssessment().withId(24L).withStatus("archived").build();
 when(assessmentRepository.findById(24L)).thenReturn(Optional.of(content));
@@ -162,9 +178,11 @@ when(assessmentRepository.updateStatusFrom(24L, "archived", "published")).thenRe
 ```
 
 **Steps:**
+
 1. Gọi `service.restore(24L, new RestoreContentRequest(ASSESSMENT), 10L)`
 
 **Expected:**
+
 - `status = "published"`; audit `action = "restore_content"`
 - `updateStatusFrom(24L, "archived", "published")` được gọi
 
@@ -180,15 +198,18 @@ when(assessmentRepository.updateStatusFrom(24L, "archived", "published")).thenRe
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 Question content = aQuestion().withId(9L).withStatus("deleted").build();
 when(questionRepository.findById(9L)).thenReturn(Optional.of(content));
 ```
 
 **Steps:**
+
 1. Gọi `service.restore(9L, new RestoreContentRequest(QUESTION), 10L)`
 
 **Expected:**
+
 - Ném `RestoreNotAllowedException` (HTTP 409 / `RESTORE_NOT_ALLOWED`)
 - `updateStatusFrom(...)` / `auditService.log(...)` KHÔNG được gọi; status không đổi
 
@@ -204,15 +225,18 @@ when(questionRepository.findById(9L)).thenReturn(Optional.of(content));
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 Question content = aQuestion().withId(9L).withStatus("published").build();
 when(questionRepository.findById(9L)).thenReturn(Optional.of(content));
 ```
 
 **Steps:**
+
 1. Gọi `service.restore(9L, new RestoreContentRequest(QUESTION), 10L)`
 
 **Expected:**
+
 - Ném `InvalidStateTransitionException` (HTTP 409 / `INVALID_STATE_TRANSITION`); status không đổi
 
 ---
@@ -227,9 +251,11 @@ when(questionRepository.findById(9L)).thenReturn(Optional.of(content));
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Gọi `service.updateStatus(9L, new UpdateContentStatusRequest(QUESTION, "published", "x"), 10L)`
 
 **Expected:**
+
 - Ném `ValidationException` (HTTP 400 / `VALIDATION_FAILED`) — `status` chỉ chấp nhận {unpublished, archived, deleted}
 - Không đổi status
 
@@ -245,14 +271,17 @@ when(questionRepository.findById(9L)).thenReturn(Optional.of(content));
 | **Ưu tiên** | P1 |
 
 **Setup:**
+
 ```java
 when(questionRepository.findById(999L)).thenReturn(Optional.empty());
 ```
 
 **Steps:**
+
 1. Gọi `service.getDetail(QUESTION, 999L)`
 
 **Expected:**
+
 - Ném `ContentNotFoundException` (HTTP 404 / `CONTENT_NOT_FOUND`)
 
 ---
@@ -267,6 +296,7 @@ when(questionRepository.findById(999L)).thenReturn(Optional.empty());
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 Question content = aQuestion().withId(9L).withStatus("published").build();
 when(questionRepository.findById(9L)).thenReturn(Optional.of(content));
@@ -275,9 +305,11 @@ when(questionRepository.updateStatusFrom(9L, "published", "archived")).thenRetur
 ```
 
 **Steps:**
+
 1. Gọi `service.updateStatus(9L, new UpdateContentStatusRequest(QUESTION, "archived", "Lý do hợp lệ"), 10L)`
 
 **Expected:**
+
 - Ném `InvalidStateTransitionException` (HTTP 409); `auditService.log(...)` KHÔNG được gọi
 
 ---
@@ -292,6 +324,7 @@ when(questionRepository.updateStatusFrom(9L, "published", "archived")).thenRetur
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 when(questionRepository.findById(9L)).thenReturn(Optional.of(aQuestion().withStatus("published").build()));
 when(referenceChecker.findBlockingReferences(QUESTION, 9L)).thenReturn(List.of());
@@ -300,9 +333,11 @@ doThrow(new RuntimeException("DB down")).when(auditService).log(any(), any(), an
 ```
 
 **Steps:**
+
 1. Gọi `service.updateStatus(9L, req, 10L)` trong ngữ cảnh transaction
 
 **Expected:**
+
 - Exception lan ra → transaction rollback (`@Transactional`); đổi status không được commit
 - Verify: phương thức ném exception, không nuốt lỗi
 
@@ -325,10 +360,12 @@ doThrow(new RuntimeException("DB down")).when(auditService).log(any(), any(), an
 | **Ưu tiên** | P0 (Data Integrity) |
 
 **Steps:**
+
 1. Seed question ID 1 `status='published'`; assessment ID 2 `status='published'`; `question_assignments(parent_type='assessment', parent_id=2, question_id=1)`
 2. Gọi `questionAssignmentRepository.findPublishedAssessmentRefs(1L)`
 
 **Expected:**
+
 - Trả đúng 1 dòng: `(assessment_id=2, title="Đề thi thử N5 - Tháng 6")`
 
 ---
@@ -343,10 +380,12 @@ doThrow(new RuntimeException("DB down")).when(auditService).log(any(), any(), an
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Seed question ID 9 `published`; assessment ID 8 `status='archived'`; assignment (assessment, 8, 9)
 2. Gọi `questionAssignmentRepository.findPublishedAssessmentRefs(9L)`
 
 **Expected:**
+
 - Trả **0 dòng** (chỉ đếm assessment `published`) → không chặn unpublish/archive
 
 ---
@@ -361,11 +400,13 @@ doThrow(new RuntimeException("DB down")).when(auditService).log(any(), any(), an
 | **Ưu tiên** | P0 |
 
 **Steps:**
+
 1. Seed question ID 9 `status='published'`
 2. Lần 1: `updateStatusFrom(9, "published", "archived")` → trả 1
 3. Lần 2: `updateStatusFrom(9, "published", "deleted")` → trả 0
 
 **Expected:**
+
 - Lần 1: 1 dòng, `status='archived'`
 - Lần 2: **0 dòng** (WHERE status='published' không khớp) → Service ném 409
 
@@ -381,11 +422,13 @@ doThrow(new RuntimeException("DB down")).when(auditService).log(any(), any(), an
 | **Ưu tiên** | P0 |
 
 **Steps:**
+
 1. Seed lesson ID 5 `published`
 2. `updateStatusFrom(5, "published", "deleted")`
 3. `SELECT COUNT(*) FROM lessons WHERE lesson_id = 5`
 
 **Expected:**
+
 - `status='deleted'` nhưng `COUNT(*) = 1` — bản ghi VẪN tồn tại (không hard delete)
 
 ---
@@ -400,10 +443,12 @@ doThrow(new RuntimeException("DB down")).when(auditService).log(any(), any(), an
 | **Ưu tiên** | P1 |
 
 **Steps:**
+
 1. Gọi `auditService.log("archive_content", 10L, "assessments", 24L, "Đề cũ 2024")`
 2. Query `admin_audit_logs` mới nhất
 
 **Expected:**
+
 - `staff_actor_id=10`, `action="archive_content"`, `target_table="assessments"`, `target_id=24`, `description="Đề cũ 2024"`, `created_at ≈ NOW()`
 
 ---
@@ -418,10 +463,12 @@ doThrow(new RuntimeException("DB down")).when(auditService).log(any(), any(), an
 | **Ưu tiên** | P0 |
 
 **Steps:**
+
 1. Seed question ID 9 `status='archived'`
 2. Gọi truy vấn Student-facing (vd `questionRepository.findPublishedForPractice(...)` lọc `status='published'`)
 
 **Expected:**
+
 - Question 9 KHÔNG xuất hiện trong kết quả
 
 ---
@@ -447,6 +494,7 @@ doThrow(new RuntimeException("DB down")).when(auditService).log(any(), any(), an
 **Mock:** `service.listPublished(...)` trả 1 item
 
 **Expected:**
+
 ```
 HTTP 200
 { "status": 200, "message": "...", "data": { "content": [ { "contentId": 105, "contentType": "question", "status": "published", ... } ], "totalElements": 1 } }
@@ -466,9 +514,11 @@ HTTP 200
 **Request:** `GET /api/manager/published-contents` + `@WithMockUser(authorities="STAFF")`
 
 **Expected:**
+
 ```
 HTTP 403  { "status": 403, "message": "Tài khoản không có thẩm quyền quản lý nội dung xuất bản", ... }  // FORBIDDEN
 ```
+
 - `service.listPublished(...)` KHÔNG được gọi
 
 ---
@@ -498,6 +548,7 @@ HTTP 403  { "status": 403, "message": "Tài khoản không có thẩm quyền qu
 | **Ưu tiên** | P0 |
 
 **Request:**
+
 ```json
 PUT /api/manager/contents/24/status
 { "contentType": "assessment", "status": "archived", "reason": "Đề cũ 2024 không còn phù hợp." }
@@ -506,6 +557,7 @@ PUT /api/manager/contents/24/status
 **Mock:** `service.updateStatus(...)` → `ContentStatusResultResponse(24, "assessment", "archived")`
 
 **Expected:**
+
 ```
 HTTP 200
 { "status": 200, "message": "Cập nhật trạng thái xuất bản thành công", "data": { "contentId": 24, "contentType": "assessment", "status": "archived" } }
@@ -523,6 +575,7 @@ HTTP 200
 | **Ưu tiên** | P0 (Data Integrity) |
 
 **Request:**
+
 ```json
 PUT /api/manager/contents/1/status
 { "contentType": "question", "status": "archived", "reason": "Lý do hợp lệ" }
@@ -531,6 +584,7 @@ PUT /api/manager/contents/1/status
 **Mock:** `service.updateStatus(...)` ném `ResourceInUseException` với `references=[{assessment,2,"Đề thi thử N5 - Tháng 6"}]`
 
 **Expected:**
+
 ```
 HTTP 409
 { "status": 409, "message": "Câu hỏi đang được sử dụng trong đề thi đang hoạt động, không thể thu hồi",
@@ -549,11 +603,13 @@ HTTP 409
 | **Ưu tiên** | P0 |
 
 **Request:**
+
 ```json
 { "contentType": "question", "status": "deleted", "reason": "" }
 ```
 
 **Expected:**
+
 ```
 HTTP 400  { "status": 400, "message": "Phải nhập lý do khi thu hồi, lưu trữ hoặc xóa nội dung", ... }  // REASON_REQUIRED
 ```
@@ -570,6 +626,7 @@ HTTP 400  { "status": 400, "message": "Phải nhập lý do khi thu hồi, lưu 
 | **Ưu tiên** | P1 |
 
 **Request:**
+
 ```json
 { "contentType": "question", "status": "published", "reason": "abc def ghi" }
 ```
@@ -588,6 +645,7 @@ HTTP 400  { "status": 400, "message": "Phải nhập lý do khi thu hồi, lưu 
 | **Ưu tiên** | P0 |
 
 **Request:**
+
 ```json
 POST /api/manager/contents/24/restore
 { "contentType": "assessment" }
@@ -596,6 +654,7 @@ POST /api/manager/contents/24/restore
 **Mock:** `service.restore(...)` → `status="published"`
 
 **Expected:**
+
 ```
 HTTP 200  { "status": 200, "message": "Khôi phục nội dung thành công", "data": { "contentId": 24, "contentType": "assessment", "status": "published" } }
 ```
@@ -614,6 +673,7 @@ HTTP 200  { "status": 200, "message": "Khôi phục nội dung thành công", "d
 **Mock:** `service.restore(...)` ném `RestoreNotAllowedException`
 
 **Expected:**
+
 ```
 HTTP 409  { "status": 409, "message": "Nội dung đã bị xóa không thể khôi phục (trạng thái cuối)", "data": { "errorCode": "RESTORE_NOT_ALLOWED" } }
 ```
@@ -647,10 +707,12 @@ HTTP 409  { "status": 409, "message": "Nội dung đã bị xóa không thể kh
 | **Ưu tiên** | P0 |
 
 **Steps:**
+
 1. Gọi `GET /api/manager/contents/105?contentType=question`
 2. Parse đệ quy toàn bộ JSON
 
 **Expected:**
+
 - Response là DTO; có `contentId`, `contentType`, `status`, `references`
 - KHÔNG có key Hibernate nội bộ (`hibernateLazyInitializer`, `handler`) hay trường nhạy cảm không khai báo trong DTO
 

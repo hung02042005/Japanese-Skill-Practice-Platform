@@ -11,6 +11,7 @@
 > **File:** `QuestionServiceTest.java` | **Tag:** `@Tag("unit")`
 
 ### TC-U-24-01 — Tạo câu hỏi multiple_choice hợp lệ → draft
+
 | Thuộc tính | Nội dung |
 |:---|:---|
 | **ID** | TC-U-24-01 |
@@ -21,11 +22,13 @@
 **Setup:** `currentStaffId = 5`; request multiple_choice đủ A/B/C/D + `correctOption='A'`, `skill=kanji`, `jlptLevel=N5`.
 **Steps:** Gọi `service.create(req, 5L)`.
 **Expected:**
+
 - Bản ghi lưu với `status='draft'`, `created_by=5`, `created_at≈NOW()`.
 - Client gửi `status='published'` → bị **bỏ qua**, vẫn `draft`.
 - Trả `questionId` mới; SLF4J log `Staff 5 create question {id}`.
 
 ### TC-U-24-02 — Thiếu trường bắt buộc → VALIDATION_FAILED
+
 | Thuộc tính | Nội dung |
 |:---|:---|
 | **ID** | TC-U-24-02 |
@@ -37,6 +40,7 @@
 **Expected:** Ném `ValidationException` (400 `VALIDATION_FAILED`); repository `save` KHÔNG được gọi.
 
 ### TC-U-24-03 — multiple_choice thiếu đáp án → MISSING_OPTIONS
+
 | Thuộc tính | Nội dung |
 |:---|:---|
 | **ID** | TC-U-24-03 |
@@ -48,6 +52,7 @@
 **Expected:** 400 `MISSING_OPTIONS`; rollback (không `save`).
 
 ### TC-U-24-04 — JLPT level ngoài tập → INVALID_JLPT_LEVEL
+
 | Thuộc tính | Nội dung |
 |:---|:---|
 | **ID** | TC-U-24-04 |
@@ -59,6 +64,7 @@
 **Expected:** 400 `INVALID_JLPT_LEVEL`.
 
 ### TC-U-24-05 — Cập nhật câu đã làm bài → QUESTION_LOCKED
+
 | Thuộc tính | Nội dung |
 |:---|:---|
 | **ID** | TC-U-24-05 |
@@ -67,14 +73,17 @@
 | **Ưu tiên** | P0 |
 
 **Setup:**
+
 ```java
 when(questionRepository.findById(200L)).thenReturn(Optional.of(aQuestion().withId(200L).withCreatedBy(5L).withStatus("draft").build()));
 when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 ```
+
 **Steps:** Gọi `service.update(200L, req, 5L)`.
 **Expected:** Ném `QuestionLockedException` (409 `QUESTION_LOCKED`); `save` KHÔNG được gọi; dữ liệu không đổi.
 
 ### TC-U-24-06 — Cập nhật khi status=pending_review → INVALID_STATUS_TRANSITION
+
 | Thuộc tính | Nội dung |
 |:---|:---|
 | **ID** | TC-U-24-06 |
@@ -87,6 +96,7 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 **Expected:** 409 `INVALID_STATUS_TRANSITION`; không `save`.
 
 ### TC-U-24-07 — Cập nhật câu draft hợp lệ → refresh updated_at
+
 | Thuộc tính | Nội dung |
 |:---|:---|
 | **ID** | TC-U-24-07 |
@@ -99,6 +109,7 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 **Expected:** `save` được gọi; `updated_at` mới; status vẫn `draft`.
 
 ### TC-U-24-08 — Không phải chủ sở hữu → FORBIDDEN
+
 | Thuộc tính | Nội dung |
 |:---|:---|
 | **ID** | TC-U-24-08 |
@@ -111,6 +122,7 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 **Expected:** Ném `OwnershipDeniedException` (403 `FORBIDDEN`); không `save`.
 
 ### TC-U-24-09 — STAFF_MANAGER bỏ qua ownership guard
+
 | Thuộc tính | Nội dung |
 |:---|:---|
 | **ID** | TC-U-24-09 |
@@ -122,6 +134,7 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 **Expected:** Update thành công (guard bỏ qua).
 
 ### TC-U-24-10 — Gửi duyệt câu draft → pending_review
+
 | Thuộc tính | Nội dung |
 |:---|:---|
 | **ID** | TC-U-24-10 |
@@ -134,6 +147,7 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 **Expected:** `status='pending_review'`; log `submit`.
 
 ### TC-U-24-11 — Gửi duyệt khi status=published → INVALID_STATUS_TRANSITION
+
 | Thuộc tính | Nội dung |
 |:---|:---|
 | **ID** | TC-U-24-11 |
@@ -151,6 +165,7 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 > **File:** `QuestionRepositoryIT.java` | **Tag:** `@Tag("integration")` | **Stack:** Testcontainers (SQL Server) + Flyway
 
 ### TC-I-24-01 — isLocked qua tồn tại trong attempt_answers
+
 | **ID** | TC-I-24-01 · **Tham chiếu** AC-24-07, FR-24-15 · **Ưu tiên** P0 |
 |:---|:---|
 
@@ -158,6 +173,7 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 **Expected:** `existsAttemptAnswerByQuestionId(200)=true`, `(105)=false`.
 
 ### TC-I-24-02 — Lọc AND theo skill + jlptLevel, loại deleted
+
 | **ID** | TC-I-24-02 · **Tham chiếu** AC-24-05, FR-24-12/13 · **Ưu tiên** P0 |
 |:---|:---|
 
@@ -165,6 +181,7 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 **Expected:** Chỉ câu kanji N5 không `deleted`; phân trang đúng, sort `updated_at` desc.
 
 ### TC-I-24-03 — Tìm kiếm theo từ khóa (LIKE, không phân biệt hoa thường)
+
 | **ID** | TC-I-24-03 · **Tham chiếu** AC-24-06, FR-24-11 · **Ưu tiên** P1 |
 |:---|:---|
 
@@ -178,6 +195,7 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 > **File:** `StaffQuestionControllerTest.java` | **Tag:** `@Tag("api")` | `@WebMvcTest` + Spring Security test
 
 ### TC-A-24-01 — POST /api/staff/questions — STAFF → 201
+
 | **ID** | TC-A-24-01 · **Tham chiếu** AC-24-01 · **Ưu tiên** P0 |
 |:---|:---|
 
@@ -185,12 +203,14 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 **Expected:** `HTTP 201`, `{ status:201, data:{ questionId, status:"draft" } }`.
 
 ### TC-A-24-02 — POST — không JWT → 401
+
 | **ID** | TC-A-24-02 · **Tham chiếu** NFR-24-02 · **Ưu tiên** P0 |
 |:---|:---|
 
 **Expected:** `HTTP 401 UNAUTHORIZED`; service KHÔNG được gọi.
 
 ### TC-A-24-03 — POST — role STUDENT → 403
+
 | **ID** | TC-A-24-03 · **Tham chiếu** NFR-24-02 · **Ưu tiên** P0 |
 |:---|:---|
 
@@ -198,6 +218,7 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 **Expected:** `HTTP 403 FORBIDDEN`.
 
 ### TC-A-24-04 — PUT — câu đã làm bài → 409 QUESTION_LOCKED
+
 | **ID** | TC-A-24-04 · **Tham chiếu** AC-24-09 · **Ưu tiên** P0 |
 |:---|:---|
 
@@ -205,6 +226,7 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 **Expected:** `HTTP 409`, message "Câu hỏi đã được học viên làm, không thể sửa trực tiếp".
 
 ### TC-A-24-05 — POST /contents/submit-review → 200 pending_review
+
 | **ID** | TC-A-24-05 · **Tham chiếu** AC-24-11 · **Ưu tiên** P0 |
 |:---|:---|
 
@@ -212,18 +234,21 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 **Expected:** `HTTP 200`, `data:{ status:"pending_review" }`.
 
 ### TC-A-24-06 — Cố đặt status=published → 403 PUBLISH_NOT_ALLOWED
+
 | **ID** | TC-A-24-06 · **Tham chiếu** AC-24-12, FR-24-23 · **Ưu tiên** P0 |
 |:---|:---|
 
 **Expected:** `HTTP 403 PUBLISH_NOT_ALLOWED`; status không đổi.
 
 ### TC-A-24-07 — GET /{id} — không tồn tại → 404
+
 | **ID** | TC-A-24-07 · **Tham chiếu** FR-24-14 · **Ưu tiên** P1 |
 |:---|:---|
 
 **Expected:** `HTTP 404 QUESTION_NOT_FOUND`.
 
 ### TC-A-24-08 — Response chỉ DTO, không lộ Entity
+
 | **ID** | TC-A-24-08 · **Tham chiếu** NFR-24-04, ADR-005 · **Ưu tiên** P0 |
 |:---|:---|
 
@@ -233,6 +258,7 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 ---
 
 ## 4. TEST DATA SUMMARY
+
 | Fixture | questionId | created_by | status | attempt_answers? |
 |:---|:---|:---|:---|:---|
 | `draftOwn` | 105 | 5 | draft | không |
@@ -245,6 +271,7 @@ when(questionRepository.existsAttemptAnswerByQuestionId(200L)).thenReturn(true);
 ---
 
 ## 5. COVERAGE CHECKLIST (Rule nghiệp vụ UC-24)
+
 | Rule/FR | Mô tả | Test Case | Covered? |
 |:---|:---|:---|:---|
 | FR-24-01/02 | Create → draft + created_by, bỏ qua status client | TC-U-24-01, TC-A-24-01 | ✅ |

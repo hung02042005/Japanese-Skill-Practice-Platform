@@ -7,12 +7,14 @@
 ## Available Tools
 
 **JDKs**
+
 - JDK 17.0.1: C:\Program Files\Java\jdk-17.0.1\bin
 - JDK 21.0.11: C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot\bin (current target)
 - JDK 25.0.3: C:\Users\DELL\AppData\Roaming\Code\User\globalStorage\pleiades.java-extension-pack-jdk\java\25\bin
 - JDK 26.0.1: C:\Users\DELL\AppData\Roaming\Code\User\globalStorage\pleiades.java-extension-pack-jdk\java\latest\bin
 
 **Build Tools**
+
 - Maven 3.9.16: C:\apache-maven-3.9.16\bin
 - Maven Wrapper: not found in repository root; using system Maven 3.9.16
 

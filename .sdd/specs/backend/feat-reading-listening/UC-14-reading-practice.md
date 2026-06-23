@@ -238,6 +238,7 @@ sequenceDiagram
 | `POST` | `/api/lessons/{lessonId}/submit` | Nộp bài, nhận điểm và phản hồi |
 
 **Request body mẫu — POST /api/lessons/{lessonId}/submit:**
+
 ```json
 {
   "attemptType": "reading",
@@ -249,6 +250,7 @@ sequenceDiagram
 ```
 
 **Response body mẫu (200):**
+
 ```json
 {
   "status": 200,

@@ -1,4 +1,5 @@
 # SPEC — Trang chủ Từ Vựng (Vocab Home — SakuJi gamified)
+>
 > **Feature ID:** `feat-student` | **Page:** `VocabHome`
 > **Route:** `/vocabulary` (gamified lesson-path home) — private, role STUDENT, redirect `/login` nếu chưa auth
 > **UC Coverage:** UC-09 (Học Từ vựng theo Level/Topic), UC-19 (Progress & Streak)
@@ -6,7 +7,7 @@
 > **Author:** Team | **Last Updated:** 2026-06-19
 > **Design ref:** `feat-dashboard/SPEC-dashboard.md` — **SakuJi · Hanami** theme (sakura-pink). Layout gamified theo prompt N5 Kanji & Vocab.
 > **Backend ref:** `.sdd/specs/backend/feat-core-learning/SPEC.md UC-09`, `feat-learning-analytics/SPEC.md`
-
+>
 > **Chủ đề chính:** Dùng **thương hiệu & design system SakuJi** (logo SakuJi, mascot **Saku-chan**, palette sakura-pink, font Nunito + Noto Sans JP). KHÔNG dùng brand/icon riêng khác. Tokens lấy từ `SPEC-dashboard.md §2` (token toàn cục `--color-*`).
 > **Quan hệ spec cũ:** `SPEC-vocabulary.md` là màn **danh sách từ** (list/filter/search) tại `/vocabulary?view=list`. Spec này là **entry point gamified của section Từ vựng**; click LessonCard → mở word-list/flashcard session của bài (FR-VH-06).
 
@@ -79,6 +80,7 @@
 Trang chủ section **Từ vựng** của **SakuJi** — dashboard học tập cho khoá **N5 Kanji & Vocab**, phong cách Hanami (sakura-pink, dễ thương). Học sinh học **từng bài theo danh sách** (lesson-path), có động lực qua streak + Saku-chan + unlock.
 
 **Cấu trúc tổng thể (3 cột dưới TopNav):**
+
 ```
 [TopNav]     — full-width: logo SakuJi + tabs + user (dùng chung toàn app)
 [LEFT 220px] — StreakCard (sakura gradient) + tiến độ tuần
@@ -88,6 +90,7 @@ Trang chủ section **Từ vựng** của **SakuJi** — dashboard học tập c
 ```
 
 **File structure:**
+
 ```
 apps/frontend/src/
 ├── components/layout/
@@ -157,6 +160,7 @@ apps/frontend/src/
 ## 3. LAYOUT TỔNG THỂ
 
 ### 3.1 Page Shell
+
 ```
 .vh-page
   min-height: 100vh
@@ -166,6 +170,7 @@ apps/frontend/src/
 ```
 
 ### 3.2 Body grid (desktop ≥ 1024px)
+
 ```
 .vh-body
   display: grid
@@ -179,6 +184,7 @@ apps/frontend/src/
 ```
 
 ### 3.3 Sơ đồ bố cục đầy đủ
+
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
 │  TopNav (sticky 64px)                                                     │
@@ -257,6 +263,7 @@ Tái dùng `components/layout/TopNav.jsx` với `activeTab="vocabulary"`. Chi ti
 > Chỉ render khi `subscription !== 'VIP'` (FR-VH-04).
 
 ### 6.1 UnlockBanner — `.vh-unlock`
+
 ```
 Background:    linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)
 Color:         #FFFFFF
@@ -270,6 +277,7 @@ Border:        1px solid var(--color-primary-light)
 ```
 
 **Tiêu đề — `.vh-unlock-title`**
+
 ```
 Font: Nunito 800, 22px, uppercase, letter-spacing 0.5px
 Text: "UNLOCK ALL LESSONS"
@@ -277,12 +285,14 @@ Text-shadow: 0 1px 2px rgba(0,0,0,0.12)
 ```
 
 **Sub — `.vh-unlock-sub`** (tuỳ chọn)
+
 ```
 Font: Nunito 600, 13px, color rgba(255,255,255,0.9)
 Text: "Mở khoá toàn bộ bài N5 Kanji & Vocab"
 ```
 
 **CTA — `.vh-unlock-cta`**
+
 ```
 Text: "UNLOCK NOW"
 Background: #FFFFFF, color var(--color-primary-dark)
@@ -295,6 +305,7 @@ onClick → navigate('/subscription')
 ```
 
 **Saku-chan trang trí — `.vh-unlock-mascot`**
+
 ```
 Saku-chan SVG, absolute right 20px bottom 0, width ~96px
 Animation: saku-sway 3s ease-in-out infinite; pointer-events none
@@ -306,6 +317,7 @@ Animation: saku-sway 3s ease-in-out infinite; pointer-events none
 ## 7. CENTER — SECTION TITLE + LESSON LIST
 
 ### 7.1 Section title — `.vh-section-title`
+
 ```
 Font: Nunito 800, 22px, color var(--color-text)
 Text: "N5 Kanji & Vocab"
@@ -314,14 +326,17 @@ Margin: 0 0 14px
 ```
 
 ### 7.2 VocabLessonList — `.vh-lesson-list`
+
 ```
 Display: flex, flex-direction: column, gap: 14px
 ```
 
 ### 7.3 VocabLessonCard — `.vh-lesson`
+
 3 trạng thái: **active** (green), **available** (trắng), **locked**.
 
 **Layout:**
+
 ```
 ┌──────────────────────────────────────────────────┐
 │  [◯ thumb 56px]   Tiêu đề JP            [→ / 🔒]  │
@@ -330,6 +345,7 @@ Display: flex, flex-direction: column, gap: 14px
 ```
 
 **Base styles:**
+
 ```
 Display: flex, align-items: center, gap: 16px
 Background: var(--color-card)
@@ -342,6 +358,7 @@ Transition: transform var(--transition), box-shadow var(--transition), border-co
 ```
 
 **Hover (available/active) — FR-VH-14:**
+
 ```
 Transform: scale(1.02)
 Box-shadow: var(--shadow-md)
@@ -349,6 +366,7 @@ Border-color: var(--color-primary-light)
 ```
 
 **State `active` (green nổi bật):**
+
 ```
 Background: linear-gradient(135deg, #66BB6A 0%, var(--color-secondary) 100%)
 Color: #FFFFFF
@@ -361,12 +379,14 @@ aria-current="true"
 ```
 
 **State `available` (trắng):**
+
 ```
 Background: var(--color-card)
 [Arrow]: color var(--color-text-disabled) → hover var(--color-secondary)
 ```
 
 **State `locked`:**
+
 ```
 Background: var(--color-bg)
 Opacity: 0.7, cursor: not-allowed
@@ -375,6 +395,7 @@ aria-disabled="true"
 ```
 
 #### 7.3.1 Thumbnail — `.vh-lesson-thumb`
+
 ```
 56px, border-radius var(--radius-full), flex-shrink 0, overflow hidden
 Display flex center
@@ -386,6 +407,7 @@ locked:    lock icon trên nền var(--color-border)
 ```
 
 #### 7.3.2 Content — `.vh-lesson-content`
+
 ```
 Flex 1, min-width 0
 [Title] .vh-lesson-title:  Nunito 800, 17px, Noto Sans JP cho JP (vd "はじめましょう"); ellipsis
@@ -393,6 +415,7 @@ Flex 1, min-width 0
 ```
 
 #### 7.3.3 Trailing — `.vh-lesson-trail`
+
 ```
 flex-shrink 0
 available/active: arrow 20px
@@ -400,6 +423,7 @@ locked: lock 18px, color var(--color-text-disabled)
 ```
 
 **Dữ liệu mẫu (theo prompt):**
+
 | status | Title (JP) | Subtitle (EN) | Thumb |
 |:---|:---|:---|:---|
 | active | はじめましょう | Start with Mochi | Saku-chan tròn |
@@ -412,6 +436,7 @@ locked: lock 18px, color var(--color-text-disabled)
 ## 8. RIGHT SIDEBAR — ACCOUNT + COURSE LIST
 
 ### 8.1 AccountPanel — `.vh-account`
+
 ```
 Background: var(--color-card), border-radius var(--radius-lg)
 Padding: 18px 16px, box-shadow var(--shadow-sm)
@@ -424,6 +449,7 @@ Display: flex, flex-direction: column, align-items: center, gap: 8px
 ```
 
 ### 8.2 CourseListCard — `.vh-courselist`
+
 ```
 Background: var(--color-card), border-radius var(--radius-lg)
 Padding: 18px 16px, box-shadow var(--shadow-sm)
@@ -448,6 +474,7 @@ SectionTitle: skeleton 220×30px
 LessonCard:   3 skeleton 84px height, radius var(--radius-lg)
 AccountPanel: 220×130px ; CourseList: 220×80px
 ```
+
 ```css
 @keyframes vhSkel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 .vh-skel {
@@ -584,6 +611,7 @@ export default function VocabHome() {
 | Tải Vocab Home | `GET` | `/api/students/vocab-home` | `{ streak, weekDays[], courseTitle, subscription, lessons[] }` |
 
 **Response shape (tham khảo):**
+
 ```json
 {
   "status": 200,
@@ -654,6 +682,7 @@ export default function VocabHome() {
 ## 16. STYLE GUARDRAILS
 
 Theo phong cách SakuJi Hanami (cute, friendly), TUYỆT ĐỐI tránh:
+
 - ❌ Harsh shadows → chỉ soft shadow `rgba(0,0,0,0.07–0.10)`
 - ❌ Dark UI → nền washi sáng `#FAF7F4`
 - ❌ Complex clutter → mỗi vùng một nhiệm vụ, whitespace rộng
@@ -672,4 +701,5 @@ Theo phong cách SakuJi Hanami (cute, friendly), TUYỆT ĐỐI tránh:
 - ❌ Các section khác trong TopNav (Kanji, Ngữ pháp, …)
 - ❌ Dark mode
 - ❌ Mascot animation engine nâng cao (chỉ idle sway)
+
 ```

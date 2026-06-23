@@ -1,6 +1,9 @@
 <<<<<<< Updated upstream
+
 # SPEC — Flashcard theo Course → Topic (`/flashcard`)
+
 =======
+
 # SPEC — Quản lý Flashcard (`/flashcard`)
 >
 >>>>>>> Stashed changes
@@ -16,6 +19,7 @@
 Điểm vào học **Flashcard** theo cấu trúc **Course → Topic**. Thẻ lấy từ **kho từ vựng** (`vocabulary`), chia theo **chủ đề (topic)** trong từng **Course** (mỗi JLPT level N5→N1 là một Course).
 
 Luồng:
+
 1. Học viên **chọn Course** (N5 / N4 / N3 / N2 / N1).
 2. Trang **hiện danh sách Topic** của course đó (lấy từ kho vocab theo level).
 3. Chọn một topic → mở **phiên học Flashcard** (`SPEC-flashcard-session.md`) theo `level + topic`.
@@ -305,6 +309,7 @@ export default function Flashcard() {
 ---
 
 ## OUT OF SCOPE
+
 - ❌ Tạo/sửa/xoá bộ thẻ cá nhân (deck CRUD) — điểm vào học là Course→Topic; Sổ tay "Từ cần ôn lại" quản ở `/notebook`.
 - ❌ Học Kanji/Ngữ pháp dạng flashcard — bản này chỉ từ vựng.
 - ❌ Course entity động (nhiều course/level) — dùng level tĩnh.

@@ -1,4 +1,5 @@
 # SPEC — Từ Điển (`/dictionary`)
+>
 > **Sprint:** 2 — Core Learning Loop
 > **Prefix:** `dct-` | **activeTab:** `'dictionary'` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §10` · `DESIGN.md` (Hanami Theme) | **Backend ref:** `feat-dictionary-bookmark/SPEC.md` (UC-16) · `feat-flashcard-srs` (review-deck/add)
@@ -11,6 +12,7 @@
 **Từ Điển** là công cụ **tra cứu** tích hợp trên kho nội dung đã xuất bản. Trọng tâm là **kho từ vựng (`vocabulary`)**, kèm tra cứu phụ Kanji, ngữ pháp, bài học. Học viên gõ từ khóa (chữ Nhật / Romaji / tiếng Việt) → nhận kết quả **gom nhóm theo loại**; mở một mục → xem chi tiết (furigana, nghĩa, âm Onyomi/Kunyomi, ví dụ song ngữ, audio).
 
 **Vai trò trong hệ thống (xem `SPEC-notebook.md §1.1`):**
+
 - **Từ điển = tra cứu**, không lưu trữ.
 - Từ kết quả/chi tiết, học viên bấm **"Lưu vào sổ tay"** để đưa từ vựng vào Sổ Tay "Từ cần ôn lại" (`/notebook`) — **thay cho** tab bookmark nhúng trong trang cũ.
 

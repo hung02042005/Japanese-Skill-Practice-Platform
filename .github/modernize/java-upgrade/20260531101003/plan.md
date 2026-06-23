@@ -7,10 +7,12 @@
 ## Available Tools
 
 **JDKs**
+
 - JDK 17.0.1: C:\Program Files\Java\jdk-17.0.1\bin
 - JDK 21.0.11: C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot\bin
 
 **Build Tools**
+
 - Maven 3.9.16: C:\apache-maven-3.9.16\bin
 - Maven Wrapper: not present in repository
 
