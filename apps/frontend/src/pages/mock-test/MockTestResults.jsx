@@ -2,7 +2,6 @@ import { Fragment, useState, useEffect } from 'react';
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import TopNav from '../../components/layout/TopNav';
 import { getExamReview } from '../../api/studentService';
-import { DEMO_MODE, MOCK_QUIZ_RESULT } from '../../api/mockData';
 import './MockTestResults.css';
 
 const SECTION_LABELS = {
@@ -23,11 +22,6 @@ export default function MockTestResults() {
 
   useEffect(() => {
     if (!attemptId) { navigate('/mock-test'); return; }
-    if (DEMO_MODE) {
-      setResult(MOCK_QUIZ_RESULT);
-      setLoading(false);
-      return;
-    }
     (async () => {
       setLoading(true);
       try {

@@ -4,8 +4,16 @@ import TopNav from '../../components/layout/TopNav';
 import { EmptyState } from '../../components/common/EmptyState';
 import QuizCard from '../../components/student/QuizCard';
 import QuizQuestion from '../../components/student/QuizQuestion';
-import { getQuizList, getQuizQuestions, submitPracticeQuiz } from '../../api/studentService';
+import { getQuizzes, startAssessment, submitAssessment } from '../../api/studentService';
 import './QuizPage.css';
+
+// Chuyển câu hỏi từ payload assessment (optionA..D) sang shape QuizQuestion mong đợi.
+function toQuizQuestion(q) {
+  const options = ['A', 'B', 'C', 'D']
+    .map((label) => ({ optionId: label, label, text: q[`option${label}`] }))
+    .filter((o) => o.text != null && o.text !== '');
+  return { questionId: q.questionId, content: q.questionText, options };
+}
 
 const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
 const SKILLS = [
@@ -40,14 +48,14 @@ export default function QuizPage() {
     setLoading(true);
     setError('');
     try {
-      const data = await getQuizList({ level, skill });
-      setQuizzes(data.content);
+      const data = await getQuizzes({ level });
+      setQuizzes(data.content ?? []);
     } catch (err) {
       setError(err?.response?.data?.message ?? 'Không thể tải danh sách quiz.');
     } finally {
       setLoading(false);
     }
-  }, [level, skill]);
+  }, [level]);
 
   useEffect(() => { fetchQuizzes(); }, [fetchQuizzes]);
 
@@ -55,9 +63,10 @@ export default function QuizPage() {
     setLoadingQ(true);
     setError('');
     try {
-      const qs = await getQuizQuestions(quiz.quizId);
-      setActiveQuiz(quiz);
-      setQuestions(qs);
+      const data = await startAssessment(quiz.assessmentId);
+      const raw = data.sections?.flatMap((s) => s.questions) ?? data.questions ?? [];
+      setActiveQuiz({ ...quiz, attemptId: data.attemptId });
+      setQuestions(raw.map(toQuizQuestion));
       setCurrentIdx(0);
       setAnswers({});
       setResult(null);
@@ -76,9 +85,21 @@ export default function QuizPage() {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      const answerEntries = Object.entries(answers).map(([qId, oId]) => [Number(qId), oId]);
-      const res = await submitPracticeQuiz(activeQuiz.quizId, answerEntries);
-      setResult(res);
+      const answerArr = questions.map((q) => ({
+        questionId: q.questionId,
+        selectedOption: answers[q.questionId] ?? null,
+      }));
+      const res = await submitAssessment(activeQuiz.assessmentId, {
+        attemptId: activeQuiz.attemptId,
+        isAutoSubmit: false,
+        answers: answerArr,
+      });
+      const correct = res.results?.filter((r) => r.isCorrect).length ?? 0;
+      const total = res.results?.length ?? questions.length;
+      const pct = Number(res.maxScore) > 0
+        ? Math.round((Number(res.totalScore) / Number(res.maxScore)) * 100)
+        : 0;
+      setResult({ score: correct, totalQuestions: total, scorePct: pct, results: res.results });
       setView('result');
     } catch {
       setError('Không thể nộp bài. Vui lòng thử lại.');
@@ -195,7 +216,7 @@ export default function QuizPage() {
             <div className="qz-result-actions">
               <button
                 className="qz-btn-secondary"
-                onClick={() => { setCurrentIdx(0); setAnswers({}); setResult(null); setView('attempt'); }}
+                onClick={() => startQuiz(activeQuiz)}
               >
                 Làm lại
               </button>
@@ -264,7 +285,7 @@ export default function QuizPage() {
         ) : (
           <div className="qz-list">
             {quizzes.map((q) => (
-              <QuizCard key={q.quizId} quiz={q} onStart={startQuiz} />
+              <QuizCard key={q.assessmentId} quiz={q} onStart={startQuiz} />
             ))}
           </div>
         )}

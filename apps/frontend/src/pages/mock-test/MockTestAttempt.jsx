@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ExamTopBar from '../../components/student/ExamTopBar';
 import ExamNavigator from '../../components/student/ExamNavigator';
 import { startAssessment, submitAssessment } from '../../api/studentService';
-import { DEMO_MODE, MOCK_ASSESSMENT_DETAIL } from '../../api/mockData';
 import './MockTestAttempt.css';
 
 export default function MockTestAttempt() {
@@ -30,16 +29,14 @@ export default function MockTestAttempt() {
     (async () => {
       setLoading(true);
       try {
-        const data = DEMO_MODE ? MOCK_ASSESSMENT_DETAIL : await startAssessment(id);
+        const data = await startAssessment(id);
         const allQs = data.sections?.flatMap((s) =>
           s.questions.map((q) => ({ ...q, sectionName: s.sectionName }))
         ) ?? data.questions ?? [];
         setExam(data);
         setAttemptId(data.attemptId);
         setQs(allQs);
-        setTime(DEMO_MODE
-          ? data.durationMin * 60
-          : Math.max(0, Math.floor((new Date(data.expiresAt).getTime() - Date.now()) / 1000)));
+        setTime(Math.max(0, Math.floor((new Date(data.expiresAt).getTime() - Date.now()) / 1000)));
         const draft = localStorage.getItem(DRAFT_KEY);
         if (draft) {
           try { setAnswers(JSON.parse(draft)); } catch { /* ignore */ }
@@ -81,11 +78,6 @@ export default function MockTestAttempt() {
     setSubmit(true);
     clearInterval(timerRef.current);
     try {
-      if (DEMO_MODE) {
-        localStorage.removeItem(DRAFT_KEY);
-        navigate(`/mock-test/${id}/results?attemptId=demo-1`);
-        return;
-      }
       const payload = questions.map((q) => ({
         questionId:     q.questionId,
         selectedOption: answers[q.questionId] ?? null,

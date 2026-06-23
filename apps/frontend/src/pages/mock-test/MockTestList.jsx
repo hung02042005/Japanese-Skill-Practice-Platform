@@ -6,7 +6,6 @@ import { JlptBadge } from '../../components/common/Badges';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
 import { getExamList } from '../../api/studentService';
-import { DEMO_MODE, MOCK_EXAM_LIST } from '../../api/mockData';
 import './MockTestList.css';
 
 const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
@@ -26,13 +25,6 @@ export default function MockTestList() {
     setLoading(true);
     setError('');
     try {
-      if (DEMO_MODE) {
-        const mock = MOCK_EXAM_LIST[level] ?? { content: [], totalPages: 1 };
-        setExams(mock.content);
-        setTotal(mock.totalPages);
-        setLoading(false);
-        return;
-      }
       const res = await getExamList({ level, page: page - 1, size: 10 });
       setExams(res.content ?? []);
       setTotal(res.totalPages ?? 1);

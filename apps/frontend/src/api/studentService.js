@@ -308,25 +308,13 @@ export async function markKanaComplete(kanaId) {
   return res.data.data;
 }
 
-// ─── Quiz (Practice) ─────────────────────────────────────────────────────────
-export async function getQuizList({ level, skill, page = 0, size = 20 } = {}) {
-  const params = { level, page, size };
-  if (skill) params.skill = skill;
-  const res = await api.get('/quizzes', { params });
-  return res.data.data;
-}
-
-export async function getQuizQuestions(quizId) {
-  const res = await api.get(`/quizzes/${quizId}/questions`);
-  return res.data.data;
-}
-
-export async function submitPracticeQuiz(quizId, answers) {
-  const res = await api.post('/quiz-attempts', {
-    quizId,
-    answers: answers.map(([questionId, selectedOptionId]) => ({ questionId, selectedOptionId })),
-  });
-  return res.data.data;
+// ─── Quiz (Practice) — dùng chung backend assessment (assessment_type='quiz') ──
+// Danh sách quiz đã published; làm bài qua startAssessment/submitAssessment như exam.
+export async function getQuizzes({ level, page = 0, size = 20 } = {}) {
+  const params = { type: 'quiz', page, size };
+  if (level) params.level = level;
+  const res = await api.get('/assessments', { params });
+  return res.data.data; // { content, totalElements, totalPages }
 }
 
 // ─── Speaking (AI) ───────────────────────────────────────────────────────────
