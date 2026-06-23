@@ -18,46 +18,46 @@ GO
    0. CẤU HÌNH HỆ THỐNG (gộp từ V1 cũ + V25)
    ============================================================ */
 
-INSERT INTO system_settings (setting_group, setting_key, setting_value, value_type) VALUES
-('general',  'platform_name',       N'JLPT Learning Platform', 'string'),
-('general',  'logo_url',            N'/assets/logo.png',       'string'),
-('general',  'default_language',    N'vi',                     'string'),
-('general',  'maintenance_mode',    N'false',                  'boolean'),
-('general',  'allow_registration',  N'true',                   'boolean'),
-
-('security','max_login_attempts',  N'5',                      'integer'),
-('security','session_timeout_min', N'60',                     'integer'),
-('security','password_reset_min',  N'15',                     'integer'),
-
-('smtp',    'host',                N'smtp.gmail.com',         'string'),
-('smtp',    'port',                N'587',                    'integer'),
-('smtp',    'username',            N'',                       'string'),
-('smtp',    'from_email',          N'noreply@jlpt.com',       'string'),
-('smtp',    'secure',              N'STARTTLS',               'string'),
-('smtp',    'from_name',           N'JLPT Platform',          'string'),
-
-('auto_notification','streak_10_days_enabled',    N'true',                                  'boolean'),
-('auto_notification','streak_10_days_title',      N'Tuyệt vời!',                            'string'),
-('auto_notification','streak_10_days_template',   N'Bạn đã học liên tiếp 10 ngày!',         'string'),
-('auto_notification','daily_flashcard_enabled',   N'true',                                  'boolean'),
-('auto_notification','daily_flashcard_time',      N'08:00',                                 'time'),
-('auto_notification','daily_flashcard_title',     N'Ôn flashcard',                          'string'),
-('auto_notification','daily_flashcard_template',  N'Đến giờ ôn flashcard rồi!',             'string'),
-('auto_notification','exam_result_ready_enabled', N'true',                                  'boolean'),
-('auto_notification','exam_result_ready_title',   N'Kết quả thi',                           'string'),
-('auto_notification','exam_result_ready_template',N'Điểm bài thi của bạn đã có',            'string'),
-
-('email_register', 'from_email', N'noreply@jlpt.com',            'string'),
-('email_register', 'from_name',  N'JLPT Platform',               'string'),
-('email_register', 'subject',    N'Xác nhận đăng ký tài khoản',  'string'),
-
-('email_otp', 'from_email', N'noreply@jlpt.com',    'string'),
-('email_otp', 'from_name',  N'JLPT Platform',       'string'),
-('email_otp', 'subject',    N'Mã xác thực của bạn', 'string'),
-
-('email_reset', 'from_email', N'noreply@jlpt.com',                  'string'),
-('email_reset', 'from_name',  N'JLPT Platform',                     'string'),
-('email_reset', 'subject',    N'Cấp lại mật khẩu tài khoản Staff',  'string');
+INSERT INTO system_settings (setting_group, setting_key, setting_value, value_type)
+SELECT g, k, v, t FROM (VALUES
+    ('general',           'platform_name',              N'JLPT Learning Platform',           'string'),
+    ('general',           'logo_url',                   N'/assets/logo.png',                 'string'),
+    ('general',           'default_language',           N'vi',                               'string'),
+    ('general',           'maintenance_mode',           N'false',                            'boolean'),
+    ('general',           'allow_registration',         N'true',                             'boolean'),
+    ('security',          'max_login_attempts',         N'5',                                'integer'),
+    ('security',          'session_timeout_min',        N'60',                               'integer'),
+    ('security',          'password_reset_min',         N'15',                               'integer'),
+    ('smtp',              'host',                       N'smtp.gmail.com',                   'string'),
+    ('smtp',              'port',                       N'587',                              'integer'),
+    ('smtp',              'username',                   N'',                                 'string'),
+    ('smtp',              'from_email',                 N'noreply@jlpt.com',                 'string'),
+    ('smtp',              'secure',                     N'STARTTLS',                         'string'),
+    ('smtp',              'from_name',                  N'JLPT Platform',                    'string'),
+    ('auto_notification', 'streak_10_days_enabled',     N'true',                             'boolean'),
+    ('auto_notification', 'streak_10_days_title',       N'Tuyệt vời!',                       'string'),
+    ('auto_notification', 'streak_10_days_template',    N'Bạn đã học liên tiếp 10 ngày!',    'string'),
+    ('auto_notification', 'daily_flashcard_enabled',    N'true',                             'boolean'),
+    ('auto_notification', 'daily_flashcard_time',       N'08:00',                            'time'),
+    ('auto_notification', 'daily_flashcard_title',      N'Ôn flashcard',                     'string'),
+    ('auto_notification', 'daily_flashcard_template',   N'Đến giờ ôn flashcard rồi!',        'string'),
+    ('auto_notification', 'exam_result_ready_enabled',  N'true',                             'boolean'),
+    ('auto_notification', 'exam_result_ready_title',    N'Kết quả thi',                      'string'),
+    ('auto_notification', 'exam_result_ready_template', N'Điểm bài thi của bạn đã có',       'string'),
+    ('email_register',    'from_email',                 N'noreply@jlpt.com',                 'string'),
+    ('email_register',    'from_name',                  N'JLPT Platform',                    'string'),
+    ('email_register',    'subject',                    N'Xác nhận đăng ký tài khoản',       'string'),
+    ('email_otp',         'from_email',                 N'noreply@jlpt.com',                 'string'),
+    ('email_otp',         'from_name',                  N'JLPT Platform',                    'string'),
+    ('email_otp',         'subject',                    N'Mã xác thực của bạn',              'string'),
+    ('email_reset',       'from_email',                 N'noreply@jlpt.com',                 'string'),
+    ('email_reset',       'from_name',                  N'JLPT Platform',                    'string'),
+    ('email_reset',       'subject',                    N'Cấp lại mật khẩu tài khoản Staff', 'string')
+) AS src(g, k, v, t)
+WHERE NOT EXISTS (
+    SELECT 1 FROM system_settings s
+    WHERE s.setting_group = src.g AND s.setting_key = src.k
+);
 GO
 
 /* ============================================================

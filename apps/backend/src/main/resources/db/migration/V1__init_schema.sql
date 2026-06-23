@@ -8,18 +8,6 @@
 -- =====================================================
 -- 0. KHỞI TẠO DATABASE
 -- =====================================================
-IF DB_ID('JLPT_LearningDB') IS NOT NULL
-BEGIN
-    ALTER DATABASE JLPT_LearningDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-    DROP DATABASE JLPT_LearningDB;
-END
-GO
-
-CREATE DATABASE JLPT_LearningDB;
-GO
-
-USE JLPT_LearningDB;
-GO
 
 
 /* ============================================================================

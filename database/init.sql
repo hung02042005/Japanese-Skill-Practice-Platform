@@ -11,6 +11,10 @@
    I. NGƯỜI DÙNG & XÁC THỰC
    ============================================================================ */
 
+   create database JLPT_LearningDB
+   go
+
+   use JLPT_LearningDB
 -- 1. Admin
 CREATE TABLE admin_users (
     admin_id             BIGINT IDENTITY(1,1) PRIMARY KEY,
@@ -741,3 +745,5 @@ GO
 
 PRINT N'✅ Schema JLPT_LearningDB v2.6 đã khởi tạo thành công.';
 GO
+
+
