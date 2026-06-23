@@ -1,24 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
 import StaffTopNav from '../../components/layout/StaffTopNav';
 import StaffPageHero from '../../components/staff/StaffPageHero';
+import { getStaffDashboard } from '../../api/staffService';
 import './StaffDashboard.css';
-
-const MOCK_STATS = {
-  draftCount: 3,
-  pendingReviewCount: 7,
-  openTicketCount: 12,
-  pendingGradingCount: 5,
-};
-
-const MOCK_ACTIVITY = [
-  { id: 1, date: '03/06/2026', type: 'Bài học', title: 'Bài 3 — Kanji N5 cơ bản', status: 'draft' },
-  { id: 2, date: '02/06/2026', type: 'Câu hỏi', title: "N5 Kanji: '水' đọc là gì?", status: 'pending_review' },
-  { id: 3, date: '01/06/2026', type: 'Đề thi', title: 'Mock Test N4 Vol.2', status: 'published' },
-  { id: 4, date: '31/05/2026', type: 'Từ vựng', title: 'Nhóm từ về gia đình N5', status: 'pending_review' },
-  { id: 5, date: '30/05/2026', type: 'Ngữ pháp', title: '～てから (sau khi ~)', status: 'rejected' },
-];
 
 const STATUS_MAP = {
   draft: { label: 'Nháp', className: 'sfd-status--draft' },
@@ -135,8 +121,25 @@ function IconMicAction() {
 function StaffDashboard() {
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
-  const [stats] = useState(MOCK_STATS);
-  const [activity] = useState(MOCK_ACTIVITY);
+  const [stats, setStats] = useState({ draftCount: 0, pendingReviewCount: 0, openTicketCount: 0, pendingGradingCount: 0 });
+  const [activity, setActivity] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    getStaffDashboard()
+      .then((d) => {
+        if (cancelled) return;
+        setStats({
+          draftCount: d.draftCount ?? 0,
+          pendingReviewCount: d.pendingReviewCount ?? 0,
+          openTicketCount: d.openTicketCount ?? 0,
+          pendingGradingCount: d.pendingGradingCount ?? 0,
+        });
+        setActivity(d.recentActivity ?? []);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <div className="sfd-page">

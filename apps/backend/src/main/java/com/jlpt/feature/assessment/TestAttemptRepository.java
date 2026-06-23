@@ -33,4 +33,7 @@ public interface TestAttemptRepository extends JpaRepository<TestAttempt, Long> 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT t FROM TestAttempt t WHERE t.id = :id")
     Optional<TestAttempt> findByIdForUpdate(@Param("id") Long id);
+
+    // Staff view: toàn bộ lần thi đã nộp của 1 học viên (tính điểm TB + lấy gần đây).
+    List<TestAttempt> findByStudent_IdAndStatusIn(Long studentId, List<TestAttempt.AttemptStatus> statuses);
 }

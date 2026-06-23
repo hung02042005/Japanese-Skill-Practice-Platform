@@ -3,6 +3,7 @@ package com.jlpt.feature.assessment;
 
 import com.jlpt.feature.learning.Kanji;
 import com.jlpt.feature.student.StudentUser;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +39,12 @@ public interface AssessmentRepository extends JpaRepository<Assessment, Long> {
     boolean existsByTitle(String title);
 
     Optional<Assessment> findByIdAndIsDeletedFalse(Long id);
+
+    // Dashboard staff: đếm assessment (quiz/exam) do nhân viên này tạo theo trạng thái.
+    long countByCreatedBy_IdAndStatus(Long staffId, Kanji.ContentStatus status);
+
+    // Dashboard staff: hoạt động gần đây (assessment do nhân viên này tạo/sửa).
+    List<Assessment> findTop8ByCreatedBy_IdAndIsDeletedFalseOrderByUpdatedAtDesc(Long staffId);
 
     @Query(
             """

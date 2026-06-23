@@ -5,67 +5,10 @@ import { JlptBadge } from '../../components/common/Badges';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
 import StudentDetailPanel from '../../components/staff/StudentDetailPanel';
+import { getStaffStudents, getStudentProgress } from '../../api/staffService';
 import './StaffStudents.css';
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
-
-const MOCK_STUDENTS = [
-  { studentId: 1,  fullName: 'Nguyễn Văn An',    email: 'nguyenvanan@email.com',   jlptLevel: 'N3', status: 'active',    subscription: 'VIP' },
-  { studentId: 2,  fullName: 'Trần Thị Bảo',     email: 'tranthbao@email.com',     jlptLevel: 'N4', status: 'active',    subscription: 'FREE' },
-  { studentId: 3,  fullName: 'Lê Minh Cường',    email: 'leminhcuong@email.com',   jlptLevel: 'N2', status: 'suspended', subscription: 'VIP' },
-  { studentId: 4,  fullName: 'Phạm Thị Dung',    email: 'phamthidung@email.com',   jlptLevel: 'N5', status: 'active',    subscription: 'FREE' },
-  { studentId: 5,  fullName: 'Hoàng Văn Em',     email: 'hoangvanem@email.com',    jlptLevel: 'N4', status: 'active',    subscription: 'VIP' },
-  { studentId: 6,  fullName: 'Vũ Thanh Giang',   email: 'vuthanhhgiang@email.com', jlptLevel: 'N1', status: 'active',    subscription: 'VIP' },
-  { studentId: 7,  fullName: 'Đặng Thị Hà',      email: 'dangthiha@email.com',     jlptLevel: 'N5', status: 'suspended', subscription: 'FREE' },
-  { studentId: 8,  fullName: 'Bùi Văn Hùng',     email: 'buivanhung@email.com',    jlptLevel: 'N3', status: 'active',    subscription: 'FREE' },
-  { studentId: 9,  fullName: 'Ngô Thị Lan',      email: 'ngothilan@email.com',     jlptLevel: 'N4', status: 'active',    subscription: 'VIP' },
-  { studentId: 10, fullName: 'Trịnh Minh Khoa',  email: 'trinhminhkhoa@email.com', jlptLevel: 'N3', status: 'active',    subscription: 'FREE' },
-  { studentId: 11, fullName: 'Đinh Thị Mai',     email: 'dinhthimai@email.com',    jlptLevel: 'N2', status: 'active',    subscription: 'VIP' },
-  { studentId: 12, fullName: 'Lý Văn Nam',       email: 'lyvannam@email.com',      jlptLevel: 'N5', status: 'active',    subscription: 'FREE' },
-];
-
-const MOCK_PROGRESS_MAP = {
-  1: {
-    jlptLevel: 'N3', currentStreak: 14, lessonsCompleted: 42, averageQuizScore: 78,
-    recentAttempts: [
-      { attemptId: 1, title: 'Quiz Từ Vựng N3 Bài 5',    score: 18, maxScore: 20, scorePct: 90, takenAt: '2026-06-01T10:00:00' },
-      { attemptId: 2, title: 'Mock Test JLPT N3 — Đề 01', score: 85, maxScore: 110, scorePct: 77, takenAt: '2026-05-28T14:00:00' },
-      { attemptId: 3, title: 'Quiz Ngữ Pháp N3',          score: 12, maxScore: 20, scorePct: 60, takenAt: '2026-05-25T09:00:00' },
-    ],
-  },
-  2: {
-    jlptLevel: 'N4', currentStreak: 5, lessonsCompleted: 28, averageQuizScore: 65,
-    recentAttempts: [
-      { attemptId: 4, title: 'Quiz Từ Vựng N4 Bài 2',    score: 13, maxScore: 20, scorePct: 65, takenAt: '2026-06-02T09:00:00' },
-      { attemptId: 5, title: 'Quiz Kanji N4',             score: 14, maxScore: 20, scorePct: 70, takenAt: '2026-05-30T11:00:00' },
-    ],
-  },
-  3: {
-    jlptLevel: 'N2', currentStreak: 0, lessonsCompleted: 67, averageQuizScore: 82,
-    recentAttempts: [
-      { attemptId: 6, title: 'Mock Test JLPT N2 — Đề 02', score: 120, maxScore: 150, scorePct: 80, takenAt: '2026-05-20T15:00:00' },
-    ],
-  },
-  4: {
-    jlptLevel: 'N5', currentStreak: 3, lessonsCompleted: 12, averageQuizScore: 55,
-    recentAttempts: [
-      { attemptId: 7, title: 'Quiz Hiragana cơ bản',      score: 11, maxScore: 20, scorePct: 55, takenAt: '2026-06-03T08:00:00' },
-    ],
-  },
-  5: {
-    jlptLevel: 'N4', currentStreak: 22, lessonsCompleted: 35, averageQuizScore: 88,
-    recentAttempts: [
-      { attemptId: 8, title: 'Mock Test JLPT N4 Vol.2',   score: 95, maxScore: 110, scorePct: 86, takenAt: '2026-06-02T16:00:00' },
-      { attemptId: 9, title: 'Quiz Ngữ Pháp N4 ～て形',   score: 18, maxScore: 20, scorePct: 90, takenAt: '2026-05-30T13:00:00' },
-    ],
-  },
-  6: {
-    jlptLevel: 'N1', currentStreak: 60, lessonsCompleted: 120, averageQuizScore: 91,
-    recentAttempts: [
-      { attemptId: 10, title: 'Mock Test JLPT N1 — Đề 01', score: 155, maxScore: 180, scorePct: 86, takenAt: '2026-06-01T14:00:00' },
-    ],
-  },
-};
 
 const LEVELS   = [
   { id: '', label: 'Tất cả' },
@@ -89,7 +32,11 @@ export default function StaffStudents() {
   const [debounced,     setDebounced]   = useState('');
   const [levelFilter,   setLevel]       = useState('');
   const [statusFilter,  setStatus]      = useState('');
-  const [students]                      = useState(MOCK_STUDENTS);
+  const [students,      setStudents]    = useState([]);
+  const [totalElements, setTotalEl]     = useState(0);
+  const [totalPages,    setTotalPages]  = useState(1);
+  const [isLoading,     setLoading]     = useState(true);
+  const [listError,     setListError]   = useState('');
   const [page,          setPage]        = useState(1);
   const [activeStudent, setActiveStudent] = useState(null);
   const [detail,        setDetail]        = useState(null);
@@ -105,28 +52,40 @@ export default function StaffStudents() {
 
   useEffect(() => { setPage(1); }, [debounced, levelFilter, statusFilter]);
 
-  // Client-side filter
-  const filtered = students.filter((s) => {
-    const q = debounced.toLowerCase();
-    if (q && !s.fullName.toLowerCase().includes(q) && !s.email.toLowerCase().includes(q)) return false;
-    if (levelFilter && s.jlptLevel !== levelFilter) return false;
-    if (statusFilter && s.status !== statusFilter) return false;
-    return true;
-  });
+  // Server-side fetch (lọc + phân trang ở backend)
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setListError('');
+    getStaffStudents({
+      search: debounced || undefined,
+      level: levelFilter || undefined,
+      status: statusFilter || undefined,
+      page: page - 1,
+      size: PAGE_SIZE,
+    })
+      .then((data) => {
+        if (cancelled) return;
+        setStudents(data.content ?? []);
+        setTotalEl(data.totalElements ?? 0);
+        setTotalPages(Math.max(1, data.totalPages ?? 1));
+      })
+      .catch((err) => { if (!cancelled) setListError(err?.response?.data?.message ?? 'Không thể tải danh sách học viên.'); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [debounced, levelFilter, statusFilter, page]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const safePage   = Math.min(page, totalPages);
-  const pageSlice  = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const safePage = page;
 
   const openDetail = useCallback((student) => {
     setActiveStudent(student);
     setLoadingDet(true);
     setDetail(null);
     setView('detail');
-    setTimeout(() => {
-      setDetail(MOCK_PROGRESS_MAP[student.studentId] ?? null);
-      setLoadingDet(false);
-    }, 300);
+    getStudentProgress(student.studentId)
+      .then((d) => setDetail(d))
+      .catch(() => setDetail(null))
+      .finally(() => setLoadingDet(false));
   }, []);
 
   // ── Detail view ──
@@ -195,7 +154,7 @@ export default function StaffStudents() {
 
         <div className="sst-page-header">
           <h1 className="sst-page-title">Quản Lý Học Viên</h1>
-          <span className="sst-total-count">{filtered.length} học viên</span>
+          <span className="sst-total-count">{totalElements} học viên</span>
         </div>
 
         <div className="sst-filters">
@@ -228,7 +187,11 @@ export default function StaffStudents() {
           </select>
         </div>
 
-        {pageSlice.length === 0 ? (
+        {isLoading ? (
+          <EmptyState title="Đang tải…" subtitle="Vui lòng chờ trong giây lát." mascotVariant="thinking" mascotSize={100} />
+        ) : listError ? (
+          <EmptyState title="Lỗi tải dữ liệu" subtitle={listError} mascotVariant="thinking" mascotSize={100} />
+        ) : students.length === 0 ? (
           <EmptyState
             title="Không có học viên nào"
             subtitle="Thử thay đổi bộ lọc tìm kiếm."
@@ -248,7 +211,7 @@ export default function StaffStudents() {
               </tr>
             </thead>
             <tbody>
-              {pageSlice.map((s) => (
+              {students.map((s) => (
                 <tr key={s.studentId}>
                   <td className="sst-td-name">
                     <button className="sst-name-btn" onClick={() => openDetail(s)}>
