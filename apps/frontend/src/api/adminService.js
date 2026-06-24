@@ -96,7 +96,7 @@ export async function getSettings(group) {
 }
 
 export async function updateSetting(group, key, value) {
-  const res = await api.put(`/admin/settings/${group}/${key}`, { settingValue: value });
+  const res = await api.put(`/admin/settings/${group}/${key}`, { value });
   return res.data.data;
 }
 

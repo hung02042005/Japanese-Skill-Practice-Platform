@@ -1,5 +1,6 @@
 # PLAN — Support, Notifications & Manual Grading (`feat-support`)
 > **Feature ID:** `feat-support` | **UC:** UC-29, UC-30, UC-31 | **Version:** 1.0 | **Updated:** 2026-06-14
+> **STATUS: ✅ HOÀN THÀNH** (verified 2026-06-24) — backend (entity/repo/service/controller) + frontend (pages/components/API) đã implement đầy đủ, 30/30 test pass. Codebase đã refactor sang cấu trúc feature-based nên vị trí file thực tế khác với §2.2 dưới đây — xem ghi chú "Vị trí thực tế" trong từng mục, và TASKS.md để biết chi tiết theo từng phase.
 
 ---
 
@@ -58,33 +59,33 @@ Ba nhóm người dùng có nhu cầu giao tiếp và chấm điểm khác nhau:
 
 ### 2.2 File Structure
 
+> ⚠️ **Sơ đồ dưới đây là kế hoạch ban đầu (package phẳng `com.jlpt.controller/service/repository/dto`).** Codebase thực tế đã refactor sang feature-based trước khi feature này hoàn thành. Vị trí thực tế:
+
 ```
-controller/
-  student/
-    SupportController.java               [MOI] — student ticket & notification
-  admin/
-    StaffTicketController.java           [MOI] — staff ticket + grading
+feature/support/controller/
+  SupportController.java                 [student ticket — đã có]
+  (Staff ticket + grading routes nằm trong feature/admin/controller/AdminDashboardController.java,
+   không tách riêng StaffTicketController — class này đã sẵn @RequestMapping("/api/staff"))
 
-service/
-  SupportTicketService.java              [MOI]
+feature/notification/controller/
+  NotificationController.java            [student notification — đã có]
 
-repository/
-  TicketRepository.java                  [MOI]
-  TicketReplyRepository.java             [MOI]
-  NotificationRepository.java            [MOI]
+feature/support/service/
+  SupportTicketService.java              [đã có — đảm nhận cả ticket + notification + grading]
 
-dto/request/
-  TicketRequest.java                     [MOI]
-  TicketReplyRequest.java                [MOI]
-  SendNotificationRequest.java           [MOI]
-  ManualGradeRequest.java                [MOI]
+feature/support/repository/
+  TicketRepository.java                  [đã có]
+  TicketReplyRepository.java             [đã có]
 
-dto/response/
-  TicketResponse.java                    [MOI]
-  TicketDetailResponse.java              [MOI]
-  TicketReplyResponse.java               [MOI]
-  NotificationResponse.java              [MOI]
-  GradeResponse.java                     [MOI]
+feature/notification/repository/
+  NotificationRepository.java            [đã có]
+
+feature/support/dto/
+  TicketRequest/Response/Detail/Reply*.java, AssignTicketRequest.java,
+  ManualGradeRequest.java, GradeResponse.java, SubmissionResponse.java   [đã có]
+
+feature/notification/dto/
+  SendNotificationRequest.java, NotificationResponse.java               [đã có]
 ```
 
 ### 2.3 API Routes
@@ -194,19 +195,21 @@ return jobId;
 
 ## 3. Risk Assessment
 
-| # | Rui ro | Xac suat | Muc do | Bien phap |
-|:--|:---|:---:|:---:|:---|
-| R1 | `StudentSubmissionRepository` chua ton tai (Nguoi 3) -> compile error | Cao | Cao | Tao interface stub voi cac method can thiet; dung `@Autowired(required = false)` trong service |
-| R2 | DB Constraint `CK_replies_sender` bi vi pham khi set ca 2 sender | Trung binh | Cao | Service set duy nhat 1 sender field; unit test kiem tra ca 2 case |
-| R3 | Broadcast notification den 10,000 student lam timeout request | Cao | Cao | Xu ly async bat buoc; tra jobId trong <200ms; @Async voi ThreadPoolTaskExecutor rieng |
-| R4 | Duplicate milestone notification gui nhieu lan | Trung binh | Trung binh | Check rule_key + studentId trong window 24h truoc khi insert |
-| R5 | Staff cham sai bai nop (handwriting thay vi speaking) | Thap | Trung binh | Validate submissionType = 'speaking' o service layer -> HTTP 422 |
-| R6 | Student goi GET /staff/tickets nhan 403 nhung Frontend khong xu ly | Thap | Thap | 403 duoc handle boi Axios interceptor chung; Frontend khong can xu ly rieng |
-| R7 | Ticket reply trung lap do double-click | Thap | Thap | Frontend disable nut sau click (UI state); Backend khong block duplicate (stateless) |
+| # | Rui ro | Xac suat | Muc do | Bien phap | Ket qua thuc te |
+|:--|:---|:---:|:---:|:---|:---|
+| R1 | `StudentSubmissionRepository` chua ton tai (Nguoi 3) -> compile error | Cao | Cao | Tao interface stub voi cac method can thiet; dung `@Autowired(required = false)` trong service | ✅ Repo da ton tai day du (khong phai stub) tai `feature/corelearning/repository/StudentSubmissionRepository.java` voi cac method `findAllByTypeAndFilters`, `findByStudentIdAndFilters`...; `@Autowired(required=false)` van duoc giu trong service de an toan |
+| R2 | DB Constraint `CK_replies_sender` bi vi pham khi set ca 2 sender | Trung binh | Cao | Service set duy nhat 1 sender field; unit test kiem tra ca 2 case | ✅ `addStudentReply`/`addStaffReply` tach rieng, khong the set ca 2 |
+| R3 | Broadcast notification den 10,000 student lam timeout request | Cao | Cao | Xu ly async bat buoc; tra jobId trong <200ms; @Async voi ThreadPoolTaskExecutor rieng | ✅ Verified <500ms ca unit + integration test |
+| R4 | Duplicate milestone notification gui nhieu lan | Trung binh | Trung binh | Check rule_key + studentId trong window 24h truoc khi insert | ⚠️ Guard `existsByStudentIdAndRuleKeyAndCreatedAtAfter` chi duoc dung cho milestone tu dong (`NotificationRuleService`), khong goi trong `manualGrade()` — nhung khong can vi state machine submission (ai_graded→graded) tu nhien chan grade lai |
+| R5 | Staff cham sai bai nop (handwriting thay vi speaking) | Thap | Trung binh | Validate submissionType = 'speaking' o service layer -> HTTP 422 | ✅ Verified boi test `manualGrade_withHandwriting_throws422` |
+| R6 | Student goi GET /staff/tickets nhan 403 nhung Frontend khong xu ly | Thap | Thap | 403 duoc handle boi Axios interceptor chung; Frontend khong can xu ly rieng | ✅ Khong phat sinh — `studentService.js` khong co call nao toi `/staff/*`; UI Student khong co duong dan nao goi route nay |
+| R7 | Ticket reply trung lap do double-click | Thap | Thap | Frontend disable nut sau click (UI state); Backend khong block duplicate (stateless) | ⚠️ `TicketDetail.jsx` hien chi disable nut khi `replyText` rong (`disabled={!replyText.trim()}`), **chua co state loading/`isSending` de chan double-click trong luc request dang chay** — gap thuc te so voi bien phap de ra, rui ro thap nhung nen ghi vao backlog de fix sau |
 
 ---
 
 ## 4. Verification Plan
+
+> ✅ Toàn bộ mục §4.1/4.2 đã được implement và pass (`mvn test`, 30/30, 2026-06-24). Chi tiết per-test xem TASKS.md Phase 6.
 
 ### 4.1 Unit Tests (Service Layer)
 
@@ -258,10 +261,12 @@ StaffTicketControllerTest (Staff):
 
 ### 4.3 Manual Verification Checklist
 
-- [ ] Hoc vien tao ticket -> thay ticket trong danh sach cua minh -> KHONG thay ticket nguoi khac
-- [ ] Staff reply -> ticket status chuyen IN_PROGRESS -> hoc vien thay reply
-- [ ] Staff dong ticket -> hoc vien co reply -> nhan loi "Ticket da dong"
-- [ ] Staff cham bai noi voi score 85.50 -> final_score = 85.50 (ghi de AI score)
-- [ ] Hoc vien nhan notification sau khi bai noi duoc cham
-- [ ] Staff gui broadcast den N3 -> tra jobId ngay < 1s -> hoc vien N3 nhan notification
-- [ ] Kiem tra bang `notifications` co record dung voi `rule_key`, `is_read = 0`
+> Các mục dưới đã được cover gián tiếp qua integration test (server-side), nhưng **chưa thao tác qua UI thật trên browser** — vẫn nên giữ checklist này để QA verify end-to-end khi có dịp.
+
+- [x] Hoc vien tao ticket -> thay ticket trong danh sach cua minh -> KHONG thay ticket nguoi khac *(verified bằng integration test, chưa qua UI)*
+- [x] Staff reply -> ticket status chuyen IN_PROGRESS -> hoc vien thay reply *(verified bằng integration test, chưa qua UI)*
+- [x] Staff dong ticket -> hoc vien co reply -> nhan loi "Ticket da dong" *(verified bằng integration test, chưa qua UI)*
+- [x] Staff cham bai noi voi score 85.50 -> final_score = 85.50 (ghi de AI score) *(verified bằng integration test, chưa qua UI)*
+- [x] Hoc vien nhan notification sau khi bai noi duoc cham *(verified — `manualGrade` luôn tạo Notification, có unit test `manualGrade_sendsNotificationToStudent`)*
+- [x] Staff gui broadcast den N3 -> tra jobId ngay < 1s -> hoc vien N3 nhan notification *(verified <500ms; broadcastAsync filter theo `targetJlptLevel` đã review code)*
+- [ ] Kiem tra bang `notifications` co record dung voi `rule_key`, `is_read = 0` — chưa kiểm tra trực tiếp trên DB thật (chỉ verify qua H2 test DB), nên làm khi deploy lên staging.

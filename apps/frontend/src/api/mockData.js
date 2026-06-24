@@ -576,18 +576,12 @@ export const MOCK_BACK_CONTENT_MAP = {
 
 // ─── Progress ────────────────────────────────────────────────────────────────
 export const MOCK_STATS = {
-  currentStreak:    7,
-  longestStreak:    14,
-  wordCount:        243,
-  lessonsCompleted: 18,
-  daysThisMonth:    12,
-  radarData: { vocabulary: 65, grammar: 50, reading: 45, listening: 40, kanji: 55 },
-  completions: {
-    kanji:      { completed: 18,  total: 103 },
-    vocabulary: { completed: 243, total: 800 },
-    grammar:    { completed: 12,  total: 60  },
-    kana:       { completed: 46,  total: 92  },
-  },
+  currentStreak: 7,
+  longestStreak: 14,
+  streakStatus: 'ACTIVE',
+  skillsRadar: { vocabulary: 65, grammar: 50, reading: 45, listening: 40, speaking: 55 },
+  completions:     { lesson: 18, kanji: 18,   vocabulary: 243, grammar: 12, kana: 46 },
+  completionRates: { lesson: 60, kanji: 17.5, vocabulary: 30.4, grammar: 20, kana: 50 },
 };
 
 export const MOCK_EXAM_HISTORY = {

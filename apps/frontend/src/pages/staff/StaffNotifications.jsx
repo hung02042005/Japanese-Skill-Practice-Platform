@@ -2,17 +2,13 @@ import { useState } from 'react';
 import StaffTopNav from '../../components/layout/StaffTopNav';
 import { useToast, ToastContainer } from '../../components/common/Toast';
 import StaffPageHero from '../../components/staff/StaffPageHero';
+import { sendNotification } from '../../api/staffService';
 import './StaffNotifications.css';
 
-const MOCK_SENT = [
-  { id: 1, title: 'Thông báo bảo trì hệ thống', content: 'Hệ thống sẽ bảo trì vào 02:00 ngày 05/06/2026.', targetLevel: 'all', channel: 'both', sentAt: '03/06/2026 09:00', sentCount: 1250 },
-  { id: 2, title: 'Tài liệu N4 mới đã được cập nhật', content: 'Bộ flashcard N4 Vol.3 đã được thêm vào hệ thống.', targetLevel: 'N4', channel: 'in-app', sentAt: '01/06/2026 14:30', sentCount: 340 },
-  { id: 3, title: 'Nhắc nhở streak — Đừng để streak bị gián đoạn!', content: 'Bạn chưa học hôm nay. Hãy giữ streak của mình nhé!', targetLevel: 'all', channel: 'email', sentAt: '30/05/2026 20:00', sentCount: 980 },
-  { id: 4, title: 'Kết quả thi JLPT tháng 7/2026 đã có', content: 'Xem kết quả kỳ thi JLPT tháng 7 ngay bây giờ.', targetLevel: 'N3', channel: 'both', sentAt: '28/05/2026 10:00', sentCount: 215 },
-];
+const NOTIFICATION_TYPE_BY_CHANNEL_TAB = 'news';
 
 const CHANNEL_LABELS = { 'in-app': 'In-app', 'email': 'Email', 'both': 'Cả hai' };
-const LEVEL_OPTIONS = ['all', 'N5', 'N4', 'N3', 'N2', 'N1'];
+const CHANNEL_TO_BACKEND = { 'in-app': 'in_app', email: 'email', both: 'both' };
 const CHANNEL_OPTIONS = [
   { value: 'in-app', label: 'In-app' },
   { value: 'email', label: 'Email' },
@@ -20,7 +16,9 @@ const CHANNEL_OPTIONS = [
 ];
 
 export default function StaffNotifications() {
-  const [sent, setSent] = useState(MOCK_SENT);
+  // Backend chưa có API lấy lịch sử thông báo đã gửi (out of scope feat-support) —
+  // danh sách dưới đây chỉ phản ánh các lượt gửi trong phiên làm việc hiện tại.
+  const [sent, setSent] = useState([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [targetLevel, setLevel] = useState('all');
@@ -36,12 +34,19 @@ export default function StaffNotifications() {
     return errs;
   }
 
-  function handleSend() {
+  async function handleSend() {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setErrors({});
     setSending(true);
-    setTimeout(() => {
+    try {
+      await sendNotification({
+        title,
+        content,
+        notificationType: NOTIFICATION_TYPE_BY_CHANNEL_TAB,
+        channel: CHANNEL_TO_BACKEND[channel],
+        targetJlptLevel: targetLevel === 'all' ? null : targetLevel,
+      });
       const newItem = {
         id: Date.now(),
         title,
@@ -49,16 +54,18 @@ export default function StaffNotifications() {
         targetLevel,
         channel,
         sentAt: new Date().toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        sentCount: Math.floor(Math.random() * 500) + 50,
       };
       setSent((prev) => [newItem, ...prev]);
       setTitle('');
       setContent('');
       setLevel('all');
       setChannel('in-app');
-      setSending(false);
       addToast('success', 'Thông báo đã được gửi thành công!');
-    }, 600);
+    } catch {
+      addToast('error', 'Không thể gửi thông báo. Vui lòng thử lại.');
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -180,7 +187,6 @@ export default function StaffNotifications() {
                   <th>Tiêu đề</th>
                   <th>Đối tượng</th>
                   <th>Kênh</th>
-                  <th>Đã gửi</th>
                   <th>Thời gian</th>
                 </tr>
               </thead>
@@ -197,9 +203,6 @@ export default function StaffNotifications() {
                       </span>
                     </td>
                     <td>{CHANNEL_LABELS[item.channel]}</td>
-                    <td>
-                      <span className="nfs-count">{item.sentCount.toLocaleString()} người</span>
-                    </td>
                     <td className="nfs-date">{item.sentAt}</td>
                   </tr>
                 ))}

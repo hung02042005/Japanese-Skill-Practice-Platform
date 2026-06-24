@@ -1,0 +1,24 @@
+/* (c) JLPT E-Learning Platform */
+package com.jlpt.feature.auth.converter;
+
+import com.jlpt.feature.auth.entity.AuthToken;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+
+@Converter
+public class TokenTypeConverter implements AttributeConverter<AuthToken.TokenType, String> {
+
+    @Override
+    public String convertToDatabaseColumn(AuthToken.TokenType attribute) {
+        return attribute == null ? null : attribute.getValue();
+    }
+
+    @Override
+    public AuthToken.TokenType convertToEntityAttribute(String dbData) {
+        if (dbData == null) return null;
+        for (AuthToken.TokenType e : AuthToken.TokenType.values()) {
+            if (e.getValue().equalsIgnoreCase(dbData) || e.name().equalsIgnoreCase(dbData)) return e;
+        }
+        throw new IllegalArgumentException("Unknown TokenType: " + dbData);
+    }
+}

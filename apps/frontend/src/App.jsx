@@ -58,6 +58,8 @@ import KanaList         from './pages/kana/KanaList';
 import VocabularyList   from './pages/vocabulary/VocabularyList';
 import QuizPage         from './pages/quiz/QuizPage';
 import SpeakingPage     from './pages/speaking/SpeakingPage';
+import MySupportTickets from './pages/support/MySupportTickets';
+import MyNotifications  from './pages/notifications/MyNotifications';
 
 function App() {
   return (
@@ -101,6 +103,8 @@ function App() {
         <Route path="/vocabulary"   element={<PrivateRoute><VocabularyList /></PrivateRoute>} />
         <Route path="/quiz"         element={<PrivateRoute><QuizPage /></PrivateRoute>} />
         <Route path="/speaking"     element={<PrivateRoute><SpeakingPage /></PrivateRoute>} />
+        <Route path="/support"       element={<PrivateRoute><MySupportTickets /></PrivateRoute>} />
+        <Route path="/notifications" element={<PrivateRoute><MyNotifications /></PrivateRoute>} />
 
         {/* Protected — Staff */}
         <Route path="/staff"                 element={<StaffRoute><StaffDashboard /></StaffRoute>} />

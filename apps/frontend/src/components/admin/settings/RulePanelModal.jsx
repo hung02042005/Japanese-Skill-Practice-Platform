@@ -13,6 +13,10 @@ export const MILESTONES = [
 
 const EMPTY = { milestone: '', templateTitle: '', templateContent: '', channel: 'in_app' };
 
+function milestoneToLabel(milestoneValue) {
+  return MILESTONES.find((m) => m.value === milestoneValue)?.label ?? milestoneValue;
+}
+
 function CloseIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -24,14 +28,25 @@ function CloseIcon() {
 
 /**
  * Props:
- *   rule    — null (create) | ruleObj (edit)
+ *   rule    — null (create) | ruleObj from NotificationRuleResponse (edit)
  *   onClose — fn
  *   onSaved — fn(savedRule, isEdit)
  *   addToast — fn
  */
 export function RulePanelModal({ rule, onClose, onSaved, addToast }) {
-  const isEdit      = Boolean(rule);
-  const [form,   setForm]  = useState(isEdit ? { ...rule } : { ...EMPTY });
+  const isEdit = Boolean(rule);
+
+  // Map API response fields (triggerCondition) back to the form field (milestone)
+  const initForm = isEdit
+    ? {
+        milestone:       rule.triggerCondition ?? '',
+        templateTitle:   rule.templateTitle    ?? '',
+        templateContent: rule.templateContent  ?? '',
+        channel:         rule.channel          ?? 'in_app',
+      }
+    : { ...EMPTY };
+
+  const [form,   setForm]  = useState(initForm);
   const [errors, setErrors]= useState({});
   const [saving, setSaving]= useState(false);
   const backdropRef = useRef(null);
@@ -62,10 +77,33 @@ export function RulePanelModal({ rule, onClose, onSaved, addToast }) {
     try {
       let saved;
       if (isEdit) {
-        saved = await updateNotificationRule(rule.ruleId, form);
-        saved = saved ?? { ...rule, ...form };
+        // ruleKey comes from the existing rule; path param for update
+        const payload = {
+          ruleKey:         rule.ruleKey,
+          description:     milestoneToLabel(form.milestone),
+          isEnabled:       rule.isEnabled ?? true,
+          triggerCondition: form.milestone,
+          channel:         form.channel,
+          templateTitle:   form.templateTitle,
+          templateContent: form.templateContent,
+        };
+        const result = await updateNotificationRule(rule.ruleKey, payload);
+        // Merge local form values in case backend returns minimal response
+        saved = result ?? { ...rule, ...payload };
       } else {
-        saved = await createNotificationRule(form);
+        // Auto-generate ruleKey: prefix with 'milestone_' + milestone value
+        const generatedKey = `milestone_${form.milestone}`;
+        const payload = {
+          ruleKey:         generatedKey,
+          description:     milestoneToLabel(form.milestone),
+          isEnabled:       true,
+          triggerCondition: form.milestone,
+          channel:         form.channel,
+          templateTitle:   form.templateTitle,
+          templateContent: form.templateContent,
+        };
+        const result = await createNotificationRule(payload);
+        saved = result ?? payload;
       }
       onSaved(saved, isEdit);
     } catch {

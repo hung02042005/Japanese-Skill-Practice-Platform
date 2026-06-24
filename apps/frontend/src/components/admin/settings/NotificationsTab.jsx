@@ -19,7 +19,7 @@ function RuleCard({ rule, onEdit, onDelete, isDeleting }) {
     <div className="ast-rule-card">
       <div className="ast-rule-body">
         <div className="ast-rule-chips">
-          <span className="ast-chip ast-chip--milestone">{milestoneLabel(rule.milestone)}</span>
+          <span className="ast-chip ast-chip--milestone">{milestoneLabel(rule.triggerCondition)}</span>
           <span className={`ast-chip ast-chip--channel ast-chip--${rule.channel ?? 'in_app'}`}>
             {channelLabel(rule.channel)}
           </span>
@@ -38,7 +38,7 @@ function RuleCard({ rule, onEdit, onDelete, isDeleting }) {
         </button>
         <button
           className="ast-rule-btn ast-rule-btn--delete"
-          onClick={() => onDelete(rule.ruleId)}
+          onClick={() => onDelete(rule.ruleKey)}
           disabled={isDeleting}
           aria-label={`Xóa: ${rule.templateTitle}`}
         >
@@ -77,12 +77,12 @@ export function NotificationsTab({ addToast }) {
 
   useEffect(() => { load(); }, [load]);
 
-  async function handleDelete(ruleId) {
+  async function handleDelete(ruleKey) {
     if (!window.confirm('Bạn có chắc muốn xóa quy tắc này?')) return;
-    setDeleting(ruleId);
+    setDeleting(ruleKey);
     try {
-      await deleteNotificationRule(ruleId);
-      setRules((prev) => prev.filter((r) => r.ruleId !== ruleId));
+      await deleteNotificationRule(ruleKey);
+      setRules((prev) => prev.filter((r) => r.ruleKey !== ruleKey));
       addToast('success', 'Đã xóa quy tắc thông báo');
     } catch {
       addToast('error', 'Xóa thất bại');
@@ -93,7 +93,7 @@ export function NotificationsTab({ addToast }) {
 
   function handleSaved(rule, isEdit) {
     setRules((prev) =>
-      isEdit ? prev.map((r) => (r.ruleId === rule.ruleId ? rule : r)) : [...prev, rule]
+      isEdit ? prev.map((r) => (r.ruleKey === rule.ruleKey ? rule : r)) : [...prev, rule]
     );
     setPanelRule(null);
     addToast('success', isEdit ? 'Đã cập nhật quy tắc' : 'Đã tạo quy tắc thông báo mới');
@@ -137,11 +137,11 @@ export function NotificationsTab({ addToast }) {
         <div className="ast-rule-list">
           {rules.map((rule) => (
             <RuleCard
-              key={rule.ruleId}
+              key={rule.ruleKey}
               rule={rule}
               onEdit={setPanelRule}
               onDelete={handleDelete}
-              isDeleting={deleting === rule.ruleId}
+              isDeleting={deleting === rule.ruleKey}
             />
           ))}
         </div>

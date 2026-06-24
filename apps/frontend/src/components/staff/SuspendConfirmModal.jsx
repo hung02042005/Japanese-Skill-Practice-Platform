@@ -5,11 +5,14 @@ export default function SuspendConfirmModal({
   reason,
   onReasonChange,
   isActioning,
+  actionError,
   onConfirm,
   onClose,
 }) {
   const { student, action } = modal;
   const isSuspend = action === 'suspend';
+  const reasonLen = reason?.trim().length ?? 0;
+  const reasonValid = !isSuspend || (reasonLen >= 10 && reasonLen <= 500);
 
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') onClose(); };
@@ -41,17 +44,41 @@ export default function SuspendConfirmModal({
         {isSuspend && (
           <div className="sst-modal-reason">
             <label htmlFor="sst-reason-input" className="sst-modal-reason-label">
-              Lý do (không bắt buộc):
+              Lý do đình chỉ{' '}
+              <span aria-hidden="true" style={{ color: 'var(--color-error, #ef4444)' }}>*</span>{' '}
+              <span style={{ fontWeight: 400, opacity: 0.7 }}>(10–500 ký tự)</span>
             </label>
-            <input
+            <textarea
               id="sst-reason-input"
-              type="text"
               className="sst-modal-reason-input"
-              placeholder="Nhập lý do..."
+              placeholder="Nhập lý do đình chỉ tài khoản... (bắt buộc, tối thiểu 10 ký tự)"
               value={reason}
               onChange={(e) => onReasonChange(e.target.value)}
-              maxLength={255}
+              maxLength={500}
+              rows={3}
+              style={{ resize: 'vertical', width: '100%' }}
             />
+            <div style={{ fontSize: '0.75rem', textAlign: 'right', opacity: 0.6 }}>
+              {reasonLen}/500 ký tự
+              {reasonLen > 0 && reasonLen < 10 && (
+                <span style={{ color: 'var(--color-error, #ef4444)', marginLeft: '0.5rem' }}>
+                  (cần thêm {10 - reasonLen} ký tự)
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {actionError && (
+          <div role="alert" style={{
+            color: 'var(--color-error, #ef4444)',
+            background: 'rgba(239,68,68,0.08)',
+            borderRadius: '6px',
+            padding: '8px 12px',
+            fontSize: '0.85rem',
+            marginTop: '8px',
+          }}>
+            {actionError}
           </div>
         )}
 
@@ -66,7 +93,7 @@ export default function SuspendConfirmModal({
           <button
             className={`sst-modal-btn-confirm${isSuspend ? ' sst-modal-btn-confirm--danger' : ''}`}
             onClick={onConfirm}
-            disabled={isActioning}
+            disabled={isActioning || (isSuspend && !reasonValid)}
             aria-label={
               isSuspend
                 ? `Xác nhận suspend ${student.fullName}`

@@ -177,8 +177,11 @@ erDiagram
 | `NotificationRuleRequest.java` | `com.jlpt.dto.request` | DTO Request | Mới |
 | `SystemSettingResponse.java` | `com.jlpt.dto.response` | DTO Response | Mới |
 | `NotificationRuleResponse.java` | `com.jlpt.dto.response` | DTO Response | Mới |
+| `DashboardResponse.java` | `com.jlpt.dto.response` | DTO Response | **Shared** — định nghĩa trong `feat-learning-analytics`, dùng chung cho `AdminDashboardController` |
 
 > **⚠️ Quan trọng:** KHÔNG sửa `AdminController.java` đã có. Tạo `AdminSystemController.java` và `AdminDashboardController.java` riêng biệt để tránh conflict với team khác.
+
+> **⚠️ DTO Shared:** `DashboardResponse.java` được tạo và quản lý bởi `feat-learning-analytics` (AnalyticsService). `AdminDashboardController` chỉ **inject `AnalyticsService`** và gọi `getAdminDashboard()` — không tạo duplicate DTO class.
 
 ---
 

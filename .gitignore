@@ -7,3 +7,8 @@ node_modules/
 dist/
 *.log
 apps/backend/data/
+.env
+.env.local
+.env.development
+.env.production
+!.env.example

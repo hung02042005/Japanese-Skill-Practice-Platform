@@ -10,7 +10,8 @@ import { getMyStats, getMyExamHistory } from '../../api/studentService';
 import { DEMO_MODE, MOCK_STATS, MOCK_EXAM_HISTORY } from '../../api/mockData';
 import './Progress.css';
 
-const COMPLETION_LABELS = { kanji: 'Kanji', vocabulary: 'Từ vựng', grammar: 'Ngữ pháp', kana: 'Kana' };
+const COMPLETION_LABELS = { lesson: 'Bài học', kanji: 'Kanji', vocabulary: 'Từ vựng', grammar: 'Ngữ pháp', kana: 'Kana' };
+const RADAR_KEY_MAP = { speaking: 'pronunciation' };
 
 export default function Progress() {
   const { toasts, addToast, removeToast } = useToast();
@@ -64,10 +65,12 @@ export default function Progress() {
 
   const statItems = stats ? [
     { icon: '🔥', value: stats.currentStreak, label: 'ngày streak', sub: `Dài nhất: ${stats.longestStreak} ngày` },
-    { icon: '⭐', value: stats.wordCount,       label: 'từ đã học' },
-    { icon: '📚', value: stats.lessonsCompleted,label: 'bài đã học' },
-    { icon: '📅', value: stats.daysThisMonth,   label: 'ngày học tháng này' },
+    { icon: '📚', value: Object.values(stats.completions ?? {}).reduce((sum, v) => sum + v, 0), label: 'mục đã hoàn thành' },
   ] : [];
+
+  const radarData = Object.fromEntries(
+    Object.entries(stats?.skillsRadar ?? {}).map(([key, val]) => [RADAR_KEY_MAP[key] ?? key, val])
+  );
 
   return (
     <div className="prg-page">
@@ -78,7 +81,7 @@ export default function Progress() {
         {/* Stat row */}
         <div className="prg-stat-row">
           {isLoading
-            ? [1, 2, 3, 4].map((i) => <div key={i} className="prg-skel prg-skel--stat" aria-hidden="true" />)
+            ? [1, 2].map((i) => <div key={i} className="prg-skel prg-skel--stat" aria-hidden="true" />)
             : statItems.map((s, i) => (
               <div key={i} className="prg-stat-card">
                 <span className="prg-stat-icon" aria-hidden="true">{s.icon}</span>
@@ -98,15 +101,16 @@ export default function Progress() {
             <div className="prg-chart-card">
               <h2 className="prg-card-title">Năng lực kỹ năng</h2>
               <div className="prg-radar-wrap">
-                <SkillRadarChart data={stats.radarData ?? {}} />
+                <SkillRadarChart data={radarData} />
               </div>
             </div>
 
             <div className="prg-chart-card">
               <h2 className="prg-card-title">Hoàn thành nội dung</h2>
               <div className="prg-completions">
-                {Object.entries(stats.completions ?? {}).map(([key, val]) => {
-                  const pct = val.total > 0 ? Math.round((val.completed / val.total) * 100) : 0;
+                {Object.entries(stats.completionRates ?? {}).map(([key, rate]) => {
+                  const pct = Math.round(rate);
+                  const count = stats.completions?.[key] ?? 0;
                   return (
                     <div key={key} className="prg-comp-row">
                       <span className="prg-comp-label">{COMPLETION_LABELS[key] ?? key}</span>
@@ -115,7 +119,7 @@ export default function Progress() {
                           <div className="prg-comp-fill" style={{ width: `${pct}%` }} />
                         </div>
                       </div>
-                      <span className="prg-comp-count">{val.completed}/{val.total}</span>
+                      <span className="prg-comp-count">{count} hoàn thành</span>
                       <span className="prg-comp-pct">{pct}%</span>
                     </div>
                   );

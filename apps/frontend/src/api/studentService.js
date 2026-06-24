@@ -169,7 +169,7 @@ export async function getMyExamHistory({ page = 0, size = 10 } = {}) {
 
 // ─── Progress & Stats ────────────────────────────────────────────────────────
 export async function getMyStats() {
-  const res = await api.get('/students/me/stats');
+  const res = await api.get('/analytics/my-progress');
   return res.data.data;
 }
 
@@ -277,5 +277,44 @@ export async function getCertificateProgress() {
 
 export async function downloadCertificate(certId) {
   const res = await api.get(`/certificates/${certId}/download`);
+  return res.data.data;
+}
+
+// ─── Support Tickets ──────────────────────────────────────────────────────────
+export async function createTicket({ subject, content, category, priority }) {
+  const res = await api.post('/support/tickets', { subject, content, category, priority });
+  return res.data.data;
+}
+
+export async function getMyTickets({ status, page = 0, size = 10 } = {}) {
+  const params = { page, size };
+  if (status) params.status = status;
+  const res = await api.get('/support/tickets', { params });
+  return res.data.data;
+}
+
+export async function getMyTicketDetail(ticketId) {
+  const res = await api.get(`/support/tickets/${ticketId}`);
+  return res.data.data;
+}
+
+export async function replyToMyTicket(ticketId, message) {
+  const res = await api.post(`/support/tickets/${ticketId}/reply`, { message });
+  return res.data.data;
+}
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+export async function getMyNotifications({ page = 0, size = 20 } = {}) {
+  const res = await api.get('/notifications', { params: { page, size } });
+  return res.data.data;
+}
+
+export async function markNotificationRead(notificationId) {
+  const res = await api.post(`/notifications/${notificationId}/read`);
+  return res.data.data;
+}
+
+export async function markAllNotificationsRead() {
+  const res = await api.post('/notifications/read-all');
   return res.data.data;
 }
