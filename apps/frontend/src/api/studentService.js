@@ -154,6 +154,8 @@ export async function addVocabToFlashcard(vocabId) {
 }
 
 // ─── Flashcard SRS ───────────────────────────────────────────────────────────
+const vocabFlashcardSessionRequests = new Map();
+
 export async function getFlashcardDecks() {
   const res = await api.get('/flashcard-decks');
   return res.data.data;
@@ -183,9 +185,22 @@ export async function addToFlashcard(contentType, contentId, deckName = 'Mặc �
 
 export async function getVocabFlashcardSession({ topicId, newLimit, deckId } = {}) {
   const params = deckId != null ? { deckId } : { topicId, newLimit };
+  const requestKey = deckId != null
+    ? `deck:${deckId}`
+    : `topic:${topicId}:${newLimit ?? ''}`;
+
+  if (vocabFlashcardSessionRequests.has(requestKey)) {
+    return vocabFlashcardSessionRequests.get(requestKey);
+  }
+
   // POST (không phải GET) vì build phiên có side-effect: backend tạo deck/thẻ MỚI cho từ được chọn.
-  const res = await api.post('/flashcards/session', null, { params });
-  return res.data.data;
+  const request = api
+    .post('/flashcards/session', null, { params })
+    .then((res) => res.data.data)
+    .finally(() => vocabFlashcardSessionRequests.delete(requestKey));
+
+  vocabFlashcardSessionRequests.set(requestKey, request);
+  return request;
 }
 
 export async function submitFlashcardReview(

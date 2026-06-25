@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -83,6 +84,8 @@ public class FlashcardSrsService {
     private static final double EASE_MAX = 2.50;
 
     private static final Kanji.ContentStatus PUBLISHED = Kanji.ContentStatus.PUBLISHED;
+
+    private static final Map<String, Object> SESSION_LOCKS = new ConcurrentHashMap<>();
 
     private final FlashcardRepository flashcardRepository;
     private final FlashcardDeckRepository flashcardDeckRepository;
@@ -421,6 +424,14 @@ public class FlashcardSrsService {
 
     @Transactional
     public SessionResponse getSession(Long studentId, Long deckId, Long topicId, Integer newLimit) {
+        String lockKey = studentId + ":" + (deckId != null ? "deck:" + deckId : "topic:" + topicId);
+        Object lock = SESSION_LOCKS.computeIfAbsent(lockKey, ignored -> new Object());
+        synchronized (lock) {
+            return getSessionLocked(studentId, deckId, topicId, newLimit);
+        }
+    }
+
+    private SessionResponse getSessionLocked(Long studentId, Long deckId, Long topicId, Integer newLimit) {
         int limit = (newLimit != null && newLimit > 0) ? newLimit : NEW_CARDS_PER_DAY;
         LocalDate today = LocalDate.now();
         StudentUser student = studentUserRepository.getReferenceById(studentId);
