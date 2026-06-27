@@ -1,52 +1,65 @@
 import { useState, useEffect, useRef } from 'react';
-import SakuChan from '../../components/auth/SakuChan';
+import SakuChan from '../auth/SakuChan';
+import PriorityPill from '../support/PriorityPill';
+import TicketStatusBadge from '../support/TicketStatusBadge';
+import { formatDateTime, formatRelativeTime } from '../../utils/date';
 import './TicketDetail.css';
 
-const PRIORITY_CONFIG = {
-  urgent: { bg: '#FFEAEA', color: 'var(--color-error)', label: 'Khẩn cấp' },
-  high:   { bg: 'var(--color-accent-bg)', color: 'var(--color-warning)', label: 'Cao' },
-  normal: { bg: 'var(--color-secondary-bg)', color: 'var(--color-secondary)', label: 'Thường' },
-  low:    { bg: 'var(--color-bg)', color: 'var(--color-text-disabled)', label: 'Thấp' },
-};
+const CLOSED_STATUSES = ['resolved', 'closed'];
 
-const STATUS_CONFIG = {
-  open:        { bg: '#FFEAEA', color: 'var(--color-error)', label: 'Mở' },
-  in_progress: { bg: 'var(--color-accent-bg)', color: 'var(--color-warning)', label: 'Đang xử lý' },
-  resolved:    { bg: 'var(--color-secondary-bg)', color: 'var(--color-secondary)', label: 'Đã giải quyết' },
-  closed:      { bg: '#F0EDEB', color: 'var(--color-text-disabled)', label: 'Đã đóng' },
-};
-
-function formatDateTime(isoStr) {
-  const d = new Date(isoStr);
-  return d.toLocaleString('vi-VN', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  });
-}
-
-function getInitials(name) {
+function getInitial(name) {
   if (!name) return '?';
   const parts = name.trim().split(' ');
   return parts[parts.length - 1].charAt(0).toUpperCase();
 }
 
-export default function TicketDetail({ ticket, replies, onReply, onStatusChange }) {
+/**
+ * Chi tiết ticket (dùng chung Staff + Manager) — backend shape.
+ * Props:
+ *   detail            — TicketDetailResponse + replies[] (senderRole STUDENT|STAFF)
+ *   onReply(message, attachmentUrl) => Promise<boolean>  (true = thành công → clear form)
+ *   onClose() => Promise<void>
+ *   isSending, isClosing
+ *   headerExtra       — node chèn dưới header (AssignPanel cho Manager)
+ *   isLoading         — skeleton
+ */
+export default function TicketDetail({
+  detail,
+  onReply,
+  onClose,
+  isSending = false,
+  isClosing = false,
+  headerExtra = null,
+  isLoading = false,
+}) {
   const [replyText, setReply] = useState('');
-  const [newStatus, setNewStatus] = useState('');
+  const [attachUrl, setAttach] = useState('');
+  const [showConfirm, setConfirm] = useState(false);
   const threadBottomRef = useRef(null);
 
   useEffect(() => {
     setReply('');
-    setNewStatus('');
-  }, [ticket?.id]);
+    setAttach('');
+    setConfirm(false);
+  }, [detail?.ticketId]);
 
   useEffect(() => {
-    if (threadBottomRef.current) {
-      threadBottomRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [ticket?.id, replies]);
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    threadBottomRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+  }, [detail?.replies?.length]);
 
-  if (!ticket) {
+  if (isLoading) {
+    return (
+      <div className="tkt-detail-col">
+        <div className="tkt-skel-head" aria-hidden="true" />
+        <div className="tkt-skel-bubble" aria-hidden="true" />
+        <div className="tkt-skel-bubble tkt-skel-bubble--right" aria-hidden="true" />
+        <div className="tkt-skel-bubble" aria-hidden="true" />
+      </div>
+    );
+  }
+
+  if (!detail) {
     return (
       <div className="tkt-detail-col">
         <div className="tkt-empty-detail">
@@ -57,69 +70,62 @@ export default function TicketDetail({ ticket, replies, onReply, onStatusChange 
     );
   }
 
-  const priorityCfg = PRIORITY_CONFIG[ticket.priority] ?? PRIORITY_CONFIG.normal;
-  const statusCfg = STATUS_CONFIG[ticket.status] ?? STATUS_CONFIG.open;
-  const isClosed = ticket.status === 'closed';
+  const isClosed = CLOSED_STATUSES.includes(detail.status);
 
-  function handleSend() {
-    if (!replyText.trim()) return;
-    onReply(replyText.trim(), newStatus || null);
-    setReply('');
-    setNewStatus('');
+  async function handleSend(e) {
+    e.preventDefault();
+    if (!replyText.trim() || isSending) return;
+    const ok = await onReply(replyText.trim(), attachUrl.trim() || undefined);
+    if (ok) { setReply(''); setAttach(''); }
   }
+
+  // Nội dung gốc = bubble student đầu tiên
+  const thread = [
+    { replyId: 'origin', senderRole: 'STUDENT', senderName: detail.studentName, message: detail.content, createdAt: detail.createdAt },
+    ...(detail.replies ?? []),
+  ];
 
   return (
     <div className="tkt-detail-col">
-      {/* Header */}
       <div className="tkt-detail-header">
-        <h2 className="tkt-detail-subject">{ticket.subject}</h2>
+        <h2 className="tkt-detail-subject">{detail.subject}</h2>
         <div className="tkt-badge-row">
-          <span
-            className="tkt-priority-pill"
-            style={{ background: priorityCfg.bg, color: priorityCfg.color }}
-          >
-            {priorityCfg.label}
-          </span>
-          <span
-            className="tkt-status-badge"
-            style={{ background: statusCfg.bg, color: statusCfg.color }}
-          >
-            {statusCfg.label}
-          </span>
+          <PriorityPill priority={detail.priority} />
+          {detail.category && <span className="tkt-detail-cat">{detail.category}</span>}
+          <TicketStatusBadge status={detail.status} />
         </div>
         <div className="tkt-detail-meta">
-          <span>Học viên: {ticket.studentName}</span>
+          <span>Học viên: {detail.studentName}</span>
           <span aria-hidden="true">|</span>
-          <span>Level: {ticket.jlptLevel}</span>
+          <span>Gửi: {formatDateTime(detail.createdAt)}</span>
           <span aria-hidden="true">|</span>
-          <span>Gửi: {formatDateTime(ticket.createdAt)}</span>
+          <span>Được giao: {detail.assignedToStaffName ?? '— chưa giao'}</span>
         </div>
       </div>
 
-      {/* Thread */}
+      {headerExtra}
+
       <div className="tkt-thread" role="log" aria-live="polite" aria-label="Cuộc hội thoại">
-        {replies.map((reply) => {
-          const isStaff = reply.senderType === 'staff';
+        {thread.map((r) => {
+          const isStaff = r.senderRole === 'STAFF';
           return (
-            <div
-              key={reply.replyId}
-              className={`tkt-msg${isStaff ? ' tkt-msg--staff' : ' tkt-msg--student'}`}
-            >
+            <div key={r.replyId} className={`tkt-msg${isStaff ? ' tkt-msg--staff' : ' tkt-msg--student'}`}>
               <div
                 className="tkt-msg-avatar"
                 aria-hidden="true"
-                style={
-                  isStaff
-                    ? { background: 'var(--color-primary-bg)', color: 'var(--color-primary-dark)' }
-                    : { background: 'var(--color-secondary-bg)', color: 'var(--color-secondary)' }
-                }
+                style={isStaff
+                  ? { background: 'var(--color-primary-bg)', color: 'var(--color-primary-dark)' }
+                  : { background: 'var(--color-secondary-bg)', color: 'var(--color-secondary)' }}
               >
-                {getInitials(reply.senderName)}
+                {getInitial(r.senderName)}
               </div>
               <div className="tkt-msg-bubble">
-                <span className="tkt-msg-name">{reply.senderName}</span>
-                <p className="tkt-msg-text">{reply.message}</p>
-                <span className="tkt-msg-time">{formatDateTime(reply.createdAt)}</span>
+                <span className="tkt-msg-name">{r.senderName}</span>
+                <p className="tkt-msg-text">{r.message}</p>
+                {r.attachmentUrl && (
+                  <a className="tkt-msg-attach" href={r.attachmentUrl} target="_blank" rel="noreferrer">🔗 Tệp đính kèm</a>
+                )}
+                <span className="tkt-msg-time">{formatRelativeTime(r.createdAt)}</span>
               </div>
             </div>
           );
@@ -127,17 +133,12 @@ export default function TicketDetail({ ticket, replies, onReply, onStatusChange 
         <div ref={threadBottomRef} />
       </div>
 
-      {/* Reply form or closed banner */}
       {isClosed ? (
-        <div className="tkt-closed-banner" role="alert">
-          Ticket này đã đóng. Không thể gửi thêm phản hồi.
+        <div className="tkt-closed-banner" role="status">
+          Ticket đã đóng. Không thể gửi thêm phản hồi.
         </div>
       ) : (
-        <form
-          className="tkt-reply-form"
-          onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-          aria-label="Form phản hồi"
-        >
+        <form className="tkt-reply-form" onSubmit={handleSend} aria-label="Form phản hồi">
           <textarea
             className="tkt-reply-textarea"
             rows={3}
@@ -145,35 +146,49 @@ export default function TicketDetail({ ticket, replies, onReply, onStatusChange 
             value={replyText}
             onChange={(e) => setReply(e.target.value)}
             aria-label="Nội dung phản hồi"
+            aria-required="true"
+          />
+          <input
+            className="tkt-attach-input"
+            type="url"
+            placeholder="🔗 Đính kèm URL (tùy chọn)"
+            value={attachUrl}
+            maxLength={500}
+            onChange={(e) => setAttach(e.target.value)}
           />
           <div className="tkt-reply-footer">
-            <select
-              className="tkt-status-select"
-              value={newStatus}
-              onChange={(e) => setNewStatus(e.target.value)}
-              aria-label="Thay đổi trạng thái ticket"
-            >
-              <option value="">-- Giữ nguyên --</option>
-              <option value="open">Mở (open)</option>
-              <option value="in_progress">Đang xử lý (in_progress)</option>
-              <option value="resolved">Đã giải quyết (resolved)</option>
-              <option value="closed">Đóng (closed)</option>
-            </select>
             <button
-              type="submit"
-              className="tkt-reply-btn"
-              disabled={!replyText.trim()}
-              aria-label="Gửi phản hồi"
+              type="button"
+              className="tkt-close-btn"
+              onClick={() => setConfirm(true)}
+              disabled={isClosing}
             >
-              {/* Send icon */}
+              {isClosing ? 'Đang đóng…' : 'Đóng ticket'}
+            </button>
+            <button type="submit" className="tkt-reply-btn" disabled={!replyText.trim() || isSending} aria-busy={isSending}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M22 2L11 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M22 2L11 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              Gửi phản hồi
+              {isSending ? 'Đang gửi…' : 'Gửi phản hồi'}
             </button>
           </div>
         </form>
+      )}
+
+      {showConfirm && (
+        <div className="tkt-confirm-overlay" onMouseDown={() => setConfirm(false)}>
+          <div className="tkt-confirm" role="alertdialog" aria-modal="true" aria-labelledby="tkt-confirm-title" onMouseDown={(e) => e.stopPropagation()}>
+            <h3 id="tkt-confirm-title" className="tkt-confirm-title">Đóng ticket này?</h3>
+            <p className="tkt-confirm-text">Ticket sẽ chuyển sang trạng thái đã giải quyết và học viên được thông báo.</p>
+            <div className="tkt-confirm-actions">
+              <button type="button" className="tkt-close-btn" onClick={() => setConfirm(false)}>Hủy</button>
+              <button type="button" className="tkt-reply-btn tkt-confirm-danger" onClick={async () => { setConfirm(false); await onClose(); }}>
+                Xác nhận đóng
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

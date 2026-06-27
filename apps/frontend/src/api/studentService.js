@@ -370,6 +370,60 @@ export async function getOcrResult(jobId) {
   return res.data.data;
 }
 
+// ─── Hỗ trợ / Ticket — UC-29 (SupportController) ──────────────────────────────
+
+// Danh sách ticket của tôi. status optional. Trả { content, totalElements, totalPages }.
+export async function getMyTickets({ status, page = 0, size = 10 } = {}) {
+  const params = { page, size };
+  if (status) params.status = status;
+  const res = await api.get('/support/tickets', { params });
+  return res.data.data;
+}
+
+// Chi tiết 1 ticket + replies[]. 403 nếu không phải ticket của mình; 404 nếu không tồn tại.
+export async function getTicketDetail(ticketId) {
+  const res = await api.get(`/support/tickets/${ticketId}`);
+  return res.data.data; // TicketDetailResponse
+}
+
+// Tạo ticket mới. priority: 'low'|'normal'|'high'|'urgent' (mặc định normal).
+export async function createTicket({ subject, content, category, priority }) {
+  const res = await api.post('/support/tickets', { subject, content, category, priority });
+  return res.data.data; // TicketResponse (status 201)
+}
+
+// Gửi phản hồi vào ticket của mình. attachmentUrl optional (≤500 ký tự).
+export async function replyTicket(ticketId, { message, attachmentUrl } = {}) {
+  const res = await api.post(`/support/tickets/${ticketId}/reply`, { message, attachmentUrl });
+  return res.data.data; // TicketReplyResponse
+}
+
+// Học viên tự đóng ticket của mình → status 'closed'.
+export async function closeMyTicket(ticketId) {
+  const res = await api.post(`/support/tickets/${ticketId}/close`);
+  return res.data.data; // TicketResponse
+}
+
+// ─── Thông báo — UC-30 (NotificationController) ───────────────────────────────
+
+// Danh sách thông báo. Trả { content, totalElements, totalPages, unreadCount }.
+export async function getMyNotifications({ page = 0, size = 20 } = {}) {
+  const res = await api.get('/notifications', { params: { page, size } });
+  return res.data.data;
+}
+
+// Đánh dấu 1 thông báo đã đọc. 403 nếu không phải của mình.
+export async function markNotificationRead(notificationId) {
+  const res = await api.post(`/notifications/${notificationId}/read`);
+  return res.data;
+}
+
+// Đánh dấu tất cả đã đọc → { markedCount }.
+export async function markAllNotificationsRead() {
+  const res = await api.post('/notifications/read-all');
+  return res.data.data;
+}
+
 // ─── Certificates ────────────────────────────────────────────────────────────
 export async function getMyCertificates() {
   const res = await api.get('/certificates/me');

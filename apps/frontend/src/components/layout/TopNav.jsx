@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logoutThunk } from '../../store/slices/authSlice';
 import AppLogo from '../common/AppLogo';
 import { VocabIcon } from '../student/StudentIcons';
+import NotificationBell from '../notifications/NotificationBell';
 import './TopNav.css';
 
 const NAV_TABS = [
@@ -83,6 +84,11 @@ function UserDropdown({ user, streak, wordCount, daysThisMonth, onClose, onLogou
     navigate('/notebook');
   }
 
+  function handleSupport() {
+    onClose();
+    navigate('/support');
+  }
+
   async function handleLogout() {
     onClose();
     await onLogout();
@@ -159,6 +165,16 @@ function UserDropdown({ user, streak, wordCount, daysThisMonth, onClose, onLogou
           Sổ tay — Từ cần ôn lại
           <svg className="ud-action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+
+        <button type="button" className="ud-action-btn ud-action-btn--support" onClick={handleSupport}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+          </svg>
+          Hỗ trợ — Gửi yêu cầu
+          <svg className="ud-action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
 
@@ -243,6 +259,8 @@ function TopNav({ activeTab = '' }) {
 
       {/* User area + Dropdown */}
       <div className="topnav-user" ref={wrapperRef}>
+        <NotificationBell />
+
         <span className="topnav-email" title={displayEmail}>{displayEmail}</span>
 
         <button

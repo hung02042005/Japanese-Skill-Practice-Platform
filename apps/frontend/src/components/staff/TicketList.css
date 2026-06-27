@@ -61,6 +61,15 @@
   padding: 1px 7px;
 }
 
+.tkt-assigned { font-size: 11px; color: var(--color-text-sub); margin-left: auto; }
+
+.tkt-skel-card {
+  height: 72px; margin: 8px 12px; border-radius: var(--radius-md);
+  background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%);
+  background-size: 200% 100%; animation: tktSkel 1.4s ease infinite;
+}
+@keyframes tktSkel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
 .tkt-empty-list { padding: 40px 20px; text-align: center; font-size: 14px; color: var(--color-text-sub); }
 
 @media (max-width: 767px) {

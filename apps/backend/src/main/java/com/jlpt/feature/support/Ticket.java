@@ -76,6 +76,7 @@ public class Ticket {
 
     public enum TicketStatus {
         OPEN("open"),
+        ASSIGNED("assigned"),
         IN_PROGRESS("in_progress"),
         RESOLVED("resolved"),
         CLOSED("closed");

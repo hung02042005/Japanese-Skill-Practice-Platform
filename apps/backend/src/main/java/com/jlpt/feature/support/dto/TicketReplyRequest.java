@@ -1,5 +1,5 @@
 /* (c) JLPT E-Learning Platform */
-package com.jlpt.shared.dto.request;
+package com.jlpt.feature.support.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

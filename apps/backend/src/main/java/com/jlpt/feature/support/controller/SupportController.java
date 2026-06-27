@@ -2,12 +2,12 @@
 package com.jlpt.feature.support.controller;
 
 import com.jlpt.shared.common.ApiResponse;
-import com.jlpt.shared.dto.response.TicketDetailResponse;
-import com.jlpt.shared.dto.response.TicketReplyResponse;
+import com.jlpt.feature.support.dto.TicketDetailResponse;
+import com.jlpt.feature.support.dto.TicketReplyResponse;
 import com.jlpt.feature.support.dto.TicketRequest;
 import com.jlpt.feature.support.dto.TicketResponse;
 import com.jlpt.feature.support.service.SupportTicketService;
-import com.jlpt.shared.dto.request.TicketReplyRequest;
+import com.jlpt.feature.support.dto.TicketReplyRequest;
 import com.jlpt.shared.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import java.util.Map;

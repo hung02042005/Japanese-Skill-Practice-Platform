@@ -1,0 +1,14 @@
+.tks-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.tks-status--open        { background: #FFEAEA; color: var(--color-error); }
+.tks-status--assigned    { background: var(--color-primary-bg); color: var(--color-primary-dark); }
+.tks-status--in_progress { background: var(--color-accent-bg); color: var(--color-warning); }
+.tks-status--resolved    { background: var(--color-secondary-bg); color: var(--color-secondary); }
+.tks-status--closed      { background: #F0EDEB; color: var(--color-text-disabled); }

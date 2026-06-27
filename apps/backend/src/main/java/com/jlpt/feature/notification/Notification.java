@@ -32,12 +32,12 @@ public class Notification {
     @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
     private String content;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = NotificationTypeConverter.class)
     @Column(name = "notification_type", nullable = false, length = 30)
     @Builder.Default
     private NotificationType notificationType = NotificationType.NEWS;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = ChannelConverter.class)
     @Column(nullable = false, length = 30)
     @Builder.Default
     private Channel channel = Channel.IN_APP;

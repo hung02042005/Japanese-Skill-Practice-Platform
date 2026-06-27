@@ -1,5 +1,46 @@
 import api from './authService';
 
+// --- Support Tickets (UC-29 · StaffSupportController) -------------------------
+
+// Danh sách ticket. Trả { content, totalElements, totalPages }.
+export async function getTickets({ status, category, priority, q, page = 0, size = 20 } = {}) {
+  const params = { page, size };
+  if (status) params.status = status;
+  if (category) params.category = category;
+  if (priority) params.priority = priority;
+  if (q) params.q = q;
+  const res = await api.get('/staff/tickets', { params });
+  return res.data.data;
+}
+
+// Chi tiết + replies[].
+export async function getTicketDetail(ticketId) {
+  const res = await api.get(`/staff/tickets/${ticketId}`);
+  return res.data.data; // TicketDetailResponse
+}
+
+// Phản hồi. Backend tự chuyển OPEN/ASSIGNED → IN_PROGRESS + notify student.
+// 403 nếu không phải người được giao (và không phải manager).
+export async function replyTicket(ticketId, { message, attachmentUrl } = {}) {
+  const res = await api.post(`/staff/tickets/${ticketId}/reply`, { message, attachmentUrl });
+  return res.data.data; // TicketReplyResponse
+}
+
+// Đóng ticket → RESOLVED + audit log + notify student.
+export async function closeTicket(ticketId) {
+  const res = await api.post(`/staff/tickets/${ticketId}/close`);
+  return res.data.data; // TicketResponse
+}
+
+// --- Broadcast Notifications (UC-30 · StaffNotificationController) ------------
+
+// Broadcast async — trả { jobId } (202). KHÔNG poll.
+// payload: { title, content, notificationType, channel, targetJlptLevel, scheduledAt? }
+export async function sendBroadcast(payload) {
+  const res = await api.post('/staff/notifications', payload);
+  return res.data.data; // { jobId }
+}
+
 // --- Staff Students -----------------------------------------------------------
 export async function getStaffStudents({ search, level, status, page = 0, size = 20 } = {}) {
   const params = { page, size };

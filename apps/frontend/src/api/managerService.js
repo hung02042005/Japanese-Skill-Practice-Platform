@@ -54,3 +54,18 @@ export async function restorePublishedContent(contentId, payload) {
   const res = await api.post(`/manager/published-contents/${contentId}/restore`, payload);
   return res.data.data;
 }
+
+// --- UC-29: Ticket assignment (Staff Manager) --------------------------------
+// Ghi chú: list/detail/reply/close dùng chung từ staffService (endpoint /staff/tickets).
+
+// Phân công ticket cho 1 staff. OPEN → ASSIGNED. 403 nếu không phải manager/admin.
+export async function assignTicket(ticketId, assignToStaffId) {
+  const res = await api.post(`/staff/tickets/${ticketId}/assign`, { assignToStaffId });
+  return res.data.data; // TicketResponse
+}
+
+// Danh sách nhân viên có thể được giao (assignee picker). STAFF_MANAGER only.
+export async function getAssignableStaff() {
+  const res = await api.get('/staff/members');
+  return res.data.data; // [{ staffId, fullName, email, staffRole, assignedOpenCount }]
+}

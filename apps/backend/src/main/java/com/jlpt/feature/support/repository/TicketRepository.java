@@ -39,11 +39,10 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             @Param("q") String q,
             Pageable pageable);
 
-    long countByStatus(Ticket.TicketStatus status);
-
-    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.assignedTo.id = :staffId AND t.status = :status")
-    long countByAssignedToIdAndStatus(
+    /** Ticket dang con xu ly (chua resolved/closed) cua 1 staff — phuc vu can tai khi phan cong. */
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.assignedTo.id = :staffId AND t.status NOT IN :statuses")
+    long countByAssignedToIdAndStatusNotIn(
             @Param("staffId") Long staffId,
-            @Param("status") Ticket.TicketStatus status);
+            @Param("statuses") java.util.Collection<Ticket.TicketStatus> statuses);
 }
 

@@ -1,22 +1,39 @@
-# SPEC — Staff Gửi Thông Báo (Notifications)
+# SPEC — Gửi Thông Báo Học Viên (Broadcast Notifications)
 >
-> **Feature ID:** `feat-staff` | **Page:** `StaffNotifications`
-> **Route:** `/staff/notifications`
-> **Version:** 1.0 | **Status:** Draft
-> **Author:** Team | **Last Updated:** 2026-06-03
+> **Feature ID:** `feat-staff` | **Page:** `ManagerNotifications` (dùng chung cho Staff/Manager)
+> **Route:** `/manager/notifications` (Staff có thể tái dùng tại `/staff/notifications` nếu mở route)
+> **Version:** 2.0 | **Status:** Draft (thay thế v1.0 — căn lại đúng backend đã port)
+> **Author:** Team | **Last Updated:** 2026-06-27
 > **Design ref:** `DESIGN.md` — SakuJi · Hanami E-learning
-> **Master ref:** `MASTERFrontend-Student-Staff-SPEC.md`
-> **Backend ref:** `feat-support` — UC-30 (Send Notifications)
+> **Backend ref:** `feat-support` — UC-30 · `StaffNotificationController` (`POST /api/staff/notifications`)
+> **Liên quan:** `SPEC-notifications.md` (student NHẬN thông báo), `AdminNotificationRuleController` (rule tự động — màn riêng)
+
+---
+
+## 0. KHÁC BIỆT SO VỚI v1.0 (⚠️ ĐỌC TRƯỚC)
+
+Trang hiện tại [ManagerNotifications.jsx](../../../apps/frontend/src/pages/manager/ManagerNotifications.jsx) **đang mock 100%** (`MOCK_SENT`, `setTimeout` giả lập gửi). Backend thật **chỉ có 1 endpoint**: `POST /api/staff/notifications` (broadcast bất đồng bộ, trả `jobId`). Không có history/stats/estimate.
+
+| v1.0 / mock hiện tại (SAI) | v2.0 (ĐÚNG backend) |
+|:---|:---|
+| `GET /staff/notifications` (history table) | ❌ **Không tồn tại** — bỏ bảng lịch sử (hoặc đánh dấu "sắp có") |
+| `GET /staff/notifications/estimate` | ❌ **Không tồn tại** — bỏ "ước tính người nhận" |
+| stats `todayCount/weekCount` | ❌ **Không tồn tại** — bỏ stats row |
+| channel `'in-app'` / `'both'` | ✅ `in_app` \| `email` \| `both` (underscore!) |
+| thiếu `notificationType` | ✅ `news\|warning\|promotion\|system\|achievement\|reminder` (mặc định `system`) |
+| `setTimeout` giả lập | ✅ `POST` thật, nhận `{ jobId }` (202), fire-and-forget |
+
+Kết quả: màn này thu gọn về **một form soạn & gửi** (compose-only).
 
 ---
 
 ## 1. TỔNG QUAN TRANG
 
-Trang soạn thảo và quản lý thông báo hệ thống gửi đến học viên. Staff soạn nội dung, chọn kênh (in-app / email / cả hai), chọn nhóm đối tượng theo JLPT level, và lên lịch gửi (ngay lập tức hoặc hẹn giờ). Xử lý backend async — gửi xong trả `jobId`, không block UI.
+Màn soạn và **broadcast** thông báo hệ thống đến học viên. Người gửi (Staff Manager) nhập tiêu đề + nội dung, chọn **loại**, **kênh** (in-app / email / cả hai), **đối tượng** theo JLPT level (hoặc tất cả), và **lịch gửi** (ngay / hẹn giờ). Backend xử lý **bất đồng bộ**: trả `jobId` ngay, không block UI, **không poll** trạng thái job ở frontend.
 
 **Prefix CSS:** `nfs-`
-**activeTab:** `'staff-notifications'`
-**Guard:** `<StaffRoute>`
+**activeTab:** `'manager-notifications'`
+**Guard:** `<ManagerRoute>` (hiện tại). Nếu mở cho Staff thường: `<StaffRoute>` + route `/staff/notifications`.
 **State:** Local state + `useCallback`
 
 ---
@@ -25,23 +42,26 @@ Trang soạn thảo và quản lý thông báo hệ thống gửi đến học v
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│  StaffTopNav  activeTab="staff-notifications"                │
+│  ManagerTopNav  activeTab="manager-notifications"            │
 ├──────────────────────────────────────────────────────────────┤
 │  <main className="nfs-body">                                 │
+│  [StaffPageHero accent="pink" "Gửi Thông Báo"]              │
 │                                                              │
-│  [Page Header: "Thông Báo"  [+ Soạn thông báo mới]]          │
+│  ┌─ Compose Card ─────────────────────────────────────────┐  │
+│  │ Tiêu đề *            [____________________]  0/255      │  │
+│  │ Nội dung *           [____________________] (5 dòng)    │  │
+│  │                                                        │  │
+│  │ Loại thông báo *                                       │  │
+│  │  ○Tin tức ○Cảnh báo ○Khuyến mãi ●Hệ thống ○Thành tích  │  │
+│  │  ○Nhắc nhở                                              │  │
+│  │ Kênh gửi *           ●In-app ○Email ○Cả hai            │  │
+│  │ Đối tượng            ●Tất cả  ○Theo Level [N5▼]        │  │
+│  │ Thời gian gửi        ●Gửi ngay ○Hẹn giờ [date][time]   │  │
+│  │ ─────────────────────────────────────────────────────  │  │
+│  │                              [Gửi thông báo →]         │  │
+│  └────────────────────────────────────────────────────────┘  │
 │                                                              │
-│  [Stats Row: Đã gửi hôm nay / Tổng học viên nhận]           │
-│                                                              │
-│  [Notification History Table]                                │
-│  ┌──────────────────────────────────────────────────────┐    │
-│  │ Tiêu đề │ Loại │ Kênh │ Đối tượng │ Thời gian │ TT │    │
-│  ├─────────┼──────┼──────┼───────────┼───────────┼────┤    │
-│  │ Bảo trì │ ⚠️  │ Cả hai│ Tất cả   │ 01/06 23:00│✓  │    │
-│  └──────────────────────────────────────────────────────┘    │
-│                                                              │
-│  [Pagination]                                                │
-│                                                              │
+│  [Bảng "Lịch sử gửi" — CHỜ BACKEND, ẩn ở v2.0]              │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -50,9 +70,9 @@ Trang soạn thảo và quản lý thông báo hệ thống gửi đến học v
 ## 3. FILE STRUCTURE
 
 ```
-pages/staff/StaffNotifications.jsx
-pages/staff/StaffNotifications.css
-components/staff/NotificationComposeModal.jsx   ← modal soạn thông báo (>60 dòng)
+pages/manager/ManagerNotifications.jsx   ← thay máu từ mock → API thật
+pages/manager/ManagerNotifications.css
+// Form đủ nhỏ → giữ inline trong page; không cần modal (không có list phía sau)
 ```
 
 ---
@@ -60,210 +80,140 @@ components/staff/NotificationComposeModal.jsx   ← modal soạn thông báo (>6
 ## 4. STATE
 
 ```js
-const [notifications, setItems]    = useState([]);
-const [isLoading,     setLoading]  = useState(true);
-const [error,         setError]    = useState('');
-const [currentPage,   setPage]     = useState(1);
-const [totalPages,    setTotal]    = useState(1);
-const [showCompose,   setCompose]  = useState(false);
-const PAGE_SIZE = 20;
-```
-
----
-
-## 5. API — `staffService.js`
-
-```js
-// Lấy lịch sử thông báo đã gửi
-export async function getNotificationHistory({ page = 0, size = 20 } = {}) {
-  const res = await api.get('/staff/notifications', { params: { page, size } });
-  return res.data.data;
-  // { content: [{ notificationId, title, notificationType, channel, targetLevel, sentAt, deliveredCount }], totalPages }
-}
-
-// Gửi thông báo mới (async job)
-export async function sendNotification(data) {
-  const res = await api.post('/staff/notifications', data);
-  return res.data.data; // { jobId }
-  // data: { title, content, notificationType, channel, targetJlptLevel?, scheduledAt? }
-}
-```
-
----
-
-## 6. NOTIFICATION HISTORY TABLE
-
-| Cột | Nội dung |
-|:---|:---|
-| Tiêu đề | text truncate 60 ký tự |
-| Loại | `<NotificationTypeBadge type={n.notificationType} />` |
-| Kênh | `<ChannelPill channel={n.channel} />` |
-| Đối tượng | Level (N5/N4/... hoặc "Tất cả") |
-| Gửi lúc | "ngay lập tức" hoặc thời gian lên lịch |
-| Đã gửi | `deliveredCount` học viên |
-
-### NotificationTypeBadge
-
-| Type | Icon SVG | Background | Text |
-|:---|:---|:---|:---|
-| `news` | 📰 newspaper | `#E3F2FD` | `#1565C0` |
-| `warning` | ⚠️ triangle | `--color-accent-bg` | `--color-warning` |
-| `promotion` | 🎁 gift | `--color-secondary-bg` | `--color-secondary` |
-| `system` | ⚙️ gear | `#F0EDEB` | `--color-text-sub` |
-| `achievement` | ⭐ star | `--color-accent-bg` | `#B7670A` |
-| `reminder` | 🔔 bell | `--color-primary-bg` | `--color-primary-dark` |
-
-### ChannelPill
-
-| Channel | Label | Style |
-|:---|:---|:---|
-| `in_app` | In-app | outline gray |
-| `email` | Email | outline blue |
-| `both` | In-app + Email | solid primary-bg |
-
----
-
-## 7. NOTIFICATION COMPOSE MODAL (`NotificationComposeModal`)
-
-```
-┌──────────────────────────────────────────────────────┐
-│  Soạn thông báo mới                           [✕]   │
-├──────────────────────────────────────────────────────┤
-│                                                      │
-│  [Tiêu đề *]                                         │
-│  [________________________________]                  │
-│                                                      │
-│  [Nội dung *]                                        │
-│  [________________________________]                  │
-│  [________________________________]  (textarea 4r)   │
-│  [________________________________]                  │
-│                                                      │
-│  [Loại thông báo *]                                  │
-│  ○ Tin tức  ○ Cảnh báo  ○ Khuyến mãi               │
-│  ○ Hệ thống  ○ Thành tích  ○ Nhắc nhở               │
-│                                                      │
-│  [Kênh gửi *]                                        │
-│  ○ Chỉ In-app  ○ Chỉ Email  ○ Cả hai                │
-│                                                      │
-│  [Đối tượng nhận]                                    │
-│  ● Tất cả học viên                                  │
-│  ○ Theo Level JLPT:  [N5▼]                           │
-│                                                      │
-│  [Thời gian gửi]                                     │
-│  ● Gửi ngay                                         │
-│  ○ Hẹn giờ:  [2026-06-05]  [23:00]                  │
-│                                                      │
-│  ─────────────────────────────────────────────────   │
-│  Ước tính: ~1,240 học viên sẽ nhận thông báo này    │
-│                                                      │
-│                       [Hủy] [Gửi thông báo →]       │
-└──────────────────────────────────────────────────────┘
-```
-
-### State (trong modal)
-
-```js
 const [form, setForm] = useState({
   title:            '',
   content:          '',
-  notificationType: 'news',
-  channel:          'in_app',
+  notificationType: 'system',     // news|warning|promotion|system|achievement|reminder
+  channel:          'in_app',     // in_app|email|both
   targetAll:        true,
-  targetLevel:      'N5',
+  targetLevel:      'N5',         // chỉ dùng khi !targetAll
   scheduleNow:      true,
   scheduledDate:    '',
   scheduledTime:    '',
 });
-const [estimatedCount, setEstimated] = useState(null);
-const [isSending,      setSending]   = useState(false);
-const [sendError,      setSendError] = useState('');
-```
-
-### Ước tính số người nhận
-
-Fetch khi `targetAll` hoặc `targetLevel` thay đổi:
-
-```js
-useEffect(() => {
-  // GET /api/staff/notifications/estimate?level={targetLevel}&all={targetAll}
-  // returns: { count: 1240 }
-  estimateRecipients({ all: form.targetAll, level: form.targetLevel })
-    .then((r) => setEstimated(r.count))
-    .catch(() => setEstimated(null));
-}, [form.targetAll, form.targetLevel]);
-```
-
-### Validation client-side
-
-- `title`: 1–255 ký tự
-- `content`: không rỗng
-- Nếu `scheduleNow = false`: `scheduledDate` và `scheduledTime` phải là tương lai
-
-### Submit flow
-
-1. Build payload: `{ title, content, notificationType, channel, targetJlptLevel (nếu không all), scheduledAt (nếu hẹn giờ) }`
-2. Gọi `sendNotification(payload)` → nhận `{ jobId }`
-3. Đóng modal
-4. Toast success: "Đang gửi thông báo (Job #job_notification_951). Quá trình diễn ra trong nền."
-5. Refresh danh sách (gọi lại `getNotificationHistory()`)
-
-**Không** poll job status trên UI — gửi là async fire-and-forget từ phía frontend.
-
-### Confirm dialog trước khi gửi toàn bộ
-
-Nếu `targetAll = true` và `estimatedCount > 500`, hiển thị confirm dialog:
-
-```
-"Bạn sắp gửi thông báo đến {estimatedCount} học viên.
-Hành động này không thể hoàn tác.
-[Hủy]  [Xác nhận gửi]"
+const [errors,    setErrors]   = useState({});
+const [isSending, setSending]  = useState(false);
+const { toasts, addToast, removeToast } = useToast();
 ```
 
 ---
 
-## 8. STATS ROW
+## 5. API — `staffService.js` (hoặc `managerService.js`)
 
-```
-┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
-│ Đã gửi hôm nay  │  │ Tuần này         │  │ Tổng học viên   │
-│     3 thông báo │  │    12 thông báo  │  │   nhận tuần này │
-└──────────────────┘  └──────────────────┘  └──────────────────┘
+```js
+import api from './authService';
+
+// Broadcast async — trả { jobId }. Status 202.
+// payload: { title, content, notificationType, channel, targetJlptLevel, scheduledAt? }
+export async function sendBroadcast(payload) {
+  const res = await api.post('/staff/notifications', payload);
+  return res.data.data; // { jobId }
+}
 ```
 
-Lấy từ response header của `getNotificationHistory()` (server trả thêm field `todayCount`, `weekCount`).
+### 5.1 Hợp đồng request (đúng `SendNotificationRequest`)
+
+```jsonc
+{
+  "title": "Bảo trì hệ thống",            // bắt buộc, ≤255
+  "content": "Hệ thống bảo trì 23:00…",   // bắt buộc
+  "notificationType": "system",           // mặc định "system"
+  "channel": "in_app",                    // mặc định "in_app"
+  "targetJlptLevel": "ALL",               // N1|N2|N3|N4|N5|ALL — mặc định "ALL"
+  "scheduledAt": "2026-06-28T23:00:00"    // optional (LocalDateTime ISO, bỏ nếu gửi ngay)
+}
+```
+
+> `targetJlptLevel`: gửi `"ALL"` khi `targetAll`; ngược lại gửi `form.targetLevel`. `scheduledAt`: chỉ thêm khi `!scheduleNow`, ghép `scheduledDate + 'T' + scheduledTime + ':00'`.
+
+---
+
+## 6. COMPOSE FORM
+
+### Validation client-side (khớp Bean Validation backend)
+
+| Field | Ràng buộc | Message |
+|:---|:---|:---|
+| `title` | bắt buộc, ≤255 | "Tiêu đề không được để trống" / "Tối đa 255 ký tự" |
+| `content` | bắt buộc | "Nội dung không được để trống" |
+| `notificationType` | ∈ 6 loại (radio) | — |
+| `channel` | ∈ `in_app/email/both` (radio) | — |
+| `scheduledAt` (khi hẹn giờ) | phải là tương lai | "Thời gian hẹn phải ở tương lai" |
+
+### NotificationType radio (label VI)
+
+| value | label |
+|:---|:---|
+| `news` | Tin tức |
+| `warning` | Cảnh báo |
+| `promotion` | Khuyến mãi |
+| `system` | Hệ thống |
+| `achievement` | Thành tích |
+| `reminder` | Nhắc nhở |
+
+### Submit flow
+
+1. `validate()` → có lỗi: set `errors`, dừng.
+2. Build payload (§5.1).
+3. **Confirm dialog** nếu `targetAll === true` (gửi toàn bộ học viên):
+   `"Bạn sắp broadcast đến TẤT CẢ học viên. Hành động không thể hoàn tác. [Hủy] [Xác nhận gửi]"` (`role="alertdialog"`).
+4. `sendBroadcast(payload)` → nhận `{ jobId }`.
+5. Toast success: `"Đã gửi yêu cầu broadcast (Job ${jobId}). Hệ thống đang xử lý trong nền."`
+6. Reset form về mặc định.
+
+**Không poll job** — fire-and-forget (backend `@Async`).
+
+---
+
+## 7. CHANNEL PILL (hiển thị lựa chọn / nhãn)
+
+| Channel | Label | Style |
+|:---|:---|:---|
+| `in_app` | In-app | outline gray (`--color-border`) |
+| `email` | Email | outline blue (`#1565C0`) |
+| `both` | In-app + Email | nền `--color-primary-bg`, viền `--color-primary-light`, chữ `--color-primary-dark` |
+
+```css
+.nfs-channel-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: var(--radius-full); font-size: 11px; font-weight: 700; }
+.nfs-channel--in_app { border: 1.5px solid var(--color-border); color: var(--color-text-sub); }
+.nfs-channel--email  { border: 1.5px solid #1565C0; color: #1565C0; }
+.nfs-channel--both   { background: var(--color-primary-bg); border: 1.5px solid var(--color-primary-light); color: var(--color-primary-dark); }
+```
+
+---
+
+## 8. LỊCH SỬ GỬI — ⚠️ CHỜ BACKEND
+
+Backend **chưa có** endpoint trả lịch sử thông báo đã gửi. Ở v2.0:
+
+- **Bỏ** bảng lịch sử mock + stats row.
+- (Tùy chọn) hiển thị placeholder dưới form: `<EmptyState title="Lịch sử gửi sắp ra mắt" subtitle="Tính năng xem lại các thông báo đã broadcast đang được phát triển." mascotVariant="thinking" mascotSize={120} />`
+
+**Future (out of scope):** đề xuất backend bổ sung `GET /api/staff/notifications?page=&size=` trả danh sách broadcast đã gửi (group theo `ruleKey`/batch) + `deliveredCount`. Khi có, dựng lại bảng theo cấu trúc v1.0 (đã lưu trong git history).
 
 ---
 
 ## 9. LOADING / ERROR / EMPTY
 
-- **Loading:** skeleton 5 hàng bảng + skeleton 3 stat cards
-- **Error:** error banner + retry
-- **Empty:** `<EmptyState title="Chưa có thông báo nào" subtitle="Soạn và gửi thông báo đầu tiên đến học viên." mascotVariant="idle" mascotSize={120}>`
+- **Sending:** nút "Gửi thông báo" `aria-busy`, disabled, spinner.
+- **Error:** toast `error` với message từ backend (`err.response.data.message`); giữ nguyên form để gửi lại.
+- **Empty:** không áp dụng (form luôn hiển thị).
 
 ---
 
 ## 10. CSS KEY CLASSES
 
 ```css
-.nfs-page  { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); }
-.nfs-body  { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; }
+.nfs-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); }
+.nfs-body { flex: 1; max-width: 760px; width: 100%; margin: 0 auto; padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; }
 
-.nfs-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.nfs-stat-card {
-  background: var(--color-card); border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm); padding: 20px;
-}
-.nfs-stat-value { font-size: 26px; font-weight: 800; color: var(--color-text); }
-.nfs-stat-label { font-size: 12px; color: var(--color-text-sub); margin-top: 4px; }
-
-.nfs-channel-pill {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 2px 10px; border-radius: var(--radius-full);
-  font-size: 11px; font-weight: 700;
-}
-.nfs-channel--in_app { border: 1.5px solid var(--color-border); color: var(--color-text-sub); }
-.nfs-channel--email  { border: 1.5px solid #1565C0; color: #1565C0; }
-.nfs-channel--both   { background: var(--color-primary-bg); border: 1.5px solid var(--color-primary-light); color: var(--color-primary-dark); }
+.nfs-compose-card { background: var(--color-card); border-radius: var(--radius-lg); box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 24px 28px; display: flex; flex-direction: column; gap: 18px; }
+.nfs-field { display: flex; flex-direction: column; gap: 6px; }
+.nfs-radios { display: flex; flex-wrap: wrap; gap: 8px; }
+.nfs-radio { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1.5px solid var(--color-border); border-radius: var(--radius-full); font-size: 13px; font-weight: 600; color: var(--color-text-sub); cursor: pointer; }
+.nfs-radio--on { border-color: var(--color-primary); background: var(--color-primary-bg); color: var(--color-primary-dark); }
+.nfs-send-btn { align-self: flex-end; height: 44px; padding: 0 26px; border-radius: var(--radius-full); background: var(--color-secondary); color: #fff; border: none; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(93,187,105,0.25); }
+.nfs-send-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 ```
 
 ---
@@ -273,19 +223,21 @@ Lấy từ response header của `getNotificationHistory()` (server trả thêm 
 ```css
 @media (max-width: 1199px) { .nfs-body { padding: 24px 20px 40px; } }
 @media (max-width: 767px)  {
-  .nfs-body       { padding: 16px 16px 32px; }
-  .nfs-stats-row  { grid-template-columns: 1fr 1fr; }
-  /* ẩn cột "Đã gửi" trên mobile */
-  .nfs-col-delivered { display: none; }
+  .nfs-body { padding: 16px 16px 32px; }
+  .nfs-compose-card { padding: 18px 16px; }
+  .nfs-send-btn { width: 100%; }
 }
+@media (prefers-reduced-motion: reduce) { .nfs-page * { animation: none !important; transition-duration: 0ms !important; } }
 ```
 
 ---
 
 ## 12. ACCESSIBILITY
 
-- [ ] Radio groups trong modal: `<fieldset>` + `<legend>` cho mỗi nhóm (Loại, Kênh, Đối tượng, Thời gian)
-- [ ] Estimated count: `aria-live="polite"` để screen reader thông báo khi số cập nhật
-- [ ] Confirm dialog: `role="alertdialog"`, `aria-modal="true"`, focus trap
-- [ ] Date/time inputs hẹn giờ: `min={new Date().toISOString().slice(0,10)}` để chặn ngày quá khứ
-- [ ] Modal `NotificationComposeModal`: `role="dialog"`, `aria-modal="true"`, Escape đóng
+- [ ] Radio groups: `<fieldset>` + `<legend>` cho mỗi nhóm (Loại, Kênh, Đối tượng, Thời gian).
+- [ ] Date/time hẹn giờ: `min={today}` chặn ngày quá khứ.
+- [ ] Confirm broadcast toàn bộ: `role="alertdialog"`, `aria-modal="true"`, focus trap, Escape hủy.
+- [ ] Nút gửi: `aria-busy` khi đang gửi.
+- [ ] `addToast(type, message)` đúng signature `useToast` (mock cũ dùng đúng — giữ nguyên).
+- [ ] Mọi `<input>`/`<textarea>` có `<label htmlFor>`.
+```

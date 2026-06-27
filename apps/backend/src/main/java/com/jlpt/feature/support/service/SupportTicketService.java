@@ -1,46 +1,47 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.support.service;
 
-import com.jlpt.feature.support.dto.GradeResponse;
-import com.jlpt.feature.support.dto.ManualGradeRequest;
-import com.jlpt.shared.dto.response.TicketDetailResponse;
-import com.jlpt.shared.dto.response.TicketReplyResponse;
-import com.jlpt.feature.support.dto.TicketResponse;
-import com.jlpt.feature.support.repository.TicketReplyRepository;
-import com.jlpt.feature.support.repository.TicketRepository;
 import com.jlpt.feature.admin.AdminAuditLog;
 import com.jlpt.feature.admin.AdminAuditLogRepository;
 import com.jlpt.feature.assessment.StudentSubmission;
 import com.jlpt.feature.assessment.StudentSubmissionRepository;
 import com.jlpt.feature.notification.Notification;
-import com.jlpt.feature.notification.NotificationRepository;
-import com.jlpt.feature.notification.dto.NotificationResponse;
+import com.jlpt.feature.notification.service.NotificationService;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.StudentUserRepository;
 import com.jlpt.feature.support.Ticket;
 import com.jlpt.feature.support.TicketReply;
-import com.jlpt.shared.dto.request.SendNotificationRequest;
-import com.jlpt.shared.dto.request.TicketReplyRequest;
+import com.jlpt.feature.support.dto.GradeResponse;
+import com.jlpt.feature.support.dto.ManualGradeRequest;
+import com.jlpt.feature.support.dto.TicketDetailResponse;
+import com.jlpt.feature.support.dto.TicketReplyRequest;
+import com.jlpt.feature.support.dto.TicketReplyResponse;
+import com.jlpt.feature.support.dto.TicketRequest;
+import com.jlpt.feature.support.dto.TicketResponse;
+import com.jlpt.feature.support.repository.TicketReplyRepository;
+import com.jlpt.feature.support.repository.TicketRepository;
 import com.jlpt.shared.exception.BusinessException;
 import com.jlpt.shared.exception.ForbiddenException;
 import com.jlpt.shared.exception.ResourceNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Support ticket (UC-29) + chấm điểm speaking thủ công (UC-31).
+ * Thông báo (UC-30) đã tách sang {@link NotificationService}; service này chỉ gọi
+ * {@code notificationService.notifyStudent(...)} khi có sự kiện ticket/chấm điểm.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -48,19 +49,19 @@ public class SupportTicketService {
 
     private final TicketRepository ticketRepository;
     private final TicketReplyRepository ticketReplyRepository;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
     private final StudentUserRepository studentUserRepository;
     private final StaffUserRepository staffUserRepository;
     private final AdminAuditLogRepository adminAuditLogRepository;
 
-    /** READ + grade write â€” owned by NgÆ°á»i 3. */
+    /** READ + grade write — owned by Người 3. */
     @Autowired(required = false)
     private StudentSubmissionRepository submissionRepository;
 
-    // â”€â”€ UC-29: Create ticket â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── UC-29: Create ticket ──────────────────────────────────────────────────
 
     @Transactional
-    public TicketResponse createTicket(Long studentId, com.jlpt.feature.support.dto.TicketRequest req) {
+    public TicketResponse createTicket(Long studentId, TicketRequest req) {
         var student = findStudentOrThrow(studentId);
         Ticket.Priority priority = req.getPriority() != null
                 ? Ticket.Priority.valueOf(req.getPriority().toUpperCase())
@@ -79,32 +80,37 @@ public class SupportTicketService {
         return toTicketResponse(ticket);
     }
 
-    // â”€â”€ UC-29: Get my tickets (Student) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── UC-29: Get my tickets (Student) ───────────────────────────────────────
 
     @Transactional(readOnly = true)
     public Page<TicketResponse> getMyTickets(Long studentId, String status, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         if (status != null && !status.isBlank()) {
-            Ticket.TicketStatus ts = Ticket.TicketStatus.valueOf(status.toUpperCase());
+            Ticket.TicketStatus ts;
+            try {
+                ts = Ticket.TicketStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new BusinessException(400, "INVALID_STATUS", "Trang thai ticket khong hop le: " + status);
+            }
             return ticketRepository.findByStudentIdAndStatus(studentId, ts, pageable)
                     .map(this::toTicketResponse);
         }
         return ticketRepository.findByStudentId(studentId, pageable).map(this::toTicketResponse);
     }
 
-    // â”€â”€ UC-29: Ticket detail (Student â€” ownership check) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── UC-29: Ticket detail (Student — ownership check) ──────────────────────
 
     @Transactional(readOnly = true)
     public TicketDetailResponse getStudentTicketDetail(Long ticketId, Long studentId) {
         Ticket ticket = findTicketOrThrow(ticketId);
         if (!ticket.getStudent().getId().equals(studentId)) {
-            throw new ForbiddenException("Báº¡n khÃ´ng cÃ³ quyá»n xem ticket nÃ y");
+            throw new ForbiddenException("Bạn không có quyền xem ticket này");
         }
         List<TicketReply> replies = ticketReplyRepository.findByTicketIdOrderByCreatedAtAsc(ticketId);
         return toTicketDetailResponse(ticket, replies);
     }
 
-    // â”€â”€ UC-29: Ticket detail (Staff â€” no ownership check) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── UC-29: Ticket detail (Staff — no ownership check) ─────────────────────
 
     @Transactional(readOnly = true)
     public TicketDetailResponse getStaffTicketDetail(Long ticketId) {
@@ -113,17 +119,17 @@ public class SupportTicketService {
         return toTicketDetailResponse(ticket, replies);
     }
 
-    // â”€â”€ UC-29: Reply (Student) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── UC-29: Reply (Student) ────────────────────────────────────────────────
 
     @Transactional
     public TicketReplyResponse addStudentReply(Long ticketId, Long studentId, TicketReplyRequest req) {
         Ticket ticket = findTicketOrThrow(ticketId);
         checkTicketNotClosed(ticket);
         if (!ticket.getStudent().getId().equals(studentId)) {
-            throw new ForbiddenException("Báº¡n khÃ´ng cÃ³ quyá»n pháº£n há»“i ticket nÃ y");
+            throw new ForbiddenException("Bạn không có quyền phản hồi ticket này");
         }
         var student = findStudentOrThrow(studentId);
-        // Only studentSender set â€” DB constraint CK_replies_sender
+        // Only studentSender set — DB constraint CK_replies_sender
         TicketReply reply = ticketReplyRepository.save(TicketReply.builder()
                 .ticket(ticket)
                 .studentSender(student)
@@ -135,29 +141,46 @@ public class SupportTicketService {
         return toReplyResponse(reply, student.getFullName(), "STUDENT");
     }
 
-    // â”€â”€ UC-29: Reply (Staff) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── UC-29: Reply (Staff) ──────────────────────────────────────────────────
 
     @Transactional
     public TicketReplyResponse addStaffReply(Long ticketId, String staffEmail, TicketReplyRequest req) {
         Ticket ticket = findTicketOrThrow(ticketId);
         checkTicketNotClosed(ticket);
         var staff = findStaffOrThrow(staffEmail);
-        // Only staffSender set â€” DB constraint CK_replies_sender
+        // Chi staff duoc giao hoac Staff Manager moi duoc ho tro ticket nay
+        boolean isManager = staff.getStaffRole() == StaffUser.StaffRole.STAFF_MANAGER;
+        boolean isAssignee = ticket.getAssignedTo() != null
+                && ticket.getAssignedTo().getId().equals(staff.getId());
+        if (!isManager && !isAssignee) {
+            throw new ForbiddenException(
+                    "Chi staff duoc phan cong hoac Staff Manager moi duoc ho tro ticket nay");
+        }
+        // Only staffSender set — DB constraint CK_replies_sender
         TicketReply reply = ticketReplyRepository.save(TicketReply.builder()
                 .ticket(ticket)
                 .staffSender(staff)
                 .message(req.getMessage())
                 .attachmentUrl(req.getAttachmentUrl())
                 .build());
-        if (ticket.getStatus() == Ticket.TicketStatus.OPEN) {
+        if (ticket.getStatus() == Ticket.TicketStatus.OPEN
+                || ticket.getStatus() == Ticket.TicketStatus.ASSIGNED) {
             ticket.setStatus(Ticket.TicketStatus.IN_PROGRESS);
         }
         ticket.setLastReplyAt(LocalDateTime.now());
         ticketRepository.save(ticket);
+        // Noi ticket -> notification: bao cho student co phan hoi moi
+        notificationService.notifyStudent(
+                ticket.getStudent(),
+                "Ticket cua ban co phan hoi moi",
+                "Nhan vien ho tro vua phan hoi ticket: " + ticket.getSubject(),
+                Notification.NotificationType.SYSTEM,
+                "ticket_reply_" + reply.getId(),
+                staff);
         return toReplyResponse(reply, staff.getFullName(), "STAFF");
     }
 
-    // â”€â”€ UC-29: Close ticket (Staff/Admin) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── UC-29: Close ticket (Staff/Admin) ─────────────────────────────────────
 
     @Transactional
     public TicketResponse closeTicket(Long ticketId, String actorEmail) {
@@ -175,17 +198,26 @@ public class SupportTicketService {
                 .description("Ticket '" + ticket.getSubject() + "' closed by " + actorEmail)
                 .build());
 
+        // Noi ticket -> notification: bao cho student ticket da duoc xu ly
+        notificationService.notifyStudent(
+                ticket.getStudent(),
+                "Ticket cua ban da duoc xu ly",
+                "Ticket '" + ticket.getSubject() + "' da duoc nhan vien ho tro dong.",
+                Notification.NotificationType.SYSTEM,
+                "ticket_resolved_" + ticketId,
+                staff);
+
         log.info("[Support] {} closed ticket {}", actorEmail, ticketId);
         return toTicketResponse(ticket);
     }
 
-    // â”€â”€ UC-29: Close ticket (Student â€” own ticket only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── UC-29: Close ticket (Student — own ticket only) ───────────────────────
 
     @Transactional
     public TicketResponse closeStudentTicket(Long ticketId, Long studentId) {
         Ticket ticket = findTicketOrThrow(ticketId);
         if (!ticket.getStudent().getId().equals(studentId)) {
-            throw new ForbiddenException("Báº¡n khÃ´ng cÃ³ quyá»n Ä‘Ã³ng ticket nÃ y");
+            throw new ForbiddenException("Bạn không có quyền đóng ticket này");
         }
         checkTicketNotClosed(ticket);
         ticket.setStatus(Ticket.TicketStatus.CLOSED);
@@ -195,20 +227,25 @@ public class SupportTicketService {
         return toTicketResponse(ticket);
     }
 
-    // â”€â”€ Assign ticket (Staff Manager/Admin) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Assign ticket (Staff Manager/Admin) ───────────────────────────────────
 
     @Transactional
     public TicketResponse assignTicket(Long ticketId, Long assignToStaffId, String actorEmail, boolean isAdmin) {
         if (!isAdmin) {
             StaffUser actor = findStaffOrThrow(actorEmail);
             if (actor.getStaffRole() != StaffUser.StaffRole.STAFF_MANAGER) {
-                throw new ForbiddenException("Chá»‰ Staff Manager hoáº·c Admin Ä‘Æ°á»£c phÃ¢n cÃ´ng ticket");
+                throw new ForbiddenException("Chỉ Staff Manager hoặc Admin được phân công ticket");
             }
         }
         Ticket ticket = findTicketOrThrow(ticketId);
+        checkTicketNotClosed(ticket);
         var targetStaff = staffUserRepository.findById(assignToStaffId)
-                .orElseThrow(() -> new ResourceNotFoundException("KhÃ´ng tÃ¬m tháº¥y nhÃ¢n viÃªn Ä‘Æ°á»£c giao"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhân viên được giao"));
         ticket.setAssignedTo(targetStaff);
+        // Staff Manager duyet + giao -> OPEN chuyen ASSIGNED (da duyet, cho staff xu ly)
+        if (ticket.getStatus() == Ticket.TicketStatus.OPEN) {
+            ticket.setStatus(Ticket.TicketStatus.ASSIGNED);
+        }
         ticketRepository.save(ticket);
         adminAuditLogRepository.save(AdminAuditLog.builder()
                 .staffActor(staffUserRepository.findByEmail(actorEmail).orElse(null))
@@ -221,7 +258,7 @@ public class SupportTicketService {
         return toTicketResponse(ticket);
     }
 
-    // â”€â”€ UC-29: All tickets (Staff view) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── UC-29: All tickets (Staff view) ───────────────────────────────────────
 
     @Transactional(readOnly = true)
     public Page<TicketResponse> getAllTickets(
@@ -231,79 +268,7 @@ public class SupportTicketService {
                 .map(this::toTicketResponse);
     }
 
-    // â”€â”€ UC-30: Get my notifications (Student) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-    @Transactional(readOnly = true)
-    public Page<NotificationResponse> getMyNotifications(Long studentId, int page, int size) {
-        return notificationRepository
-                .findByStudentId(studentId, PageRequest.of(page, size))
-                .map(this::toNotificationResponse);
-    }
-
-    public long getUnreadCount(Long studentId) {
-        return notificationRepository.countUnreadByStudentId(studentId);
-    }
-
-    // â”€â”€ UC-30: Mark read â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-    @Transactional
-    public void markNotificationRead(Long notificationId, Long studentId) {
-        var notif = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new ResourceNotFoundException("KhÃ´ng tÃ¬m tháº¥y thÃ´ng bÃ¡o"));
-        if (!notif.getStudent().getId().equals(studentId)) {
-            throw new ForbiddenException("Báº¡n khÃ´ng cÃ³ quyá»n Ä‘Ã¡nh dáº¥u thÃ´ng bÃ¡o nÃ y");
-        }
-        notif.setIsRead(true);
-        notif.setReadAt(LocalDateTime.now());
-        notificationRepository.save(notif);
-    }
-
-    @Transactional
-    public int markAllNotificationsRead(Long studentId) {
-        return notificationRepository.markAllReadByStudentId(studentId, LocalDateTime.now());
-    }
-
-    // â”€â”€ UC-30: Broadcast notification (Staff â€” async) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-    public String sendNotification(String actorEmail, SendNotificationRequest req) {
-        String jobId = "job_notification_" + System.currentTimeMillis();
-        var staff = staffUserRepository.findByEmail(actorEmail).orElse(null);
-        List<StudentUser> targets = resolveTargets(req.getTargetJlptLevel());
-        broadcastAsync(targets, req, staff);
-        adminAuditLogRepository.save(AdminAuditLog.builder()
-                .staffActor(staff)
-                .action("BROADCAST_SENT")
-                .targetTable("notifications")
-                .description("Broadcast jobId=" + jobId + " target=" + req.getTargetJlptLevel()
-                        + " type=" + req.getNotificationType())
-                .build());
-        log.info("[Support] {} triggered notification broadcast jobId={} targets={}",
-                actorEmail, jobId, targets.size());
-        return jobId;
-    }
-
-    @Async
-    public CompletableFuture<Void> broadcastAsync(
-            List<StudentUser> targets, SendNotificationRequest req, StaffUser staffCreator) {
-        Notification.NotificationType notifType =
-                Notification.NotificationType.valueOf(req.getNotificationType().toUpperCase());
-        Notification.Channel channel = Notification.Channel.valueOf(req.getChannel().toUpperCase());
-        for (StudentUser student : targets) {
-            notificationRepository.save(Notification.builder()
-                    .student(student)
-                    .title(req.getTitle())
-                    .content(req.getContent())
-                    .notificationType(notifType)
-                    .channel(channel)
-                    .isAuto(false)
-                    .scheduledAt(req.getScheduledAt())
-                    .staffCreator(staffCreator)
-                    .build());
-        }
-        return CompletableFuture.completedFuture(null);
-    }
-
-    // â”€â”€ UC-31: Browse speaking submissions (Staff grading queue) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── UC-31: Browse speaking submissions (Staff grading queue) ──────────────
 
     @Transactional(readOnly = true)
     public Page<com.jlpt.feature.support.dto.SubmissionResponse> getAllSubmissions(
@@ -325,10 +290,10 @@ public class SupportTicketService {
     @Transactional(readOnly = true)
     public com.jlpt.feature.support.dto.SubmissionResponse getSubmissionDetail(Long submissionId) {
         if (submissionRepository == null) {
-            throw new BusinessException(503, "SERVICE_UNAVAILABLE", "Submission service chÆ°a sáºµn sÃ ng");
+            throw new BusinessException(503, "SERVICE_UNAVAILABLE", "Submission service chưa sẵn sàng");
         }
         var submission = submissionRepository.findById(submissionId)
-                .orElseThrow(() -> new ResourceNotFoundException("KhÃ´ng tÃ¬m tháº¥y bÃ i ná»™p"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài nộp"));
         return toSubmissionResponse(submission);
     }
 
@@ -359,23 +324,23 @@ public class SupportTicketService {
                 .build();
     }
 
-    // â”€â”€ UC-31: Manual grade speaking submission â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── UC-31: Manual grade speaking submission ───────────────────────────────
 
     @Transactional
     public GradeResponse manualGrade(Long submissionId, String actorEmail, ManualGradeRequest req) {
         if (submissionRepository == null) {
-            throw new BusinessException(503, "SERVICE_UNAVAILABLE", "Submission service chÆ°a sáºµn sÃ ng");
+            throw new BusinessException(503, "SERVICE_UNAVAILABLE", "Submission service chưa sẵn sàng");
         }
         var submission = submissionRepository.findById(submissionId)
-                .orElseThrow(() -> new ResourceNotFoundException("KhÃ´ng tÃ¬m tháº¥y bÃ i ná»™p"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài nộp"));
 
         if (submission.getSubmissionType() != StudentSubmission.SubmissionType.SPEAKING) {
             throw new BusinessException(422, "INVALID_SUBMISSION_TYPE",
-                    "Chá»‰ cÃ³ thá»ƒ cháº¥m Ä‘iá»ƒm thá»§ cÃ´ng bÃ i nÃ³i (speaking)");
+                    "Chỉ có thể chấm điểm thủ công bài nói (speaking)");
         }
         if (submission.getStatus() != StudentSubmission.SubmissionStatus.AI_GRADED) {
             throw new BusinessException(422, "INVALID_STATUS",
-                    "Chá»‰ cháº¥m Ä‘Æ°á»£c bÃ i Ä‘Ã£ qua AI cháº¥m (ai_graded)");
+                    "Chỉ chấm được bài đã qua AI chấm (ai_graded)");
         }
 
         var staff = findStaffOrThrow(actorEmail);
@@ -386,16 +351,14 @@ public class SupportTicketService {
         submission.setStatus(StudentSubmission.SubmissionStatus.GRADED);
         submissionRepository.save(submission);
 
-        notificationRepository.save(Notification.builder()
-                .student(submission.getStudent())
-                .title("BÃ i nÃ³i cá»§a báº¡n Ä‘Ã£ Ä‘Æ°á»£c cháº¥m Ä‘iá»ƒm")
-                .content("Äiá»ƒm cá»§a báº¡n: " + req.getManualScore() + "/100")
-                .notificationType(Notification.NotificationType.ACHIEVEMENT)
-                .channel(Notification.Channel.IN_APP)
-                .isAuto(true)
-                .ruleKey("speaking_graded_" + submissionId)
-                .staffCreator(staff)
-                .build());
+        // Noi grading -> notification: bao cho student bai noi da duoc cham diem
+        notificationService.notifyStudent(
+                submission.getStudent(),
+                "Bài nói của bạn đã được chấm điểm",
+                "Điểm của bạn: " + req.getManualScore() + "/100",
+                Notification.NotificationType.ACHIEVEMENT,
+                "speaking_graded_" + submissionId,
+                staff);
 
         adminAuditLogRepository.save(AdminAuditLog.builder()
                 .staffActor(staff)
@@ -424,41 +387,28 @@ public class SupportTicketService {
                 .build();
     }
 
-    // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Helpers ───────────────────────────────────────────────────────────────
 
     private Ticket findTicketOrThrow(Long id) {
         return ticketRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("KhÃ´ng tÃ¬m tháº¥y ticket"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ticket"));
     }
 
     private StudentUser findStudentOrThrow(Long id) {
         return studentUserRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("KhÃ´ng tÃ¬m tháº¥y há»c viÃªn"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy học viên"));
     }
 
     private StaffUser findStaffOrThrow(String email) {
         return staffUserRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("KhÃ´ng tÃ¬m tháº¥y nhÃ¢n viÃªn: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhân viên: " + email));
     }
 
     private void checkTicketNotClosed(Ticket ticket) {
         if (ticket.getStatus() == Ticket.TicketStatus.RESOLVED
                 || ticket.getStatus() == Ticket.TicketStatus.CLOSED) {
-            throw new BusinessException(409, "TICKET_CLOSED", "Ticket Ä‘Ã£ Ä‘Æ°á»£c Ä‘Ã³ng, khÃ´ng thá»ƒ pháº£n há»“i thÃªm");
+            throw new BusinessException(409, "TICKET_CLOSED", "Ticket đã được đóng, không thể phản hồi thêm");
         }
-    }
-
-    private List<StudentUser> resolveTargets(String targetJlptLevel) {
-        if (targetJlptLevel == null || targetJlptLevel.isBlank()) {
-            return studentUserRepository.findAll().stream()
-                    .filter(s -> s.getStatus() == StudentUser.StudentStatus.ACTIVE)
-                    .toList();
-        }
-        StudentUser.JlptLevel level = StudentUser.JlptLevel.valueOf(targetJlptLevel.toUpperCase());
-        return studentUserRepository.findAll().stream()
-                .filter(s -> s.getStatus() == StudentUser.StudentStatus.ACTIVE
-                        && level.equals(s.getCurrentJlptLevel()))
-                .toList();
     }
 
     private TicketResponse toTicketResponse(Ticket t) {
@@ -522,19 +472,6 @@ public class SupportTicketService {
                 .build();
     }
 
-    private NotificationResponse toNotificationResponse(Notification n) {
-        return NotificationResponse.builder()
-                .notificationId(n.getId())
-                .title(n.getTitle())
-                .content(n.getContent())
-                .notificationType(n.getNotificationType().getValue())
-                .channel(n.getChannel().getValue())
-                .isRead(n.getIsRead())
-                .readAt(n.getReadAt())
-                .createdAt(n.getCreatedAt())
-                .build();
-    }
-
     private Ticket.TicketStatus parseStatus(String status) {
         if (status == null) return null;
         try { return Ticket.TicketStatus.valueOf(status.toUpperCase()); }
@@ -547,5 +484,3 @@ public class SupportTicketService {
         catch (IllegalArgumentException e) { return null; }
     }
 }
-
-

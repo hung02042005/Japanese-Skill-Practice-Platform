@@ -1,22 +1,39 @@
-# SPEC — Staff Hỗ Trợ Học Viên (Support Tickets)
+# SPEC — Staff Xử Lý Ticket Được Giao (Support Tickets)
 >
 > **Feature ID:** `feat-staff` | **Page:** `StaffTickets`
 > **Route:** `/staff/tickets`
-> **Version:** 1.0 | **Status:** Draft
-> **Author:** Team | **Last Updated:** 2026-06-03
+> **Version:** 2.0 | **Status:** Draft (thay thế v1.0 — căn lại đúng backend đã port)
+> **Author:** Team | **Last Updated:** 2026-06-27
 > **Design ref:** `DESIGN.md` — SakuJi · Hanami E-learning
-> **Master ref:** `MASTERFrontend-Student-Staff-SPEC.md`
-> **Backend ref:** `feat-support` — UC-29 (Respond to Student Support)
+> **Backend ref:** `feat-support` — UC-29 · `StaffSupportController` (`/api/staff/tickets`)
+> **Liên quan:** `SPEC-manager-tickets.md` (manager phân công), `SPEC-support-tickets.md` (student)
+
+---
+
+## 0. KHÁC BIỆT SO VỚI v1.0 (⚠️ ĐỌC TRƯỚC)
+
+v1.0 mô tả các endpoint **không tồn tại** ở backend đã port. Trang hiện tại ([StaffTickets.jsx](../../../apps/frontend/src/pages/staff/StaffTickets.jsx)) **đang chạy mock 100%**. v2.0 căn lại đúng `StaffSupportController`:
+
+| v1.0 (SAI) | v2.0 (ĐÚNG backend) |
+|:---|:---|
+| `PUT /staff/tickets/{id}/status` | ❌ Không tồn tại — staff reply **tự** chuyển `→ in_progress` |
+| `PUT /staff/tickets/{id}/assign` `{ staffId }` | ➡️ **Manager-only**, `POST .../assign` `{ assignToStaffId }` → xem `SPEC-manager-tickets.md`. Staff thường gọi sẽ `403`. |
+| `reply { message }` đổi status thủ công | `POST .../reply` `{ message, attachmentUrl? }` — status đổi tự động |
+| `senderType` | `senderRole` = `STUDENT` \| `STAFF` |
+| dropdown "Đổi trạng thái" khi reply | **Bỏ** — không có endpoint set status; chỉ có nút **Đóng** (`→ resolved`) |
 
 ---
 
 ## 1. TỔNG QUAN TRANG
 
-Trang quản lý tickets hỗ trợ từ học viên. Layout dạng **master-detail**: cột trái liệt kê tickets, click chọn ticket → cột phải hiển thị lịch sử hội thoại + form trả lời. Staff có thể trả lời, đổi trạng thái, và phân công.
+Màn của **nhân viên hỗ trợ (STAFF)**: xem ticket, đọc luồng hội thoại và **phản hồi ticket mình được giao**. Không phân công (đó là việc của Manager). Layout **master-detail**: cột trái danh sách, cột phải chi tiết + thread + form trả lời.
+
+**Quyền (backend tự enforce):** staff chỉ reply/đóng được ticket có `assignedTo == mình` (hoặc nếu là Staff Manager). Reply ticket không được giao → `403`. Frontend phản chiếu: ẩn/disable form khi không phải người được giao.
 
 **Prefix CSS:** `tkt-`
 **activeTab:** `'staff-tickets'`
 **Guard:** `<StaffRoute>`
+**TopNav:** `StaffTopNav`
 **State:** Local state + `useCallback`
 
 ---
@@ -29,25 +46,14 @@ Trang quản lý tickets hỗ trợ từ học viên. Layout dạng **master-det
 ├──────────────────────────────────────────────────────────────────┤
 │  <main className="tkt-body">                                     │
 │  ┌────────────────────┐  ┌──────────────────────────────────┐   │
-│  │  TICKET LIST       │  │  TICKET DETAIL                   │   │
-│  │  (360px, sticky)   │  │  (flex: 1)                       │   │
-│  │                    │  │                                  │   │
-│  │ [Search tickets]   │  │ [Detail Header]                  │   │
-│  │ [Status tabs]      │  │  Subject | Priority | Status     │   │
-│  │  Open | Progress   │  │  Học viên: Nguyễn Văn A          │   │
-│  │  Resolved | All    │  │  Level: N4 | Gửi: 01/06/2026    │   │
-│  │                    │  │                                  │   │
-│  │ ┌────────────────┐ │  │ [Thread — tin nhắn dạng chat]   │   │
-│  │ │ 🔴 Ticket #45  │ │  │                                  │   │
-│  │ │ Lỗi âm thanh..│ │  │  [Student bubble]                │   │
-│  │ │ Nguyễn A •2h  │ │  │  "Xin chào, tôi gặp lỗi..."     │   │
-│  │ └────────────────┘ │  │                                  │   │
-│  │ ┌────────────────┐ │  │  [Staff bubble]                  │   │
-│  │ │ 🟡 Ticket #42  │ │  │  "Chào bạn, chúng tôi đã..."   │   │
-│  │ │ Hỏi về Level..│ │  │                                  │   │
-│  │ └────────────────┘ │  │ [Reply Form]                     │   │
-│  │ ...                │  │  [Textarea "Nhập phản hồi..."]   │   │
-│  │                    │  │  [Status▼] [Gửi phản hồi →]     │   │
+│  │  TICKET LIST (360)  │  │  TICKET DETAIL (flex:1)          │   │
+│  │ [Search]            │  │ [Subject] [Priority][Status]     │   │
+│  │ [Được giao cho tôi] │  │ Học viên: Nguyễn A · N3          │   │
+│  │ [Đang xử lý][Tất cả]│  │ Được giao: NV (Bạn) / Trần C     │   │
+│  │ ┌────────────────┐  │  │ ┌─ Thread (chat) ──────────────┐ │   │
+│  │ │🔴#45 Lỗi audio │  │  │ │ [student]… [staff]…          │ │   │
+│  │ │Nguyễn A ·2h    │  │  │ └──────────────────────────────┘ │   │
+│  │ └────────────────┘  │  │ [Reply form]  [Đóng ticket]      │   │
 │  └────────────────────┘  └──────────────────────────────────┘   │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -57,10 +63,11 @@ Trang quản lý tickets hỗ trợ từ học viên. Layout dạng **master-det
 ## 3. FILE STRUCTURE
 
 ```
-pages/staff/StaffTickets.jsx
+pages/staff/StaffTickets.jsx     ← thay máu từ mock → API thật
 pages/staff/StaffTickets.css
-components/staff/TicketList.jsx       ← danh sách ticket trái (>60 dòng)
-components/staff/TicketDetail.jsx     ← chi tiết + thread + reply form (>60 dòng)
+components/staff/TicketList.jsx   ← danh sách trái (cập nhật field: senderRole, status backend)
+components/staff/TicketDetail.jsx ← chi tiết + thread + reply (bỏ dropdown status)
+// Dùng lại: components/support/TicketStatusBadge.jsx, PriorityPill.jsx
 ```
 
 ---
@@ -69,274 +76,170 @@ components/staff/TicketDetail.jsx     ← chi tiết + thread + reply form (>60 
 
 ```js
 const [tickets,       setTickets]  = useState([]);
-const [selectedId,    setSelected] = useState(null);       // ticket đang xem
-const [detail,        setDetail]   = useState(null);       // ticket detail + replies[]
+const [selectedId,    setSelected] = useState(null);
+const [detail,        setDetail]   = useState(null);   // TicketDetailResponse + replies[]
 const [isLoadingList, setLoadList] = useState(true);
 const [isLoadingDtl,  setLoadDtl]  = useState(false);
 const [error,         setError]    = useState('');
-const [statusFilter,  setStatus]   = useState('open');     // 'open'|'in_progress'|'resolved'|'closed'|''
+const [statusFilter,  setStatus]   = useState('');     // ''|'open'|'assigned'|'in_progress'|'resolved'|'closed'
 const [search,        setSearch]   = useState('');
 const [debounced,     setDebounced]= useState('');
-const [currentPage,   setPage]     = useState(1);
+const [page,          setPage]     = useState(0);       // 0-based khớp backend
 const [totalPages,    setTotal]    = useState(1);
 const [replyText,     setReply]    = useState('');
-const [newStatus,     setNewStatus]= useState('');         // status muốn đổi khi reply
+const [attachUrl,     setAttach]   = useState('');
 const [isSending,     setSending]  = useState(false);
-const timerRef = useRef(null);
-const threadBottomRef = useRef(null);   // auto-scroll to bottom
+const [isClosing,     setClosing]  = useState(false);
+const timerRef        = useRef(null);
+const threadBottomRef = useRef(null);
 const PAGE_SIZE = 20;
 ```
 
 ---
 
-## 5. API — `staffService.js`
+## 5. API — `staffService.js` (cần BỔ SUNG — hiện chưa có hàm ticket nào)
 
 ```js
-// Lấy danh sách tickets (với filter)
-export async function getTickets({ status, search, page = 0, size = 20 } = {}) {
+import api from './authService';
+
+// Danh sách ticket. Trả { content, totalElements, totalPages }.
+export async function getTickets({ status, category, priority, q, page = 0, size = 20 } = {}) {
   const params = { page, size };
-  if (status) params.status = status;
-  if (search) params.search = search;
+  if (status)   params.status   = status;
+  if (category) params.category = category;
+  if (priority) params.priority = priority;
+  if (q)        params.q        = q;
   const res = await api.get('/staff/tickets', { params });
-  return res.data.data; // { content: [ticket], totalPages }
+  return res.data.data;
 }
 
-// Lấy chi tiết ticket + replies
+// Chi tiết + replies[].
 export async function getTicketDetail(ticketId) {
   const res = await api.get(`/staff/tickets/${ticketId}`);
-  return res.data.data;
-  // { ticket, replies: [{ replyId, senderType, senderName, message, createdAt }] }
+  return res.data.data; // TicketDetailResponse
 }
 
-// Trả lời ticket (tự động đổi status → 'in_progress')
-export async function replyTicket(ticketId, message) {
-  const res = await api.post(`/staff/tickets/${ticketId}/reply`, { message });
-  return res.data.data; // { replyId, createdAt }
+// Phản hồi. Backend tự chuyển OPEN/ASSIGNED → IN_PROGRESS + notify student.
+// 403 nếu không phải người được giao (và không phải manager).
+export async function replyTicket(ticketId, { message, attachmentUrl } = {}) {
+  const res = await api.post(`/staff/tickets/${ticketId}/reply`, { message, attachmentUrl });
+  return res.data.data; // TicketReplyResponse
 }
 
-// Đổi trạng thái ticket
-export async function updateTicketStatus(ticketId, status) {
-  const res = await api.put(`/staff/tickets/${ticketId}/status`, { status });
-  return res.data.data;
-}
-
-// Phân công ticket cho Staff khác
-export async function assignTicket(ticketId, staffId) {
-  const res = await api.put(`/staff/tickets/${ticketId}/assign`, { staffId });
-  return res.data.data;
+// Đóng ticket → RESOLVED + audit log + notify student.
+export async function closeTicket(ticketId) {
+  const res = await api.post(`/staff/tickets/${ticketId}/close`);
+  return res.data.data; // TicketResponse
 }
 ```
+
+> **KHÔNG** thêm hàm `assignTicket`/`updateTicketStatus` ở màn staff — assign là manager-only (`SPEC-manager-tickets.md`), và không có endpoint set-status.
+
+### 5.1 Hợp đồng dữ liệu
+
+`TicketResponse` / `TicketDetailResponse` / `TicketReplyResponse`: xem `SPEC-support-tickets.md §5.1`. Lưu ý:
+- `status`: `open | assigned | in_progress | resolved | closed` (chữ thường).
+- Reply: `senderRole` = `STUDENT | STAFF` (KHÔNG phải `senderType`); `senderName`, `message`, `attachmentUrl?`, `createdAt`.
+- Field `null` bị lược (`@JsonInclude(NON_NULL)`) → dùng optional chaining.
 
 ---
 
 ## 6. TICKET LIST (cột trái)
 
-### Status filter tabs
+### Tab lọc
 
 ```
-[Mở (open)] [Đang xử lý] [Đã giải quyết] [Tất cả]
+[Tất cả] [Chưa giao (open)] [Đã giao (assigned)] [Đang xử lý (in_progress)] [Đã giải quyết (resolved)]
 ```
 
-Mỗi tab có badge số (lấy từ response count).
+Mỗi tab badge đếm. Card: `PriorityPill` + `#id` + subject (truncate) + "{studentName} · {relativeTime}". Khi `assignedToStaffName` có → meta nhỏ "Giao: {tên}".
 
-### Ticket Card
-
-```
-┌────────────────────────────────────┐
-│ 🔴 [Priority pill]  #45            │
-│                                    │
-│ Lỗi âm thanh bài luyện shadowing  │
-│ (truncate 60 ký tự)                │
-│                                    │
-│ Nguyễn Văn A  ·  2 giờ trước       │
-│ [Chưa đọc badge nếu chưa reply]   │
-└────────────────────────────────────┘
-```
-
-Priority dot colors:
-
-- `urgent` → `var(--color-error)` 🔴
-- `high` → `var(--color-warning)` 🟠
-- `normal` → `var(--color-secondary)` 🟢
-- `low` → `var(--color-text-disabled)` ⚫
-
-Active ticket (đang xem): background `var(--color-primary-bg)`, border-left `3px solid var(--color-primary)`.
-
-```css
-.tkt-ticket-card {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--color-border);
-  cursor: pointer;
-  transition: background var(--transition);
-}
-.tkt-ticket-card:hover { background: var(--color-primary-bg); }
-.tkt-ticket-card--active {
-  background: var(--color-primary-bg);
-  border-left: 3px solid var(--color-primary);
-}
-.tkt-ticket-subject { font-size: 14px; font-weight: 600; color: var(--color-text); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tkt-ticket-meta    { font-size: 12px; color: var(--color-text-sub); display: flex; gap: 8px; align-items: center; }
-```
+Priority dot & active card: như v1.0 (nền `--color-primary-bg`, border-left `3px solid --color-primary`). Search debounce 400ms → refetch `q`.
 
 ---
 
 ## 7. TICKET DETAIL (cột phải)
 
-### Detail Header
+### Header
+Subject (18px/700) · `PriorityPill` · `TicketStatusBadge` · "Học viên: {name} · {level} · Gửi {createdAt}" · "Được giao: {assignedToStaffName ?? '— chưa giao'}".
 
+### Thread (chat)
+Bubble theo `senderRole`:
+- `STAFF` → bên phải, nền `var(--color-primary-bg)`, viền `--color-primary-light`. Nếu là chính mình hiển thị tên + "(Bạn)".
+- `STUDENT` → bên trái, nền `var(--color-bg)`, viền `--color-border`, kèm `UserAvatar`.
+- Nội dung gốc `detail.content` = bubble student đầu tiên.
+
+Auto-scroll xuống cuối sau load + sau gửi reply (tôn trọng `prefers-reduced-motion`).
+
+### Reply form
 ```
-┌──────────────────────────────────────────────────────────┐
-│ Tiêu đề ticket (font-size: 18px, font-weight: 700)       │
-│                                                          │
-│ [Priority pill] [Status badge]                           │
-│                                                          │
-│ Học viên: Nguyễn Văn A | Level: N4 | Gửi: 01/06/2026   │
-│ Được phân công: Staff Trần C (nếu có)                   │
-│                                                          │
-│ [Hành động phải]:  [Phân công ▼] [Đổi trạng thái ▼]    │
-└──────────────────────────────────────────────────────────┘
+[Textarea "Nhập phản hồi cho học viên…", 3 rows]
+[🔗 Đính kèm URL (tùy chọn)]
+                         [Đóng ticket]   [Gửi phản hồi →]
 ```
 
-### Thread (chat messages)
+**Submit reply:** `replyTicket(selectedId, { message, attachmentUrl })` → append vào thread → reset → scroll → cập nhật card (status có thể `→ in_progress`, lastReplyAt). Disabled khi `replyText.trim()===''` hoặc `isSending` hoặc ticket `resolved/closed`.
 
+**Đóng:** confirm dialog → `closeTicket(selectedId)` → `status='resolved'` → khóa form.
+
+**Quyền:** nếu reply trả `403` → toast "Bạn không được giao ticket này" + (nếu muốn) ẩn form. Có thể chủ động ẩn form khi `assignedToStaffId` khác id staff hiện tại và staff không phải manager — nhưng **luôn** xử lý `403` từ backend làm nguồn chân lý.
+
+### Banner khóa
 ```jsx
-<div className="tkt-thread" ref={threadContainerRef}>
-  {detail.replies.map((reply) => (
-    <div
-      key={reply.replyId}
-      className={`tkt-msg ${reply.senderType === 'staff' ? 'tkt-msg--staff' : 'tkt-msg--student'}`}
-    >
-      <div className="tkt-msg-avatar">
-        <UserAvatar name={reply.senderName} size={32} />
-      </div>
-      <div className="tkt-msg-bubble">
-        <span className="tkt-msg-name">{reply.senderName}</span>
-        <p className="tkt-msg-text">{reply.message}</p>
-        <span className="tkt-msg-time">{formatRelativeTime(reply.createdAt)}</span>
-      </div>
-    </div>
-  ))}
-  <div ref={threadBottomRef} />
-</div>
-```
-
-**Layout bubbles:**
-
-- Student: avatar trái + bubble trái, background `var(--color-bg)`, border `var(--color-border)`
-- Staff: bubble phải, background `var(--color-primary-bg)`, border `var(--color-primary-light)`
-
-Auto-scroll to bottom sau mỗi lần load detail và sau khi gửi reply:
-
-```js
-useEffect(() => {
-  threadBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-}, [detail?.replies]);
-```
-
-```css
-.tkt-thread { flex: 1; overflow-y: auto; padding: 16px 24px; display: flex; flex-direction: column; gap: 16px; }
-.tkt-msg { display: flex; gap: 10px; max-width: 80%; }
-.tkt-msg--staff { flex-direction: row-reverse; align-self: flex-end; }
-.tkt-msg-bubble { background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 12px 14px; }
-.tkt-msg--staff .tkt-msg-bubble { background: var(--color-primary-bg); border-color: var(--color-primary-light); }
-.tkt-msg-name { font-size: 12px; font-weight: 700; color: var(--color-text-sub); display: block; margin-bottom: 4px; }
-.tkt-msg-text { font-size: 14px; color: var(--color-text); margin: 0; }
-.tkt-msg-time { font-size: 11px; color: var(--color-text-disabled); display: block; margin-top: 4px; }
-```
-
-### Reply Form
-
-```
-┌──────────────────────────────────────────────────────┐
-│  [Textarea "Nhập phản hồi cho học viên...", 3 rows]  │
-│                                                      │
-│  [Đổi trạng thái ▼]   [Gửi phản hồi →]              │
-│   open/in_progress/resolved/closed                   │
-└──────────────────────────────────────────────────────┘
-```
-
-"Đổi trạng thái" dropdown: cho phép chọn trạng thái mới khi gửi reply. Nếu không chọn → giữ nguyên (backend tự đổi sang `in_progress`).
-
-**Submit flow:**
-
-1. `replyTicket(selectedId, replyText)` → thêm reply vào thread local
-2. Nếu `newStatus` khác rỗng → `updateTicketStatus(selectedId, newStatus)` → cập nhật header
-3. Reset `replyText`, `newStatus`
-4. Scroll to bottom
-5. Cập nhật ticket card trong list (last_reply_at, status)
-
-**Disabled khi:**
-
-- `replyText.trim() === ''`
-- `isSending === true`
-- Ticket status = `closed`
-
-**Closed ticket banner:**
-
-```jsx
-{detail.ticket.status === 'closed' && (
-  <div className="tkt-closed-banner" role="alert">
-    Ticket này đã đóng. Không thể gửi thêm phản hồi.
+{['resolved','closed'].includes(detail.status) && (
+  <div className="tkt-closed-banner" role="status">
+    Ticket đã đóng. Không thể gửi thêm phản hồi.
   </div>
 )}
 ```
 
 ---
 
-## 8. TRẠNG THÁI KHÔNG CHỌN TICKET (cột phải rỗng)
-
-Khi chưa chọn ticket nào:
+## 8. TRẠNG THÁI CHƯA CHỌN TICKET
 
 ```jsx
 <div className="tkt-empty-detail">
-  <SakuChan variant="idle" size={80} aria-hidden="true" />
+  <SakuChan variant="idle" size={80} />
   <p>Chọn một ticket để bắt đầu hỗ trợ</p>
 </div>
 ```
 
 ---
 
-## 9. STATUS BADGE
+## 9. STATUS BADGE & PRIORITY PILL
 
-| Status | Background | Text | Label |
-|:---|:---|:---|:---|
-| `open` | `#FFEAEA` | `var(--color-error)` | Mở |
-| `in_progress` | `--color-accent-bg` | `--color-warning` | Đang xử lý |
-| `resolved` | `--color-secondary-bg` | `--color-secondary` | Đã giải quyết |
-| `closed` | `#F0EDEB` | `--color-text-disabled` | Đã đóng |
+Dùng chung `components/support/TicketStatusBadge` + `PriorityPill` (bảng màu `SPEC-support-tickets.md §9`). Bổ sung nhãn `assigned` = "Đã tiếp nhận".
 
 ---
 
 ## 10. LOADING / ERROR / EMPTY
 
-- **Loading list:** skeleton 5 ticket card
-- **Loading detail:** skeleton thread (3 bubbles)
-- **Error list:** error banner + retry
-- **Error detail:** "Không thể tải ticket. Vui lòng thử lại." + retry button
-- **Empty list:** `<EmptyState title="Không có ticket nào" subtitle="Tất cả yêu cầu hỗ trợ đã được xử lý!" mascotVariant="celebrate" mascotSize={120}>`
+- Loading list: skeleton 5 card. Loading detail: skeleton 3 bubble.
+- Error list/detail: banner + retry. Reply `403`/`409`: toast message backend.
+- Empty list: `<EmptyState title="Không có ticket nào" subtitle="Tất cả yêu cầu đã được xử lý!" mascotVariant="celebrate" mascotSize={120} />`
 
 ---
 
 ## 11. RESPONSIVE
 
 ```css
-@media (max-width: 1199px) {
-  .tkt-body { padding: 24px 20px 40px; }
-}
-@media (max-width: 767px)  {
+@media (max-width: 1199px) { .tkt-body { padding: 24px 20px 40px; } }
+@media (max-width: 767px) {
   .tkt-body     { padding: 0; flex-direction: column; }
   .tkt-list-col { width: 100%; border-right: none; border-bottom: 1px solid var(--color-border); max-height: 40vh; overflow-y: auto; }
   .tkt-detail-col { flex: 1; }
 }
+@media (prefers-reduced-motion: reduce) { .tkt-page * { animation: none !important; transition-duration: 0ms !important; } }
 ```
 
 ---
 
 ## 12. ACCESSIBILITY
 
-- [ ] Ticket list: `role="list"`, mỗi card là `role="listitem"` + `aria-selected`
-- [ ] Thread messages: `aria-live="polite"` trên container để screen reader thông báo khi có reply mới
-- [ ] Textarea reply: `aria-label="Nhập phản hồi"` + `aria-required="true"` khi ticket còn mở
-- [ ] Closed banner: `role="alert"`
-- [ ] Status dropdown: `<label>` ẩn liên kết bằng `htmlFor`
-- [ ] Auto-scroll không gây vấn đề với `prefers-reduced-motion`: dùng `behavior: 'auto'` thay `'smooth'` khi motion reduced
+- [ ] List `role="list"`, card `role="listitem"` + `aria-selected`; tab lọc `role="tablist"`.
+- [ ] Thread `aria-live="polite"`.
+- [ ] Textarea reply: `<label htmlFor>` + `aria-required` khi ticket mở.
+- [ ] Closed banner `role="status"`; confirm đóng `role="alertdialog"` + focus trap + Escape.
+- [ ] Auto-scroll `behavior:'auto'` khi `prefers-reduced-motion`.
+- [ ] `addToast(type, message)` đúng signature của `useToast` (v1.0 dùng sai `addToast({type,message})`).
+```

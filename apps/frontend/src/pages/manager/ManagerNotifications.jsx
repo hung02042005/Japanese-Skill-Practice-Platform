@@ -1,213 +1,172 @@
 import { useState } from 'react';
 import ManagerTopNav from '../../components/layout/ManagerTopNav';
-import { useToast, ToastContainer } from '../../components/common/Toast';
 import StaffPageHero from '../../components/staff/StaffPageHero';
+import { useToast, ToastContainer } from '../../components/common/Toast';
+import { sendBroadcast } from '../../api/staffService';
 import './ManagerNotifications.css';
 
-const MOCK_SENT = [
-  { id: 1, title: 'Thông báo bảo trì hệ thống', content: 'Hệ thống sẽ bảo trì vào 02:00 ngày 05/06/2026.', targetLevel: 'all', channel: 'both', sentAt: '03/06/2026 09:00', sentCount: 1250 },
-  { id: 2, title: 'Tài liệu N4 mới đã được cập nhật', content: 'Bộ flashcard N4 Vol.3 đã được thêm vào hệ thống.', targetLevel: 'N4', channel: 'in-app', sentAt: '01/06/2026 14:30', sentCount: 340 },
-  { id: 3, title: 'Nhắc nhở streak — Đừng để streak bị gián đoạn!', content: 'Bạn chưa học hôm nay. Hãy giữ streak của mình nhé!', targetLevel: 'all', channel: 'email', sentAt: '30/05/2026 20:00', sentCount: 980 },
-  { id: 4, title: 'Kết quả thi JLPT tháng 7/2026 đã có', content: 'Xem kết quả kỳ thi JLPT tháng 7 ngay bây giờ.', targetLevel: 'N3', channel: 'both', sentAt: '28/05/2026 10:00', sentCount: 215 },
+const TYPES = [
+  { value: 'news', label: 'Tin tức' }, { value: 'warning', label: 'Cảnh báo' },
+  { value: 'promotion', label: 'Khuyến mãi' }, { value: 'system', label: 'Hệ thống' },
+  { value: 'achievement', label: 'Thành tích' }, { value: 'reminder', label: 'Nhắc nhở' },
 ];
-
-const CHANNEL_LABELS = { 'in-app': 'In-app', 'email': 'Email', 'both': 'Cả hai' };
-const LEVEL_OPTIONS = ['all', 'N5', 'N4', 'N3', 'N2', 'N1'];
-const CHANNEL_OPTIONS = [
-  { value: 'in-app', label: 'In-app' },
-  { value: 'email', label: 'Email' },
-  { value: 'both', label: 'Cả hai' },
+const CHANNELS = [
+  { value: 'in_app', label: 'Chỉ In-app' }, { value: 'email', label: 'Chỉ Email' }, { value: 'both', label: 'Cả hai' },
 ];
+const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
+const today = new Date().toISOString().slice(0, 10);
 
 export default function ManagerNotifications() {
-  const [sent, setSent] = useState(MOCK_SENT);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [targetLevel, setLevel] = useState('all');
-  const [channel, setChannel] = useState('in-app');
-  const [errors, setErrors] = useState({});
-  const [sending, setSending] = useState(false);
   const { toasts, addToast, removeToast } = useToast();
+  const [form, setForm] = useState({
+    title: '', content: '', notificationType: 'system', channel: 'in_app',
+    targetAll: true, targetLevel: 'N5', scheduleNow: true, scheduledDate: '', scheduledTime: '',
+  });
+  const [errors, setErrors] = useState({});
+  const [isSending, setSending] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+
+  const set = (k, v) => { setForm((f) => ({ ...f, [k]: v })); if (errors[k]) setErrors((e) => ({ ...e, [k]: '' })); };
 
   function validate() {
-    const errs = {};
-    if (!title.trim()) errs.title = 'Tiêu đề không được để trống.';
-    if (!content.trim()) errs.content = 'Nội dung không được để trống.';
-    return errs;
+    const er = {};
+    if (!form.title.trim()) er.title = 'Tiêu đề không được để trống';
+    else if (form.title.length > 255) er.title = 'Tối đa 255 ký tự';
+    if (!form.content.trim()) er.content = 'Nội dung không được để trống';
+    if (!form.scheduleNow) {
+      if (!form.scheduledDate || !form.scheduledTime) er.schedule = 'Chọn ngày và giờ gửi';
+      else if (new Date(`${form.scheduledDate}T${form.scheduledTime}`) <= new Date()) er.schedule = 'Thời gian hẹn phải ở tương lai';
+    }
+    return er;
   }
 
-  function handleSend() {
-    const errs = validate();
-    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
-    setErrors({});
+  function attemptSend() {
+    const er = validate();
+    if (Object.keys(er).length) { setErrors(er); return; }
+    if (form.targetAll) { setConfirm(true); return; }
+    doSend();
+  }
+
+  async function doSend() {
+    setConfirm(false);
     setSending(true);
-    setTimeout(() => {
-      const newItem = {
-        id: Date.now(),
-        title,
-        content,
-        targetLevel,
-        channel,
-        sentAt: new Date().toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        sentCount: Math.floor(Math.random() * 500) + 50,
+    try {
+      const payload = {
+        title: form.title.trim(), content: form.content.trim(),
+        notificationType: form.notificationType, channel: form.channel,
+        targetJlptLevel: form.targetAll ? 'ALL' : form.targetLevel,
       };
-      setSent((prev) => [newItem, ...prev]);
-      setTitle('');
-      setContent('');
-      setLevel('all');
-      setChannel('in-app');
-      setSending(false);
-      addToast('success', 'Thông báo đã được gửi thành công!');
-    }, 600);
+      if (!form.scheduleNow) payload.scheduledAt = `${form.scheduledDate}T${form.scheduledTime}:00`;
+      const { jobId } = await sendBroadcast(payload);
+      addToast('success', `Đã gửi yêu cầu broadcast (Job ${jobId}). Hệ thống đang xử lý trong nền.`);
+      setForm((f) => ({ ...f, title: '', content: '', scheduledDate: '', scheduledTime: '', scheduleNow: true }));
+    } catch (err) {
+      addToast('error', err?.response?.data?.message ?? 'Không thể gửi thông báo.');
+    } finally { setSending(false); }
   }
 
   return (
     <div className="nfs-page">
       <ManagerTopNav activeTab="manager-notifications" />
-
       <main className="nfs-body">
-        <StaffPageHero
-          accent="pink"
-          title="Gửi Thông Báo"
-          subtitle="Soạn và gửi thông báo hệ thống đến học viên theo cấp độ và kênh truyền thông"
-          icon={
-            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              {/* Chuông gió Nhật (風鈴) */}
-              <line x1="24" y1="4" x2="24" y2="8"/>
-              <path d="M16 20 C16 13 20 8 24 8 C28 8 32 13 32 20 L34 28 L14 28 Z"/>
-              <path d="M14 28 Q24 33 34 28"/>
-              <line x1="24" y1="33" x2="24" y2="37"/>
-              <circle cx="24" cy="39" r="2.5" fill="currentColor"/>
-              <line x1="24" y1="41.5" x2="24" y2="44"/>
-              <line x1="21" y1="44" x2="27" y2="44"/>
-              <line x1="24" y1="44" x2="24" y2="47"/>
-            </svg>
-          }
-        />
+        <StaffPageHero accent="pink" title="Gửi Thông Báo" subtitle="Soạn và broadcast thông báo hệ thống đến học viên theo cấp độ và kênh"
+          icon={<svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 20a15 15 0 0 1 30 0v8l4 6H5l4-6z"/><path d="M20 40a4 4 0 0 0 8 0"/></svg>} />
 
-        {/* Compose form */}
-        <section className="nfs-card">
-          <h2 className="nfs-section-title">Soạn thông báo mới</h2>
-
-          <div className="nfs-form">
-            <div className="nfs-field">
-              <label className="nfs-field-label" htmlFor="nfs-title">
-                Tiêu đề <span className="nfs-req">*</span>
-              </label>
-              <input
-                id="nfs-title"
-                className={`nfs-input${errors.title ? ' nfs-input--err' : ''}`}
-                type="text"
-                value={title}
-                onChange={(e) => { setTitle(e.target.value); setErrors((p) => ({ ...p, title: '' })); }}
-                placeholder="Nhập tiêu đề thông báo..."
-              />
-              {errors.title && <span className="nfs-field-error">{errors.title}</span>}
-            </div>
-
-            <div className="nfs-field">
-              <label className="nfs-field-label" htmlFor="nfs-content">
-                Nội dung <span className="nfs-req">*</span>
-              </label>
-              <textarea
-                id="nfs-content"
-                className={`nfs-textarea${errors.content ? ' nfs-input--err' : ''}`}
-                rows={4}
-                value={content}
-                onChange={(e) => { setContent(e.target.value); setErrors((p) => ({ ...p, content: '' })); }}
-                placeholder="Nhập nội dung thông báo..."
-              />
-              {errors.content && <span className="nfs-field-error">{errors.content}</span>}
-            </div>
-
-            <div className="nfs-row">
-              <div className="nfs-field">
-                <label className="nfs-field-label" htmlFor="nfs-level">Đối tượng</label>
-                <select id="nfs-level" className="nfs-select" value={targetLevel} onChange={(e) => setLevel(e.target.value)}>
-                  <option value="all">Tất cả học viên</option>
-                  {['N5','N4','N3','N2','N1'].map((l) => (
-                    <option key={l} value={l}>Học viên {l}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="nfs-field">
-                <label className="nfs-field-label" htmlFor="nfs-channel">Kênh gửi</label>
-                <select id="nfs-channel" className="nfs-select" value={channel} onChange={(e) => setChannel(e.target.value)}>
-                  {CHANNEL_OPTIONS.map((c) => (
-                    <option key={c.value} value={c.value}>{c.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="nfs-field">
-                <label className="nfs-field-label" htmlFor="nfs-schedule">Thời gian gửi</label>
-                <select id="nfs-schedule" className="nfs-select" defaultValue="now">
-                  <option value="now">Gửi ngay</option>
-                  <option value="schedule" disabled>Hẹn giờ (sắp ra mắt)</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="nfs-form-footer">
-              <button className="nfs-btn-send" onClick={handleSend} disabled={sending}>
-                {sending ? (
-                  <>
-                    <span className="nfs-spinner" aria-hidden="true" />
-                    Đang gửi...
-                  </>
-                ) : (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M22 2L15 22 11 13 2 9l20-7z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    Gửi thông báo
-                  </>
-                )}
-              </button>
-            </div>
+        <form className="nfs-card nfs-form" onSubmit={(e) => { e.preventDefault(); attemptSend(); }}>
+          <div className="nfs-field">
+            <label className="nfs-field-label" htmlFor="nfs-title">Tiêu đề <span className="nfs-req">*</span>
+              <span className="nfs-char">{form.title.length}/255</span></label>
+            <input id="nfs-title" className={`nfs-input${errors.title ? ' nfs-input--err' : ''}`} maxLength={255}
+              value={form.title} onChange={(e) => set('title', e.target.value)} placeholder="Tiêu đề thông báo…" />
+            {errors.title && <span className="nfs-field-error">{errors.title}</span>}
           </div>
-        </section>
 
-        {/* Sent history */}
-        <section className="nfs-card">
-          <h2 className="nfs-section-title">Lịch sử đã gửi ({sent.length})</h2>
-          <div className="nfs-table-wrap">
-            <table className="nfs-table">
-              <thead>
-                <tr>
-                  <th>Tiêu đề</th>
-                  <th>Đối tượng</th>
-                  <th>Kênh</th>
-                  <th>Đã gửi</th>
-                  <th>Thời gian</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sent.map((item) => (
-                  <tr key={item.id}>
-                    <td className="nfs-title-cell">
-                      <div className="nfs-sent-title">{item.title}</div>
-                      <div className="nfs-sent-content">{item.content}</div>
-                    </td>
-                    <td>
-                      <span className="nfs-level-tag">
-                        {item.targetLevel === 'all' ? 'Tất cả' : item.targetLevel}
-                      </span>
-                    </td>
-                    <td>{CHANNEL_LABELS[item.channel]}</td>
-                    <td>
-                      <span className="nfs-count">{item.sentCount.toLocaleString()} người</span>
-                    </td>
-                    <td className="nfs-date">{item.sentAt}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="nfs-field">
+            <label className="nfs-field-label" htmlFor="nfs-content">Nội dung <span className="nfs-req">*</span></label>
+            <textarea id="nfs-content" className={`nfs-textarea${errors.content ? ' nfs-input--err' : ''}`} rows={5}
+              value={form.content} onChange={(e) => set('content', e.target.value)} placeholder="Nội dung thông báo…" />
+            {errors.content && <span className="nfs-field-error">{errors.content}</span>}
           </div>
-        </section>
+
+          <fieldset className="nfs-field nfs-fieldset">
+            <legend className="nfs-field-label">Loại thông báo <span className="nfs-req">*</span></legend>
+            <div className="nfs-radios">
+              {TYPES.map((t) => (
+                <label key={t.value} className={`nfs-radio${form.notificationType === t.value ? ' nfs-radio--on' : ''}`}>
+                  <input type="radio" name="ntype" value={t.value} checked={form.notificationType === t.value} onChange={(e) => set('notificationType', e.target.value)} />{t.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="nfs-field nfs-fieldset">
+            <legend className="nfs-field-label">Kênh gửi <span className="nfs-req">*</span></legend>
+            <div className="nfs-radios">
+              {CHANNELS.map((c) => (
+                <label key={c.value} className={`nfs-radio${form.channel === c.value ? ' nfs-radio--on' : ''}`}>
+                  <input type="radio" name="channel" value={c.value} checked={form.channel === c.value} onChange={(e) => set('channel', e.target.value)} />{c.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="nfs-field nfs-fieldset">
+            <legend className="nfs-field-label">Đối tượng nhận</legend>
+            <div className="nfs-radios">
+              <label className={`nfs-radio${form.targetAll ? ' nfs-radio--on' : ''}`}>
+                <input type="radio" name="target" checked={form.targetAll} onChange={() => set('targetAll', true)} />Tất cả học viên
+              </label>
+              <label className={`nfs-radio${!form.targetAll ? ' nfs-radio--on' : ''}`}>
+                <input type="radio" name="target" checked={!form.targetAll} onChange={() => set('targetAll', false)} />Theo Level
+              </label>
+              {!form.targetAll && (
+                <select className="nfs-select nfs-select--inline" value={form.targetLevel} onChange={(e) => set('targetLevel', e.target.value)} aria-label="Chọn JLPT level">
+                  {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
+                </select>
+              )}
+            </div>
+          </fieldset>
+
+          <fieldset className="nfs-field nfs-fieldset">
+            <legend className="nfs-field-label">Thời gian gửi</legend>
+            <div className="nfs-radios">
+              <label className={`nfs-radio${form.scheduleNow ? ' nfs-radio--on' : ''}`}>
+                <input type="radio" name="sched" checked={form.scheduleNow} onChange={() => set('scheduleNow', true)} />Gửi ngay
+              </label>
+              <label className={`nfs-radio${!form.scheduleNow ? ' nfs-radio--on' : ''}`}>
+                <input type="radio" name="sched" checked={!form.scheduleNow} onChange={() => set('scheduleNow', false)} />Hẹn giờ
+              </label>
+              {!form.scheduleNow && (
+                <>
+                  <input className="nfs-input nfs-input--inline" type="date" min={today} value={form.scheduledDate} onChange={(e) => set('scheduledDate', e.target.value)} aria-label="Ngày gửi" />
+                  <input className="nfs-input nfs-input--inline" type="time" value={form.scheduledTime} onChange={(e) => set('scheduledTime', e.target.value)} aria-label="Giờ gửi" />
+                </>
+              )}
+            </div>
+            {errors.schedule && <span className="nfs-field-error">{errors.schedule}</span>}
+          </fieldset>
+
+          <div className="nfs-form-footer">
+            <button type="submit" className="nfs-btn-send" disabled={isSending} aria-busy={isSending}>
+              {isSending && <span className="nfs-spinner" aria-hidden="true" />}
+              {isSending ? 'Đang gửi…' : 'Gửi thông báo →'}
+            </button>
+          </div>
+        </form>
       </main>
+
+      {confirm && (
+        <div className="nfs-confirm-overlay" onMouseDown={() => setConfirm(false)}>
+          <div className="nfs-confirm" role="alertdialog" aria-modal="true" aria-labelledby="nfs-confirm-title" onMouseDown={(e) => e.stopPropagation()}>
+            <h3 id="nfs-confirm-title" className="nfs-confirm-title">Gửi đến tất cả học viên?</h3>
+            <p className="nfs-confirm-text">Bạn sắp broadcast đến TẤT CẢ học viên. Hành động này không thể hoàn tác.</p>
+            <div className="nfs-confirm-actions">
+              <button type="button" className="nfs-confirm-cancel" onClick={() => setConfirm(false)}>Hủy</button>
+              <button type="button" className="nfs-btn-send" onClick={doSend}>Xác nhận gửi</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>

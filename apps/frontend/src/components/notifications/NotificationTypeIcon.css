@@ -1,0 +1,15 @@
+.ntf-type {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ntf-type--news        { background: #E3F2FD; color: #1565C0; }
+.ntf-type--warning     { background: var(--color-accent-bg); color: var(--color-warning); }
+.ntf-type--promotion   { background: var(--color-secondary-bg); color: var(--color-secondary); }
+.ntf-type--system      { background: #F0EDEB; color: var(--color-text-sub); }
+.ntf-type--achievement { background: var(--color-accent-bg); color: #B7670A; }
+.ntf-type--reminder    { background: var(--color-primary-bg); color: var(--color-primary-dark); }

@@ -1,5 +1,5 @@
 /* (c) JLPT E-Learning Platform */
-package com.jlpt.shared.dto.response;
+package com.jlpt.feature.support.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDateTime;

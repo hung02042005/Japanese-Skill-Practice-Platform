@@ -45,6 +45,7 @@ import ManagerStaffPerformance from './pages/manager/ManagerStaffPerformance';
 import ManagerContentPipeline  from './pages/manager/ManagerContentPipeline';
 import ManagerReports          from './pages/manager/ManagerReports';
 import ManagerNotifications    from './pages/manager/ManagerNotifications';
+import ManagerTickets          from './pages/manager/ManagerTickets';
 import StaffDashboard    from './pages/staff/StaffDashboard';
 import StaffContent      from './pages/staff/StaffContent';
 import StaffQuestions    from './pages/staff/StaffQuestions';
@@ -58,6 +59,9 @@ import VocabFlashcardSession from './pages/vocabulary/VocabFlashcardSession';
 import CourseList       from './pages/courses/CourseList';
 import QuizPage         from './pages/quiz/QuizPage';
 import SpeakingPage     from './pages/speaking/SpeakingPage';
+import SupportTickets       from './pages/support/SupportTickets';
+import SupportTicketDetail  from './pages/support/SupportTicketDetail';
+import Notifications        from './pages/notifications/Notifications';
 
 function App() {
   return (
@@ -102,6 +106,9 @@ function App() {
         <Route path="/courses"              element={<PrivateRoute><CourseList /></PrivateRoute>} />
         <Route path="/quiz"         element={<PrivateRoute><QuizPage /></PrivateRoute>} />
         <Route path="/speaking"     element={<PrivateRoute><SpeakingPage /></PrivateRoute>} />
+        <Route path="/support"                  element={<PrivateRoute><SupportTickets /></PrivateRoute>} />
+        <Route path="/support/tickets/:ticketId" element={<PrivateRoute><SupportTicketDetail /></PrivateRoute>} />
+        <Route path="/notifications"            element={<PrivateRoute><Notifications /></PrivateRoute>} />
 
         {/* Protected — Staff */}
         <Route path="/staff"                 element={<StaffRoute><StaffDashboard /></StaffRoute>} />
@@ -119,6 +126,7 @@ function App() {
         <Route path="/manager/content-pipeline"   element={<ManagerRoute><ManagerContentPipeline /></ManagerRoute>} />
         <Route path="/manager/reports"            element={<ManagerRoute><ManagerReports /></ManagerRoute>} />
         <Route path="/manager/notifications"      element={<ManagerRoute><ManagerNotifications /></ManagerRoute>} />
+        <Route path="/manager/tickets"            element={<ManagerRoute><ManagerTickets /></ManagerRoute>} />
 
         {/* Protected — Admin */}
         <Route path="/admin"           element={<AdminRoute><AdminDashboard /></AdminRoute>} />
