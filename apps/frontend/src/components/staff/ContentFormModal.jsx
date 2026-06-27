@@ -31,7 +31,7 @@ function buildInitialForm(contentType, editItem) {
   };
 
   switch (contentType) {
-    case 'course':
+    case 'course': {
       const exp = editItem?.explanation || editItem?.description || '';
       return {
         ...base,
@@ -40,6 +40,7 @@ function buildInitialForm(contentType, editItem) {
         explanation: exp,
         lessonType: 'lesson',
       };
+    }
     case 'lesson':
       return {
         ...base,

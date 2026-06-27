@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import SakuChan from '../auth/SakuChan';
-import { STAFF_ROLE_LABELS } from '../common/Badges';
+
 import { IcBloomCheck } from './ManageUsersIcons';
 /* CSS: classes are defined in pages/admin/ManageUsers.css */
 
@@ -19,9 +19,9 @@ export function ConfirmModal({ modal, onConfirm, onClose, isSubmitting }) {
         <div className="mu-modal-mascot"><SakuChan variant={cfg.sakuVariant} size={80} /></div>
         <h2 className="mu-modal-title">{cfg.icon} {cfg.title}</h2>
         <p className="mu-modal-desc">
-          {modal.action === 'activate'   && <>Kích hoạt lại tài khoản <strong>"{modal.userName}"</strong>? Người dùng có thể đăng nhập trở lại.</>}
-          {modal.action === 'reset-pass' && <>Email đặt lại mật khẩu sẽ được gửi đến <strong>"{modal.userName}"</strong>. Liên kết có hiệu lực 15 phút.</>}
-          {modal.action === 'delete'     && <>Xóa tài khoản <strong>"{modal.userName}"</strong>? Dữ liệu học tập vẫn được giữ lại. Không thể khôi phục qua giao diện này.</>}
+          {modal.action === 'activate'   && <>Kích hoạt lại tài khoản <strong>&quot;{modal.userName}&quot;</strong>? Người dùng có thể đăng nhập trở lại.</>}
+          {modal.action === 'reset-pass' && <>Email đặt lại mật khẩu sẽ được gửi đến <strong>&quot;{modal.userName}&quot;</strong>. Liên kết có hiệu lực 15 phút.</>}
+          {modal.action === 'delete'     && <>Xóa tài khoản <strong>&quot;{modal.userName}&quot;</strong>? Dữ liệu học tập vẫn được giữ lại. Không thể khôi phục qua giao diện này.</>}
         </p>
         <div className="mu-modal-row">
           <button type="button" className="mu-btn mu-btn--ghost" onClick={onClose}>Huỷ</button>
@@ -47,7 +47,7 @@ export function SuspendModal({ modal, onConfirm, onClose, isSubmitting }) {
         <button type="button" className="mu-modal-x" onClick={onClose}>×</button>
         <div className="mu-modal-mascot"><SakuChan variant="thinking" size={80} /></div>
         <h2 className="mu-modal-title">🔒 Đình chỉ tài khoản?</h2>
-        <p className="mu-modal-desc">Đình chỉ tài khoản <strong>"{modal.userName}"</strong>. Người dùng sẽ không thể đăng nhập cho đến khi được kích hoạt lại.</p>
+        <p className="mu-modal-desc">Đình chỉ tài khoản <strong>&quot;{modal.userName}&quot;</strong>. Người dùng sẽ không thể đăng nhập cho đến khi được kích hoạt lại.</p>
         <div className="mu-form-field">
           <label className="mu-form-label">Lý do đình chỉ <span className="mu-required">*</span></label>
           <textarea className={`mu-form-textarea${tooShort ? ' mu-form-input--err' : ''}`} placeholder="Nhập lý do đình chỉ (10–500 ký tự)..." value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} rows={3} />
@@ -137,7 +137,7 @@ export function ChangeStaffRoleModal({ modal, onConfirm, onClose, isSubmitting }
         <button type="button" className="mu-modal-x" onClick={onClose}>×</button>
         <div className="mu-modal-mascot"><SakuChan variant="idle" size={72} /></div>
         <h2 className="mu-modal-title">✏️ Đổi vai trò nhân viên</h2>
-        <p className="mu-modal-desc">Thay đổi vai trò cho <strong>"{modal.userName}"</strong></p>
+        <p className="mu-modal-desc">Thay đổi vai trò cho <strong>&quot;{modal.userName}&quot;</strong></p>
         <div className="mu-role-opts">
           {OPTS.map((r) => (
             <label key={r.value} className={`mu-role-opt${selected===r.value?' mu-role-opt--on':''}`}>

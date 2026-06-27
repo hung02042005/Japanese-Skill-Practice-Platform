@@ -45,7 +45,7 @@ export default function AssessmentFormModal({ isOpen, mode, editItem, onClose, o
       setForm(isQuiz ? blankQuiz(editItem) : blankExam(editItem));
       setErrors({});
     }
-  }, [isOpen, mode, editItem]);
+  }, [isOpen, mode, editItem, isQuiz]);
 
   useEffect(() => {
     if (!isOpen) return;

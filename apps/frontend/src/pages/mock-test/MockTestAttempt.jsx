@@ -48,11 +48,13 @@ export default function MockTestAttempt() {
       }
     })();
     return () => clearInterval(timerRef.current);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // Timer
+  const isRunning = timeLeft !== null && timeLeft > 0;
   useEffect(() => {
-    if (timeLeft === null || timeLeft === 0) return;
+    if (!isRunning) return;
     timerRef.current = setInterval(() => {
       setTime((t) => {
         if (t <= 1) {
@@ -64,7 +66,8 @@ export default function MockTestAttempt() {
       });
     }, 1000);
     return () => clearInterval(timerRef.current);
-  }, [timeLeft !== null && timeLeft > 0]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRunning]);
 
   function handleSelect(questionId, option) {
     const updated = { ...answers, [questionId]: option };

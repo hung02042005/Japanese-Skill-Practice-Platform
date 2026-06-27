@@ -1,4 +1,3 @@
-import { JlptBadge } from '../common/Badges';
 
 export default function StudentDetailPanel({ detail }) {
   return (

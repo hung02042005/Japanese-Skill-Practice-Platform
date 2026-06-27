@@ -127,7 +127,7 @@ export default function KanjiList() {
                         await resetProgress('KANJI');
                         fetchKanji();
                       } catch (e) {
-                        console.error(e);
+                        // silently swallow error — alert already shown
                         alert('Lỗi khi reset tiến độ!');
                       }
                     }
@@ -211,11 +211,11 @@ export default function KanjiList() {
             ) : detail ? (
               <div className="knj-modal-detail">
                 <div className="knj-modal-row">
-                  <span className="knj-modal-label">On'yomi</span>
+                  <span className="knj-modal-label">On&apos;yomi</span>
                   <span className="knj-modal-val" lang="ja">{detail.onyomi || '—'}</span>
                 </div>
                 <div className="knj-modal-row">
-                  <span className="knj-modal-label">Kun'yomi</span>
+                  <span className="knj-modal-label">Kun&apos;yomi</span>
                   <span className="knj-modal-val" lang="ja">{detail.kunyomi || '—'}</span>
                 </div>
                 <div className="knj-modal-row">

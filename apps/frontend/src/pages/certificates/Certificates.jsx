@@ -21,6 +21,7 @@ export default function Certificates() {
       .then(([certs, prog]) => { setEarned(certs ?? []); setProgress(prog ?? []); })
       .catch(() => addToast('error', 'Không thể tải chứng chỉ.'))
       .finally(() => setLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleDownload(certId) {

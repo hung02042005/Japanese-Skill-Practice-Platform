@@ -1,10 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useAppSelector } from '../../store/hooks';
 import TopNav from '../../components/layout/TopNav';
 import { ProgressBar } from '../../components/common/ProgressBar';
 import { JlptBadge } from '../../components/common/Badges';
-import { EmptyState } from '../../components/common/EmptyState';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import LessonVocabCard from '../../components/student/LessonVocabCard';
 import LessonGrammarPoint from '../../components/student/LessonGrammarPoint';
@@ -21,7 +19,6 @@ const TABS = [
 export default function LessonDetail() {
   const { id }   = useParams();
   const navigate = useNavigate();
-  const { user } = useAppSelector((s) => s.auth);
   const { toasts, addToast, removeToast } = useToast();
 
   const [lesson,       setLesson]   = useState(null);
@@ -52,7 +49,7 @@ export default function LessonDetail() {
     } finally {
       setLoading(false);
     }
-  }, [id, user, navigate]);
+  }, [id, navigate]);
 
   useEffect(() => { fetchLesson(); }, [fetchLesson]);
 
