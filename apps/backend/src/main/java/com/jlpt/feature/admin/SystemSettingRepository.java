@@ -10,4 +10,6 @@ public interface SystemSettingRepository extends JpaRepository<SystemSetting, In
     List<SystemSetting> findBySettingGroup(String settingGroup);
 
     Optional<SystemSetting> findBySettingGroupAndSettingKey(String settingGroup, String settingKey);
+
+    boolean existsBySettingGroupAndSettingKey(String settingGroup, String settingKey);
 }
