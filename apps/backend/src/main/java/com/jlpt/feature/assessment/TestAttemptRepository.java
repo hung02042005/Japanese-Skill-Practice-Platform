@@ -36,4 +36,8 @@ public interface TestAttemptRepository extends JpaRepository<TestAttempt, Long> 
 
     // Staff view: toàn bộ lần thi đã nộp của 1 học viên (tính điểm TB + lấy gần đây).
     List<TestAttempt> findByStudent_IdAndStatusIn(Long studentId, List<TestAttempt.AttemptStatus> statuses);
+
+    // Dashboard (admin): số lần làm bài bắt đầu từ mốc thời gian (hôm nay).
+    @Query("SELECT COUNT(t) FROM TestAttempt t WHERE t.startedAt >= :after")
+    long countByStartedAtAfter(@Param("after") java.time.LocalDateTime after);
 }

@@ -21,4 +21,14 @@ public interface StudentSubmissionRepository extends JpaRepository<StudentSubmis
             @Param("type") StudentSubmission.SubmissionType type,
             @Param("status") StudentSubmission.SubmissionStatus status,
             Pageable pageable);
+
+    // ── Dashboard (admin) — đếm theo trạng thái / mốc chấm ────────────────────
+    @Query("SELECT COUNT(s) FROM StudentSubmission s WHERE s.status IN :statuses")
+    long countByStatusIn(
+            @Param("statuses") java.util.Collection<StudentSubmission.SubmissionStatus> statuses);
+
+    @Query("SELECT COUNT(s) FROM StudentSubmission s WHERE s.status = :status AND s.gradedAt >= :after")
+    long countByStatusAndGradedAtAfter(
+            @Param("status") StudentSubmission.SubmissionStatus status,
+            @Param("after") java.time.LocalDateTime after);
 }

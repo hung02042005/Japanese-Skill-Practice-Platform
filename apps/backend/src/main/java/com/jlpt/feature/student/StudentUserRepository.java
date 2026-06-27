@@ -41,4 +41,14 @@ public interface StudentUserRepository extends JpaRepository<StudentUser, Long> 
             @Param("status") String status,
             @Param("jlptLevel") String jlptLevel,
             Pageable pageable);
+
+    // ── Dashboard (admin) — đếm theo trạng thái / mốc thời gian ───────────────
+    @Query("SELECT COUNT(s) FROM StudentUser s WHERE s.status = :status")
+    long countByStatus(@Param("status") StudentUser.StudentStatus status);
+
+    @Query("SELECT COUNT(s) FROM StudentUser s WHERE s.createdAt >= :after")
+    long countByCreatedAtAfter(@Param("after") java.time.LocalDateTime after);
+
+    @Query("SELECT COUNT(s) FROM StudentUser s WHERE s.lastActivityDate = :date")
+    long countByLastActivityDate(@Param("date") java.time.LocalDate date);
 }
