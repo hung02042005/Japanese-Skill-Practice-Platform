@@ -5,19 +5,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jlpt.shared.notification.dto.NotificationRuleRequest;
 import com.jlpt.shared.notification.dto.NotificationRuleResponse;
-import com.jlpt.feature.notification.NotificationRepository;
 import com.jlpt.feature.admin.AdminAuditLog;
 import com.jlpt.feature.admin.AdminUser;
-import com.jlpt.feature.notification.Notification;
-import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.admin.SystemSetting;
 import com.jlpt.shared.exception.BusinessException;
 import com.jlpt.shared.exception.ResourceNotFoundException;
 import com.jlpt.feature.admin.AdminAuditLogRepository;
 import com.jlpt.feature.admin.AdminUserRepository;
-import com.jlpt.feature.student.StudentUserRepository;
 import com.jlpt.feature.admin.SystemSettingRepository;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +32,6 @@ public class NotificationRuleService {
     private final SystemSettingRepository settingRepository;
     private final AdminUserRepository adminUserRepository;
     private final AdminAuditLogRepository adminAuditLogRepository;
-    private final NotificationRepository notificationRepository;
-    private final StudentUserRepository studentUserRepository;
     private final ObjectMapper objectMapper;
 
     // ── UC-40: List rules ────────────────────────────────────────────────────
@@ -141,53 +134,6 @@ public class NotificationRuleService {
                 .build());
 
         log.info("[NotifRule] Admin {} soft-disabled rule {}", adminId, ruleKey);
-    }
-
-    // ── UC-40: Trigger milestone notification ────────────────────────────────
-
-    @Transactional
-    public void triggerMilestone(Long studentId, String milestone) {
-        String ruleKey = "milestone_" + milestone;
-        SystemSetting setting = settingRepository
-                .findBySettingGroupAndSettingKey(NOTIFICATION_GROUP, ruleKey)
-                .orElse(null);
-        if (setting == null) return;
-
-        NotificationRuleResponse rule = parseRule(setting);
-        if (rule == null || !Boolean.TRUE.equals(rule.getIsEnabled())) return;
-
-        // Duplicate check — 24h window
-        LocalDateTime since = LocalDateTime.now().minusHours(24);
-        if (notificationRepository.existsByStudentIdAndRuleKeyAndCreatedAtAfter(studentId, ruleKey, since)) {
-            log.debug("[NotifRule] Duplicate milestone {} skipped for student {}", milestone, studentId);
-            return;
-        }
-
-        StudentUser student = studentUserRepository.findById(studentId).orElse(null);
-        if (student == null) return;
-
-        Notification.Channel channel = rule.getChannel() != null
-                ? Notification.Channel.valueOf(rule.getChannel().toUpperCase())
-                : Notification.Channel.IN_APP;
-
-        notificationRepository.save(Notification.builder()
-                .student(student)
-                .title(rule.getTemplateTitle())
-                .content(rule.getTemplateContent())
-                .notificationType(Notification.NotificationType.ACHIEVEMENT)
-                .channel(channel)
-                .isAuto(true)
-                .ruleKey(ruleKey)
-                .build());
-
-        adminAuditLogRepository.save(AdminAuditLog.builder()
-                .action("MILESTONE_NOTIFICATION_SENT")
-                .targetTable("notifications")
-                .targetId(studentId)
-                .description("Milestone " + milestone + " sent to student " + studentId)
-                .build());
-
-        log.info("[NotifRule] Milestone {} notification sent to student {}", milestone, studentId);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────

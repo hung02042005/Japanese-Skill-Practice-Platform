@@ -56,7 +56,4 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             @Param("channels") Collection<Notification.Channel> channels,
             @Param("now") LocalDateTime now,
             Pageable pageable);
-
-    boolean existsByStudentIdAndRuleKeyAndCreatedAtAfter(
-            Long studentId, String ruleKey, LocalDateTime createdAt);
 }
