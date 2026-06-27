@@ -8,6 +8,17 @@ const api = axios.create({
   timeout: 15000,
 });
 
+let refreshPromise = null;
+
+function clearSessionAndRedirect() {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('jlpt-user');
+  if (window.location.pathname !== '/login') {
+    window.location.href = '/login';
+  }
+}
+
 // ─── Request interceptor: đính Bearer token ────────────────────────────────────
 
 api.interceptors.request.use(
@@ -26,26 +37,37 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (!refreshToken) throw new Error('No refresh token');
+        if (!refreshPromise) {
+          const refreshToken = localStorage.getItem('refreshToken');
+          if (!refreshToken) throw new Error('No refresh token');
 
-        // Dùng axios thuần để tránh vòng lặp interceptor
-        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
+          // Use plain axios to avoid interceptor recursion.
+          refreshPromise = axios
+            .post(`${API_BASE_URL}/auth/refresh`, { refreshToken })
+            .then(({ data }) => {
+              localStorage.setItem('accessToken', data.data.accessToken);
+              localStorage.setItem('refreshToken', data.data.refreshToken);
+              return data.data.accessToken;
+            })
+            .finally(() => {
+              refreshPromise = null;
+            });
+        }
 
-        localStorage.setItem('accessToken', data.data.accessToken);
-        localStorage.setItem('refreshToken', data.data.refreshToken);
-
-        originalRequest.headers.Authorization = `Bearer ${data.data.accessToken}`;
+        const accessToken = await refreshPromise;
+        originalRequest.headers = originalRequest.headers ?? {};
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest);
       } catch {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('jlpt-user');
-        window.location.href = '/login';
+        clearSessionAndRedirect();
         return Promise.reject(error);
       }
     }
