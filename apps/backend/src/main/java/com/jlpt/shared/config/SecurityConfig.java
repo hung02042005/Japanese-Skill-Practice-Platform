@@ -50,6 +50,10 @@ public class SecurityConfig {
                         .hasRole("ADMIN")
                         .requestMatchers("/api/staff/**")
                         .hasRole("STAFF")
+                        // Manager endpoints dùng chung authority ROLE_STAFF; phân biệt staff_manager
+                        // được enforce ở Service Layer (StaffManagerGuard / requireManager).
+                        .requestMatchers("/api/manager/**")
+                        .hasRole("STAFF")
                         .anyRequest()
                         .authenticated())
                 // Chưa xác thực → 401 (không phải 403 mặc định của Spring) để FE biết refresh token.

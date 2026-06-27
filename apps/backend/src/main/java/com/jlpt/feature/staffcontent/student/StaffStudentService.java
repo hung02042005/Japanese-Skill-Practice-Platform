@@ -4,6 +4,7 @@ package com.jlpt.feature.staffcontent.student;
 import com.jlpt.feature.assessment.AssessmentRepository;
 import com.jlpt.feature.assessment.TestAttempt;
 import com.jlpt.feature.assessment.TestAttemptRepository;
+import com.jlpt.feature.staff.StaffManagerGuard;
 import com.jlpt.feature.staffcontent.student.dto.StaffStudentListResponse;
 import com.jlpt.feature.staffcontent.student.dto.StaffStudentProgressResponse;
 import com.jlpt.feature.staffcontent.student.dto.StaffStudentSummaryResponse;
@@ -36,6 +37,9 @@ public class StaffStudentService {
     private final StudentContentProgressRepository progressRepository;
     private final TestAttemptRepository testAttemptRepository;
     private final AssessmentRepository assessmentRepository;
+    private final StaffManagerGuard staffManagerGuard;
+
+    private static final String FORBIDDEN_MSG = "Chỉ Staff Manager mới có quyền khoá/mở khoá học viên";
 
     @Transactional(readOnly = true)
     public StaffStudentListResponse listStudents(String search, String level, String status, int page, int size) {
@@ -110,7 +114,8 @@ public class StaffStudentService {
     }
 
     @Transactional
-    public StaffStudentSummaryResponse suspend(Long studentId, String reason) {
+    public StaffStudentSummaryResponse suspend(String actorEmail, Long studentId, String reason) {
+        staffManagerGuard.requireManager(actorEmail, FORBIDDEN_MSG);
         StudentUser s = studentUserRepository
                 .findById(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("StudentUser", studentId));
@@ -121,7 +126,8 @@ public class StaffStudentService {
     }
 
     @Transactional
-    public StaffStudentSummaryResponse activate(Long studentId) {
+    public StaffStudentSummaryResponse activate(String actorEmail, Long studentId) {
+        staffManagerGuard.requireManager(actorEmail, FORBIDDEN_MSG);
         StudentUser s = studentUserRepository
                 .findById(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("StudentUser", studentId));

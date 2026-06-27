@@ -9,6 +9,7 @@ import com.jlpt.shared.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,15 +45,18 @@ public class StaffStudentController {
 
     @PostMapping("/{studentId}/suspend")
     public ResponseEntity<ApiResponse<StaffStudentSummaryResponse>> suspend(
-            @PathVariable Long studentId, @RequestBody(required = false) SuspendStudentRequest request) {
+            @PathVariable Long studentId,
+            @RequestBody(required = false) SuspendStudentRequest request,
+            Authentication authentication) {
         String reason = request != null ? request.getReason() : null;
-        return ResponseEntity.ok(
-                ApiResponse.success("Đã tạm khoá học viên", staffStudentService.suspend(studentId, reason)));
+        return ResponseEntity.ok(ApiResponse.success(
+                "Đã tạm khoá học viên", staffStudentService.suspend(authentication.getName(), studentId, reason)));
     }
 
     @PostMapping("/{studentId}/activate")
-    public ResponseEntity<ApiResponse<StaffStudentSummaryResponse>> activate(@PathVariable Long studentId) {
-        return ResponseEntity.ok(
-                ApiResponse.success("Đã mở khoá học viên", staffStudentService.activate(studentId)));
+    public ResponseEntity<ApiResponse<StaffStudentSummaryResponse>> activate(
+            @PathVariable Long studentId, Authentication authentication) {
+        return ResponseEntity.ok(ApiResponse.success(
+                "Đã mở khoá học viên", staffStudentService.activate(authentication.getName(), studentId)));
     }
 }

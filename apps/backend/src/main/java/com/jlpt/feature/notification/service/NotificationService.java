@@ -6,8 +6,8 @@ import com.jlpt.feature.admin.AdminAuditLogRepository;
 import com.jlpt.feature.notification.Notification;
 import com.jlpt.feature.notification.NotificationRepository;
 import com.jlpt.feature.notification.dto.NotificationResponse;
+import com.jlpt.feature.staff.StaffManagerGuard;
 import com.jlpt.feature.staff.StaffUser;
-import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.StudentUserRepository;
 import com.jlpt.shared.dto.request.SendNotificationRequest;
@@ -34,9 +34,9 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final StudentUserRepository studentUserRepository;
-    private final StaffUserRepository staffUserRepository;
     private final AdminAuditLogRepository adminAuditLogRepository;
     private final NotificationDispatcher notificationDispatcher;
+    private final StaffManagerGuard staffManagerGuard;
 
     // ── Tao thong bao he thong cho 1 student (ticket reply, ticket dong, cham diem...) ──
 
@@ -97,7 +97,9 @@ public class NotificationService {
     @Transactional
     public String broadcast(String actorEmail, SendNotificationRequest req) {
         String jobId = "job_notification_" + System.currentTimeMillis();
-        var staff = staffUserRepository.findByEmail(actorEmail).orElse(null);
+        // Broadcast toàn hệ thống là quyền quản lý — chỉ staff_manager (không tin việc FE đã ẩn nút).
+        StaffUser staff =
+                staffManagerGuard.requireManager(actorEmail, "Chỉ Staff Manager mới có quyền gửi thông báo broadcast");
         List<StudentUser> targets = resolveTargets(req.getTargetJlptLevel());
         // Cross-bean call -> @Async cua dispatcher hoat dong (khong bi bypass proxy)
         notificationDispatcher.broadcastAsync(targets, req, staff);
