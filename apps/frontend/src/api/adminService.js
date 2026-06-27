@@ -84,7 +84,7 @@ export async function getDashboardSummary() {
 
 // ── UC-36: Audit log ────────────────────────────────────────────────────────
 export async function getAuditLog({ page = 0, size = 10 } = {}) {
-  const res = await api.get('/admin/audit-log', { params: { page, size } });
+  const res = await api.get('/admin/audit-logs', { params: { page, size } });
   return res.data.data;
 }
 
