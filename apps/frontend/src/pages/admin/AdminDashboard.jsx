@@ -14,7 +14,7 @@ export default function AdminDashboard() {
   const [logs,         setLogs]     = useState(null);
   const [isLoadingSum, setLoadSum]  = useState(true);
   const [isLoadingLog, setLoadLog]  = useState(true);
-  const { toasts, addToast, removeToast } = useToast();
+  const { toasts, removeToast } = useToast();
 
   const fetchSummary = useCallback(async () => {
     setLoadSum(true);

@@ -108,7 +108,7 @@ const staffGrammarSlice = createSlice({
       })
       
       // Create
-      .addCase(createGrammarThunk.fulfilled, (state, action) => {
+      .addCase(createGrammarThunk.fulfilled, (_state, _action) => {
         // Optionally prepend to list or let caller refresh
         // For simplicity, we just rely on component re-fetching list after success.
       })

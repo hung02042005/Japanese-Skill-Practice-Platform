@@ -87,7 +87,6 @@ export default function StaffContent() {
   const { toasts, addToast, removeToast } = useToast();
   const searchTimerRef = useRef(null);
 
-  const isGrammar = activeContentTab === "grammar";
 
   // ─── State helpers ──────────────────────────────────────────────────
 

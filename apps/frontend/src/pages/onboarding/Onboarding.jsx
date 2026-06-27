@@ -135,7 +135,7 @@ export default function Onboarding() {
         {step === 3 && (
           <div className="onb-step">
             <h1 className="onb-title">Kỹ năng nào bạn muốn tập trung?</h1>
-            <p className="onb-subtitle">Có thể chọn nhiều hoặc chọn "Tất cả".</p>
+            <p className="onb-subtitle">Có thể chọn nhiều hoặc chọn &quot;Tất cả&quot;.</p>
             <div className="onb-skill-grid" role="group" aria-label="Chọn kỹ năng">
               {SKILL_OPTIONS.map((sk) => (
                 <button

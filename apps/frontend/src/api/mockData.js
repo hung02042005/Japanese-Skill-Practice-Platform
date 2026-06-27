@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 // DEMO_MODE mock data — dùng để kiểm tra UI mà không cần backend
 // Set DEMO_MODE = false khi kết nối backend thật
 

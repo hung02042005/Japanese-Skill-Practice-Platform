@@ -77,7 +77,7 @@ export default function LearnNew() {
                 </span>
               </div>
               {nextLesson.description && (
-                <p className="lnw-next-desc">"{nextLesson.description}"</p>
+                <p className="lnw-next-desc">&quot;{nextLesson.description}&quot;</p>
               )}
               <div className="lnw-next-progress">
                 <span className="lnw-prog-label">Tiến độ</span>
