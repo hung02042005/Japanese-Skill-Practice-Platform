@@ -1,75 +1,75 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useAppSelector } from '../../store/hooks';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { EmptyState } from '../../components/common/EmptyState';
+import { getReadingLessons, getReadingDetail, submitReading } from '../../api/studentService';
 import './Reading.css';
 
-const LEVELS = ['All', 'N5', 'N4', 'N3', 'N2', 'N1'];
-
-const MOCK_READINGS = [
-  {
-    id: 1,
-    title: 'Đọc hiểu: Một ngày của Tanaka',
-    jlptLevel: 'N5',
-    questionCount: 3,
-    hasAttempted: false,
-    passage:
-      'たなかさくらさんは まいにち ６じに おきます。あさごはんを たべて、でんしゃで かいしゃに いきます。かいしゃは とおきょうに あります。しごとは ８じから ５じまでです。しゅうまつは こうえんで さんぽを します。とても たのしい せいかつです。',
-    questions: [
-      { id: 1, content: 'たなかさんは まいにち なんじに おきますか。', optionA: '５じ', optionB: '６じ', optionC: '７じ', optionD: '８じ', correctOption: 'B', explanation: '「まいにち６じにおきます」と書いてあります。' },
-      { id: 2, content: 'たなかさんは どうやって かいしゃに いきますか。', optionA: 'バスで', optionB: '自転車で', optionC: 'でんしゃで', optionD: 'あるいて', correctOption: 'C', explanation: '「でんしゃでかいしゃにいきます」とあります。' },
-      { id: 3, content: 'たなかさんは しゅうまつに なにを しますか。', optionA: '映画を見ます', optionB: '買い物します', optionC: 'こうえんでさんぽします', optionD: '友達と会います', correctOption: 'C', explanation: '「しゅうまつはこうえんでさんぽをします」とあります。' },
-    ],
-  },
-  {
-    id: 2,
-    title: 'Đọc hiểu: Thư mời tiệc',
-    jlptLevel: 'N4',
-    questionCount: 3,
-    hasAttempted: true,
-    passage:
-      '来週の土曜日、私の家でパーティーをします。友達を20人招待しました。午後3時から始まります。飲み物と食べ物を用意します。プレゼントは必要ありません。ぜひ来てください。楽しみにしています。',
-    questions: [
-      { id: 4, content: 'パーティーはいつですか。', optionA: '今週の土曜日', optionB: '来週の土曜日', optionC: '来週の日曜日', optionD: '来月の土曜日', correctOption: 'B', explanation: '「来週の土曜日」と書いてあります。' },
-      { id: 5, content: 'パーティーには何人が招待されましたか。', optionA: '10人', optionB: '15人', optionC: '20人', optionD: '25人', correctOption: 'C', explanation: '「友達を20人招待しました」とあります。' },
-      { id: 6, content: 'パーティーに何を持って行く必要がありますか。', optionA: '飲み物', optionB: '食べ物', optionC: 'プレゼント', optionD: '何も必要ない', correctOption: 'D', explanation: '「プレゼントは必要ありません」とあります。' },
-    ],
-  },
-  {
-    id: 3,
-    title: 'Đọc hiểu: Bản tin thời tiết',
-    jlptLevel: 'N3',
-    questionCount: 4,
-    hasAttempted: false,
-    passage:
-      '明日の天気は全国的に曇りがちですが、午後から関東地方では晴れてくるでしょう。気温は平年並みで、最高気温は東京で18度の予想です。北部では夕方から雨の可能性があります。外出の際は傘を持参することをお勧めします。週末にかけて天候は回復する見込みです。',
-    questions: [
-      { id: 7, content: '明日の午前中の天気はどうですか。', optionA: '晴れ', optionB: '雨', optionC: '曇り', optionD: '雪', correctOption: 'C', explanation: '「午後から晴れてくる」とあり、午前は曇りです。' },
-      { id: 8, content: '東京の明日の最高気温は何度ですか。', optionA: '15度', optionB: '18度', optionC: '20度', optionD: '22度', correctOption: 'B', explanation: '「最高気温は東京で18度」とあります。' },
-      { id: 9, content: '夕方から雨になるのはどこですか。', optionA: '関東地方', optionB: '南部', optionC: '北部', optionD: '全国', correctOption: 'C', explanation: '「北部では夕方から雨の可能性があります」とあります。' },
-      { id: 10, content: '外出するとき、何を持っていくことが勧められていますか。', optionA: '帽子', optionB: 'コート', optionC: 'サングラス', optionD: '傘', correctOption: 'D', explanation: '「外出の際は傘を持参することをお勧めします」とあります。' },
-    ],
-  },
-];
+const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
 export default function Reading() {
   const [searchParams] = useSearchParams();
-  const [level,   setLevel]   = useState(searchParams.get('level') ?? 'All');
+  const { user } = useAppSelector((s) => s.auth);
+
+  const [level,   setLevel]   = useState(searchParams.get('level') ?? user?.jlptLevel ?? 'N5');
   const [view,    setView]    = useState('list');
-  const [lesson,  setLesson]  = useState(null);
-  const [answers, setAnswers] = useState({});
-  const [results, setResults] = useState(null);
 
-  const visibleLessons = level === 'All'
-    ? MOCK_READINGS
-    : MOCK_READINGS.filter((r) => r.jlptLevel === level);
+  const [lessons,     setLessons]     = useState([]);
+  const [listLoading, setListLoading] = useState(true);
+  const [listError,   setListError]   = useState('');
 
-  function openLesson(r) {
-    setLesson(r);
+  const [lesson,        setLesson]        = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError,   setDetailError]   = useState('');
+
+  const [answers,   setAnswers]   = useState({});
+  const [results,   setResults]   = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  // ── Load lesson list cho level đang chọn ──
+  const loadList = useCallback(async () => {
+    setListLoading(true);
+    setListError('');
+    try {
+      const page = await getReadingLessons({ level, page: 0, size: 50 });
+      setLessons(page?.content ?? []);
+    } catch (err) {
+      setListError(err?.response?.data?.message ?? 'Không tải được danh sách bài đọc.');
+      setLessons([]);
+    } finally {
+      setListLoading(false);
+    }
+  }, [level]);
+
+  useEffect(() => { loadList(); }, [loadList]);
+
+  // ── Mở 1 bài đọc → tải chi tiết ──
+  async function openLesson(summary) {
+    setView('practice');
+    setLesson(null);
     setAnswers({});
     setResults(null);
-    setView('practice');
+    setSubmitError('');
+    setDetailLoading(true);
+    setDetailError('');
+    try {
+      const detail = await getReadingDetail(summary.id);
+      setLesson(detail);
+    } catch (err) {
+      setDetailError(err?.response?.data?.message ?? 'Không tải được nội dung bài đọc.');
+    } finally {
+      setDetailLoading(false);
+    }
+  }
+
+  function backToList() {
+    setView('list');
+    setLesson(null);
+    setResults(null);
+    setSubmitError('');
   }
 
   function pickAnswer(questionId, option) {
@@ -77,19 +77,41 @@ export default function Reading() {
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
   }
 
-  function submit() {
-    const res = lesson.questions.map((q) => ({
-      questionId: q.id,
-      content:    q.content,
-      selected:   answers[q.id] ?? null,
-      correct:    q.correctOption,
-      isCorrect:  answers[q.id] === q.correctOption,
-      explanation: q.explanation,
-      options: { A: q.optionA, B: q.optionB, C: q.optionC, D: q.optionD },
-    }));
-    const score = res.filter((r) => r.isCorrect).length;
-    setResults({ score, total: lesson.questions.length, items: res });
-    setView('results');
+  async function submit() {
+    if (!lesson) return;
+    setSubmitting(true);
+    setSubmitError('');
+    try {
+      const payload = lesson.questions.map((q) => ({
+        questionId: q.questionId,
+        selectedOption: answers[q.questionId],
+      }));
+      const res = await submitReading(lesson.id, payload);
+
+      // Backend chỉ trả { questionId, isCorrect, correctOption, explanation }.
+      // Merge với chi tiết câu hỏi (nội dung + đáp án) và lựa chọn của học viên.
+      const byQuestion = new Map(lesson.questions.map((q) => [q.questionId, q]));
+      const items = res.results.map((r) => {
+        const q = byQuestion.get(r.questionId) ?? {};
+        return {
+          questionId:  r.questionId,
+          content:     q.content,
+          selected:    answers[r.questionId] ?? null,
+          correct:     r.correctOption,
+          isCorrect:   r.isCorrect,
+          explanation: r.explanation,
+          options: { A: q.optionA, B: q.optionB, C: q.optionC, D: q.optionD },
+        };
+      });
+      const score = Number(res.score);
+      const total = Number(res.maxScore);
+      setResults({ score, total, items });
+      setView('results');
+    } catch (err) {
+      setSubmitError(err?.response?.data?.message ?? 'Nộp bài thất bại. Vui lòng thử lại.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const allAnswered = lesson && Object.keys(answers).length === lesson.questions.length;
@@ -119,16 +141,25 @@ export default function Reading() {
               ))}
             </div>
 
-            {visibleLessons.length === 0 ? (
+            {listLoading ? (
+              <p className="rdg-loading">Đang tải bài đọc…</p>
+            ) : listError ? (
+              <EmptyState
+                title="Đã xảy ra lỗi"
+                subtitle={listError}
+                mascotVariant="thinking"
+                mascotSize={120}
+              />
+            ) : lessons.length === 0 ? (
               <EmptyState
                 title="Chưa có bài đọc"
-                subtitle="Chưa có bài đọc hiểu cho cấp độ này."
+                subtitle={`Chưa có bài đọc hiểu cho cấp độ ${level}.`}
                 mascotVariant="thinking"
                 mascotSize={120}
               />
             ) : (
               <div className="rdg-card-grid">
-                {visibleLessons.map((r) => (
+                {lessons.map((r) => (
                   <div key={r.id} className="rdg-card" onClick={() => openLesson(r)}>
                     <div className="rdg-card-head">
                       <JlptBadge level={r.jlptLevel} />
@@ -150,62 +181,79 @@ export default function Reading() {
         )}
 
         {/* ── PRACTICE view ── */}
-        {view === 'practice' && lesson && (
+        {view === 'practice' && (
           <>
             <div className="rdg-practice-header">
-              <button className="rdg-back-btn" onClick={() => setView('list')} aria-label="Quay lại">
+              <button className="rdg-back-btn" onClick={backToList} aria-label="Quay lại">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 Danh sách
               </button>
-              <div className="rdg-practice-meta">
-                <JlptBadge level={lesson.jlptLevel} />
-                <h1 className="rdg-practice-title">{lesson.title}</h1>
-              </div>
-            </div>
-
-            <div className="rdg-passage-box">
-              <p className="rdg-passage-label">Đoạn văn</p>
-              <p className="rdg-passage-text">{lesson.passage}</p>
-            </div>
-
-            <div className="rdg-questions">
-              {lesson.questions.map((q, idx) => (
-                <div key={q.id} className="rdg-question">
-                  <p className="rdg-q-text">
-                    <span className="rdg-q-num">{idx + 1}</span>
-                    {q.content}
-                  </p>
-                  <div className="rdg-options">
-                    {['A', 'B', 'C', 'D'].map((opt) => (
-                      <button
-                        key={opt}
-                        className={`rdg-opt${answers[q.id] === opt ? ' rdg-opt--selected' : ''}`}
-                        onClick={() => pickAnswer(q.id, opt)}
-                        disabled={!!results}
-                      >
-                        <span className="rdg-opt-label">{opt}</span>
-                        {q[`option${opt}`]}
-                      </button>
-                    ))}
-                  </div>
+              {lesson && (
+                <div className="rdg-practice-meta">
+                  <JlptBadge level={lesson.jlptLevel} />
+                  <h1 className="rdg-practice-title">{lesson.title}</h1>
                 </div>
-              ))}
+              )}
             </div>
 
-            <div className="rdg-submit-row">
-              <p className="rdg-answered-note">
-                Đã trả lời: {Object.keys(answers).length} / {lesson.questions.length}
-              </p>
-              <button
-                className="rdg-submit-btn"
-                disabled={!allAnswered}
-                onClick={submit}
-              >
-                Nộp bài
-              </button>
-            </div>
+            {detailLoading ? (
+              <p className="rdg-loading">Đang tải nội dung…</p>
+            ) : detailError ? (
+              <EmptyState
+                title="Đã xảy ra lỗi"
+                subtitle={detailError}
+                mascotVariant="thinking"
+                mascotSize={120}
+              />
+            ) : lesson && (
+              <>
+                <div className="rdg-passage-box">
+                  <p className="rdg-passage-label">Đoạn văn</p>
+                  <p className="rdg-passage-text">{lesson.passageText}</p>
+                </div>
+
+                <div className="rdg-questions">
+                  {lesson.questions.map((q, idx) => (
+                    <div key={q.questionId} className="rdg-question">
+                      <p className="rdg-q-text">
+                        <span className="rdg-q-num">{idx + 1}</span>
+                        {q.content}
+                      </p>
+                      <div className="rdg-options">
+                        {['A', 'B', 'C', 'D'].map((opt) => (
+                          <button
+                            key={opt}
+                            className={`rdg-opt${answers[q.questionId] === opt ? ' rdg-opt--selected' : ''}`}
+                            onClick={() => pickAnswer(q.questionId, opt)}
+                            disabled={!!results}
+                          >
+                            <span className="rdg-opt-label">{opt}</span>
+                            {q[`option${opt}`]}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {submitError && <p className="rdg-error">{submitError}</p>}
+
+                <div className="rdg-submit-row">
+                  <p className="rdg-answered-note">
+                    Đã trả lời: {Object.keys(answers).length} / {lesson.questions.length}
+                  </p>
+                  <button
+                    className="rdg-submit-btn"
+                    disabled={!allAnswered || submitting}
+                    onClick={submit}
+                  >
+                    {submitting ? 'Đang nộp…' : 'Nộp bài'}
+                  </button>
+                </div>
+              </>
+            )}
           </>
         )}
 
@@ -213,7 +261,7 @@ export default function Reading() {
         {view === 'results' && results && lesson && (
           <>
             <div className="rdg-practice-header">
-              <button className="rdg-back-btn" onClick={() => setView('list')} aria-label="Về danh sách">
+              <button className="rdg-back-btn" onClick={backToList} aria-label="Về danh sách">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -231,7 +279,7 @@ export default function Reading() {
                   : '📚 Cần ôn thêm'}
               </div>
               <div className="rdg-score-pct">
-                {Math.round((results.score / results.total) * 100)}% chính xác
+                {results.total > 0 ? Math.round((results.score / results.total) * 100) : 0}% chính xác
               </div>
             </div>
 
@@ -260,14 +308,14 @@ export default function Reading() {
                       </div>
                     ))}
                   </div>
-                  <p className="rdg-ri-explain">💡 {r.explanation}</p>
+                  {r.explanation && <p className="rdg-ri-explain">💡 {r.explanation}</p>}
                 </div>
               ))}
             </div>
 
             <div className="rdg-result-actions">
               <button className="rdg-retry-btn" onClick={() => openLesson(lesson)}>Làm lại</button>
-              <button className="rdg-back2-btn" onClick={() => setView('list')}>Bài khác</button>
+              <button className="rdg-back2-btn" onClick={backToList}>Bài khác</button>
             </div>
           </>
         )}

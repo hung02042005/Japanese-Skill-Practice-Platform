@@ -25,6 +25,10 @@
 .rdg-title  { font-size: 26px; font-weight: 800; color: var(--color-text); margin: 0 0 6px; }
 .rdg-subtitle { font-size: 14px; color: var(--color-text-sub); margin: 0; }
 
+/* Loading / error states */
+.rdg-loading { text-align: center; color: var(--color-text-sub); font-size: 14px; padding: 32px 0; }
+.rdg-error   { color: var(--color-danger, #DC2626); font-size: 14px; margin: 4px 0 0; }
+
 /* Level filter */
 .rdg-levels { display: flex; gap: 8px; flex-wrap: wrap; }
 .rdg-lvl-btn {

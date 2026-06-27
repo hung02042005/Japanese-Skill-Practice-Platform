@@ -332,6 +332,26 @@ export async function getQuizzes({ level, page = 0, size = 20 } = {}) {
   return res.data.data; // { content, totalElements, totalPages }
 }
 
+// ─── Reading (Đọc hiểu) — UC-14 ──────────────────────────────────────────────
+// Danh sách bài đọc theo cấp độ. Trả Page { content, totalElements, totalPages }.
+export async function getReadingLessons({ level, page = 0, size = 50 } = {}) {
+  const res = await api.get('/lessons', { params: { type: 'reading', level, page, size } });
+  return res.data.data;
+}
+
+// Chi tiết 1 bài đọc: { id, title, jlptLevel, passageText, questions[] }.
+export async function getReadingDetail(lessonId) {
+  const res = await api.get(`/lessons/${lessonId}/reading`);
+  return res.data.data;
+}
+
+// Nộp bài đọc. answers: [{ questionId, selectedOption }]. Chấm điểm tại backend.
+// Trả { attemptId, score, maxScore, results: [{ questionId, isCorrect, correctOption, explanation }] }.
+export async function submitReading(lessonId, answers) {
+  const res = await api.post(`/lessons/${lessonId}/submit`, { attemptType: 'reading', answers });
+  return res.data.data;
+}
+
 // ─── Speaking (AI) ───────────────────────────────────────────────────────────
 export async function getSpeakingExercises(level) {
   const res = await api.get('/speaking/exercises', { params: { level } });
