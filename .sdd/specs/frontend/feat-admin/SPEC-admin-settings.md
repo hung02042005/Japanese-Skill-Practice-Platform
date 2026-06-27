@@ -1,17 +1,19 @@
-# SPEC — Admin Settings (Cài đặt & Thông báo)
+# SPEC — Admin Settings (Cài đặt)
 >
 > **Feature ID:** `feat-admin` | **Page:** `AdminSettings`
 > **Route:** `/admin/settings`
-> **Version:** 1.0 | **Status:** Draft
-> **Author:** Team | **Last Updated:** 2026-06-02
+> **Version:** 1.1 | **Status:** Draft
+> **Author:** Team | **Last Updated:** 2026-06-28
 > **Design ref:** `DESIGN.md` — SakuJi · Hanami E-learning
-> **Backend ref:** `feat-system-admin/SPEC.md § UC-39, UC-40`
+> **Backend ref:** `feat-system-admin/SPEC.md § UC-39`
+
+> ⚠️ **Đã gỡ tab "Thông báo" (UC-40):** Giao diện quản trị Notification Rules (milestone) cùng `NotificationsTab`/`RulePanelModal` đã được loại bỏ khỏi FE. Trang chỉ còn 3 tab: Hệ thống · Email · Bảo mật. Các phần milestone bên dưới (§ liên quan UC-40, mock chip milestone, API notification-rules) giữ lại chỉ để tham khảo lịch sử, **không còn áp dụng**. Backend rule CRUD nếu cần xem `feat-system-admin/SPEC.md` (endpoint `/api/admin/notifications/rules`).
 
 ---
 
 ## 1. TỔNG QUAN TRANG
 
-Trang cài đặt tổng hợp UC-39 (System Settings) và UC-40 (Notification Rules) vào một giao diện tab-based. Admin cấu hình SMTP, tham số bảo mật, chế độ bảo trì và quy tắc thông báo tự động.
+Trang cài đặt cấu hình hệ thống (UC-39) theo giao diện tab-based: SMTP, tham số bảo mật và chế độ bảo trì.
 
 **Cấu trúc trang:**
 
@@ -471,14 +473,16 @@ PUT  /api/admin/settings/{group}/{key}            — cập nhật 1 setting
 POST /api/admin/settings/smtp/test                — test kết nối SMTP
 ```
 
-### UC-40 — Notification Rules
+### UC-40 — Notification Rules ~~(đã gỡ khỏi FE)~~
 
-```
-GET    /api/admin/notification-rules              — danh sách rules
-POST   /api/admin/notification-rules              — tạo rule mới
-PUT    /api/admin/notification-rules/{ruleId}     — cập nhật rule
-DELETE /api/admin/notification-rules/{ruleId}     — xóa rule
-```
+> Không còn FE gọi các endpoint này. Backend thực tế (tham khảo `feat-system-admin/SPEC.md`):
+>
+> ```
+> GET    /api/admin/notifications/rules            — danh sách rules
+> POST   /api/admin/notifications/rules            — tạo rule mới
+> PUT    /api/admin/notifications/rules/{ruleKey}  — cập nhật rule
+> DELETE /api/admin/notifications/rules/{ruleKey}  — vô hiệu hóa mềm
+> ```
 
 ---
 

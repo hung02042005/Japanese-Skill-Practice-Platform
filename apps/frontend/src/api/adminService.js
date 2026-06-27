@@ -105,27 +105,6 @@ export async function testSmtp() {
   return res.data;
 }
 
-// ── UC-40: Notification rules ───────────────────────────────────────────────
-export async function getNotificationRules() {
-  const res = await api.get('/admin/notification-rules');
-  return res.data.data;
-}
-
-export async function createNotificationRule(data) {
-  const res = await api.post('/admin/notification-rules', data);
-  return res.data.data;
-}
-
-export async function updateNotificationRule(ruleId, data) {
-  const res = await api.put(`/admin/notification-rules/${ruleId}`, data);
-  return res.data.data;
-}
-
-export async function deleteNotificationRule(ruleId) {
-  const res = await api.delete(`/admin/notification-rules/${ruleId}`);
-  return res.data;
-}
-
 // ── Legacy: student ↔ staff promotion (old PATCH endpoints) ────────────────
 export async function fetchAdminUsers() {
   const res = await api.get('/admin/users');

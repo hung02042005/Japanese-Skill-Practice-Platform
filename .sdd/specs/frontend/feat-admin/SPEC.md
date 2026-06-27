@@ -1,7 +1,8 @@
 # SPEC — Admin Panel (Frontend Overview)
 >
 > **Feature ID:** `feat-admin`
-> **UC Coverage:** UC-35 (Login), UC-36 (Dashboard), UC-37 (User Management), UC-39 (Settings), UC-40 (Notification Rules)
+> **UC Coverage:** UC-35 (Login), UC-36 (Dashboard), UC-37 (User Management), UC-39 (Settings)
+> **Lưu ý:** UC-40 (Notification Rules) đã gỡ khỏi Admin Panel FE — chỉ còn API backend `/api/admin/notifications/rules`, không có giao diện quản trị.
 > **Version:** 1.0 | **Status:** Draft
 > **Author:** Team | **Last Updated:** 2026-06-02
 > **Design ref:** `DESIGN.md` — SakuJi · Hanami E-learning
@@ -189,7 +190,7 @@ apps/frontend/src/
 │   ├── AdminDashboard.css
 │   ├── ManageUsers.jsx           ← UC-37 (đã có)
 │   ├── ManageUsers.css
-│   ├── AdminSettings.jsx         ← UC-39 + UC-40 (tạo mới)
+│   ├── AdminSettings.jsx         ← UC-39 (tạo mới)
 │   └── AdminSettings.css
 ├── components/admin/
 │   ├── AdminPageHeader.jsx       ← đã có, dùng chung

@@ -19,7 +19,7 @@
 - **Dashboard Tổng quan (UC-36):** Hiển thị số liệu thời gian thực về đăng ký người dùng mới, lượng bài thi/quiz thực hiện hàng ngày và trạng thái tài nguyên.
 - **Quản lý phân quyền người dùng (UC-37):** Cấp quyền Admin tạo mới, chỉnh sửa thông tin, đặt lại mật khẩu và chuyển đổi phân quyền giữa các vai trò tài khoản (`admin_users`, `staff_users`, `student_users`).
 - **Cấu hình hệ thống (UC-39):** Lưu trữ các cài đặt kỹ thuật (SMTP, khóa đăng nhập, bảo trì) vào cặp Key-Value lưu trữ trong bảng `system_settings`.
-- **Quản lý quy tắc thông báo tự động (UC-40):** Thiết lập các template thông báo và quy tắc kích hoạt tự động (Notification Rules) khi người dùng đạt mốc streak học tập hoặc thi cử.
+- **Quản lý quy tắc thông báo (UC-40):** Admin cấu hình (CRUD) các quy tắc thông báo dạng template — `ruleKey`, điều kiện kích hoạt (`triggerCondition`), kênh gửi và nội dung template — lưu trong bảng `system_settings` (group `notification`). Quy tắc được nhận diện bằng `ruleKey`; xóa là vô hiệu hóa mềm (`enabled=false`). *Lưu ý: phần tự động phát thông báo theo mốc (milestone auto-dispatch) không thuộc phạm vi hiện tại.*
 
 ### 1.3 Tại sao cần?
 
@@ -58,7 +58,7 @@ Không có cấu hình cài đặt `system_settings` $\rightarrow$ không thể 
 | ID | EARS Requirement |
 |:---|:---|
 | FR-ADMIN-20 | WHEN an Admin edits a system setting, THE SYSTEM SHALL update `system_settings` with the new value, validating the `value_type` constraints. |
-| FR-ADMIN-21 | WHEN a configured system milestone occurs (e.g. Student achieves a 10-day study streak), THE SYSTEM SHALL automatically resolve the template in `notifications` and send it through the defined channel. |
+| FR-ADMIN-21 | WHEN an Admin creates/updates/deletes a notification rule, THE SYSTEM SHALL persist it as a `notification`-group entry in `system_settings` keyed by `ruleKey`, where delete is a soft-disable (`enabled=false`). |
 | FR-ADMIN-22 | WHILE the system is in `maintenance = true` state, THE SYSTEM SHALL block all Student logins with a friendly maintenance message, allowing only Admin and Staff access. |
 
 ---
@@ -194,30 +194,50 @@ erDiagram
 
 ---
 
-### `POST /api/admin/notification-rules`
+### Notification Rules — `/api/admin/notifications/rules`
 
 **Actor:** Admin | **Auth:** Bearer JWT
 
-**Request:**
+```
+GET    /api/admin/notifications/rules            — danh sách rules
+POST   /api/admin/notifications/rules            — tạo rule mới
+PUT    /api/admin/notifications/rules/{ruleKey}  — cập nhật rule
+DELETE /api/admin/notifications/rules/{ruleKey}  — vô hiệu hóa mềm (enabled=false)
+```
+
+**Request (POST/PUT):**
 
 ```json
 {
   "ruleKey": "streak_10_days",
-  "milestone": "streak_10",
+  "description": "Chúc mừng học viên duy trì chuỗi học tập 10 ngày",
+  "isEnabled": true,
+  "triggerCondition": "streak_10",
+  "channel": "in_app",
   "templateTitle": "Chúc mừng chuỗi học tập xuất sắc!",
-  "templateContent": "Bạn đã duy trì chuỗi học tập 10 ngày liên tiếp. Hãy tiếp tục phong độ tuyệt vời này nhé!",
-  "channel": "in_app"
+  "templateContent": "Bạn đã duy trì chuỗi học tập 10 ngày liên tiếp. Hãy tiếp tục phong độ tuyệt vời này nhé!"
 }
 ```
+
+- `ruleKey`: `^[a-z][a-z0-9_]{2,49}$`, là khóa định danh (không dùng id số). PUT/DELETE định danh qua `ruleKey` trên path.
+- `channel`: `in_app | email | both`.
 
 **Response (201 Created):**
 
 ```json
 {
   "status": 201,
-  "message": "Tạo quy tắc thông báo tự động thành công",
+  "message": "Da tao quy tac thong bao",
   "data": {
-    "ruleId": 5
+    "ruleKey": "streak_10_days",
+    "description": "Chúc mừng học viên duy trì chuỗi học tập 10 ngày",
+    "isEnabled": true,
+    "triggerCondition": "streak_10",
+    "channel": "in_app",
+    "templateTitle": "Chúc mừng chuỗi học tập xuất sắc!",
+    "templateContent": "Bạn đã duy trì chuỗi học tập 10 ngày liên tiếp. Hãy tiếp tục phong độ tuyệt vời này nhé!",
+    "updatedAt": "2026-05-28T23:44:00Z",
+    "updatedByAdminName": "Admin"
   }
 }
 ```

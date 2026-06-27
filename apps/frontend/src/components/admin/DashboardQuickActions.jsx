@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { IcMail, IcShield, IcWrench, IcBell, TAB_ICONS } from './ManageUsersIcons';
+import { IcMail, IcShield, IcWrench, TAB_ICONS } from './ManageUsersIcons';
 
 const QUICK_ITEMS = [
   {
@@ -37,14 +37,6 @@ const QUICK_ITEMS = [
     icon:     <IcShield />,
     label:    'Bảo mật',
     desc:     'Giới hạn đăng nhập, JWT',
-  },
-  {
-    to:       '/admin/settings?tab=notifications',
-    iconBg:   'var(--color-accent-bg)',
-    iconColor:'#B45309',
-    icon:     <IcBell />,
-    label:    'Thông báo tự động',
-    desc:     'Quản lý quy tắc thông báo',
   },
   {
     to:       '/admin/settings?tab=system',

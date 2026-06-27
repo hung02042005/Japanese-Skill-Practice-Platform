@@ -303,5 +303,4 @@ export const SETTINGS_TAB_ICONS = {
   system:        <IcWrench />,
   email:         <IcMail />,
   security:      <IcShield />,
-  notifications: <IcBell />,
 };

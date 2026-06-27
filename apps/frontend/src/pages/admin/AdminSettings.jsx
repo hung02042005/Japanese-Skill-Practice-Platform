@@ -3,18 +3,16 @@ import { useLocation, useNavigate }               from 'react-router-dom';
 import AdminTopNav                                from '../../components/layout/AdminTopNav';
 import { AdminPageHeader }                        from '../../components/admin/AdminPageHeader';
 import { ToastContainer, useToast }              from '../../components/common/Toast';
-import { IcWrench, IcMail, IcShield, IcBell }   from '../../components/admin/ManageUsersIcons';
+import { IcWrench, IcMail, IcShield }            from '../../components/admin/ManageUsersIcons';
 import { SystemTab }        from '../../components/admin/settings/SystemTab';
 import { EmailTab }         from '../../components/admin/settings/EmailTab';
 import { SecurityTab }      from '../../components/admin/settings/SecurityTab';
-import { NotificationsTab } from '../../components/admin/settings/NotificationsTab';
 import './AdminSettings.css';
 
 const TABS = [
   { id: 'system',        label: 'Hệ thống',  icon: <IcWrench /> },
   { id: 'email',         label: 'Email',      icon: <IcMail />   },
   { id: 'security',      label: 'Bảo mật',   icon: <IcShield /> },
-  { id: 'notifications', label: 'Thông báo', icon: <IcBell />   },
 ];
 
 export default function AdminSettings() {
@@ -40,7 +38,7 @@ export default function AdminSettings() {
         chipIcon={<IcWrench />}
         chipLabel="Cài đặt"
         title="Cài Đặt Hệ Thống"
-        subtitle="Cấu hình SMTP, bảo mật, bảo trì và quy tắc thông báo tự động"
+        subtitle="Cấu hình SMTP, bảo mật và bảo trì hệ thống"
         mascotVariant="idle"
         mascotSize={100}
       />
@@ -67,7 +65,6 @@ export default function AdminSettings() {
         {activeTab === 'system'        && <SystemTab        addToast={addToast} />}
         {activeTab === 'email'         && <EmailTab         addToast={addToast} />}
         {activeTab === 'security'      && <SecurityTab      addToast={addToast} />}
-        {activeTab === 'notifications' && <NotificationsTab addToast={addToast} />}
       </main>
 
       <ToastContainer toasts={toasts} onRemove={removeToast} />
