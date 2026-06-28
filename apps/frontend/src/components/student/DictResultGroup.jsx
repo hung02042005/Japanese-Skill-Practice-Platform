@@ -6,11 +6,15 @@ import { JlptBadge } from '../common/Badges';
  * click để điều hướng tới trang chi tiết tương ứng.
  */
 const FIELD = {
-  vocabulary: (i) => ({ id: i.id, main: i.word,      sub: i.furigana, meaning: i.meaning, level: i.jlptLevel }),
+  vocabulary: (i) => ({ id: i.id, main: i.word,      sub: i.furigana, meaning: i.meaning, level: i.jlptLevel, audio: i.audioUrl }),
   kanji:      (i) => ({ id: i.id, main: i.character, sub: '',         meaning: i.meaning, level: i.jlptLevel }),
   grammar:    (i) => ({ id: i.id, main: i.structure, sub: '',         meaning: i.meaning, level: i.jlptLevel }),
   lesson:     (i) => ({ id: i.id, main: i.title,     sub: '',         meaning: '',        level: i.jlptLevel }),
 };
+
+function playAudio(url) {
+  if (url) new Audio(url).play().catch(() => {});
+}
 
 export default function DictResultGroup({
   title, items = [], type, savedIds, savingId, onOpen, onSave, canSave,
@@ -41,6 +45,15 @@ export default function DictResultGroup({
                 {it.sub && <span className="dct-result-sub" lang="ja">・{it.sub}</span>}
                 {it.meaning && <span className="dct-result-meaning">{it.meaning}</span>}
               </button>
+              {it.audio && (
+                <button
+                  className="dct-audio-btn"
+                  onClick={() => playAudio(it.audio)}
+                  aria-label={`Nghe phát âm ${it.main}`}
+                >
+                  🔊
+                </button>
+              )}
               {canSave && (
                 <button
                   className={`dct-save-btn${saved ? ' dct-save-btn--saved' : ''}`}

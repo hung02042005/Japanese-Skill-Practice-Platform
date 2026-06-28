@@ -12,6 +12,8 @@ import com.jlpt.feature.flashcard.repository.FlashcardRepository;
 import com.jlpt.feature.student.kanji.dto.KanjiDetailResponse;
 import com.jlpt.feature.student.kanji.dto.KanjiItemResponse;
 import com.jlpt.feature.student.kanji.dto.KanjiListResponse;
+import com.jlpt.feature.student.kanji.dto.KanjiProgressSummaryResponse;
+import com.jlpt.shared.common.JlptLevels;
 import com.jlpt.feature.student.StudentContentProgressRepository;
 import com.jlpt.shared.exception.ResourceNotFoundException;
 import java.time.LocalDate;
@@ -98,6 +100,16 @@ public class StudentKanjiServiceImpl implements StudentKanjiService {
                 .size(kanjiPage.getSize())
                 .completedCount(completedCount)
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public KanjiProgressSummaryResponse getProgressSummary(String level, Long studentId) {
+        JlptLevel jlptLevel = JlptLevels.parseRequired(level);
+        long completed = progressRepository.countCompletedKanjiByLevel(
+                studentId, jlptLevel, ContentType.KANJI, StudentContentProgress.ProgressStatus.COMPLETED);
+        long total = kanjiRepository.countByLevelAndStatus(jlptLevel, ContentStatus.PUBLISHED);
+        return KanjiProgressSummaryResponse.builder().completed(completed).total(total).build();
     }
 
     @Override

@@ -16,4 +16,7 @@ public class StudentResponse {
     private String currentJlptLevel;
     private String targetJlptLevel;
     private LocalDateTime createdAt;
+
+    /** Đã hoàn thành onboarding chưa (suy từ targetJlptLevel != null) — quyết định có ép vào /onboarding. */
+    private boolean onboardingCompleted;
 }

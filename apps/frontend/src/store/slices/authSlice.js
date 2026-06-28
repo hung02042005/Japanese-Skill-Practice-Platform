@@ -231,6 +231,12 @@ const authSlice = createSlice({
     clearError(state) {
       state.error = null;
     },
+    // Cập nhật thông tin user hiện tại (vd sau onboarding) + đồng bộ localStorage.
+    setUser(state, action) {
+      state.user = { ...state.user, ...action.payload };
+      state.isAuthenticated = true;
+      localStorage.setItem('jlpt-user', JSON.stringify(state.user));
+    },
     logout(state) {
       state.user = null;
       state.isAuthenticated = false;
@@ -418,5 +424,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, logout } = authSlice.actions;
+export const { clearError, logout, setUser } = authSlice.actions;
 export default authSlice.reducer;

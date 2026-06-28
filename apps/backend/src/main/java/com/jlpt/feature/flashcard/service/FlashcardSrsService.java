@@ -170,9 +170,11 @@ public class FlashcardSrsService {
     // ── Card list / reveal (live-resolve §3.4) ───────────────────────────────
 
     @Transactional(readOnly = true)
-    public Page<FlashcardResponse> getCards(Long studentId, Long deckId, boolean dueOnly, String q, Pageable pageable) {
+    public Page<FlashcardResponse> getCards(
+            Long studentId, Long deckId, boolean dueOnly, String q, String sort, Pageable pageable) {
         LocalDate today = LocalDate.now();
         String needle = q == null ? null : q.trim().toLowerCase();
+        String sortKey = normalizeSort(sort);
 
         // Tìm kiếm server-side (SPEC-notebook): resolve live rồi lọc theo mặt trước — không bị giới
         // hạn bởi paging DB nên không bỏ sót thẻ ngoài trang đầu. Khi không có deckId thì tìm trên
@@ -187,8 +189,7 @@ public class FlashcardSrsService {
                     .map(c -> toFlashcardResponse(c, maps))
                     .filter(r ->
                             r.frontText() != null && r.frontText().toLowerCase().contains(needle))
-                    .sorted(Comparator.comparing(
-                            FlashcardResponse::nextReviewDate, Comparator.nullsLast(Comparator.naturalOrder())))
+                    .sorted(responseComparator(sortKey))
                     .toList();
             int from = (int) Math.min(pageable.getOffset(), matched.size());
             int to = Math.min(from + pageable.getPageSize(), matched.size());
@@ -196,7 +197,16 @@ public class FlashcardSrsService {
         }
 
         Page<Flashcard> cards;
-        if (dueOnly) {
+        if (deckId != null && !"due".equals(sortKey)) {
+            // Sort sổ tay (3B) — deck-scoped; alpha/level join Vocabulary (review deck = vocab-only).
+            cards = switch (sortKey) {
+                case "recent" -> flashcardRepository.findByDeckOrderByRecent(studentId, deckId, dueOnly, today, pageable);
+                case "alpha" -> flashcardRepository.findByDeckOrderByWord(
+                        studentId, deckId, PUBLISHED, dueOnly, today, pageable);
+                default -> flashcardRepository.findByDeckOrderByLevel(
+                        studentId, deckId, PUBLISHED, dueOnly, today, pageable);
+            };
+        } else if (dueOnly) {
             cards = deckId != null
                     ? flashcardRepository.findDueByDeck(studentId, deckId, today, pageable)
                     : flashcardRepository.findAllDue(studentId, today, pageable);
@@ -212,6 +222,37 @@ public class FlashcardSrsService {
                 .filter(r -> r.frontText() != null)
                 .toList();
         return new PageImpl<>(items, pageable, cards.getTotalElements());
+    }
+
+    /** Soft-delete (ADR-004) nhiều thẻ — quyền sở hữu ép trong query; trả số thẻ đã gỡ (3B). */
+    public int bulkDelete(Long studentId, List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return 0;
+        }
+        return flashcardRepository.softDeleteByIds(ids, studentId);
+    }
+
+    /** Khoá sort hợp lệ; mặc định "due" (lịch ôn) cho client cũ/giá trị lạ. */
+    private static String normalizeSort(String sort) {
+        if (sort == null) return "due";
+        return switch (sort.trim().toLowerCase()) {
+            case "recent", "alpha", "level" -> sort.trim().toLowerCase();
+            default -> "due";
+        };
+    }
+
+    /** Comparator FlashcardResponse khớp thứ tự DB cho nhánh tìm kiếm in-memory (recency ≈ id DESC). */
+    private static Comparator<FlashcardResponse> responseComparator(String sortKey) {
+        return switch (sortKey) {
+            case "recent" -> Comparator.comparing(FlashcardResponse::flashcardId).reversed();
+            case "alpha" -> Comparator.comparing(
+                    FlashcardResponse::frontText, Comparator.nullsLast(Comparator.naturalOrder()));
+            case "level" -> Comparator.comparing(
+                            FlashcardResponse::jlptLevel, Comparator.nullsLast(Comparator.naturalOrder()))
+                    .thenComparing(FlashcardResponse::frontText, Comparator.nullsLast(Comparator.naturalOrder()));
+            default -> Comparator.comparing(
+                    FlashcardResponse::nextReviewDate, Comparator.nullsLast(Comparator.naturalOrder()));
+        };
     }
 
     @Transactional(readOnly = true)
@@ -764,6 +805,7 @@ public class FlashcardSrsService {
                 r.front(),
                 r.back(),
                 r.furigana(),
+                r.audioUrl(),
                 r.jlptLevel(),
                 Boolean.TRUE.equals(card.getIsSystem()),
                 card.getNextReviewDate(),

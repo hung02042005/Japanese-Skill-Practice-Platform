@@ -74,6 +74,11 @@ const NAV_TABS = [
 function UserDropdown({ user, streak, wordCount, daysThisMonth, onClose, onLogout }) {
   const navigate = useNavigate();
 
+  function handleAccount() {
+    onClose();
+    navigate('/profile');
+  }
+
   function handleProfile() {
     onClose();
     navigate('/progress');
@@ -146,6 +151,17 @@ function UserDropdown({ user, streak, wordCount, daysThisMonth, onClose, onLogou
 
       {/* ── Actions ── */}
       <div className="ud-actions">
+        <button type="button" className="ud-action-btn ud-action-btn--account" onClick={handleAccount}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2"/>
+            <path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+          Hồ sơ của tôi
+          <svg className="ud-action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+
         <button type="button" className="ud-action-btn ud-action-btn--profile" onClick={handleProfile}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>

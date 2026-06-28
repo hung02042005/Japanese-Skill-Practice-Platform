@@ -2,6 +2,7 @@
 package com.jlpt.feature.flashcard.controller;
 
 import com.jlpt.feature.flashcard.dto.AddFlashcardRequest;
+import com.jlpt.feature.flashcard.dto.BulkDeleteRequest;
 import com.jlpt.feature.flashcard.dto.DeckCreateRequest;
 import com.jlpt.feature.flashcard.dto.DeckSummaryResponse;
 import com.jlpt.feature.flashcard.dto.DeckUpdateRequest;
@@ -73,11 +74,13 @@ public class StudentFlashcardController {
             @RequestParam(required = false) Long deckId,
             @RequestParam(defaultValue = "false") boolean dueOnly,
             @RequestParam(required = false) String q,
-            // Không set sort ở đây: JPQL các query findAllByDeck/findAllDue… đã có ORDER BY
-            // f.nextReviewDate ASC. Thêm sort của Pageable sẽ sinh 2 mệnh đề ORDER BY → SQL Server lỗi 500.
+            // sortBy=due|recent|alpha|level (3B). Tên param KHÔNG được là "sort" — đó là tham số dành
+            // riêng cho Pageable: Spring sẽ tự thêm "ORDER BY f.<sort>" vào JPQL vốn đã có ORDER BY →
+            // 2 mệnh đề ORDER BY → 500 (đúng cảnh báo cũ). Sort thật xử lý ở Service.
+            @RequestParam(name = "sortBy", required = false) String sortBy,
             @PageableDefault(size = 20) Pageable pageable) {
-        Page<FlashcardResponse> cards =
-                flashcardSrsService.getCards(userDetails.getStudentUser().getId(), deckId, dueOnly, q, pageable);
+        Page<FlashcardResponse> cards = flashcardSrsService.getCards(
+                userDetails.getStudentUser().getId(), deckId, dueOnly, q, sortBy, pageable);
         return ResponseEntity.ok(ApiResponse.success(cards));
     }
 
@@ -120,6 +123,14 @@ public class StudentFlashcardController {
             @PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         flashcardSrsService.deleteCard(userDetails.getStudentUser().getId(), id);
         return ResponseEntity.ok(ApiResponse.success("Đã gỡ thẻ khỏi sổ tay", null));
+    }
+
+    /** Gỡ hàng loạt thẻ khỏi sổ tay (3B). Trả số thẻ đã gỡ. */
+    @PostMapping("/flashcards/bulk-delete")
+    public ResponseEntity<ApiResponse<Integer>> bulkDelete(
+            @Valid @RequestBody BulkDeleteRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        int removed = flashcardSrsService.bulkDelete(userDetails.getStudentUser().getId(), request.ids());
+        return ResponseEntity.ok(ApiResponse.success("Đã gỡ " + removed + " từ khỏi sổ tay", removed));
     }
 
     @PostMapping("/flashcards")

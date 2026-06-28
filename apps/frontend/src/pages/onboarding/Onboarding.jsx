@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../../store/hooks';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { setUser } from '../../store/slices/authSlice';
 import AppLogo from '../../components/common/AppLogo';
 import SakuChan from '../../components/auth/SakuChan';
 import { submitOnboarding } from '../../api/studentService';
@@ -24,6 +25,7 @@ const SKILL_OPTIONS = [
 
 export default function Onboarding() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { user } = useAppSelector((s) => s.auth);
 
   const [step,         setStep]   = useState(1);
@@ -48,7 +50,9 @@ export default function Onboarding() {
     if (focusSkills.length === 0) return;
     setSubmit(true);
     try {
-      await submitOnboarding({ jlptGoal, dailyMinutes, focusSkills });
+      const updated = await submitOnboarding({ jlptGoal, dailyMinutes, focusSkills });
+      // Đồng bộ user (currentJlptLevel mới + onboardingCompleted=true) để Dashboard hiển thị đúng cấp độ.
+      dispatch(setUser(updated));
       navigate('/dashboard', { replace: true });
     } catch {
       /* ignore — hiếm lỗi ở bước này */

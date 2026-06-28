@@ -156,6 +156,42 @@
 .dct-save-btn--saved { background: var(--color-secondary); color: #fff; border-color: var(--color-secondary); cursor: default; }
 .dct-save-btn:disabled:not(.dct-save-btn--saved) { opacity: 0.6; cursor: default; }
 
+/* 3A: lịch sử tra cứu */
+.dct-history { margin-bottom: 8px; }
+.dct-history-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.dct-history-title { font-size: 14px; font-weight: 700; color: var(--color-text-sub); }
+.dct-history-clear {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-base); font-size: 13px; font-weight: 600; color: var(--color-secondary);
+}
+.dct-history-clear:hover { text-decoration: underline; }
+.dct-history-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.dct-history-chip {
+  height: 34px; padding: 0 14px; border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-border); background: var(--color-card);
+  font-family: var(--font-base); font-size: 14px; color: var(--color-text); cursor: pointer;
+  transition: all var(--transition);
+}
+.dct-history-chip:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-bg); }
+
+/* 3A: nút nghe phát âm trong kết quả từ vựng */
+.dct-audio-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-primary-bg);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: filter var(--transition);
+}
+.dct-audio-btn:hover { filter: brightness(0.95); }
+
 /* ── Detail panel ── */
 .dct-detail {
   display: flex;

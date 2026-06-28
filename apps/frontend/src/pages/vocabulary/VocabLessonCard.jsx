@@ -1,4 +1,5 @@
 import SakuChan from '../../components/auth/SakuChan';
+import { ProgressBar } from '../../components/common/ProgressBar';
 
 /* Arrow → */
 function ArrowIcon({ size = 20 }) {
@@ -14,11 +15,15 @@ function ArrowIcon({ size = 20 }) {
  * Truy cập tự do: không khoá VIP, mọi bài đều mở.
  *
  * Props:
- *   lesson  — { topicId, slug, titleJp, subtitleEn, status, thumbnail }
+ *   lesson  — { topicId, slug, titleJp, subtitleEn, status, thumbnail,
+ *              totalWords, learnedCount, masteredCount }
  *   onOpen  — (lesson) => void  (mở phiên flashcard ôn tập của chủ đề)
  */
 export default function VocabLessonCard({ lesson, onOpen }) {
-  const { titleJp, subtitleEn, status, thumbnail } = lesson;
+  const {
+    titleJp, subtitleEn, status, thumbnail,
+    totalWords = 0, learnedCount = 0, masteredCount = 0,
+  } = lesson;
 
   const isActive = status === 'active';
   const stateClass = isActive ? 'vh-lesson--active' : 'vh-lesson--available';
@@ -45,6 +50,20 @@ export default function VocabLessonCard({ lesson, onOpen }) {
       <span className="vh-lesson-content">
         {titleJp && <span className="vh-lesson-title" lang="ja">{titleJp}</span>}
         {subtitleEn && <span className="vh-lesson-sub">{subtitleEn}</span>}
+        {totalWords > 0 && (
+          <span className="vh-lesson-progress">
+            <ProgressBar
+              value={learnedCount}
+              max={totalWords}
+              height={6}
+              label={`Đã học ${learnedCount}/${totalWords} từ`}
+            />
+            <span className="vh-lesson-progress-text">
+              {learnedCount}/{totalWords} đã học
+              {masteredCount > 0 && ` · ${masteredCount} thành thạo`}
+            </span>
+          </span>
+        )}
       </span>
 
       <span className="vh-lesson-trail" aria-hidden="true">

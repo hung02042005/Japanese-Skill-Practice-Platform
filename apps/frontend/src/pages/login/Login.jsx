@@ -36,7 +36,8 @@ function Login() {
           navigate('/staff');
         }
       } else {
-        navigate('/dashboard');
+        // Student chưa hoàn thành onboarding → vào màn onboarding trước.
+        navigate(res.user?.onboardingCompleted === false ? '/onboarding' : '/dashboard');
       }
     } catch {
       /* lỗi API đã được set vào Redux state */
@@ -45,8 +46,8 @@ function Login() {
 
   async function handleGoogleSuccess(credentialResponse) {
     try {
-      await dispatch(loginWithGoogleThunk(credentialResponse.credential)).unwrap();
-      navigate('/dashboard');
+      const user = await dispatch(loginWithGoogleThunk(credentialResponse.credential)).unwrap();
+      navigate(user?.onboardingCompleted === false ? '/onboarding' : '/dashboard');
     } catch {
       /* lỗi đã set vào Redux state */
     }

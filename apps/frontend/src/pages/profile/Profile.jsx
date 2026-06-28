@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../store/hooks';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { setUser } from '../../store/slices/authSlice';
 import TopNav from '../../components/layout/TopNav';
 import { UserAvatar } from '../../components/common/UserAvatar';
 import { JlptBadge } from '../../components/common/Badges';
@@ -13,15 +14,15 @@ function validate(form) {
   if (!form.fullName.trim()) errs.fullName = 'Tên không được để trống';
   if (form.fullName.trim().length > 100) errs.fullName = 'Tên tối đa 100 ký tự';
   if (form.phone && !/^\d{9,15}$/.test(form.phone)) errs.phone = 'Số điện thoại không hợp lệ';
-  if (form.bio.length > 500) errs.bio = 'Bio tối đa 500 ký tự';
   return errs;
 }
 
 export default function Profile() {
   const { user }   = useAppSelector((s) => s.auth);
+  const dispatch   = useAppDispatch();
   const { toasts, addToast, removeToast } = useToast();
 
-  const [form, setForm] = useState({ fullName: '', phone: '', dateOfBirth: '', bio: '' });
+  const [form, setForm] = useState({ fullName: '', phone: '' });
   const [errors,       setErrors]  = useState({});
   const [isSaving,     setSaving]  = useState(false);
   const [isLoading,    setLoading] = useState(true);
@@ -31,10 +32,8 @@ export default function Profile() {
   useEffect(() => {
     if (user) {
       setForm({
-        fullName:    user.fullName    ?? '',
-        phone:       user.phone       ?? '',
-        dateOfBirth: user.dateOfBirth ?? '',
-        bio:         user.bio         ?? '',
+        fullName: user.fullName ?? '',
+        phone:    user.phone    ?? '',
       });
       setPreview(user.avatarUrl ?? null);
       setLoading(false);
@@ -63,8 +62,12 @@ export default function Profile() {
 
     setSaving(true);
     try {
+      // Upload avatar trước (persist avatarUrl), rồi updateProfile (BE đã guard không ghi đè avatar).
       if (avatarFile) await uploadAvatar(avatarFile);
-      await updateProfile(form);
+      const updated = await updateProfile(form);
+      // Đồng bộ store để TopNav/sidebar cập nhật tên + avatar ngay, không cần reload.
+      dispatch(setUser(updated));
+      setAvatar(null);
       addToast('success', 'Hồ sơ đã được cập nhật!');
     } catch (err) {
       addToast('error', err?.response?.data?.message ?? 'Không thể lưu. Thử lại sau.');
@@ -111,7 +114,7 @@ export default function Profile() {
             </div>
             <div className="prf-sidebar-name">{form.fullName || '—'}</div>
             <div className="prf-sidebar-email">{user?.email}</div>
-            <JlptBadge level={user?.jlptLevel ?? 'N5'} />
+            <JlptBadge level={user?.currentJlptLevel ?? 'N5'} />
             <div className="prf-sidebar-joined">
               Thành viên từ{' '}
               {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('vi-VN') : '—'}
@@ -152,35 +155,6 @@ export default function Profile() {
             </div>
 
             <div className="prf-field">
-              <label className="prf-label" htmlFor="prf-dob">Ngày sinh</label>
-              <input
-                id="prf-dob"
-                className="prf-input"
-                type="date"
-                value={form.dateOfBirth}
-                onChange={(e) => handleChange('dateOfBirth', e.target.value)}
-              />
-            </div>
-
-            <div className="prf-field">
-              <label className="prf-label" htmlFor="prf-bio">
-                Bio
-                <span className="prf-char-count">{form.bio.length}/500</span>
-              </label>
-              <textarea
-                id="prf-bio"
-                className={`prf-textarea${errors.bio ? ' prf-input--err' : ''}`}
-                rows={4}
-                value={form.bio}
-                onChange={(e) => handleChange('bio', e.target.value)}
-                placeholder="Giới thiệu về bản thân..."
-                aria-invalid={!!errors.bio}
-                aria-describedby={errors.bio ? 'prf-bio-err' : undefined}
-              />
-              {errors.bio && <span id="prf-bio-err" className="prf-field-error">{errors.bio}</span>}
-            </div>
-
-            <div className="prf-field">
               <label className="prf-label" htmlFor="prf-email">
                 Email
                 <span className="prf-readonly-badge">Không thể thay đổi</span>
@@ -195,17 +169,40 @@ export default function Profile() {
               />
             </div>
 
-            <Link to="/settings/password" className="prf-pwd-link">Đổi mật khẩu →</Link>
+            {/* ── Bảo mật ── */}
+            <div className="prf-security">
+              <div className="prf-security-info">
+                <span className="prf-security-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="4" y="11" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                </span>
+                <div>
+                  <div className="prf-security-title">Mật khẩu</div>
+                  <div className="prf-security-desc">Đổi mật khẩu đăng nhập của bạn</div>
+                </div>
+              </div>
+              <Link to="/settings/change-password" className="prf-security-btn">
+                Đổi mật khẩu
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Link>
+            </div>
 
-            <button
-              className="prf-save-btn"
-              onClick={handleSave}
-              disabled={isSaving}
-              aria-busy={isSaving}
-            >
-              {isSaving && <span className="prf-spinner prf-spinner--white" aria-hidden="true" />}
-              {isSaving ? 'Đang lưu…' : 'Lưu thay đổi'}
-            </button>
+            {/* ── Footer ── */}
+            <div className="prf-form-footer">
+              <button
+                className="prf-save-btn"
+                onClick={handleSave}
+                disabled={isSaving}
+                aria-busy={isSaving}
+              >
+                {isSaving && <span className="prf-spinner prf-spinner--white" aria-hidden="true" />}
+                {isSaving ? 'Đang lưu…' : 'Lưu thay đổi'}
+              </button>
+            </div>
           </section>
         </div>
       </main>
