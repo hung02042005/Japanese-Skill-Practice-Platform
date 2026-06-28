@@ -36,5 +36,8 @@ public class VocabHomeResponse {
         private String status; // "active" | "available" | "locked"
         private String thumbnail;
         private boolean vipOnly;
+        private long totalWords; // tổng số từ published của chủ đề (#5 — thanh tiến độ)
+        private long learnedCount; // số từ đã học (loại phantom 'learn' chưa ôn — 1D)
+        private long masteredCount; // số từ thành thạo (repetitionCount >= MASTERY_THRESHOLD)
     }
 }

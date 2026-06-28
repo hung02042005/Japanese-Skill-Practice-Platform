@@ -11,6 +11,7 @@ public record FlashcardResponse(
         String frontText,
         String meaning,
         String furigana,
+        String audioUrl,
         String jlptLevel,
         boolean isSystem,
         LocalDate nextReviewDate,

@@ -24,6 +24,21 @@ const TYPE_CHIPS = [
   { key: 'LESSON',     label: 'Bài học'  },
 ];
 
+// 3A: lịch sử tra cứu lưu localStorage (thuần FE — không gửi server).
+const HISTORY_KEY = 'sakuji.dict.history';
+const HISTORY_MAX = 8;
+function loadHistory() {
+  try {
+    const v = JSON.parse(localStorage.getItem(HISTORY_KEY));
+    return Array.isArray(v) ? v : [];
+  } catch {
+    return [];
+  }
+}
+function saveHistory(list) {
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list)); } catch { /* localStorage đầy/khoá → bỏ qua */ }
+}
+
 export default function Dictionary() {
   const navigate = useNavigate();
   const { toasts, addToast, removeToast } = useToast();
@@ -38,6 +53,7 @@ export default function Dictionary() {
   const [savingId,  setSavingId]  = useState(null);
   const [error,     setError]     = useState('');
   const [more,      setMore]      = useState({});     // 1B: { VOCABULARY: { items, page, hasMore, loading } }
+  const [history,   setHistory]   = useState(loadHistory); // 3A: lịch sử tra cứu
   const timerRef = useRef(null);
 
   const onQueryChange = useCallback((val) => {
@@ -48,6 +64,25 @@ export default function Dictionary() {
 
   useEffect(() => () => clearTimeout(timerRef.current), []);
 
+  // 3A: thêm từ khóa vừa tra vào lịch sử (mới nhất lên đầu, khử trùng, giới hạn HISTORY_MAX).
+  const pushHistory = useCallback((term) => {
+    const t = term.trim();
+    if (!t) return;
+    setHistory((prev) => {
+      const next = [t, ...prev.filter((x) => x.toLowerCase() !== t.toLowerCase())].slice(0, HISTORY_MAX);
+      saveHistory(next);
+      return next;
+    });
+  }, []);
+
+  const clearHistory = useCallback(() => { setHistory([]); saveHistory([]); }, []);
+
+  const runHistorySearch = useCallback((term) => {
+    setQuery(term);
+    clearTimeout(timerRef.current);
+    setDebounced(term);
+  }, []);
+
   useEffect(() => {
     if (!debounced) { setResults(null); setError(''); setMore({}); return; }
     let active = true;
@@ -57,7 +92,7 @@ export default function Dictionary() {
       setMore({});   // 1B: mỗi lần tìm mới reset các trang "Xem thêm" đã nạp
       try {
         const data = await searchDictionary(debounced, undefined, activeType || undefined);
-        if (active) setResults(data ?? {});
+        if (active) { setResults(data ?? {}); pushHistory(debounced); }
       } catch {
         if (active) setError('Không thể tìm kiếm. Thử lại sau.');
       } finally {
@@ -65,7 +100,7 @@ export default function Dictionary() {
       }
     })();
     return () => { active = false; };
-  }, [debounced, activeType]);
+  }, [debounced, activeType, pushHistory]);
 
   // 1B: nạp thêm 1 trang cho riêng một loại (VOCABULARY/KANJI/GRAMMAR/LESSON).
   async function handleMore(typeUpper) {
@@ -203,12 +238,34 @@ export default function Dictionary() {
             {error && <div className="dct-error" role="alert">{error}</div>}
 
             {!debounced && !error && (
-              <EmptyState
-                title="Gõ để tra cứu"
-                subtitle="Tìm trong kho từ vựng, Kanji, ngữ pháp của SakuJi."
-                mascotVariant="thinking"
-                mascotSize={140}
-              />
+              <>
+                {history.length > 0 && (
+                  <div className="dct-history">
+                    <div className="dct-history-head">
+                      <span className="dct-history-title">Tra cứu gần đây</span>
+                      <button className="dct-history-clear" onClick={clearHistory}>Xóa lịch sử</button>
+                    </div>
+                    <div className="dct-history-chips">
+                      {history.map((h) => (
+                        <button
+                          key={h}
+                          className="dct-history-chip"
+                          onClick={() => runHistorySearch(h)}
+                          lang="ja"
+                        >
+                          {h}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <EmptyState
+                  title="Gõ để tra cứu"
+                  subtitle="Tìm trong kho từ vựng, Kanji, ngữ pháp của SakuJi."
+                  mascotVariant="thinking"
+                  mascotSize={140}
+                />
+              </>
             )}
 
             {isLoading && (

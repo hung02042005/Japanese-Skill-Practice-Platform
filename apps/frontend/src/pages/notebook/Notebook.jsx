@@ -8,6 +8,7 @@ import {
   getFlashcardDecks,
   getFlashcardsByDeck,
   removeFlashcardCard,
+  bulkDeleteFlashcards,
 } from '../../api/studentService';
 import './Notebook.css';
 
@@ -18,6 +19,12 @@ import './Notebook.css';
  */
 const REVIEW_DECK_NAME = 'Từ cần ôn lại';
 const PAGE_SIZE = 30;   // 1A: tải theo trang + cuộn vô hạn, thay vì cứng 200 (mất từ khi >200)
+const SORT_OPTIONS = [  // 3B: thứ tự hiển thị trong sổ
+  { value: 'due',    label: 'Lịch ôn' },
+  { value: 'recent', label: 'Mới thêm' },
+  { value: 'alpha',  label: 'A → Z' },
+  { value: 'level',  label: 'Cấp độ' },
+];
 
 export default function Notebook() {
   const navigate = useNavigate();
@@ -29,10 +36,15 @@ export default function Notebook() {
   const [deckDue,   setDeckDue]   = useState(0);
   const [words,     setWords]   = useState([]);
   const [filter,    setFilter]  = useState('all');   // 'all' | 'due'
+  const [sort,      setSort]    = useState('due');   // 3B: due | recent | alpha | level
   const [query,     setQuery]   = useState('');
   const [debounced, setDebounced] = useState('');    // từ khóa đã debounce → gửi server
   const [isLoading, setLoading] = useState(true);
   const [confirmDel, setConfirm] = useState(null);   // { flashcardId, label }
+  const [selectMode, setSelectMode] = useState(false);      // 3B: bật chế độ chọn nhiều
+  const [selected,   setSelected]   = useState(() => new Set()); // flashcardId đã chọn
+  const [bulkConfirm, setBulkConfirm] = useState(false);    // mở hộp xác nhận gỡ hàng loạt
+  const [bulkBusy,    setBulkBusy]    = useState(false);
   const [error,     setError]   = useState('');
   const [page,      setPage]    = useState(0);        // 1A: trang hiện tại đã tải
   const [hasMore,   setHasMore] = useState(false);    // còn trang sau không
@@ -61,11 +73,11 @@ export default function Notebook() {
 
   // Tải thẻ theo trang — tìm kiếm + lọc "đến hạn" chạy ở server (SPEC-notebook): không bỏ sót thẻ.
   // append=true → nối thêm trang kế (cuộn vô hạn); ngược lại thay danh sách (đổi filter/từ khóa).
-  const loadCards = useCallback(async (id, q, dueOnly, pageNum = 0, append = false) => {
+  const loadCards = useCallback(async (id, q, dueOnly, sortKey, pageNum = 0, append = false) => {
     if (!id) { setWords([]); setHasMore(false); setLoading(false); return; }
     if (append) setLoadingMore(true); else setLoading(true);
     try {
-      const res = await getFlashcardsByDeck(id, pageNum, PAGE_SIZE, q, dueOnly);
+      const res = await getFlashcardsByDeck(id, pageNum, PAGE_SIZE, q, dueOnly, sortKey);
       const content = res.content ?? [];
       setWords((prev) => (append ? [...prev, ...content] : content));
       setHasMore(!res.last);
@@ -80,9 +92,9 @@ export default function Notebook() {
 
   // Thử lại: nếu chưa có deck thì tải lại deck, ngược lại tải lại thẻ.
   const reload = useCallback(() => {
-    if (deckId) loadCards(deckId, debounced, filter === 'due');
+    if (deckId) loadCards(deckId, debounced, filter === 'due', sort);
     else loadDeck();
-  }, [deckId, debounced, filter, loadCards, loadDeck]);
+  }, [deckId, debounced, filter, sort, loadCards, loadDeck]);
 
   useEffect(() => { loadDeck(); }, [loadDeck]);
 
@@ -94,16 +106,16 @@ export default function Notebook() {
   }, []);
   useEffect(() => () => clearTimeout(timerRef.current), []);
 
-  // Tải/làm mới thẻ (trang 0) khi deck sẵn sàng, từ khóa hoặc bộ lọc thay đổi.
+  // Tải/làm mới thẻ (trang 0) khi deck sẵn sàng, từ khóa, bộ lọc hoặc thứ tự thay đổi.
   useEffect(() => {
-    if (deckReady) loadCards(deckId, debounced, filter === 'due', 0, false);
-  }, [deckReady, deckId, debounced, filter, loadCards]);
+    if (deckReady) loadCards(deckId, debounced, filter === 'due', sort, 0, false);
+  }, [deckReady, deckId, debounced, filter, sort, loadCards]);
 
   // Cuộn vô hạn: khi mốc cuối danh sách lọt vào khung nhìn thì tải trang kế.
   const loadMore = useCallback(() => {
     if (!deckId || isLoading || loadingMore || !hasMore) return;
-    loadCards(deckId, debounced, filter === 'due', page + 1, true);
-  }, [deckId, isLoading, loadingMore, hasMore, page, debounced, filter, loadCards]);
+    loadCards(deckId, debounced, filter === 'due', sort, page + 1, true);
+  }, [deckId, isLoading, loadingMore, hasMore, page, debounced, filter, sort, loadCards]);
 
   useEffect(() => {
     const node = sentinelRef.current;
@@ -123,6 +135,12 @@ export default function Notebook() {
     try {
       await removeFlashcardCard(card.flashcardId);
       setWords((prev) => prev.filter((w) => w.flashcardId !== card.flashcardId));
+      setSelected((prev) => {
+        if (!prev.has(card.flashcardId)) return prev;
+        const next = new Set(prev);
+        next.delete(card.flashcardId);
+        return next;
+      });
       setDeckTotal((n) => Math.max(0, n - 1));
       if (card.isDue) setDeckDue((n) => Math.max(0, n - 1));
       setConfirm(null);
@@ -135,6 +153,47 @@ export default function Notebook() {
   function handleStudy() {
     if (!deckId || deckTotal === 0) return;
     navigate(`/vocabulary/flashcard?deckId=${deckId}`);
+  }
+
+  // ── Chọn nhiều + gỡ hàng loạt (3B) ──────────────────────────────────────────
+  function toggleSelect(id) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  function exitSelectMode() {
+    setSelectMode(false);
+    setSelected(new Set());
+  }
+
+  const allSelected = words.length > 0 && selected.size === words.length;
+  function toggleSelectAll() {
+    setSelected(allSelected ? new Set() : new Set(words.map((w) => w.flashcardId)));
+  }
+
+  async function handleBulkDelete() {
+    const ids = [...selected];
+    if (ids.length === 0) return;
+    setBulkBusy(true);
+    try {
+      const removed = await bulkDeleteFlashcards(ids);
+      const idSet = new Set(ids);
+      // Trừ "đến hạn" theo đúng số thẻ due bị gỡ (đếm trong danh sách đang hiển thị).
+      const dueRemoved = words.filter((w) => idSet.has(w.flashcardId) && w.isDue).length;
+      setWords((prev) => prev.filter((w) => !idSet.has(w.flashcardId)));
+      setDeckTotal((n) => Math.max(0, n - ids.length));
+      setDeckDue((n) => Math.max(0, n - dueRemoved));
+      setBulkConfirm(false);
+      exitSelectMode();
+      addToast('success', `Đã gỡ ${removed} từ khỏi sổ tay.`);
+    } catch {
+      addToast('error', 'Không thể gỡ các từ đã chọn. Thử lại.');
+    } finally {
+      setBulkBusy(false);
+    }
   }
 
   return (
@@ -195,7 +254,48 @@ export default function Notebook() {
               aria-label="Tìm trong sổ tay"
             />
           </div>
+          <label className="ntb-sort">
+            <span className="ntb-sort-label">Sắp xếp:</span>
+            <select
+              className="ntb-sort-select"
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              aria-label="Sắp xếp danh sách từ"
+            >
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            className={`ntb-select-toggle${selectMode ? ' ntb-select-toggle--on' : ''}`}
+            onClick={() => (selectMode ? exitSelectMode() : setSelectMode(true))}
+            disabled={deckTotal === 0}
+            aria-pressed={selectMode}
+          >
+            {selectMode ? 'Xong' : 'Chọn'}
+          </button>
         </div>
+
+        {/* Thanh thao tác hàng loạt (3B) */}
+        {selectMode && (
+          <div className="ntb-bulkbar" role="region" aria-label="Thao tác hàng loạt">
+            <label className="ntb-bulk-all">
+              <input type="checkbox" checked={allSelected} onChange={toggleSelectAll} />
+              Chọn tất cả ({words.length})
+            </label>
+            <span className="ntb-bulk-count">Đã chọn {selected.size}</span>
+            <button
+              type="button"
+              className="ntb-btn ntb-btn--danger"
+              onClick={() => setBulkConfirm(true)}
+              disabled={selected.size === 0}
+            >
+              Gỡ {selected.size > 0 ? `(${selected.size})` : ''}
+            </button>
+          </div>
+        )}
 
         {/* Error */}
         {error && (
@@ -242,6 +342,9 @@ export default function Notebook() {
               <NotebookWordCard
                 key={w.flashcardId}
                 word={w}
+                selectable={selectMode}
+                selected={selected.has(w.flashcardId)}
+                onToggleSelect={() => toggleSelect(w.flashcardId)}
                 onRemove={() => setConfirm({ flashcardId: w.flashcardId, label: w.frontText })}
               />
             ))}
@@ -269,6 +372,30 @@ export default function Notebook() {
             <div className="ntb-modal-footer">
               <button className="ntb-modal-cancel" onClick={() => setConfirm(null)}>Hủy</button>
               <button className="ntb-modal-danger" onClick={() => handleRemove(confirmDel)}>Gỡ</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm gỡ hàng loạt (3B) */}
+      {bulkConfirm && (
+        <div
+          className="ntb-modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Xác nhận gỡ nhiều từ"
+          onClick={(e) => { if (e.target === e.currentTarget && !bulkBusy) setBulkConfirm(false); }}
+        >
+          <div className="ntb-modal">
+            <h2 className="ntb-modal-title">Gỡ {selected.size} từ khỏi sổ tay</h2>
+            <p className="ntb-modal-body">
+              Gỡ <strong>{selected.size}</strong> từ đã chọn khỏi sổ tay? Các từ này sẽ không còn trong danh sách cần ôn.
+            </p>
+            <div className="ntb-modal-footer">
+              <button className="ntb-modal-cancel" onClick={() => setBulkConfirm(false)} disabled={bulkBusy}>Hủy</button>
+              <button className="ntb-modal-danger" onClick={handleBulkDelete} disabled={bulkBusy} aria-busy={bulkBusy}>
+                {bulkBusy ? 'Đang gỡ…' : `Gỡ ${selected.size} từ`}
+              </button>
             </div>
           </div>
         </div>

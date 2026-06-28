@@ -161,10 +161,23 @@ export async function getFlashcardDecks() {
   return res.data.data;
 }
 
-export async function getFlashcardsByDeck(deckId, page = 0, size = 50, q, dueOnly = false) {
+export async function getFlashcardsByDeck(deckId, page = 0, size = 50, q, dueOnly = false, sort) {
   const res = await api.get('/flashcards', {
-    params: { deckId, page, size, q: q || undefined, dueOnly: dueOnly || undefined },
+    params: {
+      deckId, page, size,
+      q: q || undefined,
+      dueOnly: dueOnly || undefined,
+      // Tên 'sortBy' (KHÔNG phải 'sort'): 'sort' là param riêng của Spring Pageable → trùng sẽ sinh
+      // 2 mệnh đề ORDER BY ở backend (500). BE đọc @RequestParam("sortBy").
+      sortBy: sort && sort !== 'due' ? sort : undefined,
+    },
   });
+  return res.data.data;
+}
+
+// Gỡ hàng loạt thẻ khỏi sổ tay (3B). ids: number[] → trả số thẻ đã gỡ.
+export async function bulkDeleteFlashcards(ids) {
+  const res = await api.post('/flashcards/bulk-delete', { ids });
   return res.data.data;
 }
 

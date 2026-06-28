@@ -1,6 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student;
 
+import com.jlpt.feature.flashcard.repository.FlashcardRepository;
 import com.jlpt.feature.learning.Kanji;
 import com.jlpt.feature.learning.VocabularyRepository;
 import com.jlpt.feature.learning.VocabularyTopic;
@@ -12,7 +13,9 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +32,14 @@ public class VocabHomeService {
 
     private static final int WEEK_DAYS = 7;
 
+    /** Ngưỡng "thành thạo" một từ: số lần lặp SM-2 thành công liên tiếp (#5, quyết định đã chốt). */
+    private static final int MASTERY_THRESHOLD = 3;
+
     private final StudentUserRepository studentUserRepository;
     private final VocabularyTopicRepository topicRepository;
     private final VocabularyRepository vocabularyRepository;
     private final StudentContentProgressRepository progressRepository;
+    private final FlashcardRepository flashcardRepository;
 
     @Transactional(readOnly = true)
     public VocabHomeResponse getVocabHome(Long studentId) {
@@ -57,6 +64,17 @@ public class VocabHomeService {
         int streak = student.getCurrentStreak() != null ? student.getCurrentStreak() : 0;
 
         List<VocabularyTopic> topics = topicRepository.findPublishedByLevel(level, Kanji.ContentStatus.PUBLISHED);
+
+        // Đếm "đã học"/"thành thạo" theo chủ đề cho thanh tiến độ (#5) — 2 query batched, tránh N+1.
+        List<Long> topicIds = topics.stream().map(VocabularyTopic::getId).toList();
+        Map<Long, Long> learnedByTopic = topicIds.isEmpty()
+                ? Map.of()
+                : toCountMap(flashcardRepository.countLearnedVocabByTopics(
+                        studentId, Kanji.ContentStatus.PUBLISHED, topicIds));
+        Map<Long, Long> masteredByTopic = topicIds.isEmpty()
+                ? Map.of()
+                : toCountMap(flashcardRepository.countMasteredVocabByTopics(
+                        studentId, Kanji.ContentStatus.PUBLISHED, topicIds, MASTERY_THRESHOLD));
 
         List<VocabHomeResponse.LessonItem> lessons = new ArrayList<>(topics.size());
         boolean activeAssigned = false;
@@ -88,6 +106,9 @@ public class VocabHomeService {
                     .status(status)
                     .thumbnail(null)
                     .vipOnly(false)
+                    .totalWords(total)
+                    .learnedCount(learnedByTopic.getOrDefault(topic.getId(), 0L))
+                    .masteredCount(masteredByTopic.getOrDefault(topic.getId(), 0L))
                     .build());
         }
 
@@ -99,6 +120,15 @@ public class VocabHomeService {
                 .subscription("FREE")
                 .lessons(lessons)
                 .build();
+    }
+
+    /** Gom kết quả {@code [topicId, count]} của query GROUP BY thành Map topicId → count. */
+    private static Map<Long, Long> toCountMap(List<Object[]> rows) {
+        Map<Long, Long> map = new HashMap<>(rows.size());
+        for (Object[] r : rows) {
+            map.put(((Number) r[0]).longValue(), ((Number) r[1]).longValue());
+        }
+        return map;
     }
 
     /**

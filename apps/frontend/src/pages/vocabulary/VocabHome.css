@@ -145,6 +145,23 @@
   text-overflow: ellipsis;
 }
 
+/* ── Tiến độ học/thành thạo (#5) ── */
+.vh-lesson-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 5px;
+}
+.vh-lesson-progress-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vh-lesson--active .vh-lesson-progress-text { color: rgba(255, 255, 255, 0.9); }
+
 /* ── Trailing ── */
 .vh-lesson-trail {
   flex-shrink: 0;

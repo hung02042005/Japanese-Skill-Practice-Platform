@@ -178,6 +178,53 @@
 /* 1A: mốc kích hoạt cuộn vô hạn (vô hình) */
 .ntb-sentinel { height: 1px; }
 
+/* ── 3B: sắp xếp + chọn nhiều ── */
+.ntb-sort { display: inline-flex; align-items: center; gap: 6px; }
+.ntb-sort-label { font-size: 13px; font-weight: 600; color: var(--color-text-sub); white-space: nowrap; }
+.ntb-sort-select {
+  height: 38px; padding: 0 10px; border-radius: var(--radius-md, 8px);
+  border: 1.5px solid var(--color-border); background: var(--color-card);
+  font-family: var(--font-base); font-size: 14px; color: var(--color-text); cursor: pointer;
+}
+.ntb-sort-select:focus { outline: none; border-color: var(--color-primary); box-shadow: var(--focus-ring); }
+
+.ntb-select-toggle {
+  height: 38px; padding: 0 16px; border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-border); background: var(--color-card);
+  font-family: var(--font-base); font-size: 14px; font-weight: 600; color: var(--color-text-sub); cursor: pointer;
+}
+.ntb-select-toggle:hover:not(:disabled) { background: var(--color-bg); color: var(--color-text); }
+.ntb-select-toggle--on { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-bg); }
+.ntb-select-toggle:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.ntb-bulkbar {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  margin-top: 12px; padding: 10px 16px;
+  background: var(--color-primary-bg); border-radius: var(--radius-lg);
+}
+.ntb-bulk-all { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--color-text); cursor: pointer; }
+.ntb-bulk-all input { width: 18px; height: 18px; cursor: pointer; }
+.ntb-bulk-count { font-size: 13px; font-weight: 600; color: var(--color-text-sub); }
+.ntb-btn--danger { background: var(--color-error); color: #fff; margin-left: auto; height: 38px; padding: 0 18px; }
+.ntb-btn--danger:hover:not(:disabled) { filter: brightness(1.07); }
+.ntb-btn--danger:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* 3A: nút nghe phát âm */
+.nwc-audio {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border: none; border-radius: var(--radius-full);
+  background: var(--color-primary-bg); cursor: pointer; font-size: 13px; line-height: 1;
+  transition: filter var(--transition);
+}
+.nwc-audio:hover { filter: brightness(0.95); }
+
+/* Thẻ có ô chọn (override .nwc-card thành flex row) */
+.nwc-card { display: flex; align-items: flex-start; gap: 14px; }
+.nwc-main { flex: 1; min-width: 0; }
+.nwc-card--selected { outline: 2px solid var(--color-primary); outline-offset: -1px; }
+.nwc-select { display: flex; align-items: center; padding-top: 4px; }
+.nwc-select input { width: 18px; height: 18px; cursor: pointer; }
+
 @media (prefers-reduced-motion: reduce) {
   .ntb-page * { animation: none !important; transition-duration: 0ms !important; }
 }
