@@ -169,17 +169,40 @@ export default function Profile() {
               />
             </div>
 
-            <Link to="/settings/password" className="prf-pwd-link">Đổi mật khẩu →</Link>
+            {/* ── Bảo mật ── */}
+            <div className="prf-security">
+              <div className="prf-security-info">
+                <span className="prf-security-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="4" y="11" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                </span>
+                <div>
+                  <div className="prf-security-title">Mật khẩu</div>
+                  <div className="prf-security-desc">Đổi mật khẩu đăng nhập của bạn</div>
+                </div>
+              </div>
+              <Link to="/settings/change-password" className="prf-security-btn">
+                Đổi mật khẩu
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Link>
+            </div>
 
-            <button
-              className="prf-save-btn"
-              onClick={handleSave}
-              disabled={isSaving}
-              aria-busy={isSaving}
-            >
-              {isSaving && <span className="prf-spinner prf-spinner--white" aria-hidden="true" />}
-              {isSaving ? 'Đang lưu…' : 'Lưu thay đổi'}
-            </button>
+            {/* ── Footer ── */}
+            <div className="prf-form-footer">
+              <button
+                className="prf-save-btn"
+                onClick={handleSave}
+                disabled={isSaving}
+                aria-busy={isSaving}
+              >
+                {isSaving && <span className="prf-spinner prf-spinner--white" aria-hidden="true" />}
+                {isSaving ? 'Đang lưu…' : 'Lưu thay đổi'}
+              </button>
+            </div>
           </section>
         </div>
       </main>
