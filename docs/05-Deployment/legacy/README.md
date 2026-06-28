@@ -444,8 +444,8 @@ apps/backend/src/main/resources/db/migration/
 ### Khởi Tạo Database Thủ Công
 
 ```bash
-# Chạy file init nếu cần reset từ đầu
-sqlcmd -S localhost -U sa -P <password> -i database/init.sql
+# Schema do Flyway tự áp dụng khi app khởi động; chạy tay file này nếu cần reset từ đầu
+sqlcmd -S localhost -U sa -P <password> -i apps/backend/src/main/resources/db/migration/V1__init_schema.sql
 ```
 
 ### Backup Database (Production)

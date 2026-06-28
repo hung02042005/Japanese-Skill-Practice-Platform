@@ -2,7 +2,7 @@
 
 > **Mã UC:** UC-25 · **Module:** Learning & Content · **Actor chính:** Staff
 > **Chuẩn:** SDD / Spec-Kit (8 thành phần) · **Văn phong yêu cầu:** EARS
-> **Tham chiếu:** `CONSTITUTION.md`, `AGENTS.md §6/§7`, `CLAUDE.md` (Learning & Content Module), `database/init.sql` (`grammar_points`, `lessons`, `staff_users`)
+> **Tham chiếu:** `CONSTITUTION.md`, `AGENTS.md §6/§7`, `CLAUDE.md` (Learning & Content Module), `apps/backend/src/main/resources/db/migration/V1__init_schema.sql` (`grammar_points`, `lessons`, `staff_users`)
 > **Ngày tạo:** 2026-06-12
 
 ---
@@ -11,7 +11,7 @@
 
 Tuân `AGENTS.md §9.1` (spec không khớp → nêu rõ, không tự đoán):
 
-1. **Không tồn tại bảng `courses`** trong `init.sql`. Nội dung ngữ pháp chỉ liên kết tới `lessons` qua `grammar_points.lesson_id`. "Course" được đưa vào *Out of Scope* (§9).
+1. **Không tồn tại bảng `courses`** trong schema (`V1__init_schema.sql`). Nội dung ngữ pháp chỉ liên kết tới `lessons` qua `grammar_points.lesson_id`. "Course" được đưa vào *Out of Scope* (§9).
 2. **Tên cột thực tế khác đề bài:** `structure` (≈ title/pattern), `usage_explanation` (≈ explanation), `example_sentence_jp/vi` (≈ example). Spec dùng đúng tên cột DB và ghi chú ánh xạ ở §5.
 
 ---
@@ -135,7 +135,7 @@ Cho phép Staff **tạo, xem, chỉnh sửa, liên kết và gửi duyệt** cá
 
 ## 5. Data Model
 
-### 5.1. Bảng `grammar_points` (nguồn: `init.sql`, không thay đổi schema)
+### 5.1. Bảng `grammar_points` (nguồn: `V1__init_schema.sql`, không thay đổi schema)
 
 | Cột | Kiểu | Null | Ràng buộc / Ghi chú | Ánh xạ đề bài |
 |-----|------|------|---------------------|----------------|

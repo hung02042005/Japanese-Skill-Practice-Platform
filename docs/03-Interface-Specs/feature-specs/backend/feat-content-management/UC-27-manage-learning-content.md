@@ -8,7 +8,7 @@
 
 ---
 
-> ℹ️ **GHI CHÚ MÔ HÌNH DỮ LIỆU:** Hệ thống **không có bảng `courses` riêng**. Đơn vị học liệu (cả cấp "khóa học" lẫn "bài giảng") được biểu diễn bằng **một bảng `lessons` duy nhất** (`database/init.sql`, dòng 160). Vì vậy mọi yêu cầu thao tác trên "course" trong mô tả gốc đều ánh xạ về bảng `lessons` qua nhóm endpoint `/api/staff/lessons`. UC-27 quản lý 3 loại học liệu thực tế: **lesson (`lessons`)**, **vocabulary (`vocabulary`)**, **kanji (`kanji`)**.
+> ℹ️ **GHI CHÚ MÔ HÌNH DỮ LIỆU:** Hệ thống **không có bảng `courses` riêng**. Đơn vị học liệu (cả cấp "khóa học" lẫn "bài giảng") được biểu diễn bằng **một bảng `lessons` duy nhất** (`apps/backend/src/main/resources/db/migration/V1__init_schema.sql`, dòng 160). Vì vậy mọi yêu cầu thao tác trên "course" trong mô tả gốc đều ánh xạ về bảng `lessons` qua nhóm endpoint `/api/staff/lessons`. UC-27 quản lý 3 loại học liệu thực tế: **lesson (`lessons`)**, **vocabulary (`vocabulary`)**, **kanji (`kanji`)**.
 
 ---
 
@@ -123,7 +123,7 @@ Nếu không quản lý tập trung và không tách trạng thái kiểm duyệ
 
 ## 5. DATA MODEL
 
-> Nguồn schema: `database/init.sql` — `lessons` (dòng 160), `kanji` (dòng 204), `vocabulary` (dòng 234), `staff_users` (dòng 37). **UC-27 chỉ ĐỌC schema; không thay đổi cấu trúc bảng.**
+> Nguồn schema: `apps/backend/src/main/resources/db/migration/V1__init_schema.sql` — `lessons` (dòng 160), `kanji` (dòng 204), `vocabulary` (dòng 282), `staff_users` (dòng 38). **UC-27 chỉ ĐỌC schema; không thay đổi cấu trúc bảng.**
 
 ### 5.1 Bảng liên quan
 
@@ -134,7 +134,7 @@ Nếu không quản lý tập trung và không tách trạng thái kiểm duyệ
 | `kanji` | Chữ Hán, `character_value` UNIQUE | — |
 | `staff_users` | Chủ sở hữu nội dung (`created_by`), kiểm tra quyền | Chỉ tham chiếu |
 
-### 5.2 Cấu trúc cột chính (trích yếu, theo `database/init.sql`)
+### 5.2 Cấu trúc cột chính (trích yếu, theo `V1__init_schema.sql`)
 
 ```sql
 -- lessons: đơn vị học liệu trung tâm (course = lesson)
