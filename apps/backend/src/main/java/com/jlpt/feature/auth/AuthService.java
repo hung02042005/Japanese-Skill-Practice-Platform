@@ -26,8 +26,10 @@ import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.StudentUserRepository;
+import com.jlpt.feature.student.dto.request.OnboardingRequest;
 import com.jlpt.feature.student.dto.request.UpdateProfileRequest;
 import com.jlpt.feature.student.dto.response.StudentResponse;
+import com.jlpt.shared.common.JlptLevels;
 import com.jlpt.shared.email.EmailService;
 import com.jlpt.shared.exception.BusinessException;
 import com.jlpt.shared.security.JwtProvider;
@@ -307,6 +309,7 @@ public class AuthService {
                                 ? user.getTargetJlptLevel().name()
                                 : null)
                 .createdAt(user.getCreatedAt())
+                .onboardingCompleted(user.getTargetJlptLevel() != null)
                 .build();
     }
 
@@ -550,12 +553,46 @@ public class AuthService {
 
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
-        user.setAvatarUrl(request.getAvatarUrl());
+
+        // Chỉ ghi avatarUrl khi client thực sự gửi — tránh xoá mất avatar đã upload
+        // (Profile gọi upload avatar trước rồi mới updateProfile mà không kèm avatarUrl).
+        if (request.getAvatarUrl() != null) {
+            user.setAvatarUrl(request.getAvatarUrl());
+        }
 
         if (request.getTargetJlptLevel() != null) {
             user.setTargetJlptLevel(StudentUser.JlptLevel.valueOf(request.getTargetJlptLevel()));
         }
 
+        return mapToStudentResponse(studentUserRepository.save(user));
+    }
+
+    /**
+     * Onboarding: lưu mục tiêu JLPT của học viên (jlptGoal → target_jlpt_level).
+     * dailyMinutes/focusSkills hiện chưa có cột lưu nên được bỏ qua (xem OnboardingRequest).
+     */
+    @Transactional
+    public StudentResponse submitOnboarding(Long studentId, OnboardingRequest request) {
+        StudentUser user = studentUserRepository
+                .findById(studentId)
+                .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"));
+
+        // Cấp độ chọn ở onboarding vừa là mục tiêu (target) vừa là cấp đang học (current)
+        // → Dashboard hiển thị đúng cấp độ người dùng vừa chọn.
+        StudentUser.JlptLevel level = JlptLevels.parseRequired(request.getJlptGoal());
+        user.setTargetJlptLevel(level);
+        user.setCurrentJlptLevel(level);
+        return mapToStudentResponse(studentUserRepository.save(user));
+    }
+
+    /** Cập nhật URL ảnh đại diện (đã được {@code AvatarStorageService} lưu ra /uploads). */
+    @Transactional
+    public StudentResponse updateAvatar(Long studentId, String avatarUrl) {
+        StudentUser user = studentUserRepository
+                .findById(studentId)
+                .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"));
+
+        user.setAvatarUrl(avatarUrl);
         return mapToStudentResponse(studentUserRepository.save(user));
     }
 

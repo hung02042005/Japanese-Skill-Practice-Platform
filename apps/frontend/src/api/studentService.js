@@ -30,8 +30,8 @@ export async function getMyProfile() {
   return res.data.data;
 }
 
-export async function updateProfile({ fullName, phone, dateOfBirth, bio }) {
-  const res = await api.put('/students/me', { fullName, phone, dateOfBirth, bio });
+export async function updateProfile({ fullName, phone }) {
+  const res = await api.put('/students/me', { fullName, phone });
   return res.data.data;
 }
 
@@ -384,22 +384,6 @@ export async function submitSpeakingAudio(exerciseId, audioBlob) {
 
 export async function getSpeakingResult(jobId) {
   const res = await api.get(`/speaking/${jobId}`, { timeout: 10000 });
-  return res.data.data;
-}
-
-// ─── OCR (AI) ────────────────────────────────────────────────────────────────
-export async function submitOcr(kanjiId, imageFile) {
-  const form = new FormData();
-  form.append('kanjiId', String(kanjiId));
-  form.append('imageFile', imageFile);
-  const res = await api.post('/ai/ocr/submit', form, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-  return res.data.data;
-}
-
-export async function getOcrResult(jobId) {
-  const res = await api.get(`/ai/ocr/${jobId}`);
   return res.data.data;
 }
 

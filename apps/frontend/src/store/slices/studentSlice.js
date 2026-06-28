@@ -162,6 +162,8 @@ const studentSlice = createSlice({
         state.lessons        = action.payload.lessons;
         state.wordCount      = action.payload.wordCount;
         state.daysThisMonth  = action.payload.daysThisMonth;
+        // Hiển thị đúng cấp độ học viên (đặt khi onboarding) thay vì mặc định N5.
+        if (action.payload.selectedLevel) state.selectedLevel = action.payload.selectedLevel;
       })
       .addCase(fetchDashboardThunk.rejected, (state, action) => {
         state.status = 'failed';

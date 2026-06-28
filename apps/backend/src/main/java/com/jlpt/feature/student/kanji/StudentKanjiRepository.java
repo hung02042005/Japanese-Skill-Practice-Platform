@@ -20,6 +20,9 @@ public interface StudentKanjiRepository extends JpaRepository<Kanji, Long> {
     @Query("SELECT k FROM Kanji k WHERE k.id = :id AND k.status = :status")
     Optional<Kanji> findByIdAndStatus(@Param("id") Long id, @Param("status") ContentStatus status);
 
+    @Query("SELECT COUNT(k) FROM Kanji k WHERE k.jlptLevel = :level AND k.status = :status")
+    long countByLevelAndStatus(@Param("level") JlptLevel level, @Param("status") ContentStatus status);
+
     Optional<Kanji> findFirstByJlptLevelAndStatusAndIdLessThanOrderByIdDesc(JlptLevel level, ContentStatus status, Long id);
     Optional<Kanji> findFirstByJlptLevelAndStatusAndIdGreaterThanOrderByIdAsc(JlptLevel level, ContentStatus status, Long id);
 }

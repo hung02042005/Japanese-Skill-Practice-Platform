@@ -2,6 +2,7 @@ package com.jlpt.feature.student.kanji;
 
 import com.jlpt.feature.student.kanji.dto.KanjiDetailResponse;
 import com.jlpt.feature.student.kanji.dto.KanjiListResponse;
+import com.jlpt.feature.student.kanji.dto.KanjiProgressSummaryResponse;
 import com.jlpt.feature.student.kanji.dto.KanjiWritingAttemptRequest;
 import com.jlpt.feature.student.kanji.dto.KanjiWritingAttemptResponse;
 import com.jlpt.feature.student.kanji.dto.KanjiWritingEvaluateRequest;
@@ -36,6 +37,15 @@ public class StudentKanjiController {
 
         KanjiListResponse response = studentKanjiService.getKanjiList(
                 level, userDetails.getStudentUser().getId(), validPage, validSize);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/progress-summary")
+    public ResponseEntity<ApiResponse<KanjiProgressSummaryResponse>> getProgressSummary(
+            @RequestParam String level, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        KanjiProgressSummaryResponse response =
+                studentKanjiService.getProgressSummary(level, userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
