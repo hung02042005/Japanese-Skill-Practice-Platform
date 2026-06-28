@@ -6,7 +6,7 @@ import { JlptBadge } from '../../components/common/Badges';
 import { ProgressBar } from '../../components/common/ProgressBar';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
-import { getKanjiList, getKanjiDetail, getKanjiProgressSummary } from '../../api/studentService';
+import { getKanjiList, getKanjiDetail, resetProgress } from '../../api/studentService';
 import './KanjiList.css';
 
 const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
@@ -35,6 +35,7 @@ export default function KanjiList() {
       const res = await getKanjiList({ level, page: page - 1, size: 50 });
       setKanji(res.content ?? []);
       setTotal(res.totalPages ?? 1);
+      setStats({ completed: res.completedCount ?? 0, total: res.totalElements ?? 0 });
     } catch (err) {
       setError(err?.response?.data?.message ?? 'Không thể tải danh sách Kanji.');
     } finally {
@@ -42,17 +43,7 @@ export default function KanjiList() {
     }
   }, [level, page]);
 
-  const fetchStats = useCallback(async () => {
-    try {
-      const summary = await getKanjiProgressSummary(level);
-      setStats({ completed: summary.completed, total: summary.total });
-    } catch {
-      setStats({ completed: 0, total: 0 });
-    }
-  }, [level]);
-
   useEffect(() => { fetchKanji(); }, [fetchKanji]);
-  useEffect(() => { fetchStats(); }, [fetchStats]);
   useEffect(() => { setPage(1); }, [level]);
 
   const openKanji = useCallback(async (k) => {
@@ -123,7 +114,6 @@ export default function KanjiList() {
                   onClick={async () => {
                     if (window.confirm('Bạn có chắc muốn reset toàn bộ tiến độ Kanji?')) {
                       try {
-                        const { resetProgress } = await import('../../api/studentService');
                         await resetProgress('KANJI');
                         fetchKanji();
                       } catch (e) {

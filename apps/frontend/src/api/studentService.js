@@ -84,11 +84,6 @@ export async function getKanjiDetail(kanjiId) {
   return res.data.data;
 }
 
-export async function getKanjiProgressSummary(level) {
-  const res = await api.get('/kanji/progress-summary', { params: { level } });
-  return res.data.data;
-}
-
 /**
  * Gửi nét vừa vẽ lên backend để chạy DTW.
  * @param {number} strokeIndex - chỉ số nét (0-based)
