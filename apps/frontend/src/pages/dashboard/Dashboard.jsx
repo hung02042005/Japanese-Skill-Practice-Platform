@@ -11,7 +11,7 @@ import QuickActionCard from '../../components/student/QuickActionCard';
 import MiniStatCard from '../../components/student/MiniStatCard';
 import {
   KanaIcon, VocabIcon, QuizIcon, MicIcon,
-  ReadingIcon, HeadphonesIcon, CertificateIcon,
+  ReadingIcon, HeadphonesIcon,
 } from '../../components/student/StudentIcons';
 import './Dashboard.css';
 
@@ -22,7 +22,6 @@ const FEATURE_SHORTCUTS = [
   { Icon: MicIcon,         label: 'Luyện nói',      route: '/speaking' },
   { Icon: ReadingIcon,     label: 'Đọc hiểu',       route: '/reading' },
   { Icon: HeadphonesIcon,  label: 'Nghe hiểu',      route: '/listening' },
-  { Icon: CertificateIcon, label: 'Chứng chỉ',      route: '/certificates' },
 ];
 
 function SkeletonBlock({ className }) {

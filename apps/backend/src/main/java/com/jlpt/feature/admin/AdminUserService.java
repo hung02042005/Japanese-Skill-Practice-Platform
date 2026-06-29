@@ -2,11 +2,8 @@
 package com.jlpt.feature.admin;
 
 import com.jlpt.feature.admin.dto.request.SuspendUserRequest;
-import com.jlpt.feature.admin.dto.request.UpdateUserRoleRequest;
-import com.jlpt.feature.admin.dto.request.UpdateUserStatusRequest;
 import com.jlpt.feature.admin.dto.response.ActivateUserResponse;
 import com.jlpt.feature.admin.dto.response.AdminDetailResponse;
-import com.jlpt.feature.admin.dto.response.AdminUserResponse;
 import com.jlpt.feature.admin.dto.response.SoftDeleteUserResponse;
 import com.jlpt.feature.admin.dto.response.SuspendUserResponse;
 import com.jlpt.feature.admin.dto.response.UserSummaryResponse;
@@ -557,56 +554,6 @@ public class AdminUserService {
                 .build();
     }
 
-    // ── Legacy methods kept for backward compatibility ──────────────────────
-
-    @Transactional
-    public AdminUserResponse updateUserStatus(String userType, Long id, UpdateUserStatusRequest request) {
-        boolean isBan = "BAN".equals(request.getAction());
-        return switch (userType.toUpperCase()) {
-            case "STUDENT" -> {
-                StudentUser student = studentUserRepository
-                        .findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy học viên id=" + id));
-                student.setStatus(isBan ? StudentUser.StudentStatus.SUSPENDED : StudentUser.StudentStatus.ACTIVE);
-                if (isBan) {
-                    student.setSuspendReason(request.getReason());
-                    student.setCurrentStreak(0);
-                } else {
-                    student.setSuspendReason(null);
-                }
-                yield toLegacyResponse(studentUserRepository.save(student));
-            }
-            case "STAFF" -> {
-                StaffUser staff = staffUserRepository
-                        .findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhân viên id=" + id));
-                staff.setStatus(isBan ? StaffUser.StaffStatus.SUSPENDED : StaffUser.StaffStatus.ACTIVE);
-                staff.setSuspendReason(isBan ? request.getReason() : null);
-                yield toLegacyResponse(staffUserRepository.save(staff));
-            }
-            case "ADMIN" -> {
-                AdminUser admin = adminUserRepository
-                        .findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy admin id=" + id));
-                admin.setStatus(isBan ? AdminUser.AdminStatus.SUSPENDED : AdminUser.AdminStatus.ACTIVE);
-                admin.setSuspendReason(isBan ? request.getReason() : null);
-                yield toLegacyResponse(adminUserRepository.save(admin));
-            }
-            default -> throw new BadRequestException("userType không hợp lệ: " + userType);
-        };
-    }
-
-    @Transactional
-    public AdminUserResponse updateUserRole(String userType, Long id, UpdateUserRoleRequest request) {
-        String currentType = userType.toUpperCase();
-        String newRole = request.getNewRole().toUpperCase();
-        if ("ADMIN".equals(currentType)) throw new ForbiddenException("Không thể thay đổi vai trò của Admin");
-        if (currentType.equals(newRole)) return getUser(currentType, id);
-        if ("STUDENT".equals(currentType) && "STAFF".equals(newRole)) return promoteStudentToStaff(id);
-        if ("STAFF".equals(currentType) && "STUDENT".equals(newRole)) return demoteStaffToStudent(id);
-        throw new BadRequestException("Thay đổi vai trò không hợp lệ");
-    }
-
     // ── Private helpers ─────────────────────────────────────────────────────
 
     private String normalizeType(String type) {
@@ -730,108 +677,4 @@ public class AdminUserService {
                 .build();
     }
 
-    private AdminUserResponse toLegacyResponse(StudentUser s) {
-        return AdminUserResponse.builder()
-                .id(s.getId())
-                .userType("STUDENT")
-                .role("STUDENT")
-                .fullName(s.getFullName())
-                .email(s.getEmail())
-                .jlptLevel(
-                        s.getCurrentJlptLevel() != null
-                                ? s.getCurrentJlptLevel().name()
-                                : null)
-                .status(
-                        s.getStatus() == StudentUser.StudentStatus.SUSPENDED
-                                ? "BANNED"
-                                : s.getStatus().name())
-                .streak(s.getCurrentStreak())
-                .createdAt(s.getCreatedAt())
-                .build();
-    }
-
-    private AdminUserResponse toLegacyResponse(StaffUser s) {
-        return AdminUserResponse.builder()
-                .id(s.getId())
-                .userType("STAFF")
-                .role("STAFF")
-                .fullName(s.getFullName())
-                .email(s.getEmail())
-                .status(
-                        s.getStatus() == StaffUser.StaffStatus.SUSPENDED
-                                ? "BANNED"
-                                : s.getStatus().name())
-                .createdAt(s.getCreatedAt())
-                .build();
-    }
-
-    private AdminUserResponse toLegacyResponse(AdminUser a) {
-        return AdminUserResponse.builder()
-                .id(a.getId())
-                .userType("ADMIN")
-                .role("ADMIN")
-                .fullName(a.getFullName())
-                .email(a.getEmail())
-                .status(
-                        a.getStatus() == AdminUser.AdminStatus.SUSPENDED
-                                ? "BANNED"
-                                : a.getStatus().name())
-                .createdAt(a.getCreatedAt())
-                .build();
-    }
-
-    private AdminUserResponse getUser(String userType, Long id) {
-        return switch (userType) {
-            case "STUDENT" -> studentUserRepository
-                    .findById(id)
-                    .map(this::toLegacyResponse)
-                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy user"));
-            case "STAFF" -> staffUserRepository
-                    .findById(id)
-                    .map(this::toLegacyResponse)
-                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy user"));
-            case "ADMIN" -> adminUserRepository
-                    .findById(id)
-                    .map(this::toLegacyResponse)
-                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy user"));
-            default -> throw new BadRequestException("userType không hợp lệ");
-        };
-    }
-
-    private AdminUserResponse promoteStudentToStaff(Long studentId) {
-        StudentUser student = studentUserRepository
-                .findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy học viên id=" + studentId));
-        if (staffUserRepository.existsByEmail(student.getEmail()))
-            throw new DuplicateResourceException("Email đã tồn tại trong bảng nhân viên");
-        StaffUser saved = staffUserRepository.save(StaffUser.builder()
-                .email(student.getEmail())
-                .fullName(student.getFullName())
-                .passwordHash(student.getPasswordHash())
-                .staffRole(StaffUser.StaffRole.STAFF)
-                .status(StaffUser.StaffStatus.ACTIVE)
-                .build());
-        student.setStatus(StudentUser.StudentStatus.DELETED);
-        studentUserRepository.save(student);
-        log.info("[AdminUserService] Promoted studentId={} → STAFF staffId={}", studentId, saved.getId());
-        return toLegacyResponse(saved);
-    }
-
-    private AdminUserResponse demoteStaffToStudent(Long staffId) {
-        StaffUser staff = staffUserRepository
-                .findById(staffId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhân viên id=" + staffId));
-        if (studentUserRepository.existsByEmail(staff.getEmail()))
-            throw new DuplicateResourceException("Email đã tồn tại trong bảng học viên");
-        StudentUser saved = studentUserRepository.save(StudentUser.builder()
-                .email(staff.getEmail())
-                .fullName(staff.getFullName())
-                .passwordHash(staff.getPasswordHash())
-                .status(StudentUser.StudentStatus.ACTIVE)
-                .build());
-        staff.setStatus(StaffUser.StaffStatus.DELETED);
-        staffUserRepository.save(staff);
-        log.info("[AdminUserService] Demoted staffId={} → STUDENT studentId={}", staffId, saved.getId());
-        return toLegacyResponse(saved);
-    }
 }

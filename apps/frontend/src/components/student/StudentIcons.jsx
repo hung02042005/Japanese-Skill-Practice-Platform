@@ -174,25 +174,6 @@ export function HeadphonesIcon({ size = 24 }) {
   );
 }
 
-/** 🏆 Certificate — round medal with star + ribbon tails */
-export function CertificateIcon({ size = 24 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      {/* Ribbon tails */}
-      <path d="M9 14 L7 23 L12 19Z" fill="currentColor" opacity="0.65" />
-      <path d="M15 14 L17 23 L12 19Z" fill="currentColor" opacity="0.50" />
-      {/* Medal disc */}
-      <circle cx="12" cy="9" r="8" fill="currentColor" />
-      <circle cx="12" cy="9" r="5.5" fill="currentColor" opacity="0.38" />
-      {/* 5-pointed star */}
-      <path
-        d="M12 5.2 L13.1 8.2 L16.4 8.2 L13.8 10.1 L14.9 13.1 L12 11.2 L9.1 13.1 L10.2 10.1 L7.6 8.2 L10.9 8.2 Z"
-        fill="white" fillOpacity="0.92"
-      />
-    </svg>
-  );
-}
-
 /** ⭐ VIP Diamond — premium upgrade icon */
 export function DiamondIcon({ size = 24 }) {
   return (

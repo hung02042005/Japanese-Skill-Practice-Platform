@@ -92,23 +92,4 @@ public class StudentAssessmentController {
                 : quizService.submitQuiz(id, studentId, request.getAttemptId(), request.getAnswers());
         return ResponseEntity.ok(ApiResponse.success("Nộp bài thành công", response));
     }
-
-    /**
-     * Xem kết quả bài làm gần nhất đã SUBMITTED.
-     * GET /api/assessments/{id}/result
-     */
-    @GetMapping("/{id}/result")
-    public ResponseEntity<ApiResponse<Object>> getResult(
-            @PathVariable Long id,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        Long studentId = userDetails.getStudentUser().getId();
-        Assessment assessment = assessmentRepository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Assessment", id));
-
-        Object response = assessment.getAssessmentType() == Assessment.AssessmentType.EXAM
-                ? mockExamService.getExamHistory(studentId, PageRequest.of(0, 1))
-                : quizService.getQuizResult(id, studentId);
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
 }

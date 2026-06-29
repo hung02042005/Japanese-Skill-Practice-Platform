@@ -10,17 +10,17 @@ import './Onboarding.css';
 const JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
 const DAILY_OPTIONS = [
-  { value: 5,  label: '5 phút' },
+  { value: 5, label: '5 phút' },
   { value: 10, label: '10 phút', recommended: true },
   { value: 15, label: '15 phút' },
   { value: 20, label: '20 phút' },
 ];
 
 const SKILL_OPTIONS = [
-  { id: 'kanji',      label: 'Kanji' },
+  { id: 'kanji', label: 'Kanji' },
   { id: 'vocabulary', label: 'Từ vựng' },
-  { id: 'grammar',    label: 'Ngữ pháp' },
-  { id: 'all',        label: 'Tất cả' },
+  { id: 'grammar', label: 'Ngữ pháp' },
+  { id: 'all', label: 'Tất cả' },
 ];
 
 export default function Onboarding() {
@@ -28,15 +28,11 @@ export default function Onboarding() {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((s) => s.auth);
 
-  const [step,         setStep]   = useState(1);
-  const [jlptGoal,     setJlpt]   = useState('N5');
-  const [dailyMinutes, setMins]   = useState(10);
-  const [focusSkills,  setSkills] = useState(['all']);
+  const [step, setStep] = useState(1);
+  const [jlptGoal, setJlpt] = useState('N5');
+  const [dailyMinutes, setMins] = useState(10);
+  const [focusSkills, setSkills] = useState(['all']);
   const [isSubmitting, setSubmit] = useState(false);
-
-  useEffect(() => {
-    if (user?.onboardingCompleted) navigate('/dashboard', { replace: true });
-  }, [user, navigate]);
 
   function toggleSkill(id) {
     if (id === 'all') { setSkills(['all']); return; }

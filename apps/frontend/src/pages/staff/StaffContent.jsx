@@ -34,8 +34,6 @@ import "./StaffContent.css";
 const LESSON_TYPE_LABELS = {
   lesson: "Bài học",
   reading: "Đọc hiểu",
-  listening: "Luyện nghe",
-  speaking: "Luyện nói",
 };
 
 const STATUS_META = {
@@ -498,12 +496,12 @@ export default function StaffContent() {
           subtitle="Soạn thảo khóa học, bài học, từ vựng, ngữ pháp và Kanji theo từng cấp độ JLPT"
           icon={
             <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="10" y="14" width="28" height="20" rx="1.5"/>
-              <ellipse cx="10" cy="24" rx="3.5" ry="10"/>
-              <ellipse cx="38" cy="24" rx="3.5" ry="10"/>
-              <line x1="16" y1="20" x2="32" y2="20"/>
-              <line x1="16" y1="25" x2="28" y2="25"/>
-              <line x1="16" y1="30" x2="24" y2="30"/>
+              <rect x="10" y="14" width="28" height="20" rx="1.5" />
+              <ellipse cx="10" cy="24" rx="3.5" ry="10" />
+              <ellipse cx="38" cy="24" rx="3.5" ry="10" />
+              <line x1="16" y1="20" x2="32" y2="20" />
+              <line x1="16" y1="25" x2="28" y2="25" />
+              <line x1="16" y1="30" x2="24" y2="30" />
             </svg>
           }
         />

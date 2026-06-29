@@ -105,18 +105,3 @@ export async function testSmtp() {
   return res.data;
 }
 
-// ── Legacy: student ↔ staff promotion (old PATCH endpoints) ────────────────
-export async function fetchAdminUsers() {
-  const res = await api.get('/admin/users');
-  return res.data.data;
-}
-
-export async function updateUserStatus(userType, id, action, reason = '') {
-  const res = await api.patch(`/admin/users/${userType}/${id}/status`, { action, reason });
-  return res.data.data;
-}
-
-export async function updateUserRole(userType, id, newRole) {
-  const res = await api.patch(`/admin/users/${userType}/${id}/role`, { newRole });
-  return res.data.data;
-}

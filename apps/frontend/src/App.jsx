@@ -22,7 +22,6 @@ import MockTestResults from './pages/mock-test/MockTestResults';
 import Progress from './pages/progress/Progress';
 import KanjiList from './pages/kanji/KanjiList';
 import KanjiPractice from './pages/kanji/KanjiPractice';
-import Certificates from './pages/certificates/Certificates';
 import Grammar from './pages/grammar/Grammar';
 import Dictionary from './pages/dictionary/Dictionary';
 import Notebook from './pages/notebook/Notebook';
@@ -94,7 +93,6 @@ function App() {
         <Route path="/progress"     element={<PrivateRoute><Progress /></PrivateRoute>} />
         <Route path="/kanji"        element={<PrivateRoute><KanjiList /></PrivateRoute>} />
         <Route path="/kanji/:id"    element={<PrivateRoute><KanjiPractice /></PrivateRoute>} />
-        <Route path="/certificates" element={<PrivateRoute><Certificates /></PrivateRoute>} />
         <Route path="/grammar"      element={<PrivateRoute><Grammar /></PrivateRoute>} />
         <Route path="/dictionary"   element={<PrivateRoute><Dictionary /></PrivateRoute>} />
         <Route path="/notebook"     element={<PrivateRoute><Notebook /></PrivateRoute>} />
