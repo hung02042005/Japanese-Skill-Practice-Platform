@@ -261,6 +261,8 @@
   border-color: var(--color-primary-light);
   color: var(--color-primary);
 }
+.sfq-btn-icon--feedback { color: #d97706; border-color: #fcd34d; }
+.sfq-btn-icon--feedback:hover { background: #fffbeb; border-color: #d97706; color: #92400e; }
 
 .sfq-btn--submit {
   height: 30px;

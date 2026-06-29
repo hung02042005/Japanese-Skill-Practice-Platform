@@ -2,6 +2,7 @@
 package com.jlpt.feature.admin;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,4 +27,8 @@ public interface AdminAuditLogRepository extends JpaRepository<AdminAuditLog, Lo
 
     /** Recent activity cho dashboard. */
     List<AdminAuditLog> findTop10ByOrderByCreatedAtDesc();
+
+    /** Lấy phản hồi mới nhất (reject/request_changes) cho một nội dung cụ thể. */
+    Optional<AdminAuditLog> findFirstByTargetIdAndTargetTableAndActionInOrderByCreatedAtDesc(
+            Long targetId, String targetTable, List<String> actions);
 }

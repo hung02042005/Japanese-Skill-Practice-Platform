@@ -298,3 +298,10 @@ export async function getStaffKanjiItem(kanjiId) {
   const res = await api.get(`/staff/kanji/${kanjiId}`);
   return res.data.data;
 }
+
+// --- Review Feedback (UC-33 — Staff xem lý do từ chối / yêu cầu chỉnh sửa) ---
+
+export async function getContentReviewFeedback(contentId, contentType) {
+  const res = await api.get(`/staff/content/${contentId}/feedback`, { params: { contentType } });
+  return res.data.data; // ReviewFeedbackResponse
+}
