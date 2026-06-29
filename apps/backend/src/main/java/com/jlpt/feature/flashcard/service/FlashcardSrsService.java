@@ -6,7 +6,6 @@ import com.jlpt.feature.flashcard.FlashcardConstants;
 import com.jlpt.feature.flashcard.FlashcardDeck;
 import com.jlpt.feature.flashcard.dto.AddFlashcardRequest;
 import com.jlpt.feature.flashcard.dto.DeckSummaryResponse;
-import com.jlpt.feature.flashcard.dto.DeckUpdateRequest;
 import com.jlpt.feature.flashcard.dto.FlashcardResponse;
 import com.jlpt.feature.flashcard.dto.FlashcardRevealResponse;
 import com.jlpt.feature.flashcard.dto.ReviewDeckAddRequest;
@@ -124,36 +123,6 @@ public class FlashcardSrsService {
         FlashcardDeck deck = getOrCreateDeck(student, deckName);
         return new DeckSummaryResponse(
                 deck.getId(), deckName, 0, 0, deck.getJlptLevel(), deck.getTopic(), false, false);
-    }
-
-    public DeckSummaryResponse updateDeck(Long studentId, Long deckId, DeckUpdateRequest request) {
-        FlashcardDeck deck = ownDeckOrThrow(studentId, deckId);
-        if (Boolean.TRUE.equals(deck.getIsSystem())) {
-            throw new ForbiddenException("Không thể sửa sổ tay hệ thống");
-        }
-        if (request.name() != null
-                && !request.name().isBlank()
-                && !request.name().equals(deck.getName())) {
-            if (flashcardDeckRepository.existsByStudentIdAndName(studentId, request.name())) {
-                throw new DuplicateResourceException("Sổ tay '" + request.name() + "' đã tồn tại");
-            }
-            deck.setName(request.name());
-        }
-        if (request.description() != null) deck.setDescription(request.description());
-        if (request.jlptLevel() != null) deck.setJlptLevel(request.jlptLevel());
-        if (request.topic() != null) deck.setTopic(request.topic());
-        if (request.color() != null) deck.setColor(request.color());
-        deck.setUpdatedAt(LocalDateTime.now());
-        flashcardDeckRepository.save(deck);
-        return new DeckSummaryResponse(
-                deck.getId(),
-                deck.getName(),
-                0,
-                0,
-                deck.getJlptLevel(),
-                deck.getTopic(),
-                false,
-                Boolean.TRUE.equals(deck.getIsReviewDeck()));
     }
 
     public void deleteDeck(Long studentId, Long deckId) {

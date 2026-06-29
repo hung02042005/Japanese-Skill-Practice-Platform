@@ -5,7 +5,6 @@ import com.jlpt.feature.flashcard.dto.AddFlashcardRequest;
 import com.jlpt.feature.flashcard.dto.BulkDeleteRequest;
 import com.jlpt.feature.flashcard.dto.DeckCreateRequest;
 import com.jlpt.feature.flashcard.dto.DeckSummaryResponse;
-import com.jlpt.feature.flashcard.dto.DeckUpdateRequest;
 import com.jlpt.feature.flashcard.dto.FlashcardResponse;
 import com.jlpt.feature.flashcard.dto.FlashcardRevealResponse;
 import com.jlpt.feature.flashcard.dto.ReviewDeckAddRequest;
@@ -49,16 +48,6 @@ public class StudentFlashcardController {
         DeckSummaryResponse deck =
                 flashcardSrsService.createDeck(userDetails.getStudentUser().getId(), request.deckName());
         return ResponseEntity.status(201).body(ApiResponse.created(deck));
-    }
-
-    @PatchMapping("/flashcard-decks/{deckId}")
-    public ResponseEntity<ApiResponse<DeckSummaryResponse>> updateDeck(
-            @PathVariable Long deckId,
-            @Valid @RequestBody DeckUpdateRequest request,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        DeckSummaryResponse deck =
-                flashcardSrsService.updateDeck(userDetails.getStudentUser().getId(), deckId, request);
-        return ResponseEntity.ok(ApiResponse.success("Đã cập nhật sổ tay", deck));
     }
 
     @DeleteMapping("/flashcard-decks/{deckId}")

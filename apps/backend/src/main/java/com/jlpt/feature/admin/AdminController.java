@@ -2,10 +2,7 @@
 package com.jlpt.feature.admin;
 
 import com.jlpt.feature.admin.dto.request.SuspendUserRequest;
-import com.jlpt.feature.admin.dto.request.UpdateUserRoleRequest;
-import com.jlpt.feature.admin.dto.request.UpdateUserStatusRequest;
 import com.jlpt.feature.admin.dto.response.ActivateUserResponse;
-import com.jlpt.feature.admin.dto.response.AdminUserResponse;
 import com.jlpt.feature.admin.dto.response.SoftDeleteUserResponse;
 import com.jlpt.feature.admin.dto.response.SuspendUserResponse;
 import com.jlpt.feature.admin.dto.response.UserSummaryResponse;
@@ -163,22 +160,5 @@ public class AdminController {
             Authentication auth, @PathVariable Long staffId, @Valid @RequestBody ChangeStaffRoleRequest request) {
         ChangeStaffRoleResponse response = adminUserService.changeStaffRole(auth.getName(), staffId, request);
         return ResponseEntity.ok(ApiResponse.success("Đã cập nhật vai trò Staff thành công", response));
-    }
-
-    // ── Legacy endpoints (backward compatible) ──────────────────────────────
-
-    @PatchMapping("/users/{userType}/{id}/status")
-    public ResponseEntity<ApiResponse<AdminUserResponse>> updateStatus(
-            @PathVariable String userType, @PathVariable Long id, @Valid @RequestBody UpdateUserStatusRequest request) {
-        AdminUserResponse updated = adminUserService.updateUserStatus(userType, id, request);
-        String msg = "BAN".equals(request.getAction()) ? "Đã khóa tài khoản" : "Đã mở khóa tài khoản";
-        return ResponseEntity.ok(ApiResponse.success(msg, updated));
-    }
-
-    @PatchMapping("/users/{userType}/{id}/role")
-    public ResponseEntity<ApiResponse<AdminUserResponse>> updateRole(
-            @PathVariable String userType, @PathVariable Long id, @Valid @RequestBody UpdateUserRoleRequest request) {
-        AdminUserResponse updated = adminUserService.updateUserRole(userType, id, request);
-        return ResponseEntity.ok(ApiResponse.success("Đã cập nhật vai trò thành " + request.getNewRole(), updated));
     }
 }

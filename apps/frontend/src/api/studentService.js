@@ -299,27 +299,6 @@ export async function getMyStats() {
   return res.data.data;
 }
 
-// ─── Subscription ────────────────────────────────────────────────────────────
-export async function getSubscriptionPlans() {
-  const res = await api.get('/subscriptions/plans');
-  return res.data.data;
-}
-
-export async function getCurrentSubscription() {
-  const res = await api.get('/subscriptions/me');
-  return res.data.data;
-}
-
-export async function checkoutSubscription(planId) {
-  const res = await api.post('/subscriptions/checkout', { planId });
-  return res.data.data;
-}
-
-export async function verifySubscription(orderId) {
-  const res = await api.get('/subscriptions/verify', { params: { orderId } });
-  return res.data.data;
-}
-
 // ─── Kana ────────────────────────────────────────────────────────────────────
 export async function getKanaList(script) {
   const res = await api.get('/kana', { params: { script } });
@@ -438,21 +417,5 @@ export async function markNotificationRead(notificationId) {
 // Đánh dấu tất cả đã đọc → { markedCount }.
 export async function markAllNotificationsRead() {
   const res = await api.post('/notifications/read-all');
-  return res.data.data;
-}
-
-// ─── Certificates ────────────────────────────────────────────────────────────
-export async function getMyCertificates() {
-  const res = await api.get('/certificates/me');
-  return res.data.data;
-}
-
-export async function getCertificateProgress() {
-  const res = await api.get('/certificates/me/progress');
-  return res.data.data;
-}
-
-export async function downloadCertificate(certId) {
-  const res = await api.get(`/certificates/${certId}/download`);
   return res.data.data;
 }

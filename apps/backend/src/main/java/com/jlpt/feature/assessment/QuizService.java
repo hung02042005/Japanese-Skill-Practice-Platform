@@ -11,7 +11,6 @@ import com.jlpt.feature.assessment.dto.response.ExamStartResponse;
 import com.jlpt.feature.assessment.dto.response.QuestionResponse;
 import com.jlpt.feature.assessment.dto.response.QuestionResultResponse;
 import com.jlpt.feature.assessment.dto.response.QuizResponse;
-import com.jlpt.feature.assessment.dto.response.QuizResultResponse;
 import com.jlpt.feature.assessment.dto.response.ScoreResponse;
 import com.jlpt.feature.learning.Kanji;
 import com.jlpt.feature.staff.StaffUser;
@@ -240,43 +239,6 @@ public class QuizService {
         }
 
         return calculateScore(attempt, assessment, answers);
-    }
-
-    public QuizResultResponse getQuizResult(Long assessmentId, Long studentId) {
-        // Lấy attempt mới nhất đã SUBMITTED của student cho assessment này
-        List<TestAttempt> attempts = testAttemptRepository
-                .findByStudent_IdAndParentIdAndStatus(
-                        studentId, assessmentId, TestAttempt.AttemptStatus.SUBMITTED);
-
-        if (attempts.isEmpty()) {
-            throw new ResourceNotFoundException("Chưa có kết quả bài làm cho assessment này");
-        }
-
-        // Lấy attempt mới nhất (submitted_at lớn nhất)
-        TestAttempt latest = attempts.stream()
-                .filter(a -> a.getSubmittedAt() != null)
-                .max((a, b) -> a.getSubmittedAt().compareTo(b.getSubmittedAt()))
-                .orElse(attempts.get(attempts.size() - 1));
-
-        List<QuestionResultResponse> results = attemptAnswerRepository
-                .findByAttemptIdWithQuestion(latest.getId())
-                .stream()
-                .map(aa -> QuestionResultResponse.builder()
-                        .questionId(aa.getQuestion().getId())
-                        .isCorrect(aa.getIsCorrect())
-                        .selectedOption(aa.getSelectedOption())
-                        .correctOption(aa.getQuestion().getCorrectOption())
-                        .explanation(aa.getQuestion().getExplanation())
-                        .build())
-                .collect(Collectors.toList());
-
-        return QuizResultResponse.builder()
-                .attemptId(latest.getId())
-                .score(latest.getTotalScore())
-                .maxScore(latest.getMaxScore())
-                .isPassed(latest.getIsPassed())
-                .results(results)
-                .build();
     }
 
     // =========================================================
