@@ -1,8 +1,10 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.admin;
 
+import com.jlpt.feature.admin.dto.request.UpdateSettingsBatchRequest;
 import com.jlpt.feature.admin.dto.response.SettingResponse;
 import com.jlpt.shared.exception.BusinessException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminSettingsService {
 
     private static final Set<String> ALLOWED_GROUPS = Set.of(
-            "general", "smtp", "security", "auto_notification",
+            "general", "system", "smtp", "security", "auto_notification",
             "email_register", "email_otp", "email_reset"
     );
 
@@ -41,6 +43,26 @@ public class AdminSettingsService {
     @Transactional
     public SettingResponse updateSetting(String group, String key, String value) {
         validateGroup(group);
+        return upsert(group, key, value);
+    }
+
+    /** PUT /api/admin/settings/{group} — upsert nhiều setting cùng nhóm trong 1 transaction. */
+    @Transactional
+    public List<SettingResponse> updateSettings(String group, List<UpdateSettingsBatchRequest.Item> items) {
+        validateGroup(group);
+        List<SettingResponse> result = new ArrayList<>(items.size());
+        for (UpdateSettingsBatchRequest.Item item : items) {
+            // Để trống ô mật khẩu = giữ nguyên giá trị hiện tại (không ghi đè bằng rỗng).
+            if (isPassword(item.getSettingKey())
+                    && (item.getSettingValue() == null || item.getSettingValue().isBlank())) {
+                continue;
+            }
+            result.add(upsert(group, item.getSettingKey(), item.getSettingValue()));
+        }
+        return result;
+    }
+
+    private SettingResponse upsert(String group, String key, String value) {
         SystemSetting setting = settingRepository
                 .findBySettingGroupAndSettingKey(group, key)
                 .orElseGet(() -> SystemSetting.builder()

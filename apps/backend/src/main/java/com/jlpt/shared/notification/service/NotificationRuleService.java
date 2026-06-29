@@ -107,35 +107,6 @@ public class NotificationRuleService {
         return parseRule(setting);
     }
 
-    // ── UC-40: Delete rule (soft disable) ───────────────────────────────────
-
-    @Transactional
-    public void deleteRule(String ruleKey, Long adminId) {
-        SystemSetting setting = findRuleOrThrow(ruleKey);
-        AdminUser admin = findAdminOrThrow(adminId);
-
-        try {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> json = objectMapper.readValue(setting.getSettingValue(), Map.class);
-            json.put("enabled", false);
-            setting.setSettingValue(objectMapper.writeValueAsString(json));
-        } catch (Exception e) {
-            log.warn("[NotifRule] JSON parse failed for rule {}, forcing disabled: {}", ruleKey, e.getMessage());
-            setting.setSettingValue("{\"enabled\":false}");
-        }
-        setting.setUpdatedBy(admin);
-        settingRepository.save(setting); // Record stays — soft disable only
-
-        adminAuditLogRepository.save(AdminAuditLog.builder()
-                .adminActor(admin)
-                .action("NOTIFICATION_RULE_DELETED")
-                .targetTable("system_settings")
-                .description("Soft-disabled rule: " + ruleKey)
-                .build());
-
-        log.info("[NotifRule] Admin {} soft-disabled rule {}", adminId, ruleKey);
-    }
-
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private SystemSetting findRuleOrThrow(String ruleKey) {

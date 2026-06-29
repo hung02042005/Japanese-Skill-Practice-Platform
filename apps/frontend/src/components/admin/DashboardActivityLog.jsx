@@ -3,6 +3,7 @@ import {
   IcAdminChip, IcAddStaff, IcBan, IcCheck,
   IcKey, IcSwap, IcTrash, IcEdit,
 } from './ManageUsersIcons';
+import { getActionLabel, getRoleMeta } from '../../utils/auditMeta';
 
 /* ── Helpers ── */
 function relativeTime(iso) {
@@ -12,16 +13,6 @@ function relativeTime(iso) {
   if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
   return `${Math.floor(diff / 86400)} ngày trước`;
 }
-
-const ACTION_LABELS = {
-  create_staff:             'Tạo tài khoản Staff',
-  suspend_user:             'Đình chỉ tài khoản',
-  activate_user:            'Kích hoạt lại tài khoản',
-  soft_delete_user:         'Xóa tài khoản (soft delete)',
-  reset_password_initiated: 'Đặt lại mật khẩu',
-  change_staff_role:        'Đổi vai trò Staff',
-  update_setting:           'Cập nhật cài đặt hệ thống',
-};
 
 const LOG_STYLE = {
   create_staff:             { icon: <IcAddStaff />, bg: 'var(--color-secondary-bg)', color: '#2E7D32' },
@@ -38,7 +29,7 @@ function getStyle(type) {
 }
 
 function getLabel(log) {
-  const base = ACTION_LABELS[log.actionType] ?? log.actionType;
+  const base = getActionLabel(log.actionType);
   return log.targetEmail ? `${base}: ${log.targetEmail}` : base;
 }
 
@@ -70,7 +61,7 @@ export function DashboardActivityLog({ logs, isLoading, onRetry }) {
     <section className="adb-card adb-activity" aria-label="Hoạt động gần đây">
       <div className="adb-card-header">
         <h2 className="adb-card-title">Hoạt Động Gần Đây</h2>
-        <Link to="/admin/reports?tab=activity" className="adb-reports-link">
+        <Link to="/admin/reports" className="adb-reports-link">
           Xem tất cả
         </Link>
       </div>
@@ -96,7 +87,7 @@ export function DashboardActivityLog({ logs, isLoading, onRetry }) {
                 <div className="adb-log-content">
                   <span className="adb-log-action">{getLabel(log)}</span>
                   <span className="adb-log-meta">
-                    {log.adminEmail} · {relativeTime(log.createdAt)}
+                    {getRoleMeta(log.actorRole).label} · {log.actorName || log.adminEmail} · {relativeTime(log.createdAt)}
                   </span>
                 </div>
               </li>

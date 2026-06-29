@@ -76,27 +76,35 @@ export async function issueTempPassword(staffId, requestId) {
   return res.data.data;
 }
 
-// ── UC-36: Dashboard summary ────────────────────────────────────────────────
-export async function getDashboardSummary() {
-  const res = await api.get('/admin/dashboard/summary');
+// ── UC-36: Admin dashboard — summary + kpi gộp trong 1 call → { summary, kpi }
+export async function getDashboardOverview() {
+  const res = await api.get('/admin/dashboard');
   return res.data.data;
 }
 
-// ── UC-36: Audit log ────────────────────────────────────────────────────────
-export async function getAuditLog({ page = 0, size = 10 } = {}) {
-  const res = await api.get('/admin/audit-logs', { params: { page, size } });
+// ── UC-36: Audit log (server-side filtering by action / targetTable) ────────
+export async function getAuditLog({ page = 0, size = 10, action, targetTable } = {}) {
+  const params = { page, size };
+  if (action)      params.action      = action;
+  if (targetTable) params.targetTable = targetTable;
+  const res = await api.get('/admin/audit-logs', { params });
   return res.data.data;
 }
 
-// ── UC-39: System settings ──────────────────────────────────────────────────
+// ── UC-39: System settings (BE chỉ expose theo nhóm: /admin/settings/{group}) ─
 export async function getSettings(group) {
-  const url = group ? `/admin/settings/${group}` : '/admin/settings';
-  const res = await api.get(url);
+  const res = await api.get(`/admin/settings/${group}`);
   return res.data.data;
 }
 
 export async function updateSetting(group, key, value) {
   const res = await api.put(`/admin/settings/${group}/${key}`, { settingValue: value });
+  return res.data.data;
+}
+
+// Lưu nhiều setting cùng nhóm trong 1 request (atomic). settings: [{ settingKey, settingValue }]
+export async function updateSettings(group, settings) {
+  const res = await api.put(`/admin/settings/${group}`, { settings });
   return res.data.data;
 }
 

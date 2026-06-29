@@ -1,7 +1,6 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.admin;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,7 +22,4 @@ public interface AdminAuditLogRepository extends JpaRepository<AdminAuditLog, Lo
             @Param("action") String action,
             @Param("targetTable") String targetTable,
             Pageable pageable);
-
-    /** Recent activity cho dashboard. */
-    List<AdminAuditLog> findTop10ByOrderByCreatedAtDesc();
 }

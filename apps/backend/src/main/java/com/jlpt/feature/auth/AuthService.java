@@ -70,6 +70,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final AdminAuthService adminAuthService;
+    private final com.jlpt.feature.admin.MaintenanceModeService maintenanceModeService;
     private final Map<String, Deque<LocalDateTime>> checkAccountTypeAttempts = new ConcurrentHashMap<>();
 
     @Value("${google.client-id}")
@@ -212,6 +213,10 @@ public class AuthService {
     }
 
     private LoginApiResponse handleStudentLogin(StudentUser user, String rawPassword, String ip) {
+        if (maintenanceModeService.isEnabled()) {
+            throw new BusinessException(503, "MAINTENANCE_MODE",
+                    "Hệ thống đang bảo trì. Vui lòng quay lại sau.");
+        }
         if (user.getLockedUntil() != null && user.getLockedUntil().isAfter(LocalDateTime.now())) {
             throw new BusinessException(429, "TOO_MANY_REQUESTS", "Quá nhiều lần thử. Vui lòng thử lại sau.");
         }
@@ -259,6 +264,10 @@ public class AuthService {
 
     @Transactional
     public StudentResponse register(RegisterRequest request) {
+        if (maintenanceModeService.isEnabled()) {
+            throw new BusinessException(503, "MAINTENANCE_MODE",
+                    "Hệ thống đang bảo trì. Vui lòng quay lại sau.");
+        }
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new BusinessException(400, "PASSWORD_MISMATCH", "Mật khẩu xác nhận không khớp");
         }
@@ -427,6 +436,10 @@ public class AuthService {
 
     @Transactional
     public AuthResponse loginWithGoogle(GoogleTokenRequest request) {
+        if (maintenanceModeService.isEnabled()) {
+            throw new BusinessException(503, "MAINTENANCE_MODE",
+                    "Hệ thống đang bảo trì. Vui lòng quay lại sau.");
+        }
         GoogleIdToken.Payload payload = verifyGoogleToken(request.getIdToken());
 
         String email = payload.getEmail();

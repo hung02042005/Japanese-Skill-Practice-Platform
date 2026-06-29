@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { useAppDispatch } from '../../store/hooks';
 import { setUser } from '../../store/slices/authSlice';
 import AppLogo from '../../components/common/AppLogo';
 import SakuChan from '../../components/auth/SakuChan';
@@ -26,7 +26,6 @@ const SKILL_OPTIONS = [
 export default function Onboarding() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((s) => s.auth);
 
   const [step, setStep] = useState(1);
   const [jlptGoal, setJlpt] = useState('N5');

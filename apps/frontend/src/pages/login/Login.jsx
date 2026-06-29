@@ -53,7 +53,8 @@ function Login() {
     }
   }
 
-  const isLocked   = error && (error.includes('khóa') || error.includes('locked'));
+  const isMaintenance = error && error.includes('bảo trì');
+  const isLocked   = error && !isMaintenance && (error.includes('khóa') || error.includes('locked'));
   const needVerify = error && (error.includes('xác minh') || error.includes('verified'));
 
   return (
@@ -71,6 +72,7 @@ function Login() {
           <h1 className="auth-title">Chào mừng trở lại</h1>
           <p className="auth-subtitle">Đăng nhập để tiếp tục hành trình học tiếng Nhật</p>
 
+          {isMaintenance && <AuthBanner type="warning">🛠️ {error}</AuthBanner>}
           {isLocked && <AuthBanner type="warning">{error}</AuthBanner>}
           {needVerify && (
             <AuthBanner type="info">
@@ -78,7 +80,7 @@ function Login() {
               <Link to="/register" className="auth-banner-link">Gửi lại email xác minh</Link>
             </AuthBanner>
           )}
-          {error && !isLocked && !needVerify && (
+          {error && !isMaintenance && !isLocked && !needVerify && (
             <AuthBanner type="error">{error}</AuthBanner>
           )}
 
