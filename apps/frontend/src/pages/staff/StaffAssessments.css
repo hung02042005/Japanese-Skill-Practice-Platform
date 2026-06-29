@@ -111,6 +111,8 @@
   color: var(--color-text-sub); transition: all var(--transition);
 }
 .sfa-btn-icon:hover { background: var(--color-primary-bg); border-color: var(--color-primary-light); color: var(--color-primary); }
+.sfa-btn-icon--feedback { color: #d97706; border-color: #fcd34d; }
+.sfa-btn-icon--feedback:hover { background: #fffbeb; border-color: #d97706; color: #92400e; }
 .sfa-btn-submit {
   height: 32px; padding: 0 14px; background: var(--color-secondary); color: white;
   border: none; border-radius: var(--radius-full); font-size: 12px; font-weight: 700;

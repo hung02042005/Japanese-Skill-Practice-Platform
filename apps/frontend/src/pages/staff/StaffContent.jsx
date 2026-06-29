@@ -19,6 +19,7 @@ import {
   createStaffKanji,
   updateStaffKanji,
   submitAssessmentForReview,
+  getContentReviewFeedback,
 } from "../../api/staffService";
 import StaffTopNav from "../../components/layout/StaffTopNav";
 import { EmptyState } from "../../components/common/EmptyState";
@@ -29,6 +30,7 @@ import ContentStatusActions from "../../components/staff/ContentStatusActions";
 import ContentFormModal from "../../components/staff/ContentFormModal";
 import ContentPreviewDrawer from "../../components/staff/ContentPreviewDrawer";
 import StaffPageHero from "../../components/staff/StaffPageHero";
+import ReviewFeedbackModal from "../../components/common/ReviewFeedbackModal";
 import "./StaffContent.css";
 
 const LESSON_TYPE_LABELS = {
@@ -81,6 +83,7 @@ export default function StaffContent() {
   const [showModal, setModal] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [feedbackModal, setFeedbackModal] = useState({ open: false, feedback: null, actionType: null, reviewedAt: null });
   const dropdownRef = useRef(null);
   const { toasts, addToast, removeToast } = useToast();
   const searchTimerRef = useRef(null);
@@ -245,6 +248,42 @@ export default function StaffContent() {
     }
   };
 
+  const handleViewFeedback = async (item) => {
+    let contentType;
+    let contentId;
+    switch (activeContentTab) {
+      case "course":
+      case "lesson":
+        contentType = "lesson";
+        contentId = item.lessonId ?? item.id;
+        break;
+      case "vocabulary":
+        contentType = "vocabulary";
+        contentId = item.vocabularyId ?? item.id;
+        break;
+      case "grammar":
+        contentType = "grammar";
+        contentId = item.grammarId ?? item.id;
+        break;
+      case "kanji":
+        contentType = "kanji";
+        contentId = item.kanjiId ?? item.id;
+        break;
+      default:
+        return;
+    }
+    try {
+      const data = await getContentReviewFeedback(contentId, contentType);
+      setFeedbackModal({ open: true, feedback: data.feedback, actionType: data.actionType, reviewedAt: data.reviewedAt });
+    } catch (err) {
+      if (err?.response?.status === 404) {
+        setFeedbackModal({ open: true, feedback: null, actionType: null, reviewedAt: null });
+      } else {
+        addToast({ type: "error", message: "Không thể tải phản hồi. Vui lòng thử lại." });
+      }
+    }
+  };
+
   const handleSave = async (formData) => {
     const ct = formData.contentType;
     try {
@@ -372,7 +411,7 @@ export default function StaffContent() {
         <td><StatusBadge status={item.status} /></td>
         <td style={{ color: "var(--color-text-sub)", fontSize: 13 }}>{formatDate(item.updatedAt)}</td>
         <td>
-          <ContentStatusActions item={item} onEdit={handleEdit} onSubmit={handleSubmitForReview} onView={handleView} />
+          <ContentStatusActions item={item} onEdit={handleEdit} onSubmit={handleSubmitForReview} onView={handleView} onFeedback={handleViewFeedback} />
         </td>
       </tr>
     );
@@ -390,7 +429,7 @@ export default function StaffContent() {
         <td><StatusBadge status={item.status} /></td>
         <td style={{ color: "var(--color-text-sub)", fontSize: 13 }}>{formatDate(item.updatedAt)}</td>
         <td>
-          <ContentStatusActions item={item} onEdit={handleEdit} onSubmit={handleSubmitForReview} onView={handleView} />
+          <ContentStatusActions item={item} onEdit={handleEdit} onSubmit={handleSubmitForReview} onView={handleView} onFeedback={handleViewFeedback} />
         </td>
       </tr>
     );
@@ -405,7 +444,7 @@ export default function StaffContent() {
         <td><StatusBadge status={item.status} /></td>
         <td style={{ color: "var(--color-text-sub)", fontSize: 13 }}>{formatDate(item.updatedAt)}</td>
         <td>
-          <ContentStatusActions item={item} onEdit={handleEdit} onSubmit={handleSubmitForReview} onView={handleView} />
+          <ContentStatusActions item={item} onEdit={handleEdit} onSubmit={handleSubmitForReview} onView={handleView} onFeedback={handleViewFeedback} />
         </td>
       </tr>
     );
@@ -421,7 +460,7 @@ export default function StaffContent() {
         <td><StatusBadge status={item.status} /></td>
         <td style={{ color: "var(--color-text-sub)", fontSize: 13 }}>{formatDate(item.updatedAt)}</td>
         <td>
-          <ContentStatusActions item={item} onEdit={handleEdit} onSubmit={handleSubmitForReview} onView={handleView} />
+          <ContentStatusActions item={item} onEdit={handleEdit} onSubmit={handleSubmitForReview} onView={handleView} onFeedback={handleViewFeedback} />
         </td>
       </tr>
     );
@@ -604,6 +643,14 @@ export default function StaffContent() {
       />
 
       <ContentPreviewDrawer item={previewItem} contentType={activeContentTab} onClose={() => setPreviewItem(null)} />
+
+      <ReviewFeedbackModal
+        isOpen={feedbackModal.open}
+        onClose={() => setFeedbackModal({ open: false, feedback: null, actionType: null, reviewedAt: null })}
+        feedback={feedbackModal.feedback}
+        actionType={feedbackModal.actionType}
+        reviewedAt={feedbackModal.reviewedAt}
+      />
 
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>

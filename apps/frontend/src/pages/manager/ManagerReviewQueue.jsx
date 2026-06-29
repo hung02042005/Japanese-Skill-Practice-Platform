@@ -7,6 +7,7 @@ import { Pagination } from '../../components/common/Pagination';
 import { useToast, ToastContainer } from '../../components/common/Toast';
 import StaffPageHero from '../../components/staff/StaffPageHero';
 import ManagerContentPreviewDrawer from '../../components/manager/ManagerContentPreviewDrawer';
+import FeedbackInputModal from './FeedbackInputModal';
 import {
   fetchReviewQueueThunk,
   reviewContentThunk,
@@ -56,6 +57,7 @@ export default function ManagerReviewQueue() {
   const [currentPage, setPage] = useState(1);
   const [previewData, setPreviewData] = useState(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [feedbackModal, setFeedbackModal] = useState({ open: false, type: null, item: null });
   const { toasts, addToast, removeToast } = useToast();
 
   const fetchQueue = useCallback(() => {
@@ -90,19 +92,19 @@ export default function ManagerReviewQueue() {
     }
   }
 
-  async function handleReject(item) {
-    const feedback = window.prompt('Nhập lý do từ chối (bắt buộc):', '');
-    if (feedback === null) return; // cancelled
-    if (!feedback.trim()) {
-      addToast('error', 'Vui lòng nhập lý do từ chối.');
-      return;
-    }
+  function handleReject(item) {
+    setFeedbackModal({ open: true, type: 'reject', item });
+  }
+
+  async function submitReject(feedback) {
+    const item = feedbackModal.item;
+    setFeedbackModal({ open: false, type: null, item: null });
     try {
       await dispatch(reviewContentThunk({
         contentType: item.contentType,
         contentId: item.contentId,
         action: 'REJECT',
-        feedback: feedback.trim(),
+        feedback,
       })).unwrap();
       addToast('error', `Đã từ chối: ${item.titleOrText}`);
       await fetchQueue();
@@ -126,18 +128,18 @@ export default function ManagerReviewQueue() {
     }
   }
 
-  async function handleRequestChanges(item) {
-    const feedback = window.prompt('Nhập nội dung yêu cầu chỉnh sửa (bắt buộc):', '');
-    if (feedback === null) return;
-    if (!feedback.trim()) {
-      addToast('error', 'Vui lòng nhập nội dung yêu cầu chỉnh sửa.');
-      return;
-    }
+  function handleRequestChanges(item) {
+    setFeedbackModal({ open: true, type: 'requestChanges', item });
+  }
+
+  async function submitRequestChanges(feedback) {
+    const item = feedbackModal.item;
+    setFeedbackModal({ open: false, type: null, item: null });
     try {
       await dispatch(requestChangesThunk({
         contentType: item.contentType,
         contentId: item.contentId,
-        feedback: feedback.trim(),
+        feedback,
       })).unwrap();
       addToast('success', `Đã yêu cầu chỉnh sửa: ${item.titleOrText}`);
       await fetchQueue();
@@ -289,6 +291,20 @@ export default function ManagerReviewQueue() {
       <ManagerContentPreviewDrawer
         data={previewData}
         onClose={() => setPreviewData(null)}
+      />
+
+      <FeedbackInputModal
+        isOpen={feedbackModal.open && feedbackModal.type === 'reject'}
+        title="Lý do từ chối"
+        onSubmit={submitReject}
+        onCancel={() => setFeedbackModal({ open: false, type: null, item: null })}
+      />
+
+      <FeedbackInputModal
+        isOpen={feedbackModal.open && feedbackModal.type === 'requestChanges'}
+        title="Yêu cầu chỉnh sửa"
+        onSubmit={submitRequestChanges}
+        onCancel={() => setFeedbackModal({ open: false, type: null, item: null })}
       />
 
       <ToastContainer toasts={toasts} onRemove={removeToast} />

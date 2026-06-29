@@ -9,6 +9,8 @@ import StaffPageHero from '../../components/staff/StaffPageHero';
 import AssessmentFormModal from '../../components/staff/AssessmentFormModal';
 import AssessmentPreviewModal from '../../components/staff/AssessmentPreviewModal';
 import AssignQuestionsModal from '../../components/staff/AssignQuestionsModal';
+import ReviewFeedbackModal from '../../components/common/ReviewFeedbackModal';
+import { getContentReviewFeedback } from '../../api/staffService';
 import {
   fetchQuizzesThunk,
   createQuizThunk,
@@ -66,6 +68,7 @@ export default function StaffAssessments() {
   const [levelFilter, setLevel] = useState('');
   const [statusFilter, setStatus] = useState('');
   const [currentPage, setPage] = useState(1);
+  const [feedbackModal, setFeedbackModal] = useState({ open: false, feedback: null, actionType: null, reviewedAt: null });
   const { toasts, addToast, removeToast } = useToast();
 
   const quizState = useSelector((state) => state.staffQuiz);
@@ -159,6 +162,19 @@ export default function StaffAssessments() {
       await fetchList();
     } catch (err) {
       addToast('error', err || 'Lỗi khi lưu và gửi duyệt');
+    }
+  }
+
+  async function handleViewFeedback(item) {
+    try {
+      const data = await getContentReviewFeedback(item.assessmentId, 'assessment');
+      setFeedbackModal({ open: true, feedback: data.feedback, actionType: data.actionType, reviewedAt: data.reviewedAt });
+    } catch (err) {
+      if (err?.response?.status === 404) {
+        setFeedbackModal({ open: true, feedback: null, actionType: null, reviewedAt: null });
+      } else {
+        addToast('error', 'Load failed. Please try again.');
+      }
     }
   }
 
@@ -294,7 +310,17 @@ export default function StaffAssessments() {
                         </button>
                         {(item.status === 'draft' || item.status === 'rejected') && (
                           <>
-                            <button className="sfa-btn-icon" onClick={() => handleEdit(item)} aria-label={`Sửa ${item.title}`} title="Sửa">
+                            <button
+                              className="sfa-btn-icon sfa-btn-icon--feedback"
+                              onClick={() => handleViewFeedback(item)}
+                              aria-label="Xem phan hoi"
+                              title="Xem phan hoi manager"
+                            >
+                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </button>
+                            <button className="sfa-btn-icon" onClick={() => handleEdit(item)} aria-label={`Sua ${item.title}`} title="Sua">
                               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -353,6 +379,14 @@ export default function StaffAssessments() {
         assessment={assignItem}
         onClose={() => setAssignItem(null)}
         onSubmit={handleAssignSubmit}
+      />
+
+      <ReviewFeedbackModal
+        isOpen={feedbackModal.open}
+        onClose={() => setFeedbackModal({ open: false, feedback: null, actionType: null, reviewedAt: null })}
+        feedback={feedbackModal.feedback}
+        actionType={feedbackModal.actionType}
+        reviewedAt={feedbackModal.reviewedAt}
       />
 
       <ToastContainer toasts={toasts} onRemove={removeToast} />

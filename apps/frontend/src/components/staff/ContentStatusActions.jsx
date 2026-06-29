@@ -1,9 +1,22 @@
-export default function ContentStatusActions({ item, onEdit, onSubmit, onView }) {
+export default function ContentStatusActions({ item, onEdit, onSubmit, onView, onFeedback }) {
   const canEdit = item.status === 'draft' || item.status === 'rejected';
   const canSubmit = item.status === 'draft' || item.status === 'rejected';
   const canView = item.status === 'pending_review' || item.status === 'published';
+  const canFeedback = onFeedback && (item.status === 'rejected' || item.status === 'draft');
   return (
     <div className="sfc-actions">
+      {canFeedback && (
+        <button
+          className="sfc-btn-icon sfc-btn-icon--feedback"
+          onClick={() => onFeedback(item)}
+          aria-label={`Xem phản hồi của manager`}
+          title="Xem phản hồi manager"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+      )}
       {canEdit && (
         <button className="sfc-btn-icon" onClick={() => onEdit(item)} aria-label={`Sửa ${item.title || item.word || item.pattern || item.character}`} title="Sửa">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">

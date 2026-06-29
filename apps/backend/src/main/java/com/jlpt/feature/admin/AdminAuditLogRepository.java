@@ -1,6 +1,8 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.admin;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +24,8 @@ public interface AdminAuditLogRepository extends JpaRepository<AdminAuditLog, Lo
             @Param("action") String action,
             @Param("targetTable") String targetTable,
             Pageable pageable);
+
+    /** Lấy phản hồi mới nhất (reject/request_changes) cho một nội dung cụ thể. */
+    Optional<AdminAuditLog> findFirstByTargetIdAndTargetTableAndActionInOrderByCreatedAtDesc(
+            Long targetId, String targetTable, List<String> actions);
 }

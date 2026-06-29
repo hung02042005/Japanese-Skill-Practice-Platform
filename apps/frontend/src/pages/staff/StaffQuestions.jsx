@@ -8,6 +8,8 @@ import { useToast, ToastContainer } from '../../components/common/Toast';
 import QuestionFormModal from '../../components/staff/QuestionFormModal';
 import QuestionPreviewDrawer from '../../components/staff/QuestionPreviewDrawer';
 import StaffPageHero from '../../components/staff/StaffPageHero';
+import ReviewFeedbackModal from '../../components/common/ReviewFeedbackModal';
+import { getContentReviewFeedback } from '../../api/staffService';
 import {
   fetchQuestionsThunk,
   createQuestionThunk,
@@ -75,6 +77,7 @@ export default function StaffQuestions() {
   const [editQuestion, setEditQ] = useState(null);
   const [prefillData, setPrefill] = useState(null);
   const [previewQ, setPreviewQ] = useState(null);
+  const [feedbackModal, setFeedbackModal] = useState({ open: false, feedback: null, actionType: null, reviewedAt: null });
 
   const { toasts, addToast, removeToast } = useToast();
 
@@ -157,6 +160,20 @@ export default function StaffQuestions() {
       await fetchQuestions();
     } catch (err) {
       addToast('error', err || 'Lỗi khi lưu và gửi duyệt');
+    }
+  };
+
+  const handleViewFeedback = async (q) => {
+    const questionId = q.questionId ?? q.id;
+    try {
+      const data = await getContentReviewFeedback(questionId, 'question');
+      setFeedbackModal({ open: true, feedback: data.feedback, actionType: data.actionType, reviewedAt: data.reviewedAt });
+    } catch (err) {
+      if (err?.response?.status === 404) {
+        setFeedbackModal({ open: true, feedback: null, actionType: null, reviewedAt: null });
+      } else {
+        addToast('error', 'Khong the tai phan hoi. Vui long thu lai.');
+      }
     }
   };
 
@@ -326,6 +343,13 @@ export default function StaffQuestions() {
                               <circle cx="12" cy="12" r="3" />
                             </svg>
                           </button>
+                          {(q.status === 'rejected' || q.status === 'draft') && (
+                            <button type="button" className="sfq-btn-icon sfq-btn-icon--feedback" onClick={() => handleViewFeedback(q)} title="Xem phan hoi" aria-label="Xem phan hoi">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                              </svg>
+                            </button>
+                          )}
                           {q.isLocked && (
                             <button type="button" className="sfq-btn--newver" onClick={() => onNewVersion(q)}>
                               Tạo phiên bản mới
@@ -359,6 +383,13 @@ export default function StaffQuestions() {
 
       <QuestionFormModal isOpen={showModal} editQuestion={editQuestion} prefillData={prefillData} onClose={closeModal} onSave={handleSave} onSaveAndSubmit={handleSaveAndSubmit} />
       <QuestionPreviewDrawer question={previewQ} onClose={() => setPreviewQ(null)} />
+      <ReviewFeedbackModal
+        isOpen={feedbackModal.open}
+        onClose={() => setFeedbackModal({ open: false, feedback: null, actionType: null, reviewedAt: null })}
+        feedback={feedbackModal.feedback}
+        actionType={feedbackModal.actionType}
+        reviewedAt={feedbackModal.reviewedAt}
+      />
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
