@@ -6,10 +6,12 @@ import { EmptyState } from '../../components/common/EmptyState';
 import { Pagination } from '../../components/common/Pagination';
 import { useToast, ToastContainer } from '../../components/common/Toast';
 import StaffPageHero from '../../components/staff/StaffPageHero';
+import ManagerContentPreviewDrawer from '../../components/manager/ManagerContentPreviewDrawer';
 import {
   fetchReviewQueueThunk,
   reviewContentThunk,
   requestChangesThunk,
+  getReviewContentDetailThunk,
 } from '../../store/slices/managerReviewSlice';
 import './ManagerReviewQueue.css';
 
@@ -52,6 +54,8 @@ export default function ManagerReviewQueue() {
   const [typeFilter, setType] = useState('');
   const [levelFilter, setLevel] = useState('');
   const [currentPage, setPage] = useState(1);
+  const [previewData, setPreviewData] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
   const { toasts, addToast, removeToast } = useToast();
 
   const fetchQueue = useCallback(() => {
@@ -104,6 +108,21 @@ export default function ManagerReviewQueue() {
       await fetchQueue();
     } catch (err) {
       addToast('error', err || 'Lỗi khi từ chối nội dung');
+    }
+  }
+
+  async function handlePreview(item) {
+    setPreviewLoading(true);
+    try {
+      const detail = await dispatch(getReviewContentDetailThunk({
+        contentId: item.contentId,
+        contentType: item.contentType,
+      })).unwrap();
+      setPreviewData(detail);
+    } catch {
+      addToast('error', 'Không thể tải chi tiết nội dung');
+    } finally {
+      setPreviewLoading(false);
     }
   }
 
@@ -213,6 +232,18 @@ export default function ManagerReviewQueue() {
                     <td>
                       <div className="mrq-actions">
                         <button
+                          className="mrq-btn-view"
+                          onClick={() => handlePreview(item)}
+                          aria-label={`Xem ${item.titleOrText}`}
+                          title="Xem nội dung"
+                          disabled={previewLoading}
+                        >
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+                          </svg>
+                        </button>
+                        <button
                           className="mrq-btn-approve"
                           onClick={() => handleApprove(item)}
                           aria-label={`Duyệt ${item.titleOrText}`}
@@ -254,6 +285,11 @@ export default function ManagerReviewQueue() {
 
         <Pagination currentPage={currentPage} totalPages={totalPages} onChange={setPage} />
       </main>
+
+      <ManagerContentPreviewDrawer
+        data={previewData}
+        onClose={() => setPreviewData(null)}
+      />
 
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>

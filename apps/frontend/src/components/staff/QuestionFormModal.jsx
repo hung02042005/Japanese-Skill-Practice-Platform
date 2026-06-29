@@ -6,7 +6,6 @@ const SKILL_OPTIONS = [
   { value: 'grammar',    label: 'Ngữ pháp' },
   { value: 'kanji',      label: 'Kanji' },
   { value: 'reading',    label: 'Đọc hiểu' },
-  { value: 'listening',  label: 'Nghe' },
   { value: 'mixed',      label: 'Tổng hợp' },
 ];
 
