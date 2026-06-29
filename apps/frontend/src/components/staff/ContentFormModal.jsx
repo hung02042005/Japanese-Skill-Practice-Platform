@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import HanziWriter from 'hanzi-writer';
 import { getStaffVocabularyTopics, createStaffVocabularyTopic } from '../../api/staffService';
+import { lookupKanjiByReading, getKanjiInfo } from '../../utils/kanjiLookup';
 
 const TYPE_LABELS = {
   course: 'Khóa học',
@@ -95,9 +97,63 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
   const [newTopic, setNewTopic] = useState({ titleVi: '', titleJa: '' });
   const [creatingTopic, setCreatingTopic] = useState(false);
 
+  // Kiểm tra ký tự Kanji có dữ liệu nét (hanzi-writer) — chặn tạo chữ học viên không tô được.
+  // status: 'idle' (chưa nhập) | 'checking' | 'valid' | 'invalid'
+  const [kanjiCheck, setKanjiCheck] = useState({ status: 'idle', strokeCount: null });
+
+  // B — Tra Kanji theo cách đọc: gõ romaji ("gaku") → gợi ý Kanji để chọn (vì staff chỉ gõ được chữ Latinh).
+  const [kanjiQuery, setKanjiQuery] = useState('');
+  const [kanjiSuggest, setKanjiSuggest] = useState({ kana: '', candidates: [] });
+
   useEffect(() => {
     setForm(buildInitialForm(contentType, editItem));
+    setKanjiQuery('');
+    setKanjiSuggest({ kana: '', candidates: [] });
   }, [contentType, editItem, isOpen]);
+
+  const handleKanjiQuery = (val) => {
+    setKanjiQuery(val);
+    setKanjiSuggest(lookupKanjiByReading(val));
+  };
+
+  // Chọn 1 ký tự Kanji → đặt characterValue và tự điền onyomi/kunyomi (vẫn cho sửa lại).
+  // force = true (bấm chip): ghi đè cách đọc; force = false (gõ/dán tay): chỉ điền khi ô đang trống.
+  const applyKanji = (ch, force) => {
+    setForm((prev) => {
+      const next = { ...prev, characterValue: ch };
+      const info = getKanjiInfo(ch);
+      if (info) {
+        if (force || !prev.onyomi) next.onyomi = info.on;
+        if (force || !prev.kunyomi) next.kunyomi = info.kun;
+      }
+      return next;
+    });
+  };
+
+  // A — Validate ký tự Kanji + C — đồng bộ số nét từ hanzi-writer.
+  useEffect(() => {
+    if (!isOpen || contentType !== 'kanji') return;
+    const ch = (form.characterValue || '').trim();
+    if (!ch) { setKanjiCheck({ status: 'idle', strokeCount: null }); return; }
+
+    let cancelled = false;
+    setKanjiCheck({ status: 'checking', strokeCount: null });
+    const timer = setTimeout(() => {
+      HanziWriter.loadCharacterData(ch)
+        .then((data) => {
+          if (cancelled) return;
+          const n = data?.strokes?.length || null;
+          setKanjiCheck({ status: 'valid', strokeCount: n });
+          // C: lấy số nét đúng từ dữ liệu nét, không để staff gõ tay lệch.
+          if (n) setForm((prev) => (prev.strokeCount === n ? prev : { ...prev, strokeCount: n }));
+        })
+        .catch(() => {
+          if (!cancelled) setKanjiCheck({ status: 'invalid', strokeCount: null });
+        });
+    }, 350);
+
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [isOpen, contentType, form.characterValue]);
 
   // Tải danh sách chủ đề khi mở form Từ vựng / đổi cấp độ.
   useEffect(() => {
@@ -176,6 +232,10 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
   const submit = (status) => {
     if (contentType === 'vocabulary' && !form.topicId) {
       setTopicError('Vui lòng chọn (hoặc tạo) một chủ đề cho từ vựng.');
+      return;
+    }
+    // A — Chặn tạo Kanji không có dữ liệu nét (học viên sẽ không tô được).
+    if (contentType === 'kanji' && kanjiCheck.status !== 'valid') {
       return;
     }
     onSave(getSubmitPayload(status));
@@ -490,18 +550,83 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
           {/* ---- KANJI ---- */}
           {contentType === 'kanji' && (
             <>
+              {/* B — Tìm Kanji bằng cách đọc romaji (vd: "gaku" → 学/楽/額/岳) rồi bấm chọn. */}
+              <div className="sfc-field">
+                <label className="sfc-field-label" htmlFor="sfc-field-kanjisearch">Tìm Kanji theo cách đọc</label>
+                <input
+                  id="sfc-field-kanjisearch"
+                  className="sfc-input"
+                  type="text"
+                  placeholder='Gõ romaji, ví dụ: "gaku" hoặc "mizu"'
+                  value={kanjiQuery}
+                  onChange={(e) => handleKanjiQuery(e.target.value)}
+                />
+                {kanjiQuery.trim() && (
+                  kanjiSuggest.candidates.length > 0 ? (
+                    <div style={{ marginTop: 8 }}>
+                      <span className="sfc-field-hint" style={{ color: '#6B7280', display: 'block', marginBottom: 4 }}>
+                        Cách đọc <strong>{kanjiSuggest.kana}</strong> — bấm để chọn:
+                      </span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                        {kanjiSuggest.candidates.map((ch) => (
+                          <button
+                            key={ch}
+                            type="button"
+                            onClick={() => applyKanji(ch, true)}
+                            title={`Chọn ${ch}`}
+                            style={{
+                              fontSize: 22, fontWeight: 700, lineHeight: 1,
+                              padding: '6px 10px', cursor: 'pointer',
+                              border: form.characterValue === ch ? '2px solid #2563EB' : '1px solid #D1D5DB',
+                              borderRadius: 8,
+                              background: form.characterValue === ch ? '#EFF6FF' : '#FFFFFF',
+                            }}
+                          >
+                            {ch}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="sfc-field-hint" style={{ color: '#6B7280' }}>
+                      Không tìm thấy Kanji JLPT cho cách đọc này. Bạn có thể nhập trực tiếp ký tự bên dưới.
+                    </span>
+                  )
+                )}
+              </div>
               <div className="sfc-field">
                 <label className="sfc-field-label sfc-field-label--req" htmlFor="sfc-field-char">Kanji (1 ký tự)</label>
                 <input
                   id="sfc-field-char"
                   className="sfc-input"
                   type="text"
-                  maxLength={1}
                   placeholder="Ví dụ: 水"
                   value={form.characterValue}
-                  onChange={(e) => set('characterValue', e.target.value.slice(0, 1))}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    // Lấy ký tự Kanji (CJK) đầu tiên nếu có (vd khi dán cả từ), không thì lấy ký tự cuối.
+                    // KHÔNG dùng maxLength để bộ gõ IME tiếng Nhật vẫn soạn chữ được.
+                    const cjk = v.match(/[㐀-鿿]/);
+                    applyKanji(cjk ? cjk[0] : v.slice(-1), false);
+                  }}
                   style={{ fontSize: 24, textAlign: 'center', fontWeight: 700 }}
                 />
+                {kanjiCheck.status === 'checking' && (
+                  <span className="sfc-field-hint" style={{ color: '#6B7280' }}>
+                    ⏳ Đang kiểm tra dữ liệu nét…
+                  </span>
+                )}
+                {kanjiCheck.status === 'valid' && (
+                  <span className="sfc-field-hint" style={{ color: '#16A34A' }}>
+                    ✔ Có dữ liệu nét — học viên tô được ({kanjiCheck.strokeCount} nét).
+                  </span>
+                )}
+                {kanjiCheck.status === 'invalid' && (
+                  <span className="sfc-field-error" style={{ color: 'var(--color-danger, #c0392b)' }}>
+                    ✖ Ký tự này chưa có dữ liệu nét (kana hoặc kanji riêng của Nhật chưa được hỗ trợ).
+                    Học viên sẽ không tô được — vui lòng chọn ký tự khác.
+                  </span>
+                )}
               </div>
               <div className="sfc-field">
                 <label className="sfc-field-label" htmlFor="sfc-field-onyomi">Âm on (Onyomi)</label>
@@ -544,10 +669,15 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
                   type="number"
                   min={1}
                   max={50}
-                  placeholder="Ví dụ: 4"
+                  placeholder="Tự động theo dữ liệu nét"
                   value={form.strokeCount}
-                  onChange={(e) => set('strokeCount', e.target.value === '' ? '' : Number(e.target.value))}
+                  readOnly
+                  title="Số nét được lấy tự động từ dữ liệu nét của ký tự."
+                  style={{ backgroundColor: '#F3F4F6', cursor: 'not-allowed' }}
                 />
+                <span className="sfc-field-hint" style={{ color: '#6B7280' }}>
+                  Tự động lấy từ dữ liệu nét — khớp đúng với phần luyện viết của học viên.
+                </span>
               </div>
             </>
           )}
