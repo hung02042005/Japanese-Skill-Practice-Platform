@@ -14,5 +14,8 @@ dist/
 login.json
 session.json
 
+# Certbot webroot (runtime ACME challenge files on VPS)
+certbot-www/
+
 # Logs
 *.log

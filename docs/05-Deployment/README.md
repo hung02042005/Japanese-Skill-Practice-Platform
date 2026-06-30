@@ -1,127 +1,134 @@
-# Hướng Dẫn Triển Khai (Deployment) — JLPT E-Learning
+# Tài Liệu Deploy — JLPT E-Learning (sakuji.online)
 
-Tài liệu này là **Nguồn chân lý duy nhất (Single Source of Truth)** cho toàn bộ quy trình đưa dự án lên Server thực tế. Chúng ta sử dụng kiến trúc **Docker** để tự động hóa và đồng nhất môi trường, giúp việc triển khai trở nên cực kỳ đơn giản.
-
-*Lưu ý: Các tài liệu cài đặt thủ công cũ (bare-metal) đã được chuyển vào thư mục `legacy/` để tham khảo nếu cần.*
+> **Cập nhật:** 2026-06-30 | **Stack:** Spring Boot 3.3 · Java 21 · React · SQL Server 2022 · Redis · Docker · Nginx
 
 ---
 
-## 1. Tổng Quan Kiến Trúc
+## Kiến Trúc Hệ Thống
 
-Hệ thống được đóng gói hoàn toàn trong Docker với 3 thành phần (Containers) chính:
-
-```text
+```
 Người dùng
-    │ (Cổng 80)
+    │ HTTPS
     ▼
-┌─────────────────────────────────┐
-│           [Nginx]               │
-│  Phục vụ giao diện React tĩnh   │
-└───────────────┬─────────────────┘
-                │ Proxy các request /api/*
-                ▼
-┌─────────────────────────────────┐
-│     [Spring Boot Backend]       │
-│  Xử lý logic, Auth, Chấm điểm   │
-└───────────────┬─────────────────┘
-                │ Lưu trữ dữ liệu
-                ▼
-┌─────────────────────────────────┐
-│   [SQL Server (hoặc Azure)]     │
-│        Database Hệ Thống        │
-└─────────────────────────────────┘
+┌──────────────────────────────────┐
+│  Cloudflare (đã có, MIỄN PHÍ)   │
+│  CDN · WAF · DDoS · SSL          │
+│  Domain: sakuji.online           │
+└────────────────┬─────────────────┘
+                 │ HTTP (ẩn IP thật)
+                 ▼
+┌──────────────────────────────────┐
+│  Máy chạy hệ thống               │
+│  (Laptop cá nhân HOẶC VPS)       │
+│                                  │
+│  ┌───────────────────────────┐   │
+│  │     Docker Compose        │   │
+│  │  Nginx (frontend :80)     │   │
+│  │  Spring Boot (:8080)      │   │
+│  │  SQL Server (:1433)       │   │
+│  │  Redis (:6379)            │   │
+│  └───────────────────────────┘   │
+└──────────────────────────────────┘
+```
+
+Cloudflare đứng trước, lo toàn bộ SSL/HTTPS và bảo mật — máy chạy hệ thống chỉ cần HTTP cổng 80.
+
+---
+
+## Chọn Approach Phù Hợp
+
+Có **2 cách deploy**, chọn theo tình huống:
+
+| Tiêu chí | Approach A: Demo (Laptop) | Approach B: VPS Thật |
+|---|---|---|
+| **Mục đích** | Bảo vệ đồ án, demo ngắn hạn | Website chạy 24/7 ổn định |
+| **Chi phí** | 0 đồng | ~$7–24/tháng (≈₫175k–600k) |
+| **Uptime** | Chỉ khi máy bật | 24/7 tự động |
+| **Độ phức tạp** | Đơn giản | Trung bình |
+| **Khi máy tắt** | Website chết | Website vẫn sống |
+| **Phù hợp khi** | Còn trong thời gian bảo vệ, chưa có ngân sách | Muốn website thật sự ổn định |
+
+---
+
+## Bảng Chi Phí Provider (nếu chọn Approach B)
+
+| Provider | Gói | Giá/tháng | RAM | Ghi chú |
+|---|---|---|---|---|
+| **Azure for Students** | B2s VM | **$0** (dùng $100 credit) | 4 GB | Dùng email trường, không cần thẻ |
+| **Contabo** | Cloud VPS S | ~$7 (~₫175k) | 8 GB | Rẻ nhất, datacenter EU/US |
+| **Hetzner** | CX32 | ~$8 (~₫200k) | 8 GB | Ổn định, datacenter EU |
+| **DigitalOcean** | Basic 4GB | $24 (~₫600k) | 4 GB | Docs tốt, Singapore (gần VN) |
+| **Vultr** | Regular 4GB | $24 (~₫600k) | 4 GB | Singapore available |
+| **VNG Cloud** | VM | ~₫200k | 2 GB ⚠️ | Trong nước, nhưng RAM hơi thấp |
+
+> **Khuyến nghị:** Nếu có email trường → dùng **Azure for Students** ($100 free, đủ chạy 3 tháng).
+> Sau khi hết credit → chuyển sang **Contabo** ($7/tháng, 8GB RAM, đủ thoải mái).
+
+---
+
+## Cấu Trúc Tài Liệu
+
+```
+docs/05-Deployment/
+├── README.md                       ← Bạn đang đọc — tổng quan & chọn approach
+│
+├── A-demo-cloudflare-tunnel.md     ← Approach A: Demo đồ án (laptop + Cloudflare Tunnel)
+│                                      Dùng khi: muốn online ngay, 0 đồng
+│
+├── B-deploy-vps.md                 ← Approach B: Deploy lên VPS thật
+│                                      Dùng khi: cần 24/7, đã chọn được provider
+│
+├── C-cloudflare-dns-ssl.md         ← Cấu hình Cloudflare (dùng chung cho cả A và B khi lên VPS)
+│                                      Đổi DNS sakuji.online → trỏ về VPS
+│
+├── D-van-hanh-backup-monitoring.md ← Vận hành hằng ngày, backup DB, monitoring
+│                                      Đọc sau khi đã deploy xong
+│
+└── legacy/                         ← Tài liệu cũ, chỉ để tham khảo
 ```
 
 ---
 
-## 2. Yêu Cầu Máy Chủ (VPS)
+## Thứ Tự Đọc Tài Liệu
 
-Để hệ thống (đặc biệt là Spring Boot và Database) hoạt động mượt mà, máy chủ cần cấu hình tối thiểu:
+### Nếu chọn Approach A (Demo ngay)
 
-- **CPU:** Tối thiểu 2 vCPU (Khuyến nghị 4 vCPU).
-- **RAM:** Tối thiểu 4 GB (Khuyến nghị 8 GB nếu chạy chung SQL Server trên cùng VPS).
-- **Disk:** 20 GB SSD trở lên.
-- **OS:** Ubuntu 22.04 LTS (Hoặc Windows có cài Docker Desktop).
-
----
-
-## 3. Hướng Dẫn Triển Khai (Core)
-
-> **Điều kiện kiên quyết:** Máy chủ phải được cài đặt sẵn [Docker](https://docs.docker.com/engine/install/) và [Docker Compose](https://docs.docker.com/compose/install/).
-
-### Bước 1: Chuẩn bị mã nguồn
-Clone dự án về máy chủ:
-```bash
-git clone <repo-url>
-cd Japanese-Skill-Practice-Platform
+```
+README.md → A-demo-cloudflare-tunnel.md → D-van-hanh-backup-monitoring.md
 ```
 
-### Bước 2: Thiết lập Biến Môi Trường (Cực kỳ quan trọng)
-Tạo file `.env` cho Backend:
-```bash
-cp apps/backend/.env.example apps/backend/.env
+### Nếu chọn Approach B (VPS thật)
+
 ```
-Mở file `apps/backend/.env` và điền các thông tin bảo mật:
-- `DATABASE_URL`: Đường dẫn tới SQL Server (VD: Azure SQL).
-- `DATABASE_USERNAME` & `DATABASE_PASSWORD`
-- `JWT_SECRET`: Chuỗi bảo mật tự sinh (dài ít nhất 64 ký tự).
-- `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET`: Lấy từ Google Cloud Console.
-
-### Bước 3: Khởi chạy bằng 1 lệnh duy nhất
-Tại thư mục gốc của dự án (nơi có file `docker-compose.yml`), chạy:
-```bash
-docker-compose up -d --build
+README.md → B-deploy-vps.md → C-cloudflare-dns-ssl.md → D-van-hanh-backup-monitoring.md
 ```
-Lệnh này sẽ tự động:
-1. Tải các image cần thiết (Java, Node, Nginx).
-2. Build code React ra file tĩnh.
-3. Build code Java ra file `.jar`.
-4. Bật tất cả các dịch vụ lên.
-
-Website của bạn sẽ lập tức có thể truy cập tại địa chỉ IP của VPS ở cổng `80`.
 
 ---
 
-## 4. Kiểm Tra Hệ Thống (Smoke Tests)
+## Yêu Cầu Tối Thiểu
 
-Sau khi hệ thống báo đèn xanh chạy thành công, hãy tự tay kiểm tra các luồng nghiệp vụ quan trọng sau để đảm bảo không có lỗi:
+Dù chọn approach nào, máy chạy hệ thống phải đáp ứng:
 
-- [ ] Đăng ký tài khoản mới → Cột user trong DB tăng lên.
-- [ ] Đăng nhập email/password → Vào được dashboard.
-- [ ] **Đăng nhập Google OAuth** → Redirect thành công (Nếu lỗi origin_mismatch, xem phần Xử lý sự cố).
-- [ ] Xem danh sách khóa học theo cấp độ (N5-N1).
-- [ ] Làm bài Quiz → Nộp bài → Nhận được điểm và lưu lịch sử.
-- [ ] **Tải ảnh OCR** lên mạng → File lưu thành công vào Volume `jlpt-uploads` và nhận về `jobId`.
-- [ ] Đăng nhập tài khoản Staff/Admin → Vào được trang quản lý.
-
----
-
-## 5. Cẩm Nang Lệnh Docker (Cheatsheet)
-
-Bạn chỉ cần nhớ các lệnh sau để quản lý hệ thống hàng ngày:
-
-| Lệnh | Chức năng & Tình huống sử dụng |
-|------|--------------------------------|
-| `docker-compose up -d --build` | **Cập nhật code mới:** Chạy mỗi khi bạn sửa code, đổi cấu hình `.env` hoặc kéo code mới từ Git về. Nó tự động build và chạy lại phần bị thay đổi. |
-| `docker-compose down` | **Tắt toàn bộ hệ thống:** Dừng mọi container, giải phóng mạng. Dữ liệu (uploads, DB) vẫn được giữ an toàn trong Volume. |
-| `docker-compose logs -f` | **Xem màn hình Log:** Dùng để soi lỗi API, xem log truy cập Nginx. Nhấn `Ctrl+C` để thoát xem. |
-| `docker ps` | Hiển thị các hộp (container) đang chạy để biết cái nào đang sập, cái nào sống. |
-| `docker exec -it <tên_container> /bin/sh` | **Chui vào máy ảo:** Dùng khi muốn soi cấu hình hoặc kiểm tra file được lưu trực tiếp trong container. |
-| `docker system prune` | **Dọn Rác:** Xóa các image cũ, container tắt để giải phóng hàng GB dung lượng. Chạy khi máy báo đầy ổ cứng. |
+| Tài nguyên | Tối thiểu | Khuyến nghị | Lý do |
+|---|---|---|---|
+| **RAM** | 4 GB | 8 GB | SQL Server cần 2GB riêng |
+| **CPU** | 2 vCPU | 4 vCPU | JVM + SQL Server nặng |
+| **Disk** | 20 GB SSD | 50 GB | DB + uploads + Docker images |
+| **OS** | Ubuntu 22.04 (VPS) / Windows 10+ (laptop) | Ubuntu 22.04 | |
+| **Kiến trúc** | x86-64 | x86-64 | SQL Server không chạy trên ARM |
 
 ---
 
-## 6. Xử Lý Sự Cố Thường Gặp (Troubleshooting)
+## Checklist Nhanh Sau Khi Deploy
 
-### 6.1 Lỗi Google API (400: origin_mismatch)
-- **Triệu chứng:** Khi bấm Đăng nhập bằng Google, hiện ra lỗi 400.
-- **Nguyên nhân:** Tên miền hoặc IP hiện tại (ví dụ: `http://localhost` hay `http://ip-may-chu`) chưa được khai báo vào Google.
-- **Khắc phục:** Vào Google Cloud Console → API & Services → Credentials. Tìm đến OAuth Client ID của bạn và thêm đường dẫn hiện tại vào **CẢ 2 mục**: "Authorized JavaScript origins" và "Authorized redirect URIs". Đợi 5 phút và thử lại trên trình duyệt Ẩn danh.
+Sau khi hệ thống lên, kiểm tra tất cả các mục sau:
 
-### 6.2 Lỗi Kẹt Cổng (Ports are not available)
-- **Triệu chứng:** Báo lỗi `listen tcp 0.0.0.0:8080: bind`.
-- **Nguyên nhân:** Có một ứng dụng khác (hoặc bản build chạy bằng tay `java -jar`) đang chiếm dụng cổng 8080 hoặc 80.
-- **Khắc phục:** Tắt ứng dụng đang chạy (hoặc tắt cửa sổ Terminal cũ) rồi bật lại Docker.
-
-### 6.3 Code mới không nhận (Vẫn chạy bản cũ)
-- **Khắc phục:** Hãy chắc chắn bạn luôn kèm cờ `--build` khi bật lại: `docker-compose up -d --build`. Lệnh này ép Docker phải phá bỏ cache cũ và đóng gói lại code mới nhất.
+- [ ] `https://sakuji.online` mở được, không có cảnh báo SSL
+- [ ] Đăng ký tài khoản mới → nhận được email xác nhận
+- [ ] Đăng nhập email/password → vào được dashboard
+- [ ] Đăng nhập Google OAuth → redirect thành công
+- [ ] Xem danh sách khóa học theo cấp độ N5–N1
+- [ ] Làm bài Quiz → nộp → nhận điểm, lưu vào lịch sử
+- [ ] Upload ảnh OCR → nhận `jobId`, poll kết quả
+- [ ] Đăng nhập Staff → vào được trang quản lý nội dung
+- [ ] Đăng nhập Admin → vào được trang quản trị người dùng

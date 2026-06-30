@@ -35,6 +35,9 @@ services:
         required: false
     environment:
       - UPLOAD_DIR=/app/uploads
+      - DATABASE_URL=jdbc:sqlserver://db:1433;databaseName=JLPT_LearningDB;encrypt=true;trustServerCertificate=true
+      - DATABASE_USERNAME=sa
+      - DATABASE_PASSWORD=${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in .env}
     volumes:
       - jlpt-uploads:/app/uploads
     restart: unless-stopped
@@ -42,6 +45,8 @@ services:
       # Chỉ bind 127.0.0.1: mọi traffic public phải đi qua Nginx (frontend), không expose Spring Boot trực tiếp
       - "127.0.0.1:8080:8080"
     depends_on:
+      db:
+        condition: service_healthy
       redis:
         condition: service_started
 

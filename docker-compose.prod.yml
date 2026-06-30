@@ -1,0 +1,19 @@
+# Override dùng trên VPS production, sau khi đã trỏ DNS xong (Bước 1).
+# Chạy cùng file gốc:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Thêm port 443 + mount chứng chỉ SSL (Let's Encrypt) và webroot dùng để
+# certbot xác minh domain / gia hạn (không cần dừng Nginx khi renew).
+#
+# QUAN TRỌNG: ./certbot-www là bind-mount tới thư mục thật trên VPS host
+# (không phải Docker named volume), vì certbot chạy trực tiếp trên host
+# (--webroot -w /path/to/project/certbot-www) cần ghi vào đúng thư mục
+# mà container frontend đang đọc.
+
+services:
+  frontend:
+    ports:
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./certbot-www:/var/www/certbot
