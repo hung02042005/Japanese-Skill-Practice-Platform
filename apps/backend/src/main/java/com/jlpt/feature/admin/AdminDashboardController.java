@@ -1,8 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.admin;
 
-import com.jlpt.feature.admin.dto.AdminDashboardSummaryResponse;
-import com.jlpt.feature.admin.dto.DashboardResponse;
+import com.jlpt.feature.admin.dto.AdminDashboardResponse;
 import com.jlpt.shared.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +20,7 @@ public class AdminDashboardController {
     private final AdminDashboardService adminDashboardService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<DashboardResponse>> getDashboard() {
-        return ResponseEntity.ok(ApiResponse.success(adminDashboardService.getAdminDashboard()));
-    }
-
-    @GetMapping("/summary")
-    public ResponseEntity<ApiResponse<AdminDashboardSummaryResponse>> getSummary() {
-        return ResponseEntity.ok(ApiResponse.success(adminDashboardService.getSummary()));
+    public ResponseEntity<ApiResponse<AdminDashboardResponse>> getDashboard() {
+        return ResponseEntity.ok(ApiResponse.success(adminDashboardService.getOverview()));
     }
 }

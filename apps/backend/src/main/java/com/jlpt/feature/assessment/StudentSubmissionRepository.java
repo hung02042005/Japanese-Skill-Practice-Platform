@@ -26,9 +26,4 @@ public interface StudentSubmissionRepository extends JpaRepository<StudentSubmis
     @Query("SELECT COUNT(s) FROM StudentSubmission s WHERE s.status IN :statuses")
     long countByStatusIn(
             @Param("statuses") java.util.Collection<StudentSubmission.SubmissionStatus> statuses);
-
-    @Query("SELECT COUNT(s) FROM StudentSubmission s WHERE s.status = :status AND s.gradedAt >= :after")
-    long countByStatusAndGradedAtAfter(
-            @Param("status") StudentSubmission.SubmissionStatus status,
-            @Param("after") java.time.LocalDateTime after);
 }

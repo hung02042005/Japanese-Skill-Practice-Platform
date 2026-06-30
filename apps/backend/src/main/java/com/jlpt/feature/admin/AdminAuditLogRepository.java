@@ -25,9 +25,6 @@ public interface AdminAuditLogRepository extends JpaRepository<AdminAuditLog, Lo
             @Param("targetTable") String targetTable,
             Pageable pageable);
 
-    /** Recent activity cho dashboard. */
-    List<AdminAuditLog> findTop10ByOrderByCreatedAtDesc();
-
     /** Lấy phản hồi mới nhất (reject/request_changes) cho một nội dung cụ thể. */
     Optional<AdminAuditLog> findFirstByTargetIdAndTargetTableAndActionInOrderByCreatedAtDesc(
             Long targetId, String targetTable, List<String> actions);

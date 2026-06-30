@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getSettings, updateSetting, testSmtp } from '../../../api/adminService';
+import { getSettings, updateSettings, testSmtp } from '../../../api/adminService';
 
 /* ─── SMTP Server ─────────────────────────────────────────────────────────── */
 
@@ -110,11 +110,11 @@ function SmtpCard({ addToast }) {
     e.preventDefault();
     setSaving(true);
     try {
-      await Promise.all(
-        SMTP_FIELDS
-          .filter((f) => f.key !== 'smtp_password' || form.smtp_password)
-          .map((f) => updateSetting('smtp', f.key, form[f.key] ?? ''))
-      );
+      // Gửi mọi field; BE tự bỏ qua mật khẩu để trống (giữ giá trị cũ).
+      await updateSettings('smtp', SMTP_FIELDS.map((f) => ({
+        settingKey: f.key,
+        settingValue: form[f.key] ?? '',
+      })));
       addToast('success', 'Đã lưu cài đặt SMTP thành công');
     } catch {
       addToast('error', 'Lưu thất bại. Kiểm tra kết nối backend.');
@@ -250,9 +250,10 @@ function EmailTypeCard({ group, title, description, icon, addToast }) {
     e.preventDefault();
     setSaving(true);
     try {
-      await Promise.all(
-        EMAIL_TYPE_FIELDS.map((f) => updateSetting(group, f.key, form[f.key] ?? ''))
-      );
+      await updateSettings(group, EMAIL_TYPE_FIELDS.map((f) => ({
+        settingKey: f.key,
+        settingValue: form[f.key] ?? '',
+      })));
       addToast('success', `Đã lưu cài đặt "${title}" thành công`);
     } catch {
       addToast('error', 'Lưu thất bại. Kiểm tra kết nối backend.');

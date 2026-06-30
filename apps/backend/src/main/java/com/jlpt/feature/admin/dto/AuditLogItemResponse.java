@@ -12,6 +12,10 @@ public class AuditLogItemResponse {
     private String actionType;
     private String targetEmail;
     private String adminEmail;
+    /** Tên người thực hiện (Admin/Staff/Manager/Student). */
+    private String actorName;
+    /** Vai trò người thực hiện: ADMIN | MANAGER | STAFF | STUDENT | SYSTEM. */
+    private String actorRole;
     private String description;
     private LocalDateTime createdAt;
 }

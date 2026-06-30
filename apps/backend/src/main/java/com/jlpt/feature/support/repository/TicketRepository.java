@@ -49,11 +49,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("SELECT COUNT(t) FROM Ticket t WHERE t.status = :status")
     long countByStatus(@Param("status") Ticket.TicketStatus status);
 
-    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.status = :status AND t.resolvedAt >= :after")
-    long countByStatusAndResolvedAtAfter(
-            @Param("status") Ticket.TicketStatus status,
-            @Param("after") java.time.LocalDateTime after);
-
     @Query("SELECT COUNT(t) FROM Ticket t WHERE t.assignedTo.id = :staffId AND t.status = :status")
     long countByAssignedToIdAndStatus(
             @Param("staffId") Long staffId, @Param("status") Ticket.TicketStatus status);

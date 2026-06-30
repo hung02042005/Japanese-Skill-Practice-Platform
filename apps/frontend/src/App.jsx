@@ -33,7 +33,6 @@ import ManageUsers     from './pages/admin/ManageUsers';
 import AdminDashboard  from './pages/admin/AdminDashboard';
 import AdminSettings   from './pages/admin/AdminSettings';
 import AdminReports    from './pages/admin/AdminReports';
-import AdminContent    from './pages/admin/AdminContent';
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute   from './components/common/AdminRoute';
 import StaffRoute        from './components/common/StaffRoute';
@@ -129,7 +128,6 @@ function App() {
         {/* Protected — Admin */}
         <Route path="/admin"           element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/admin/users"     element={<AdminRoute><ManageUsers /></AdminRoute>} />
-        <Route path="/admin/content"   element={<AdminRoute><AdminContent /></AdminRoute>} />
         <Route path="/admin/settings"  element={<AdminRoute><AdminSettings /></AdminRoute>} />
         <Route path="/admin/reports"   element={<AdminRoute><AdminReports /></AdminRoute>} />
 

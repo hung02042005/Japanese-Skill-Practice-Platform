@@ -2,6 +2,7 @@
 package com.jlpt.feature.admin;
 
 import com.jlpt.feature.admin.dto.request.UpdateSettingRequest;
+import com.jlpt.feature.admin.dto.request.UpdateSettingsBatchRequest;
 import com.jlpt.feature.admin.dto.response.SettingResponse;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
@@ -40,6 +41,15 @@ public class AdminSettingsController {
             @PathVariable String key,
             @Valid @RequestBody UpdateSettingRequest request) {
         SettingResponse data = settingsService.updateSetting(group, key, request.getSettingValue());
+        return ResponseEntity.ok(ApiResponse.success("Đã cập nhật cài đặt thành công", data));
+    }
+
+    /** PUT /api/admin/settings/{group} — cập nhật nhiều setting cùng nhóm trong 1 request. */
+    @PutMapping("/{group}")
+    public ResponseEntity<ApiResponse<List<SettingResponse>>> updateSettings(
+            @PathVariable String group,
+            @Valid @RequestBody UpdateSettingsBatchRequest request) {
+        List<SettingResponse> data = settingsService.updateSettings(group, request.getSettings());
         return ResponseEntity.ok(ApiResponse.success("Đã cập nhật cài đặt thành công", data));
     }
 

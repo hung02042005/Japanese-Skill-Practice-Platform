@@ -1,6 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.admin;
 
+import com.jlpt.feature.admin.dto.AdminDashboardResponse;
 import com.jlpt.feature.admin.dto.AdminDashboardSummaryResponse;
 import com.jlpt.feature.admin.dto.DashboardResponse;
 import com.jlpt.feature.assessment.StudentSubmission;
@@ -29,48 +30,41 @@ public class AdminDashboardService {
     private final AdminUserRepository adminUserRepository;
     private final TicketRepository ticketRepository;
     private final TestAttemptRepository testAttemptRepository;
-    private final AdminAuditLogRepository adminAuditLogRepository;
+    private final MaintenanceModeService maintenanceModeService;
 
     /** Sở hữu bởi Người 3 — optional để không vỡ context khi chưa sẵn sàng. */
     @Autowired(required = false)
     private StudentSubmissionRepository submissionRepository;
 
+    /** GET /api/admin/dashboard — gộp summary + kpi trong 1 request. */
     @Transactional(readOnly = true)
-    public DashboardResponse getAdminDashboard() {
+    public AdminDashboardResponse getOverview() {
+        return AdminDashboardResponse.builder()
+                .summary(buildSummary())
+                .kpi(buildKpi())
+                .build();
+    }
+
+    private DashboardResponse buildKpi() {
         LocalDateTime monthStart = LocalDate.now().withDayOfMonth(1).atStartOfDay();
 
         long pending = 0;
-        long gradedThisMonth = 0;
         if (submissionRepository != null) {
             pending = submissionRepository.countByStatusIn(List.of(
                     StudentSubmission.SubmissionStatus.PENDING,
                     StudentSubmission.SubmissionStatus.AI_GRADED));
-            gradedThisMonth = submissionRepository.countByStatusAndGradedAtAfter(
-                    StudentSubmission.SubmissionStatus.GRADED, monthStart);
         }
 
-        var recent = adminAuditLogRepository.findTop10ByOrderByCreatedAtDesc().stream()
-                .map(this::toActivityItem)
-                .toList();
-
         return DashboardResponse.builder()
-                .generatedAt(LocalDateTime.now())
-                .totalStudents(studentUserRepository.count())
-                .activeStudents(studentUserRepository.countByStatus(StudentUser.StudentStatus.ACTIVE))
                 .suspendedStudents(studentUserRepository.countByStatus(StudentUser.StudentStatus.SUSPENDED))
                 .newStudentsThisMonth(studentUserRepository.countByCreatedAtAfter(monthStart))
                 .openTickets(ticketRepository.countByStatus(Ticket.TicketStatus.OPEN))
                 .inProgressTickets(ticketRepository.countByStatus(Ticket.TicketStatus.IN_PROGRESS))
-                .resolvedTicketsThisMonth(ticketRepository.countByStatusAndResolvedAtAfter(
-                        Ticket.TicketStatus.RESOLVED, monthStart))
                 .pendingSubmissions(pending)
-                .gradedSubmissionsThisMonth(gradedThisMonth)
-                .recentActivity(recent)
                 .build();
     }
 
-    @Transactional(readOnly = true)
-    public AdminDashboardSummaryResponse getSummary() {
+    private AdminDashboardSummaryResponse buildSummary() {
         LocalDateTime dayStart = LocalDate.now().atStartOfDay();
         long totalUsers =
                 studentUserRepository.count() + staffUserRepository.count() + adminUserRepository.count();
@@ -78,31 +72,12 @@ public class AdminDashboardService {
                 .totalUsers(totalUsers)
                 .activeToday(studentUserRepository.countByLastActivityDate(LocalDate.now()))
                 .quizAttemptsToday(testAttemptRepository.countByStartedAtAfter(dayStart))
-                .systemStatus("OK")
+                .systemStatus(resolveSystemStatus())
                 .build();
     }
 
-    private DashboardResponse.RecentActivityItem toActivityItem(AdminAuditLog l) {
-        String actorName;
-        String actorType;
-        if (l.getAdminActor() != null) {
-            actorName = l.getAdminActor().getFullName();
-            actorType = "ADMIN";
-        } else if (l.getStaffActor() != null) {
-            actorName = l.getStaffActor().getFullName();
-            actorType = "STAFF";
-        } else if (l.getStudentActor() != null) {
-            actorName = l.getStudentActor().getFullName();
-            actorType = "STUDENT";
-        } else {
-            actorName = "Hệ thống";
-            actorType = "SYSTEM";
-        }
-        return DashboardResponse.RecentActivityItem.builder()
-                .actorName(actorName)
-                .actorType(actorType)
-                .action(l.getAction())
-                .timestamp(l.getCreatedAt())
-                .build();
+    /** Trạng thái hệ thống thật: phản ánh cờ bảo trì trong settings (group=system). */
+    private String resolveSystemStatus() {
+        return maintenanceModeService.isEnabled() ? "MAINTENANCE" : "OK";
     }
 }

@@ -3,27 +3,28 @@ import AdminTopNav                                  from '../../components/layou
 import { AdminPageHeader }                          from '../../components/admin/AdminPageHeader';
 import { ToastContainer, useToast }                from '../../components/common/Toast';
 import { DashboardStatRow }                        from '../../components/admin/DashboardStatRow';
+import { DashboardKpiRow }                         from '../../components/admin/DashboardKpiRow';
 import { DashboardActivityLog }                    from '../../components/admin/DashboardActivityLog';
 import { DashboardQuickActions }                   from '../../components/admin/DashboardQuickActions';
 import { IcAdminChip }                             from '../../components/admin/ManageUsersIcons';
-import { getDashboardSummary, getAuditLog }        from '../../api/adminService';
+import { getDashboardOverview, getAuditLog } from '../../api/adminService';
 import './AdminDashboard.css';
 
 export default function AdminDashboard() {
-  const [summary,      setSummary]  = useState(null);
-  const [logs,         setLogs]     = useState(null);
-  const [isLoadingSum, setLoadSum]  = useState(true);
-  const [isLoadingLog, setLoadLog]  = useState(true);
+  const [overview,      setOverview]  = useState(null);
+  const [logs,          setLogs]      = useState(null);
+  const [isLoadingOv,   setLoadOv]    = useState(true);
+  const [isLoadingLog,  setLoadLog]   = useState(true);
   const { toasts, removeToast } = useToast();
 
-  const fetchSummary = useCallback(async () => {
-    setLoadSum(true);
+  const fetchOverview = useCallback(async () => {
+    setLoadOv(true);
     try {
-      setSummary(await getDashboardSummary());
+      setOverview(await getDashboardOverview());
     } catch {
-      setSummary(null);
+      setOverview(null);
     } finally {
-      setLoadSum(false);
+      setLoadOv(false);
     }
   }, []);
 
@@ -39,7 +40,7 @@ export default function AdminDashboard() {
     }
   }, []);
 
-  useEffect(() => { fetchSummary(); fetchLogs(); }, [fetchSummary, fetchLogs]);
+  useEffect(() => { fetchOverview(); fetchLogs(); }, [fetchOverview, fetchLogs]);
 
   return (
     <div className="adb-page">
@@ -50,15 +51,21 @@ export default function AdminDashboard() {
         chipLabel="Tổng quan"
         title="Bảng Điều Khiển"
         subtitle="Theo dõi hoạt động hệ thống theo thời gian thực"
-        mascotVariant={isLoadingSum ? 'thinking' : 'happy'}
+        mascotVariant={isLoadingOv ? 'thinking' : 'happy'}
         mascotSize={100}
       />
 
       <main className="adb-body">
         <DashboardStatRow
-          summary={summary}
-          isLoading={isLoadingSum}
-          onRetry={fetchSummary}
+          summary={overview?.summary}
+          isLoading={isLoadingOv}
+          onRetry={fetchOverview}
+        />
+
+        <DashboardKpiRow
+          data={overview?.kpi}
+          isLoading={isLoadingOv}
+          onRetry={fetchOverview}
         />
 
         <div className="adb-content-row">

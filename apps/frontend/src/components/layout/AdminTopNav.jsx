@@ -41,21 +41,6 @@ const ADMIN_TABS = [
     ),
   },
   {
-    id: 'manage-content',
-    label: 'Nội dung',
-    route: '/admin/content',
-    icon: (
-      // Cuộn giấy Nhật (巻物) — quản lý nội dung học liệu
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <rect x="6" y="7" width="12" height="10" rx="1"/>
-        <ellipse cx="6" cy="12" rx="1.5" ry="5"/>
-        <ellipse cx="18" cy="12" rx="1.5" ry="5"/>
-        <line x1="9" y1="10.5" x2="15" y2="10.5"/>
-        <line x1="9" y1="13.5" x2="13" y2="13.5"/>
-      </svg>
-    ),
-  },
-  {
     id: 'reports',
     label: 'Báo cáo',
     route: '/admin/reports',
