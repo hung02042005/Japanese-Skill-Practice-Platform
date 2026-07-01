@@ -9,6 +9,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import com.jlpt.feature.admin.SystemSettingRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSender mailSender;
+    private final SystemSettingRepository settingRepository;
 
     @Value("${spring.mail.username}")
     private String fromEmail;
@@ -134,17 +136,42 @@ public class EmailService {
     }
 
     private void sendHtmlEmail(String to, String subject, String htmlBody) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setFrom(fromEmail);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(htmlBody, true);
-            mailSender.send(message);
-        } catch (Exception e) {
-            log.error("[EmailService] Failed to send email to {}: {}", to, e.getMessage(), e);
-            throw new RuntimeException("Gửi email thất bại tới " + to, e);
+        String finalFromEmail = settingRepository.findBySettingGroupAndSettingKey("smtp", "from_email")
+                .map(s -> s.getSettingValue())
+                .orElse(fromEmail);
+        String finalFromName = settingRepository.findBySettingGroupAndSettingKey("smtp", "from_name")
+                .map(s -> s.getSettingValue())
+                .orElse("JLPT Platform");
+
+        int maxRetries = 3;
+        int retryDelayMs = 2000;
+        for (int attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                MimeMessage message = mailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+                try {
+                    helper.setFrom(finalFromEmail, finalFromName);
+                } catch (Exception ex) {
+                    helper.setFrom(finalFromEmail);
+                }
+                helper.setTo(to);
+                helper.setSubject(subject);
+                helper.setText(htmlBody, true);
+                mailSender.send(message);
+                return; // Success
+            } catch (Exception e) {
+                log.warn("[EmailService] Failed to send email to {} (Attempt {}/{}): {}", to, attempt, maxRetries, e.getMessage());
+                if (attempt == maxRetries) {
+                    log.error("[EmailService] All attempts failed. Could not send email to {}", to, e);
+                    throw new RuntimeException("Gửi email thất bại tới " + to + " sau " + maxRetries + " lần thử", e);
+                }
+                try {
+                    Thread.sleep(retryDelayMs);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Tiến trình gửi email bị gián đoạn", ie);
+                }
+            }
         }
     }
 

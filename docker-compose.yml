@@ -8,6 +8,8 @@ services:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in .env}"
       MSSQL_PID: "Developer"
+    ports:
+      - "14330:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
     restart: unless-stopped

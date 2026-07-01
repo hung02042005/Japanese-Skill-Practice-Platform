@@ -35,6 +35,8 @@ import com.jlpt.shared.exception.BusinessException;
 import com.jlpt.shared.security.JwtProvider;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import org.springframework.context.ApplicationEventPublisher;
+import com.jlpt.feature.auth.event.SendVerificationEmailEvent;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
@@ -69,6 +71,7 @@ public class AuthService {
     private final AuthTokenRepository authTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final ApplicationEventPublisher eventPublisher;
     private final AdminAuthService adminAuthService;
     private final com.jlpt.feature.admin.MaintenanceModeService maintenanceModeService;
     private final Map<String, Deque<LocalDateTime>> checkAccountTypeAttempts = new ConcurrentHashMap<>();
@@ -296,8 +299,8 @@ public class AuthService {
                 .build();
         authTokenRepository.save(tokenEntity);
 
-        log.info("[AuthService] Registration successful for {}, sending verification email.", savedUser.getEmail());
-        emailService.sendVerificationEmail(savedUser.getEmail(), verificationToken);
+        log.info("[AuthService] Registration successful for {}, sending verification email event.", savedUser.getEmail());
+        eventPublisher.publishEvent(new SendVerificationEmailEvent(savedUser.getEmail(), verificationToken));
 
         return mapToStudentResponse(savedUser);
     }
@@ -396,6 +399,13 @@ public class AuthService {
             throw new BusinessException(400, "ALREADY_VERIFIED", "Tài khoản đã được xác minh hoặc bị khóa");
         }
 
+        Optional<AuthToken> lastToken = authTokenRepository.findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(
+                user.getId(), AuthToken.TokenType.EMAIL_VERIFICATION);
+
+        if (lastToken.isPresent() && lastToken.get().getCreatedAt().plusSeconds(60).isAfter(LocalDateTime.now())) {
+            throw new BusinessException(429, "TOO_MANY_REQUESTS", "Vui lòng đợi 60 giây trước khi yêu cầu gửi lại email");
+        }
+
         authTokenRepository.deleteByStudentIdAndTokenType(user.getId(), AuthToken.TokenType.EMAIL_VERIFICATION);
 
         String verificationToken = UUID.randomUUID().toString();
@@ -408,8 +418,8 @@ public class AuthService {
                 .build();
         authTokenRepository.save(tokenEntity);
 
-        log.info("[AuthService] Resending verification email to: {}", user.getEmail());
-        emailService.sendVerificationEmail(user.getEmail(), verificationToken);
+        log.info("[AuthService] Resending verification email event to: {}", user.getEmail());
+        eventPublisher.publishEvent(new SendVerificationEmailEvent(user.getEmail(), verificationToken));
     }
 
     @Transactional

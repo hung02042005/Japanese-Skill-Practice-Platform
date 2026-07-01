@@ -16,6 +16,17 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class AsyncConfig implements AsyncConfigurer {
 
     @Override
+    public java.util.concurrent.Executor getAsyncExecutor() {
+        org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor executor = new org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(50);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("Async-");
+        executor.initialize();
+        return executor;
+    }
+
+    @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return (Throwable ex, Method method, Object... params) -> log.error(
                 "[Async] Exception in {}.{}(): {}",

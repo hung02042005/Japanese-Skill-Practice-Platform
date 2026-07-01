@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdminSettingsService {
 
     private static final Set<String> ALLOWED_GROUPS = Set.of(
@@ -59,6 +61,9 @@ public class AdminSettingsService {
             }
             result.add(upsert(group, item.getSettingKey(), item.getSettingValue()));
         }
+        if ("smtp".equals(group)) {
+            applySmtpSettingsToMailSender();
+        }
         return result;
     }
 
@@ -78,6 +83,10 @@ public class AdminSettingsService {
         setting.setSettingValue(value);
         settingRepository.save(setting);
 
+        if ("smtp".equals(group)) {
+            applySmtpSettingsToMailSender();
+        }
+
         return SettingResponse.builder()
                 .settingKey(key)
                 .settingValue(isPassword(key) ? "" : value)
@@ -90,8 +99,61 @@ public class AdminSettingsService {
         try {
             mailSender.testConnection();
         } catch (Exception e) {
+            log.error("[AdminSettingsService] SMTP Test failed: ", e);
             throw new BusinessException(502, "SMTP_TEST_FAILED",
-                    "Kết nối SMTP thất bại: " + e.getMessage());
+                    "Kết nối SMTP thất bại. Vui lòng kiểm tra lại thông tin cấu hình. Chi tiết: " + e.getMessage());
+        }
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void applySmtpSettingsToMailSender() {
+        try {
+            settingRepository.findBySettingGroupAndSettingKey("smtp", "host")
+                    .ifPresent(s -> mailSender.setHost(s.getSettingValue()));
+            
+            settingRepository.findBySettingGroupAndSettingKey("smtp", "port")
+                    .ifPresent(s -> {
+                        try {
+                            mailSender.setPort(Integer.parseInt(s.getSettingValue()));
+                        } catch (NumberFormatException ignored) {}
+                    });
+            
+            settingRepository.findBySettingGroupAndSettingKey("smtp", "username")
+                    .ifPresent(s -> mailSender.setUsername(s.getSettingValue()));
+            
+            settingRepository.findBySettingGroupAndSettingKey("smtp", "password")
+                    .ifPresent(s -> mailSender.setPassword(s.getSettingValue()));
+            
+            settingRepository.findBySettingGroupAndSettingKey("smtp", "secure")
+                    .ifPresent(s -> {
+                        String secure = s.getSettingValue().toUpperCase();
+                        if (secure.contains("STARTTLS") || secure.contains("TLS")) {
+                            mailSender.getJavaMailProperties().put("mail.smtp.starttls.enable", "true");
+                            mailSender.getJavaMailProperties().put("mail.smtp.starttls.required", "true");
+                        } else {
+                            mailSender.getJavaMailProperties().put("mail.smtp.starttls.enable", "false");
+                            mailSender.getJavaMailProperties().put("mail.smtp.starttls.required", "false");
+                        }
+                        if (secure.equals("SSL")) {
+                            mailSender.getJavaMailProperties().put("mail.smtp.ssl.enable", "true");
+                        } else {
+                            mailSender.getJavaMailProperties().put("mail.smtp.ssl.enable", "false");
+                        }
+                    });
+
+            if (mailSender.getUsername() != null && !mailSender.getUsername().isEmpty()) {
+                mailSender.getJavaMailProperties().put("mail.smtp.auth", "true");
+            } else {
+                mailSender.getJavaMailProperties().put("mail.smtp.auth", "false");
+            }
+            
+            // Force recreation of the Session so that changes take effect immediately
+            jakarta.mail.Session newSession = jakarta.mail.Session.getInstance(mailSender.getJavaMailProperties());
+            mailSender.setSession(newSession);
+
+            log.info("[AdminSettingsService] Applied SMTP settings to JavaMailSender (Host: {})", mailSender.getHost());
+        } catch (Exception e) {
+            log.error("[AdminSettingsService] Failed to apply SMTP settings to JavaMailSender", e);
         }
     }
 
