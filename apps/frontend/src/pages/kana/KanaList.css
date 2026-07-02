@@ -153,7 +153,7 @@
   font-family: var(--font-base);
 }
 .kna-btn-complete:hover:not(:disabled) { filter: brightness(1.08); }
-.kna-btn-complete--done { background: var(--color-secondary); cursor: default; }
+.kna-btn-complete--done { background: var(--color-primary); cursor: default; }
 .kna-btn-complete:disabled { opacity: 0.65; cursor: not-allowed; }
 
 @media (max-width: 1023px) {

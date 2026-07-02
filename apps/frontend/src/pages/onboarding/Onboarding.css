@@ -124,7 +124,7 @@
 .onb-btn:active:not(:disabled) { transform: scale(0.97); }
 
 .onb-btn--primary {
-  background: var(--color-secondary); color: white; width: 100%;
+  background: var(--color-primary); color: white; width: 100%;
   box-shadow: 0 2px 8px rgba(93,187,105,0.25);
 }
 .onb-btn--primary:hover:not(:disabled) { filter: brightness(1.07); }

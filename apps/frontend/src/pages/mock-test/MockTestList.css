@@ -32,7 +32,7 @@
 .mkt-attempt-result--failed { color: var(--color-error); }
 .mkt-attempt-virgin { font-size: 13px; color: var(--color-text-disabled); }
 
-.mkt-start-btn { height: 38px; padding: 0 20px; background: var(--color-secondary); color: white; border: none; border-radius: var(--radius-full); font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: filter var(--transition); }
+.mkt-start-btn { height: 38px; padding: 0 20px; background: var(--color-primary); color: white; border: none; border-radius: var(--radius-full); font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: filter var(--transition); }
 .mkt-start-btn:hover { filter: brightness(1.07); }
 
 .mkt-skel { height: 130px; border-radius: var(--radius-lg); background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%); background-size: 200% 100%; animation: skelPulse 1.4s ease infinite; }

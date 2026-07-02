@@ -31,7 +31,9 @@
   gap: 16px;
 }
 
-.vh-center { min-width: 0; }
+.vh-center {
+  min-width: 0;
+}
 
 /* ============================================================
    SECTION TITLE + LESSON LIST (§7)
@@ -67,11 +69,25 @@
   animation: vhSlideUp 250ms ease forwards;
 }
 
-.vh-lesson:nth-child(1) { animation-delay: 0ms; }
-.vh-lesson:nth-child(2) { animation-delay: 60ms; }
-.vh-lesson:nth-child(3) { animation-delay: 120ms; }
-.vh-lesson:nth-child(4) { animation-delay: 180ms; }
-.vh-lesson:nth-child(5) { animation-delay: 240ms; }
+.vh-lesson:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.vh-lesson:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.vh-lesson:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.vh-lesson:nth-child(4) {
+  animation-delay: 180ms;
+}
+
+.vh-lesson:nth-child(5) {
+  animation-delay: 240ms;
+}
 
 /* Hover + focus (FR-VH-14, + keyboard tương đương §15) */
 .vh-lesson--available:hover,
@@ -82,7 +98,11 @@
   box-shadow: var(--shadow-md);
   border-color: var(--color-primary-light);
 }
-.vh-lesson:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+.vh-lesson:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
 /* State: active (green nổi bật) */
 .vh-lesson--active {
@@ -91,13 +111,27 @@
   background: linear-gradient(135deg, #66BB6A 0%, var(--color-secondary) 100%);
   box-shadow: 0 8px 20px rgba(93, 187, 105, 0.28);
 }
-.vh-lesson--active .vh-lesson-title { color: #ffffff; }
-.vh-lesson--active .vh-lesson-sub   { color: rgba(255, 255, 255, 0.9); }
-.vh-lesson--active .vh-lesson-trail { color: #ffffff; }
+
+.vh-lesson--active .vh-lesson-title {
+  color: #ffffff;
+}
+
+.vh-lesson--active .vh-lesson-sub {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.vh-lesson--active .vh-lesson-trail {
+  color: #ffffff;
+}
 
 /* State: available (trắng) */
-.vh-lesson--available .vh-lesson-trail { color: var(--color-text-disabled); }
-.vh-lesson--available:hover .vh-lesson-trail { color: var(--color-secondary); }
+.vh-lesson--available .vh-lesson-trail {
+  color: var(--color-text-disabled);
+}
+
+.vh-lesson--available:hover .vh-lesson-trail {
+  color: var(--color-secondary);
+}
 
 /* ── Thumbnail ── */
 .vh-lesson-thumb {
@@ -111,7 +145,10 @@
   border-radius: var(--radius-full);
   background: var(--color-primary-bg);
 }
-.vh-lesson--active .vh-lesson-thumb { background: #ffffff; }
+
+.vh-lesson--active .vh-lesson-thumb {
+  background: #ffffff;
+}
 
 .vh-lesson-thumb-char {
   font-family: 'Noto Sans JP', sans-serif;
@@ -128,6 +165,7 @@
   flex-direction: column;
   gap: 3px;
 }
+
 .vh-lesson-title {
   font-size: 17px;
   font-weight: 800;
@@ -136,6 +174,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .vh-lesson-sub {
   font-size: 13px;
   font-weight: 600;
@@ -152,6 +191,7 @@
   gap: 3px;
   margin-top: 5px;
 }
+
 .vh-lesson-progress-text {
   font-size: 11px;
   font-weight: 600;
@@ -160,7 +200,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.vh-lesson--active .vh-lesson-progress-text { color: rgba(255, 255, 255, 0.9); }
+
+.vh-lesson--active .vh-lesson-progress-text {
+  color: rgba(255, 255, 255, 0.9);
+}
 
 /* ── Trailing ── */
 .vh-lesson-trail {
@@ -183,6 +226,7 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
 }
+
 .vh-account-avatar {
   display: flex;
   align-items: center;
@@ -196,8 +240,18 @@
   font-size: 22px;
   font-weight: 800;
 }
-.vh-account-name { font-size: 15px; font-weight: 800; color: var(--color-text); }
-.vh-account-meta { font-size: 12px; font-weight: 600; color: var(--color-text-sub); }
+
+.vh-account-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.vh-account-meta {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+}
 
 .vh-courselist {
   display: flex;
@@ -214,8 +268,16 @@
   cursor: pointer;
   transition: transform var(--transition), box-shadow var(--transition);
 }
-.vh-courselist:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.vh-courselist:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+.vh-courselist:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.vh-courselist:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
 .vh-courselist-icon {
   display: flex;
@@ -228,13 +290,24 @@
   background: var(--color-primary-bg);
   border-radius: var(--radius-full);
 }
-.vh-courselist-label { flex: 1; font-size: 15px; font-weight: 800; color: var(--color-text); }
+
+.vh-courselist-label {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
 .vh-courselist-arrow {
   display: inline-flex;
   color: var(--color-text-disabled);
   transition: transform var(--transition), color var(--transition);
 }
-.vh-courselist:hover .vh-courselist-arrow { transform: translateX(3px); color: var(--color-primary); }
+
+.vh-courselist:hover .vh-courselist-arrow {
+  transform: translateX(3px);
+  color: var(--color-primary);
+}
 
 /* ============================================================
    EMPTY / ERROR STATE (§10, §12)
@@ -253,10 +326,17 @@
   cursor: pointer;
   transition: background var(--transition);
 }
+
 .vh-empty-cta:hover,
-.vh-error-retry:hover { background: var(--color-primary-bg); }
+.vh-error-retry:hover {
+  background: var(--color-primary-bg);
+}
+
 .vh-empty-cta:focus-visible,
-.vh-error-retry:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.vh-error-retry:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
 .vh-error {
   display: flex;
@@ -265,7 +345,12 @@
   padding: 40px 24px;
   text-align: center;
 }
-.vh-error-text { margin: 0; font-size: 15px; color: var(--color-text-sub); }
+
+.vh-error-text {
+  margin: 0;
+  font-size: 15px;
+  color: var(--color-text-sub);
+}
 
 /* ============================================================
    SKELETON (§9)
@@ -276,33 +361,72 @@
   animation: vhSkel 1.4s ease infinite;
   border-radius: var(--radius-lg);
 }
-.vh-skel--streak  { height: 210px; border-radius: var(--radius-xl); }
-.vh-skel--lesson  { height: 84px; }
-.vh-skel--account { height: 130px; }
+
+.vh-skel--streak {
+  height: 210px;
+  border-radius: var(--radius-xl);
+}
+
+.vh-skel--lesson {
+  height: 84px;
+}
+
+.vh-skel--account {
+  height: 130px;
+}
 
 /* ============================================================
    ANIMATIONS (§11)
    ============================================================ */
 @keyframes vhSlideUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 @keyframes vhSkel {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* ============================================================
    RESPONSIVE (§14)
    ============================================================ */
 @media (max-width: 1023px) {
-  .vh-body { grid-template-columns: 1fr 280px; }
-  .vh-left { display: none; }
+  .vh-body {
+    grid-template-columns: 1fr 280px;
+  }
+
+  .vh-left {
+    display: none;
+  }
 }
+
 @media (max-width: 767px) {
-  .vh-body { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
-  .vh-right { display: none; }
-  .vh-lesson { padding: 14px 16px; }
+  .vh-body {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .vh-right {
+    display: none;
+  }
+
+  .vh-lesson {
+    padding: 14px 16px;
+  }
 }
 
 /* ============================================================

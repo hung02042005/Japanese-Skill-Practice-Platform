@@ -53,11 +53,25 @@
   flex-shrink: 0;
 }
 
-.sph-hero--pink  .sph-icon-wrap { box-shadow: 0 3px 12px rgba(232, 154, 170, 0.30); }
-.sph-hero--green .sph-icon-wrap { box-shadow: 0 3px 12px rgba(93, 187, 105, 0.28); }
-.sph-hero--gold  .sph-icon-wrap { box-shadow: 0 3px 12px rgba(247, 201, 72, 0.30); }
-.sph-hero--indigo .sph-icon-wrap { box-shadow: 0 3px 12px rgba(123, 31, 162, 0.22); }
-.sph-hero--red   .sph-icon-wrap { box-shadow: 0 3px 12px rgba(198, 40, 40, 0.22); }
+.sph-hero--pink .sph-icon-wrap {
+  box-shadow: 0 3px 12px rgba(232, 154, 170, 0.30);
+}
+
+.sph-hero--green .sph-icon-wrap {
+  box-shadow: 0 3px 12px rgba(93, 187, 105, 0.28);
+}
+
+.sph-hero--gold .sph-icon-wrap {
+  box-shadow: 0 3px 12px rgba(247, 201, 72, 0.30);
+}
+
+.sph-hero--indigo .sph-icon-wrap {
+  box-shadow: 0 3px 12px rgba(123, 31, 162, 0.22);
+}
+
+.sph-hero--red .sph-icon-wrap {
+  box-shadow: 0 3px 12px rgba(198, 40, 40, 0.22);
+}
 
 /* ── Text ── */
 

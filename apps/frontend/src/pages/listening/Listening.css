@@ -75,7 +75,7 @@
   display: inline-flex; align-items: center; gap: 6px;
   height: 36px; padding: 0 16px;
   border-radius: var(--radius-full);
-  border: none; background: var(--color-secondary); color: white;
+  border: none; background: var(--color-primary); color: white;
   font-family: var(--font-base); font-size: 13px; font-weight: 700;
   cursor: pointer; width: fit-content;
   transition: filter var(--transition);
@@ -196,7 +196,7 @@
 .lst-submit-btn {
   height: 42px; padding: 0 28px;
   border-radius: var(--radius-full);
-  border: none; background: var(--color-secondary); color: white;
+  border: none; background: var(--color-primary); color: white;
   font-family: var(--font-base); font-size: 14px; font-weight: 700;
   cursor: pointer; transition: filter var(--transition), opacity var(--transition);
 }

@@ -51,7 +51,7 @@
 .etb-submit-btn {
   height: 36px;
   padding: 0 18px;
-  background: var(--color-secondary);
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: var(--radius-full);

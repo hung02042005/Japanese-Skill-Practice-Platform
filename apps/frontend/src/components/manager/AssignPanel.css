@@ -22,7 +22,7 @@
 .mtk-assign-select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(232,154,170,0.15); }
 .mtk-assign-btn {
   height: 44px; padding: 0 22px; border-radius: var(--radius-full);
-  background: var(--color-secondary); color: #fff; border: none;
+  background: var(--color-primary); color: #fff; border: none;
   font-family: var(--font-base); font-weight: 700; font-size: 14px; cursor: pointer;
   box-shadow: 0 2px 8px rgba(93,187,105,0.25); transition: filter var(--transition), transform var(--transition);
 }

@@ -133,7 +133,7 @@
   border: none;
   transition: filter var(--transition), background var(--transition);
 }
-.ntb-btn--primary { background: var(--color-secondary); color: #fff; }
+.ntb-btn--primary { background: var(--color-primary); color: #fff; }
 .ntb-btn--primary:hover:not(:disabled) { filter: brightness(1.07); }
 .ntb-btn--primary:disabled { opacity: 0.55; cursor: not-allowed; }
 .ntb-btn--ghost { background: transparent; border: 1.5px solid var(--color-border); color: var(--color-text-sub); }

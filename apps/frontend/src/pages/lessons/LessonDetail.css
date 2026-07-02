@@ -73,7 +73,7 @@
 .lsn-complete-btn {
   display: inline-flex; align-items: center; gap: 7px; height: 44px; padding: 0 28px;
   border-radius: var(--radius-full); font-size: 14px; font-weight: 700; cursor: pointer;
-  border: none; background: var(--color-secondary); color: white;
+  border: none; background: var(--color-primary); color: white;
   box-shadow: var(--shadow-secondary);
   transition: filter var(--transition), transform var(--transition), background var(--transition);
 }

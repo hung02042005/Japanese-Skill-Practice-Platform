@@ -27,12 +27,32 @@
   pointer-events: none;
   animation: petal-drift 6s ease-in-out infinite alternate;
 }
-.login-petal--1 { top: 12%; left: 8%;  animation-delay: 0s;    font-size: 28px; }
-.login-petal--2 { top: 60%; right: 6%; animation-delay: 1.2s;  font-size: 20px; }
-.login-petal--3 { bottom: 16%; left: 18%; animation-delay: 2.4s; font-size: 24px; }
+
+.login-petal--1 {
+  top: 12%;
+  left: 8%;
+  animation-delay: 0s;
+  font-size: 28px;
+}
+
+.login-petal--2 {
+  top: 60%;
+  right: 6%;
+  animation-delay: 1.2s;
+  font-size: 20px;
+}
+
+.login-petal--3 {
+  bottom: 16%;
+  left: 18%;
+  animation-delay: 2.4s;
+  font-size: 24px;
+}
 
 @media (max-width: 768px) {
-  .login-petal { display: none; }
+  .login-petal {
+    display: none;
+  }
 }
 
 /* ─── Auth card ─── */
@@ -93,7 +113,10 @@
   line-height: 1.5;
 }
 
-.auth-banner svg { flex-shrink: 0; margin-top: 1px; }
+.auth-banner svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
 
 .auth-banner--error {
   background: #FEF2F2;
@@ -152,7 +175,9 @@
   margin-bottom: 6px;
 }
 
-.form-label-row .form-label { margin-bottom: 0; }
+.form-label-row .form-label {
+  margin-bottom: 0;
+}
 
 .form-forgot-link {
   font-family: var(--font-base);
@@ -162,7 +187,10 @@
   text-decoration: none;
   transition: color var(--transition);
 }
-.form-forgot-link:hover { color: var(--color-primary-dark); }
+
+.form-forgot-link:hover {
+  color: var(--color-primary-dark);
+}
 
 /* input wrapper for eye toggle */
 .form-input-wrapper {
@@ -185,7 +213,9 @@
   box-sizing: border-box;
 }
 
-.form-input::placeholder { color: var(--color-text-disabled); }
+.form-input::placeholder {
+  color: var(--color-text-disabled);
+}
 
 .form-input:focus {
   border-color: var(--color-primary);
@@ -197,6 +227,7 @@
   border-color: var(--color-error);
   background: #FEF2F2;
 }
+
 .has-error .form-input:focus {
   box-shadow: 0 0 0 3px rgba(229, 115, 115, 0.12);
 }
@@ -223,7 +254,10 @@
   padding: 0;
   transition: color var(--transition);
 }
-.form-eye-btn:hover { color: var(--color-text); }
+
+.form-eye-btn:hover {
+  color: var(--color-text);
+}
 
 .field-error {
   font-family: var(--font-base);
@@ -241,7 +275,7 @@
   width: 100%;
   height: 50px;
   margin-top: 4px;
-  background: var(--color-secondary);
+  background: var(--color-primary);
   color: #ffffff;
   font-family: var(--font-base);
   font-size: 15px;
@@ -260,7 +294,9 @@
   box-shadow: 0 6px 16px rgba(93, 187, 105, 0.38);
 }
 
-.btn-submit:active:not(:disabled) { transform: scale(0.97); }
+.btn-submit:active:not(:disabled) {
+  transform: scale(0.97);
+}
 
 .btn-submit:disabled {
   opacity: 0.65;
@@ -307,7 +343,7 @@
   justify-content: center;
 }
 
-.google-login-wrapper > div {
+.google-login-wrapper>div {
   width: 100% !important;
 }
 
@@ -336,7 +372,9 @@
   box-shadow: 0 2px 8px rgba(232, 154, 170, 0.14);
 }
 
-.btn-google:active { transform: scale(0.98); }
+.btn-google:active {
+  transform: scale(0.98);
+}
 
 /* ─── Redirect link ─── */
 .auth-redirect {
@@ -352,28 +390,56 @@
   font-weight: 600;
   text-decoration: none;
 }
-.auth-redirect-link:hover { text-decoration: underline; }
+
+.auth-redirect-link:hover {
+  text-decoration: underline;
+}
 
 /* ─── Animations ─── */
 @keyframes saku-sway {
-  0%, 100% { transform: rotate(-3.5deg); }
-  50%       { transform: rotate(3.5deg); }
+
+  0%,
+  100% {
+    transform: rotate(-3.5deg);
+  }
+
+  50% {
+    transform: rotate(3.5deg);
+  }
 }
 
 @keyframes saku-bounce {
-  0%   { transform: translateY(0) rotate(0); }
-  30%  { transform: translateY(-14px) rotate(-6deg); }
-  60%  { transform: translateY(-8px) rotate(5deg); }
-  100% { transform: translateY(0) rotate(0); }
+  0% {
+    transform: translateY(0) rotate(0);
+  }
+
+  30% {
+    transform: translateY(-14px) rotate(-6deg);
+  }
+
+  60% {
+    transform: translateY(-8px) rotate(5deg);
+  }
+
+  100% {
+    transform: translateY(0) rotate(0);
+  }
 }
 
 @keyframes petal-drift {
-  0%   { transform: translateY(0) rotate(0deg); }
-  100% { transform: translateY(-12px) rotate(18deg); }
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  100% {
+    transform: translateY(-12px) rotate(18deg);
+  }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ─── Responsive ─── */
@@ -388,18 +454,28 @@
     padding: 24px 12px;
     align-items: flex-start;
   }
+
   .auth-card {
     border-radius: var(--radius-lg);
     padding: 24px 20px;
   }
-  .auth-title { font-size: 20px; }
+
+  .auth-title {
+    font-size: 20px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .saku-chan,
   .login-petal,
-  .btn-spinner { animation: none !important; }
+  .btn-spinner {
+    animation: none !important;
+  }
+
   .btn-submit,
   .btn-google,
-  .form-input { transition: none !important; }
+  .form-input {
+    transition: none !important;
+  }
 }

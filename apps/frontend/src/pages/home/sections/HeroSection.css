@@ -196,7 +196,7 @@
 }
 
 .hero-btn-start {
-  background: var(--color-secondary);
+  background: var(--color-primary);
   color: #ffffff;
   border: none;
   border-radius: var(--radius-full);
@@ -263,7 +263,7 @@
   position: relative;
 }
 
-.hero-stat + .hero-stat::before {
+.hero-stat+.hero-stat::before {
   content: '';
   position: absolute;
   left: 0;
@@ -371,7 +371,7 @@
     padding: 16px 24px;
   }
 
-  .hero-stat + .hero-stat::before {
+  .hero-stat+.hero-stat::before {
     display: none;
   }
 

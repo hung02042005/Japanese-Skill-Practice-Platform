@@ -63,7 +63,7 @@
 
 /* ─── Empty state CTA (dashboard-specific) ─── */
 .db-empty-cta {
-  background: var(--color-secondary);
+  background: var(--color-primary);
   color: #ffffff;
   font-family: var(--font-base);
   font-size: 14px;
