@@ -6,8 +6,7 @@ import jakarta.persistence.Converter;
 
 /** DB lưu notification_type chữ thường ('news','system',...); enum đọc/ghi qua getValue(). */
 @Converter(autoApply = true)
-public class NotificationTypeConverter
-        implements AttributeConverter<Notification.NotificationType, String> {
+public class NotificationTypeConverter implements AttributeConverter<Notification.NotificationType, String> {
 
     @Override
     public String convertToDatabaseColumn(Notification.NotificationType attribute) {

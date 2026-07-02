@@ -1,3 +1,4 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.kana.controller;
 
 import com.jlpt.feature.student.kana.dto.response.KanaListResponse;
@@ -22,16 +23,16 @@ public class StudentKanaController {
     public ResponseEntity<ApiResponse<KanaListResponse>> getKanaChart(
             @RequestParam(name = "script", defaultValue = "hiragana") String script,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-            
-        KanaListResponse response = kanaService.getKanaChart(script, userDetails.getStudentUser().getId());
+
+        KanaListResponse response =
+                kanaService.getKanaChart(script, userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping("/{kanaId}/complete")
     public ResponseEntity<ApiResponse<Void>> markKanaComplete(
-            @PathVariable Integer kanaId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-            
+            @PathVariable Integer kanaId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
         kanaService.markKanaComplete(kanaId, userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(null));
     }

@@ -22,6 +22,7 @@ import com.jlpt.feature.auth.dto.response.AccountTypeResponse;
 import com.jlpt.feature.auth.dto.response.AuthResponse;
 import com.jlpt.feature.auth.dto.response.LoginApiResponse;
 import com.jlpt.feature.auth.dto.response.RefreshTokenResponse;
+import com.jlpt.feature.auth.event.SendVerificationEmailEvent;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.feature.student.StudentUser;
@@ -35,8 +36,6 @@ import com.jlpt.shared.exception.BusinessException;
 import com.jlpt.shared.security.JwtProvider;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import org.springframework.context.ApplicationEventPublisher;
-import com.jlpt.feature.auth.event.SendVerificationEmailEvent;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
@@ -47,6 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -217,8 +217,7 @@ public class AuthService {
 
     private LoginApiResponse handleStudentLogin(StudentUser user, String rawPassword, String ip) {
         if (maintenanceModeService.isEnabled()) {
-            throw new BusinessException(503, "MAINTENANCE_MODE",
-                    "Hệ thống đang bảo trì. Vui lòng quay lại sau.");
+            throw new BusinessException(503, "MAINTENANCE_MODE", "Hệ thống đang bảo trì. Vui lòng quay lại sau.");
         }
         if (user.getLockedUntil() != null && user.getLockedUntil().isAfter(LocalDateTime.now())) {
             throw new BusinessException(429, "TOO_MANY_REQUESTS", "Quá nhiều lần thử. Vui lòng thử lại sau.");
@@ -268,8 +267,7 @@ public class AuthService {
     @Transactional
     public StudentResponse register(RegisterRequest request) {
         if (maintenanceModeService.isEnabled()) {
-            throw new BusinessException(503, "MAINTENANCE_MODE",
-                    "Hệ thống đang bảo trì. Vui lòng quay lại sau.");
+            throw new BusinessException(503, "MAINTENANCE_MODE", "Hệ thống đang bảo trì. Vui lòng quay lại sau.");
         }
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new BusinessException(400, "PASSWORD_MISMATCH", "Mật khẩu xác nhận không khớp");
@@ -299,7 +297,9 @@ public class AuthService {
                 .build();
         authTokenRepository.save(tokenEntity);
 
-        log.info("[AuthService] Registration successful for {}, sending verification email event.", savedUser.getEmail());
+        log.info(
+                "[AuthService] Registration successful for {}, sending verification email event.",
+                savedUser.getEmail());
         eventPublisher.publishEvent(new SendVerificationEmailEvent(savedUser.getEmail(), verificationToken));
 
         return mapToStudentResponse(savedUser);
@@ -402,8 +402,10 @@ public class AuthService {
         Optional<AuthToken> lastToken = authTokenRepository.findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(
                 user.getId(), AuthToken.TokenType.EMAIL_VERIFICATION);
 
-        if (lastToken.isPresent() && lastToken.get().getCreatedAt().plusSeconds(60).isAfter(LocalDateTime.now())) {
-            throw new BusinessException(429, "TOO_MANY_REQUESTS", "Vui lòng đợi 60 giây trước khi yêu cầu gửi lại email");
+        if (lastToken.isPresent()
+                && lastToken.get().getCreatedAt().plusSeconds(60).isAfter(LocalDateTime.now())) {
+            throw new BusinessException(
+                    429, "TOO_MANY_REQUESTS", "Vui lòng đợi 60 giây trước khi yêu cầu gửi lại email");
         }
 
         authTokenRepository.deleteByStudentIdAndTokenType(user.getId(), AuthToken.TokenType.EMAIL_VERIFICATION);
@@ -447,8 +449,7 @@ public class AuthService {
     @Transactional
     public AuthResponse loginWithGoogle(GoogleTokenRequest request) {
         if (maintenanceModeService.isEnabled()) {
-            throw new BusinessException(503, "MAINTENANCE_MODE",
-                    "Hệ thống đang bảo trì. Vui lòng quay lại sau.");
+            throw new BusinessException(503, "MAINTENANCE_MODE", "Hệ thống đang bảo trì. Vui lòng quay lại sau.");
         }
         GoogleIdToken.Payload payload = verifyGoogleToken(request.getIdToken());
 

@@ -1,20 +1,20 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.kanji;
 
+import com.jlpt.feature.flashcard.Flashcard;
+import com.jlpt.feature.flashcard.repository.FlashcardRepository;
 import com.jlpt.feature.learning.Kanji;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
 import com.jlpt.feature.student.StudentContentProgress;
 import com.jlpt.feature.student.StudentContentProgress.ContentType;
-import com.jlpt.feature.student.StudentUser;
+import com.jlpt.feature.student.StudentContentProgressRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
 import com.jlpt.feature.student.StudentUserRepository;
-import com.jlpt.feature.flashcard.Flashcard;
-import com.jlpt.feature.flashcard.repository.FlashcardRepository;
 import com.jlpt.feature.student.kanji.dto.KanjiDetailResponse;
 import com.jlpt.feature.student.kanji.dto.KanjiItemResponse;
 import com.jlpt.feature.student.kanji.dto.KanjiListResponse;
 import com.jlpt.feature.student.kanji.dto.KanjiProgressSummaryResponse;
 import com.jlpt.shared.common.JlptLevels;
-import com.jlpt.feature.student.StudentContentProgressRepository;
 import com.jlpt.shared.exception.ResourceNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
@@ -47,12 +47,10 @@ public class StudentKanjiServiceImpl implements StudentKanjiService {
             throw new IllegalArgumentException("Invalid JLPT level: " + level);
         }
 
-        Page<Kanji> kanjiPage = kanjiRepository.findByLevelAndStatus(
-                jlptLevel, ContentStatus.PUBLISHED, PageRequest.of(page, size));
+        Page<Kanji> kanjiPage =
+                kanjiRepository.findByLevelAndStatus(jlptLevel, ContentStatus.PUBLISHED, PageRequest.of(page, size));
 
-        List<Long> kanjiIds = kanjiPage.getContent().stream()
-                .map(Kanji::getId)
-                .collect(Collectors.toList());
+        List<Long> kanjiIds = kanjiPage.getContent().stream().map(Kanji::getId).collect(Collectors.toList());
 
         List<StudentContentProgress> progresses = new java.util.ArrayList<>();
         if (!kanjiIds.isEmpty()) {
@@ -63,8 +61,7 @@ public class StudentKanjiServiceImpl implements StudentKanjiService {
         Map<Long, Boolean> completionMap = progresses.stream()
                 .collect(Collectors.toMap(
                         StudentContentProgress::getContentId,
-                        p -> p.getStatus() == StudentContentProgress.ProgressStatus.COMPLETED
-                ));
+                        p -> p.getStatus() == StudentContentProgress.ProgressStatus.COMPLETED));
 
         // isInFlashcard cho danh sách: tránh N+1, truy 1 lần tập contentId rồi tra trong Set.
         java.util.Set<Long> inFlashcardIds = new java.util.HashSet<>();
@@ -109,13 +106,17 @@ public class StudentKanjiServiceImpl implements StudentKanjiService {
         long completed = progressRepository.countCompletedKanjiByLevel(
                 studentId, jlptLevel, ContentType.KANJI, StudentContentProgress.ProgressStatus.COMPLETED);
         long total = kanjiRepository.countByLevelAndStatus(jlptLevel, ContentStatus.PUBLISHED);
-        return KanjiProgressSummaryResponse.builder().completed(completed).total(total).build();
+        return KanjiProgressSummaryResponse.builder()
+                .completed(completed)
+                .total(total)
+                .build();
     }
 
     @Override
     @Transactional
     public KanjiDetailResponse getKanjiDetail(Long kanjiId, Long studentId) {
-        Kanji kanji = kanjiRepository.findByIdAndStatus(kanjiId, ContentStatus.PUBLISHED)
+        Kanji kanji = kanjiRepository
+                .findByIdAndStatus(kanjiId, ContentStatus.PUBLISHED)
                 .orElseThrow(() -> new ResourceNotFoundException("Kanji", kanjiId));
 
         // Update last activity date
@@ -124,19 +125,28 @@ public class StudentKanjiServiceImpl implements StudentKanjiService {
             studentUserRepository.save(user);
         });
 
-        StudentContentProgress progress = progressRepository.findByStudentIdAndContentTypeAndContentId(
-                studentId, ContentType.KANJI, kanjiId).orElse(null);
+        StudentContentProgress progress = progressRepository
+                .findByStudentIdAndContentTypeAndContentId(studentId, ContentType.KANJI, kanjiId)
+                .orElse(null);
 
         String progressStatusStr = progress != null ? progress.getStatus().getValue() : "learning";
-        boolean isCompleted = progress != null && progress.getStatus() == StudentContentProgress.ProgressStatus.COMPLETED;
+        boolean isCompleted =
+                progress != null && progress.getStatus() == StudentContentProgress.ProgressStatus.COMPLETED;
 
-        boolean isInFlashcard = flashcardRepository.findByStudentAndContent(
-                studentId, Flashcard.ContentType.KANJI, kanjiId).isPresent();
+        boolean isInFlashcard = flashcardRepository
+                .findByStudentAndContent(studentId, Flashcard.ContentType.KANJI, kanjiId)
+                .isPresent();
 
-        Long prevKanjiId = kanjiRepository.findFirstByJlptLevelAndStatusAndIdLessThanOrderByIdDesc(
-                kanji.getJlptLevel(), ContentStatus.PUBLISHED, kanjiId).map(Kanji::getId).orElse(null);
-        Long nextKanjiId = kanjiRepository.findFirstByJlptLevelAndStatusAndIdGreaterThanOrderByIdAsc(
-                kanji.getJlptLevel(), ContentStatus.PUBLISHED, kanjiId).map(Kanji::getId).orElse(null);
+        Long prevKanjiId = kanjiRepository
+                .findFirstByJlptLevelAndStatusAndIdLessThanOrderByIdDesc(
+                        kanji.getJlptLevel(), ContentStatus.PUBLISHED, kanjiId)
+                .map(Kanji::getId)
+                .orElse(null);
+        Long nextKanjiId = kanjiRepository
+                .findFirstByJlptLevelAndStatusAndIdGreaterThanOrderByIdAsc(
+                        kanji.getJlptLevel(), ContentStatus.PUBLISHED, kanjiId)
+                .map(Kanji::getId)
+                .orElse(null);
 
         return KanjiDetailResponse.builder()
                 .kanjiId(kanji.getId())

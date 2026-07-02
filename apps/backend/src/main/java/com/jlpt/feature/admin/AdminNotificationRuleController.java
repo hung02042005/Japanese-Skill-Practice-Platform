@@ -40,8 +40,7 @@ public class AdminNotificationRuleController {
     public ResponseEntity<ApiResponse<NotificationRuleResponse>> create(
             Authentication authentication, @Valid @RequestBody NotificationRuleRequest req) {
         NotificationRuleResponse data = notificationRuleService.createRule(req, currentAdminId(authentication));
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Da tao quy tac thong bao", data));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Da tao quy tac thong bao", data));
     }
 
     @PutMapping("/{ruleKey}")
@@ -55,7 +54,8 @@ public class AdminNotificationRuleController {
     }
 
     private Long currentAdminId(Authentication authentication) {
-        return adminUserRepository.findByEmail(authentication.getName())
+        return adminUserRepository
+                .findByEmail(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay Admin"))
                 .getId();
     }

@@ -1,13 +1,13 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.support.controller;
 
-import com.jlpt.shared.common.ApiResponse;
 import com.jlpt.feature.support.dto.TicketDetailResponse;
+import com.jlpt.feature.support.dto.TicketReplyRequest;
 import com.jlpt.feature.support.dto.TicketReplyResponse;
 import com.jlpt.feature.support.dto.TicketRequest;
 import com.jlpt.feature.support.dto.TicketResponse;
 import com.jlpt.feature.support.service.SupportTicketService;
-import com.jlpt.feature.support.dto.TicketReplyRequest;
+import com.jlpt.shared.common.ApiResponse;
 import com.jlpt.shared.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import java.util.Map;
@@ -31,8 +31,7 @@ public class SupportController {
 
     @PostMapping("/tickets")
     public ResponseEntity<ApiResponse<TicketResponse>> createTicket(
-            @AuthenticationPrincipal UserDetailsImpl principal,
-            @Valid @RequestBody TicketRequest req) {
+            @AuthenticationPrincipal UserDetailsImpl principal, @Valid @RequestBody TicketRequest req) {
         TicketResponse result =
                 supportTicketService.createTicket(principal.getStudentUser().getId(), req);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -52,8 +51,7 @@ public class SupportController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Long studentId = principal.getStudentUser().getId();
-        Page<TicketResponse> result =
-                supportTicketService.getMyTickets(studentId, status, page, size);
+        Page<TicketResponse> result = supportTicketService.getMyTickets(studentId, status, page, size);
         return ResponseEntity.ok(ApiResponse.success(Map.of(
                 "content", result.getContent(),
                 "totalElements", result.getTotalElements(),
@@ -64,10 +62,9 @@ public class SupportController {
 
     @GetMapping("/tickets/{ticketId}")
     public ResponseEntity<ApiResponse<TicketDetailResponse>> getTicketDetail(
-            @AuthenticationPrincipal UserDetailsImpl principal,
-            @PathVariable Long ticketId) {
-        TicketDetailResponse result =
-                supportTicketService.getStudentTicketDetail(ticketId, principal.getStudentUser().getId());
+            @AuthenticationPrincipal UserDetailsImpl principal, @PathVariable Long ticketId) {
+        TicketDetailResponse result = supportTicketService.getStudentTicketDetail(
+                ticketId, principal.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
@@ -78,8 +75,8 @@ public class SupportController {
             @AuthenticationPrincipal UserDetailsImpl principal,
             @PathVariable Long ticketId,
             @Valid @RequestBody TicketReplyRequest req) {
-        TicketReplyResponse result =
-                supportTicketService.addStudentReply(ticketId, principal.getStudentUser().getId(), req);
+        TicketReplyResponse result = supportTicketService.addStudentReply(
+                ticketId, principal.getStudentUser().getId(), req);
         return ResponseEntity.ok(ApiResponse.success("Gửi phản hồi thành công", result));
     }
 
@@ -87,10 +84,9 @@ public class SupportController {
 
     @PostMapping("/tickets/{ticketId}/close")
     public ResponseEntity<ApiResponse<TicketResponse>> closeTicket(
-            @AuthenticationPrincipal UserDetailsImpl principal,
-            @PathVariable Long ticketId) {
-        TicketResponse result =
-                supportTicketService.closeStudentTicket(ticketId, principal.getStudentUser().getId());
+            @AuthenticationPrincipal UserDetailsImpl principal, @PathVariable Long ticketId) {
+        TicketResponse result = supportTicketService.closeStudentTicket(
+                ticketId, principal.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success("Ticket đã được đóng", result));
     }
 }

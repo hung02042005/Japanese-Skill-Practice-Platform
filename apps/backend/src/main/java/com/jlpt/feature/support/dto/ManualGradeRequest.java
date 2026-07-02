@@ -11,8 +11,7 @@ import lombok.Data;
 @Data
 public class ManualGradeRequest {
 
-    @NotNull(message = "Điểm chấm không được để trống")
-    @DecimalMin(value = "0.00", message = "Điểm chấm không được nhỏ hơn 0")
+    @NotNull(message = "Điểm chấm không được để trống") @DecimalMin(value = "0.00", message = "Điểm chấm không được nhỏ hơn 0")
     @DecimalMax(value = "100.00", message = "Điểm chấm không được lớn hơn 100")
     private BigDecimal manualScore;
 

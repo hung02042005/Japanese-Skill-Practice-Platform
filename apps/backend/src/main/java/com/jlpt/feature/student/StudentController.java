@@ -36,8 +36,8 @@ public class StudentController {
     @GetMapping("/dashboard")
     public ResponseEntity<ApiResponse<DashboardResponse>> getDashboard(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        DashboardResponse response =
-                studentDashboardService.getDashboard(userDetails.getStudentUser().getId());
+        DashboardResponse response = studentDashboardService.getDashboard(
+                userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -52,8 +52,8 @@ public class StudentController {
     @GetMapping("/next-lesson")
     public ResponseEntity<ApiResponse<NextLessonResponse>> getNextLesson(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        NextLessonResponse response =
-                studentDashboardService.getNextLesson(userDetails.getStudentUser().getId());
+        NextLessonResponse response = studentDashboardService.getNextLesson(
+                userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -67,8 +67,7 @@ public class StudentController {
 
     @PostMapping("/me/avatar")
     public ResponseEntity<ApiResponse<StudentResponse>> uploadAvatar(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam("avatar") MultipartFile avatar) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam("avatar") MultipartFile avatar) {
         Long studentId = userDetails.getStudentUser().getId();
         String avatarUrl = avatarStorageService.store(avatar, studentId);
         StudentResponse response = authService.updateAvatar(studentId, avatarUrl);

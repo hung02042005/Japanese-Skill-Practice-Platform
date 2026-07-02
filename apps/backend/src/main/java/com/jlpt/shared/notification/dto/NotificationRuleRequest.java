@@ -11,7 +11,8 @@ import lombok.Data;
 public class NotificationRuleRequest {
 
     @NotBlank(message = "Rule key không được để trống")
-    @Pattern(regexp = "^[a-z][a-z0-9_]{2,49}$",
+    @Pattern(
+            regexp = "^[a-z][a-z0-9_]{2,49}$",
             message = "ruleKey chỉ chứa chữ thường, số và underscore, bắt đầu bằng chữ cái (3-50 ký tự)")
     private String ruleKey;
 
@@ -19,8 +20,7 @@ public class NotificationRuleRequest {
     @Size(max = 255, message = "Mô tả không vượt quá 255 ký tự")
     private String description;
 
-    @NotNull(message = "Trạng thái kích hoạt không được để trống")
-    private Boolean isEnabled;
+    @NotNull(message = "Trạng thái kích hoạt không được để trống") private Boolean isEnabled;
 
     @Size(max = 100, message = "Điều kiện kích hoạt không vượt quá 100 ký tự")
     private String triggerCondition;

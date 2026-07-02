@@ -169,12 +169,12 @@ public class FlashcardSrsService {
         if (deckId != null && !"due".equals(sortKey)) {
             // Sort sổ tay (3B) — deck-scoped; alpha/level join Vocabulary (review deck = vocab-only).
             cards = switch (sortKey) {
-                case "recent" -> flashcardRepository.findByDeckOrderByRecent(studentId, deckId, dueOnly, today, pageable);
+                case "recent" -> flashcardRepository.findByDeckOrderByRecent(
+                        studentId, deckId, dueOnly, today, pageable);
                 case "alpha" -> flashcardRepository.findByDeckOrderByWord(
                         studentId, deckId, PUBLISHED, dueOnly, today, pageable);
                 default -> flashcardRepository.findByDeckOrderByLevel(
-                        studentId, deckId, PUBLISHED, dueOnly, today, pageable);
-            };
+                        studentId, deckId, PUBLISHED, dueOnly, today, pageable);};
         } else if (dueOnly) {
             cards = deckId != null
                     ? flashcardRepository.findDueByDeck(studentId, deckId, today, pageable)
@@ -213,7 +213,8 @@ public class FlashcardSrsService {
     /** Comparator FlashcardResponse khớp thứ tự DB cho nhánh tìm kiếm in-memory (recency ≈ id DESC). */
     private static Comparator<FlashcardResponse> responseComparator(String sortKey) {
         return switch (sortKey) {
-            case "recent" -> Comparator.comparing(FlashcardResponse::flashcardId).reversed();
+            case "recent" -> Comparator.comparing(FlashcardResponse::flashcardId)
+                    .reversed();
             case "alpha" -> Comparator.comparing(
                     FlashcardResponse::frontText, Comparator.nullsLast(Comparator.naturalOrder()));
             case "level" -> Comparator.comparing(
@@ -551,7 +552,8 @@ public class FlashcardSrsService {
         // session_id (V17): mỗi lượt review trong phiên đóng dấu UUID này lên thẻ → cuối phiên gom
         // đúng các từ sai của CHÍNH phiên này, thay cửa sổ thời gian 2h dễ gom nhầm.
         String sessionId = UUID.randomUUID().toString();
-        return new SessionResponse(sessionId, sessionDeck.getId(), sessionLevel, sessionTopicTitle, chosen.size(), items);
+        return new SessionResponse(
+                sessionId, sessionDeck.getId(), sessionLevel, sessionTopicTitle, chosen.size(), items);
     }
 
     /** Thứ tự ưu tiên chọn từ vào phiên: chưa học (0) → đến hạn ôn (1) → đã học chưa đến hạn (2). */

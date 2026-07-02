@@ -1,3 +1,4 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.progress;
 
 import com.jlpt.feature.student.StudentContentProgress;
@@ -27,7 +28,8 @@ public class StudentLearningProgressServiceImpl implements StudentLearningProgre
     @Override
     @Transactional
     public LearningProgressResponse markProgress(LearningProgressRequest request, Long studentId) {
-        StudentUser student = studentUserRepository.findById(studentId)
+        StudentUser student = studentUserRepository
+                .findById(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("StudentUser", studentId));
 
         ContentType contentType;
@@ -54,11 +56,13 @@ public class StudentLearningProgressServiceImpl implements StudentLearningProgre
                     .contentType(contentType)
                     .contentId(request.getContentId())
                     .status(newStatus)
-                    .progressPercent(request.getProgressPercent() != null ? request.getProgressPercent() : BigDecimal.ZERO)
+                    .progressPercent(
+                            request.getProgressPercent() != null ? request.getProgressPercent() : BigDecimal.ZERO)
                     .build();
         } else {
             // BR-07-04: progress_percent/status only increase, not decrease manually
-            if (request.getProgressPercent() != null && progress.getProgressPercent().compareTo(request.getProgressPercent()) < 0) {
+            if (request.getProgressPercent() != null
+                    && progress.getProgressPercent().compareTo(request.getProgressPercent()) < 0) {
                 progress.setProgressPercent(request.getProgressPercent());
             }
             if (newStatus == ProgressStatus.COMPLETED) {

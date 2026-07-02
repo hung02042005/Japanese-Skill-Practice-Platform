@@ -77,7 +77,8 @@ public class NotificationService {
 
     @Transactional
     public void markNotificationRead(Long notificationId, Long studentId) {
-        var notif = notificationRepository.findById(notificationId)
+        var notif = notificationRepository
+                .findById(notificationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay thong bao"));
         if (!notif.getStudent().getId().equals(studentId)) {
             throw new ForbiddenException("Ban khong co quyen danh dau thong bao nay");
@@ -107,27 +108,23 @@ public class NotificationService {
                 .staffActor(staff)
                 .action("BROADCAST_SENT")
                 .targetTable("notifications")
-                .description("Broadcast jobId=" + jobId + " target=" + req.getTargetJlptLevel()
-                        + " type=" + req.getNotificationType())
+                .description("Broadcast jobId=" + jobId + " target=" + req.getTargetJlptLevel() + " type="
+                        + req.getNotificationType())
                 .build());
-        log.info("[Notification] {} triggered broadcast jobId={} targets={}",
-                actorEmail, jobId, targets.size());
+        log.info("[Notification] {} triggered broadcast jobId={} targets={}", actorEmail, jobId, targets.size());
         return jobId;
     }
 
     private List<StudentUser> resolveTargets(String targetJlptLevel) {
         // null / rong / "ALL" -> tat ca student dang ACTIVE
-        if (targetJlptLevel == null
-                || targetJlptLevel.isBlank()
-                || "ALL".equalsIgnoreCase(targetJlptLevel)) {
+        if (targetJlptLevel == null || targetJlptLevel.isBlank() || "ALL".equalsIgnoreCase(targetJlptLevel)) {
             return studentUserRepository.findAll().stream()
                     .filter(s -> s.getStatus() == StudentUser.StudentStatus.ACTIVE)
                     .toList();
         }
         StudentUser.JlptLevel level = StudentUser.JlptLevel.valueOf(targetJlptLevel.toUpperCase());
         return studentUserRepository.findAll().stream()
-                .filter(s -> s.getStatus() == StudentUser.StudentStatus.ACTIVE
-                        && level.equals(s.getCurrentJlptLevel()))
+                .filter(s -> s.getStatus() == StudentUser.StudentStatus.ACTIVE && level.equals(s.getCurrentJlptLevel()))
                 .toList();
     }
 

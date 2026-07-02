@@ -4,8 +4,8 @@ package com.jlpt.feature.staffcontent.feedback;
 import com.jlpt.feature.admin.AdminAuditLog;
 import com.jlpt.feature.admin.AdminAuditLogRepository;
 import com.jlpt.feature.contentreview.ContentType;
-import com.jlpt.feature.contentreview.ReviewableContentResolver;
 import com.jlpt.feature.contentreview.ReviewAuditService;
+import com.jlpt.feature.contentreview.ReviewableContentResolver;
 import com.jlpt.feature.contentreview.handler.ReviewableContentHandler;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
@@ -24,9 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StaffReviewFeedbackService {
 
-    private static final List<String> FEEDBACK_ACTIONS = List.of(
-            ReviewAuditService.ACTION_REJECT,
-            ReviewAuditService.ACTION_REQUEST_CHANGES);
+    private static final List<String> FEEDBACK_ACTIONS =
+            List.of(ReviewAuditService.ACTION_REJECT, ReviewAuditService.ACTION_REQUEST_CHANGES);
 
     private final AdminAuditLogRepository auditLogRepository;
     private final ReviewableContentResolver resolver;
@@ -39,10 +38,11 @@ public class StaffReviewFeedbackService {
 
         // Lấy thông tin nội dung để kiểm tra quyền sở hữu
         var snapshot = handler.findActiveById(contentId)
-                .orElseThrow(() -> new BusinessException(404, "CONTENT_NOT_FOUND",
-                        "Không tìm thấy nội dung: " + contentId));
+                .orElseThrow(
+                        () -> new BusinessException(404, "CONTENT_NOT_FOUND", "Không tìm thấy nội dung: " + contentId));
 
-        StaffUser staff = staffUserRepository.findByEmail(staffEmail)
+        StaffUser staff = staffUserRepository
+                .findByEmail(staffEmail)
                 .orElseThrow(() -> new ForbiddenException("Không xác định được tài khoản"));
 
         if (!staff.getId().equals(snapshot.getCreatedById())) {
@@ -52,8 +52,8 @@ public class StaffReviewFeedbackService {
         AdminAuditLog log = auditLogRepository
                 .findFirstByTargetIdAndTargetTableAndActionInOrderByCreatedAtDesc(
                         contentId, handler.tableName(), FEEDBACK_ACTIONS)
-                .orElseThrow(() -> new BusinessException(404, "FEEDBACK_NOT_FOUND",
-                        "Chưa có phản hồi nào cho nội dung này"));
+                .orElseThrow(() ->
+                        new BusinessException(404, "FEEDBACK_NOT_FOUND", "Chưa có phản hồi nào cho nội dung này"));
 
         return ReviewFeedbackResponse.builder()
                 .feedback(log.getDescription())

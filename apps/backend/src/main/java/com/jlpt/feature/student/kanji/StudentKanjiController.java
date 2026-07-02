@@ -1,3 +1,4 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.kanji;
 
 import com.jlpt.feature.student.kanji.dto.KanjiDetailResponse;
@@ -44,15 +45,14 @@ public class StudentKanjiController {
     public ResponseEntity<ApiResponse<KanjiProgressSummaryResponse>> getProgressSummary(
             @RequestParam String level, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        KanjiProgressSummaryResponse response =
-                studentKanjiService.getProgressSummary(level, userDetails.getStudentUser().getId());
+        KanjiProgressSummaryResponse response = studentKanjiService.getProgressSummary(
+                level, userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/{kanjiId}")
     public ResponseEntity<ApiResponse<KanjiDetailResponse>> getKanjiDetail(
-            @PathVariable Long kanjiId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @PathVariable Long kanjiId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         KanjiDetailResponse response = studentKanjiService.getKanjiDetail(
                 kanjiId, userDetails.getStudentUser().getId());

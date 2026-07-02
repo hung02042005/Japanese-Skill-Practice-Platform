@@ -25,9 +25,7 @@ public class StaffMemberController {
     private final StaffMemberService staffMemberService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<StaffMemberResponse>>> listAssignable(
-            Authentication authentication) {
-        return ResponseEntity.ok(
-                ApiResponse.success(staffMemberService.listAssignableStaff(authentication.getName())));
+    public ResponseEntity<ApiResponse<List<StaffMemberResponse>>> listAssignable(Authentication authentication) {
+        return ResponseEntity.ok(ApiResponse.success(staffMemberService.listAssignableStaff(authentication.getName())));
     }
 }

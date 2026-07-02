@@ -56,7 +56,10 @@ public class StaffStudentService {
                         .studentId(s.getId())
                         .fullName(s.getFullName())
                         .email(s.getEmail())
-                        .jlptLevel(s.getCurrentJlptLevel() != null ? s.getCurrentJlptLevel().name() : null)
+                        .jlptLevel(
+                                s.getCurrentJlptLevel() != null
+                                        ? s.getCurrentJlptLevel().name()
+                                        : null)
                         .status(s.getStatus() != null ? s.getStatus().getValue() : null)
                         .subscription("FREE")
                         .build())
@@ -80,13 +83,10 @@ public class StaffStudentService {
         long lessonsCompleted =
                 progressRepository.countCompleted(studentId, ContentType.LESSON, ProgressStatus.COMPLETED);
 
-        List<TestAttempt> attempts =
-                testAttemptRepository.findByStudent_IdAndStatusIn(studentId, SUBMITTED_STATUSES);
+        List<TestAttempt> attempts = testAttemptRepository.findByStudent_IdAndStatusIn(studentId, SUBMITTED_STATUSES);
 
-        int avg = (int) Math.round(attempts.stream()
-                .mapToInt(this::scorePct)
-                .average()
-                .orElse(0));
+        int avg = (int)
+                Math.round(attempts.stream().mapToInt(this::scorePct).average().orElse(0));
 
         List<StaffStudentProgressResponse.AttemptItem> recent = attempts.stream()
                 .sorted(Comparator.comparing(
@@ -105,7 +105,10 @@ public class StaffStudentService {
         return StaffStudentProgressResponse.builder()
                 .studentId(student.getId())
                 .fullName(student.getFullName())
-                .jlptLevel(student.getCurrentJlptLevel() != null ? student.getCurrentJlptLevel().name() : null)
+                .jlptLevel(
+                        student.getCurrentJlptLevel() != null
+                                ? student.getCurrentJlptLevel().name()
+                                : null)
                 .currentStreak(student.getCurrentStreak() != null ? student.getCurrentStreak() : 0)
                 .lessonsCompleted(lessonsCompleted)
                 .averageQuizScore(avg)
@@ -138,7 +141,8 @@ public class StaffStudentService {
     }
 
     private int scorePct(TestAttempt a) {
-        if (a.getTotalScore() == null || a.getMaxScore() == null
+        if (a.getTotalScore() == null
+                || a.getMaxScore() == null
                 || a.getMaxScore().compareTo(BigDecimal.ZERO) <= 0) {
             return 0;
         }
@@ -152,7 +156,10 @@ public class StaffStudentService {
         if (assessmentId == null) {
             return "(Không rõ)";
         }
-        return assessmentRepository.findById(assessmentId).map(a -> a.getTitle()).orElse("(Không rõ)");
+        return assessmentRepository
+                .findById(assessmentId)
+                .map(a -> a.getTitle())
+                .orElse("(Không rõ)");
     }
 
     private StaffStudentSummaryResponse toSummary(StudentUser s) {
@@ -160,7 +167,10 @@ public class StaffStudentService {
                 .studentId(s.getId())
                 .fullName(s.getFullName())
                 .email(s.getEmail())
-                .jlptLevel(s.getCurrentJlptLevel() != null ? s.getCurrentJlptLevel().name() : null)
+                .jlptLevel(
+                        s.getCurrentJlptLevel() != null
+                                ? s.getCurrentJlptLevel().name()
+                                : null)
                 .status(s.getStatus() != null ? s.getStatus().getValue() : null)
                 .subscription("FREE")
                 .build();

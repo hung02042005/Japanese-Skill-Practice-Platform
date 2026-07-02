@@ -1,15 +1,15 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.reading.repository;
 
 import com.jlpt.feature.learning.Lesson;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 public interface StudentReadingLessonRepository extends JpaRepository<Lesson, Long> {
@@ -19,19 +19,12 @@ public interface StudentReadingLessonRepository extends JpaRepository<Lesson, Lo
             @Param("type") Lesson.LessonType type,
             @Param("level") JlptLevel level,
             @Param("status") Lesson.LessonStatus status,
-            Pageable pageable
-    );
+            Pageable pageable);
 
     @Query("SELECT l FROM Lesson l WHERE l.id = :id AND l.lessonType = :type AND l.status = :status")
     Optional<Lesson> findByIdAndTypeAndStatus(
-            @Param("id") Long id,
-            @Param("type") Lesson.LessonType type,
-            @Param("status") Lesson.LessonStatus status
-    );
+            @Param("id") Long id, @Param("type") Lesson.LessonType type, @Param("status") Lesson.LessonStatus status);
 
     @Query("SELECT l FROM Lesson l WHERE l.id = :id AND l.status = :status")
-    Optional<Lesson> findByIdAndStatus(
-            @Param("id") Long id,
-            @Param("status") Lesson.LessonStatus status
-    );
+    Optional<Lesson> findByIdAndStatus(@Param("id") Long id, @Param("status") Lesson.LessonStatus status);
 }

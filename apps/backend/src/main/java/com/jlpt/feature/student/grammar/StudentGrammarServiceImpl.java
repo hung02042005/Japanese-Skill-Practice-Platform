@@ -4,6 +4,7 @@ package com.jlpt.feature.student.grammar;
 import com.jlpt.feature.learning.GrammarPoint;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
 import com.jlpt.feature.student.StudentContentProgress;
+import com.jlpt.feature.student.StudentContentProgressRepository;
 import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
 import com.jlpt.feature.student.StudentUserRepository;
@@ -11,10 +12,8 @@ import com.jlpt.feature.student.exception.StudentLearningException;
 import com.jlpt.feature.student.grammar.dto.GrammarDetailResponse;
 import com.jlpt.feature.student.grammar.dto.GrammarListResponse;
 import com.jlpt.feature.student.grammar.dto.GrammarSummaryResponse;
-import com.jlpt.feature.student.StudentContentProgressRepository;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +40,7 @@ public class StudentGrammarServiceImpl implements StudentGrammarService {
     @Transactional(readOnly = true)
     public GrammarListResponse getGrammarList(String levelStr, Long studentId, int page, int size) {
         // Resolve student
-        studentUserRepository.findById(studentId)
-                .orElseThrow(StudentLearningException::contentNotFound);
+        studentUserRepository.findById(studentId).orElseThrow(StudentLearningException::contentNotFound);
 
         // Validate level
         JlptLevel jlptLevel;
@@ -57,19 +55,17 @@ public class StudentGrammarServiceImpl implements StudentGrammarService {
         int effectiveSize = Math.max(1, Math.min(50, size));
 
         Pageable pageable = PageRequest.of(effectivePage, effectiveSize);
-        Page<GrammarPoint> grammarPage = grammarRepository.findByJlptLevelAndStatus(
-                jlptLevel, ContentStatus.PUBLISHED, pageable);
+        Page<GrammarPoint> grammarPage =
+                grammarRepository.findByJlptLevelAndStatus(jlptLevel, ContentStatus.PUBLISHED, pageable);
 
         // Fetch student progress for completed check
-        List<Long> grammarIds = grammarPage.getContent().stream()
-                .map(GrammarPoint::getId)
-                .toList();
+        List<Long> grammarIds =
+                grammarPage.getContent().stream().map(GrammarPoint::getId).toList();
 
         Set<Long> completedIds = Set.of();
         if (!grammarIds.isEmpty()) {
-            List<StudentContentProgress> progressList = progressRepository
-                    .findByStudentIdAndContentTypeAndContentIdIn(
-                            studentId, StudentContentProgress.ContentType.GRAMMAR, grammarIds);
+            List<StudentContentProgress> progressList = progressRepository.findByStudentIdAndContentTypeAndContentIdIn(
+                    studentId, StudentContentProgress.ContentType.GRAMMAR, grammarIds);
             completedIds = progressList.stream()
                     .filter(p -> p.getStatus() == StudentContentProgress.ProgressStatus.COMPLETED)
                     .map(StudentContentProgress::getContentId)
@@ -101,13 +97,17 @@ public class StudentGrammarServiceImpl implements StudentGrammarService {
     @Transactional
     public GrammarDetailResponse getGrammarDetail(Long grammarId, Long studentId) {
         // Resolve student
-        StudentUser student = studentUserRepository.findById(studentId)
-                .orElseThrow(StudentLearningException::contentNotFound);
+        StudentUser student =
+                studentUserRepository.findById(studentId).orElseThrow(StudentLearningException::contentNotFound);
 
         // Resolve grammar
-        GrammarPoint grammar = grammarRepository.findByIdAndStatus(grammarId, ContentStatus.PUBLISHED)
+        GrammarPoint grammar = grammarRepository
+                .findByIdAndStatus(grammarId, ContentStatus.PUBLISHED)
                 .orElseThrow(() -> {
-                    log.warn("[WARN] [GrammarService] Truy cập nội dung không tồn tại {studentId={}, grammarId={}}", studentId, grammarId);
+                    log.warn(
+                            "[WARN] [GrammarService] Truy cập nội dung không tồn tại {studentId={}, grammarId={}}",
+                            studentId,
+                            grammarId);
                     return StudentLearningException.contentNotFound();
                 });
 
@@ -117,7 +117,8 @@ public class StudentGrammarServiceImpl implements StudentGrammarService {
                 || (grammar.getTitle() != null && grammar.getTitle().contains("[VIP]"));
 
         // A student is VIP if email contains "vip"
-        boolean isStudentVip = student.getEmail() != null && student.getEmail().toLowerCase().contains("vip");
+        boolean isStudentVip =
+                student.getEmail() != null && student.getEmail().toLowerCase().contains("vip");
 
         if (isVipOnly && !isStudentVip) {
             throw StudentLearningException.vipRequired();

@@ -21,7 +21,8 @@ public interface AuthTokenRepository extends JpaRepository<AuthToken, Long> {
 
     void deleteByStudentIdAndTokenType(Long studentId, AuthToken.TokenType tokenType);
 
-    Optional<AuthToken> findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(Long studentId, AuthToken.TokenType tokenType);
+    Optional<AuthToken> findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(
+            Long studentId, AuthToken.TokenType tokenType);
 
     @Modifying
     @Query("DELETE FROM AuthToken t WHERE t.tokenValue = :tokenValue AND t.tokenType = :tokenType")

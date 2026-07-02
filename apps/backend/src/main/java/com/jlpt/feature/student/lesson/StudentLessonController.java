@@ -28,8 +28,8 @@ public class StudentLessonController {
     @GetMapping("/{lessonId}")
     public ResponseEntity<ApiResponse<LessonDetailResponse>> getLessonDetail(
             @PathVariable Long lessonId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        LessonDetailResponse response =
-                studentLessonService.getLessonDetail(lessonId, userDetails.getStudentUser().getId());
+        LessonDetailResponse response = studentLessonService.getLessonDetail(
+                lessonId, userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

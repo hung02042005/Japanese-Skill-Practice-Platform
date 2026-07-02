@@ -42,9 +42,9 @@ public class NotificationController {
 
     @PostMapping("/{notificationId}/read")
     public ResponseEntity<ApiResponse<Void>> markRead(
-            @AuthenticationPrincipal UserDetailsImpl principal,
-            @PathVariable Long notificationId) {
-        notificationService.markNotificationRead(notificationId, principal.getStudentUser().getId());
+            @AuthenticationPrincipal UserDetailsImpl principal, @PathVariable Long notificationId) {
+        notificationService.markNotificationRead(
+                notificationId, principal.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success("Đã đánh dấu đã đọc", null));
     }
 
@@ -53,8 +53,8 @@ public class NotificationController {
     @PostMapping("/read-all")
     public ResponseEntity<ApiResponse<Map<String, Integer>>> markAllRead(
             @AuthenticationPrincipal UserDetailsImpl principal) {
-        int updated = notificationService.markAllNotificationsRead(principal.getStudentUser().getId());
-        return ResponseEntity.ok(
-                ApiResponse.success("Đã đánh dấu tất cả là đã đọc", Map.of("markedCount", updated)));
+        int updated = notificationService.markAllNotificationsRead(
+                principal.getStudentUser().getId());
+        return ResponseEntity.ok(ApiResponse.success("Đã đánh dấu tất cả là đã đọc", Map.of("markedCount", updated)));
     }
 }

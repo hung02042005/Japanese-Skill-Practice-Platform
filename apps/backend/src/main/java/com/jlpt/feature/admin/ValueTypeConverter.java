@@ -5,8 +5,7 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 @Converter
-public class ValueTypeConverter
-        implements AttributeConverter<SystemSetting.ValueType, String> {
+public class ValueTypeConverter implements AttributeConverter<SystemSetting.ValueType, String> {
 
     @Override
     public String convertToDatabaseColumn(SystemSetting.ValueType type) {

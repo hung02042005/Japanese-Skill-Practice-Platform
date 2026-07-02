@@ -2,12 +2,12 @@
 package com.jlpt.feature.support.controller;
 
 import com.jlpt.feature.support.dto.AssignTicketRequest;
+import com.jlpt.feature.support.dto.TicketDetailResponse;
+import com.jlpt.feature.support.dto.TicketReplyRequest;
+import com.jlpt.feature.support.dto.TicketReplyResponse;
 import com.jlpt.feature.support.dto.TicketResponse;
 import com.jlpt.feature.support.service.SupportTicketService;
 import com.jlpt.shared.common.ApiResponse;
-import com.jlpt.feature.support.dto.TicketReplyRequest;
-import com.jlpt.feature.support.dto.TicketDetailResponse;
-import com.jlpt.feature.support.dto.TicketReplyResponse;
 import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +40,7 @@ public class StaffSupportController {
             @RequestParam(required = false) String q,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<TicketResponse> result =
-                supportTicketService.getAllTickets(status, category, priority, q, page, size);
+        Page<TicketResponse> result = supportTicketService.getAllTickets(status, category, priority, q, page, size);
         return ResponseEntity.ok(ApiResponse.success(Map.of(
                 "content", result.getContent(),
                 "totalElements", result.getTotalElements(),
@@ -59,11 +58,9 @@ public class StaffSupportController {
 
     @PostMapping("/{ticketId}/assign")
     public ResponseEntity<ApiResponse<TicketResponse>> assignTicket(
-            Authentication authentication,
-            @PathVariable Long ticketId,
-            @Valid @RequestBody AssignTicketRequest req) {
-        TicketResponse result = supportTicketService.assignTicket(
-                ticketId, req.getAssignToStaffId(), authentication.getName(), false);
+            Authentication authentication, @PathVariable Long ticketId, @Valid @RequestBody AssignTicketRequest req) {
+        TicketResponse result =
+                supportTicketService.assignTicket(ticketId, req.getAssignToStaffId(), authentication.getName(), false);
         return ResponseEntity.ok(ApiResponse.success("Da giao ticket cho nhan vien", result));
     }
 
@@ -71,11 +68,8 @@ public class StaffSupportController {
 
     @PostMapping("/{ticketId}/reply")
     public ResponseEntity<ApiResponse<TicketReplyResponse>> replyToTicket(
-            Authentication authentication,
-            @PathVariable Long ticketId,
-            @Valid @RequestBody TicketReplyRequest req) {
-        TicketReplyResponse result =
-                supportTicketService.addStaffReply(ticketId, authentication.getName(), req);
+            Authentication authentication, @PathVariable Long ticketId, @Valid @RequestBody TicketReplyRequest req) {
+        TicketReplyResponse result = supportTicketService.addStaffReply(ticketId, authentication.getName(), req);
         return ResponseEntity.ok(ApiResponse.success("Gui phan hoi thanh cong", result));
     }
 
@@ -83,8 +77,7 @@ public class StaffSupportController {
 
     @PostMapping("/{ticketId}/close")
     public ResponseEntity<ApiResponse<TicketResponse>> closeTicket(
-            Authentication authentication,
-            @PathVariable Long ticketId) {
+            Authentication authentication, @PathVariable Long ticketId) {
         TicketResponse result = supportTicketService.closeTicket(ticketId, authentication.getName());
         return ResponseEntity.ok(ApiResponse.success("Ticket da duoc dong", result));
     }

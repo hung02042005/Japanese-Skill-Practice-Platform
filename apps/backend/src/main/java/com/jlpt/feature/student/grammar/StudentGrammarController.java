@@ -35,8 +35,7 @@ public class StudentGrammarController {
 
     @GetMapping("/{grammarId}")
     public ResponseEntity<ApiResponse<GrammarDetailResponse>> getGrammarDetail(
-            @PathVariable Long grammarId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @PathVariable Long grammarId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         GrammarDetailResponse response = studentGrammarService.getGrammarDetail(
                 grammarId, userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(response));

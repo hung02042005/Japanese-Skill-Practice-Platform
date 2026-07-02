@@ -30,8 +30,7 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
     long countByJlptLevelAndStatus(JlptLevel jlptLevel, Lesson.LessonStatus status);
 
     /** Bài học đã publish của một cấp độ, sắp theo thứ tự hiển thị (Dashboard / next-lesson). */
-    List<Lesson> findByJlptLevelAndStatusOrderByDisplayOrderAscIdAsc(
-            JlptLevel jlptLevel, Lesson.LessonStatus status);
+    List<Lesson> findByJlptLevelAndStatusOrderByDisplayOrderAscIdAsc(JlptLevel jlptLevel, Lesson.LessonStatus status);
 
     /** Một bài học đã publish theo id (trang chi tiết bài học student-facing). */
     Optional<Lesson> findByIdAndStatus(Long id, Lesson.LessonStatus status);

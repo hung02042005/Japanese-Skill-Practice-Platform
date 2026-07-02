@@ -28,8 +28,7 @@ public class AdminAuditLogController {
             @RequestParam(required = false) String targetTable,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Page<AuditLogItemResponse> result =
-                adminAuditLogService.getAuditLogs(action, targetTable, page, size);
+        Page<AuditLogItemResponse> result = adminAuditLogService.getAuditLogs(action, targetTable, page, size);
         return ResponseEntity.ok(ApiResponse.success(Map.of(
                 "content", result.getContent(),
                 "totalElements", result.getTotalElements(),

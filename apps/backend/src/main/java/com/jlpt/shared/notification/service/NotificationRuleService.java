@@ -3,16 +3,16 @@ package com.jlpt.shared.notification.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jlpt.shared.notification.dto.NotificationRuleRequest;
-import com.jlpt.shared.notification.dto.NotificationRuleResponse;
 import com.jlpt.feature.admin.AdminAuditLog;
+import com.jlpt.feature.admin.AdminAuditLogRepository;
 import com.jlpt.feature.admin.AdminUser;
+import com.jlpt.feature.admin.AdminUserRepository;
 import com.jlpt.feature.admin.SystemSetting;
+import com.jlpt.feature.admin.SystemSettingRepository;
 import com.jlpt.shared.exception.BusinessException;
 import com.jlpt.shared.exception.ResourceNotFoundException;
-import com.jlpt.feature.admin.AdminAuditLogRepository;
-import com.jlpt.feature.admin.AdminUserRepository;
-import com.jlpt.feature.admin.SystemSettingRepository;
+import com.jlpt.shared.notification.dto.NotificationRuleRequest;
+import com.jlpt.shared.notification.dto.NotificationRuleResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,12 +110,14 @@ public class NotificationRuleService {
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private SystemSetting findRuleOrThrow(String ruleKey) {
-        return settingRepository.findBySettingGroupAndSettingKey(NOTIFICATION_GROUP, ruleKey)
+        return settingRepository
+                .findBySettingGroupAndSettingKey(NOTIFICATION_GROUP, ruleKey)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy quy tắc thông báo: " + ruleKey));
     }
 
     private AdminUser findAdminOrThrow(Long adminId) {
-        return adminUserRepository.findById(adminId)
+        return adminUserRepository
+                .findById(adminId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Admin"));
     }
 
@@ -147,8 +149,10 @@ public class NotificationRuleService {
                     .templateTitle((String) json.get("templateTitle"))
                     .templateContent((String) json.get("templateContent"))
                     .updatedAt(setting.getUpdatedAt())
-                    .updatedByAdminName(setting.getUpdatedBy() != null
-                            ? setting.getUpdatedBy().getFullName() : null)
+                    .updatedByAdminName(
+                            setting.getUpdatedBy() != null
+                                    ? setting.getUpdatedBy().getFullName()
+                                    : null)
                     .build();
         } catch (Exception e) {
             log.warn("[NotifRule] Malformed JSON for rule key '{}': {}", setting.getSettingKey(), e.getMessage());

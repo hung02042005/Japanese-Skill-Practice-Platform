@@ -47,7 +47,8 @@ public class StudentLessonService {
                 .id(lesson.getId())
                 .title(lesson.getTitle())
                 .jlptLevel(lesson.getJlptLevel() != null ? lesson.getJlptLevel().name() : null)
-                .lessonType(lesson.getLessonType() != null ? lesson.getLessonType().name() : null)
+                .lessonType(
+                        lesson.getLessonType() != null ? lesson.getLessonType().name() : null)
                 .estimatedMinutes(DEFAULT_LESSON_MINUTES)
                 // Chưa có model subscription/VIP → không khoá (đồng nhất với VocabHomeService).
                 .locked(false)

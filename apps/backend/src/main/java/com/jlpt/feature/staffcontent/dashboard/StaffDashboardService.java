@@ -38,7 +38,10 @@ public class StaffDashboardService {
                 assessmentRepository.findTop8ByCreatedBy_IdAndIsDeletedFalseOrderByUpdatedAtDesc(staffId).stream()
                         .map(a -> StaffDashboardResponse.ActivityItem.builder()
                                 .id(a.getId())
-                                .date(a.getUpdatedAt() != null ? a.getUpdatedAt().format(DATE_FMT) : null)
+                                .date(
+                                        a.getUpdatedAt() != null
+                                                ? a.getUpdatedAt().format(DATE_FMT)
+                                                : null)
                                 .type(typeLabel(a.getAssessmentType()))
                                 .title(a.getTitle())
                                 .status(a.getStatus() != null ? a.getStatus().getValue() : null)

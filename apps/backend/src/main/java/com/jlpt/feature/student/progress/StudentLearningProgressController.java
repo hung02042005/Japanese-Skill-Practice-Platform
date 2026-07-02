@@ -1,3 +1,4 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.progress;
 
 import com.jlpt.feature.student.progress.dto.LearningProgressRequest;
@@ -20,17 +21,16 @@ public class StudentLearningProgressController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<LearningProgressResponse>> markProgress(
-            @RequestBody LearningProgressRequest request,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @RequestBody LearningProgressRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        LearningProgressResponse response = progressService.markProgress(request, userDetails.getStudentUser().getId());
+        LearningProgressResponse response = progressService.markProgress(
+                request, userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @DeleteMapping("/reset")
     public ResponseEntity<ApiResponse<Void>> resetProgress(
-            @RequestParam String contentType,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @RequestParam String contentType, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         progressService.resetProgress(contentType, userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(null));
     }

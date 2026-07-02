@@ -12,7 +12,6 @@ import com.jlpt.feature.student.dto.response.DashboardResponse;
 import com.jlpt.feature.student.dto.response.NextLessonResponse;
 import com.jlpt.feature.student.dto.response.StudentStatsResponse;
 import com.jlpt.feature.student.kanji.StudentKanjiRepository;
-import com.jlpt.shared.common.JlptLevels;
 import com.jlpt.shared.exception.ResourceNotFoundException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -71,7 +70,8 @@ public class StudentDashboardService {
                 .currentStreak(nz(student.getCurrentStreak()))
                 .longestStreak(nz(student.getLongestStreak()))
                 .wordCount(progressRepository.countCompletedVocab(studentId))
-                .lessonsCompleted(progressRepository.countCompleted(studentId, ContentType.LESSON, ProgressStatus.COMPLETED))
+                .lessonsCompleted(
+                        progressRepository.countCompleted(studentId, ContentType.LESSON, ProgressStatus.COMPLETED))
                 .daysThisMonth(
                         progressRepository.countDistinctStudyDaysInMonth(studentId, now.getYear(), now.getMonthValue()))
                 .build();
@@ -83,8 +83,8 @@ public class StudentDashboardService {
         StudentUser student = loadStudent(studentId);
         JlptLevel level = currentLevel(student);
 
-        List<Lesson> lessons =
-                lessonRepository.findByJlptLevelAndStatusOrderByDisplayOrderAscIdAsc(level, Lesson.LessonStatus.PUBLISHED);
+        List<Lesson> lessons = lessonRepository.findByJlptLevelAndStatusOrderByDisplayOrderAscIdAsc(
+                level, Lesson.LessonStatus.PUBLISHED);
 
         Map<Long, Integer> progressById = lessonProgressById(
                 studentId, lessons.stream().map(Lesson::getId).toList());
@@ -101,7 +101,10 @@ public class StudentDashboardService {
                 .map(l -> toItem(l, progressById))
                 .collect(Collectors.toList());
 
-        return NextLessonResponse.builder().nextLesson(next).suggestedLessons(suggested).build();
+        return NextLessonResponse.builder()
+                .nextLesson(next)
+                .suggestedLessons(suggested)
+                .build();
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -129,7 +132,9 @@ public class StudentDashboardService {
                 .stream()
                 .collect(Collectors.toMap(
                         StudentContentProgress::getContentId,
-                        p -> p.getProgressPercent() != null ? p.getProgressPercent().intValue() : 0,
+                        p -> p.getProgressPercent() != null
+                                ? p.getProgressPercent().intValue()
+                                : 0,
                         (a, b) -> a));
     }
 

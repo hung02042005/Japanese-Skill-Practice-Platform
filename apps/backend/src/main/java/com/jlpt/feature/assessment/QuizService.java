@@ -64,13 +64,17 @@ public class QuizService {
                 .build();
 
         assessment = assessmentRepository.save(assessment);
-        log.info("[QuizService] QUIZ_CREATED assessmentId={} by staffId={}", assessment.getId(), staffUser != null ? staffUser.getId() : null);
+        log.info(
+                "[QuizService] QUIZ_CREATED assessmentId={} by staffId={}",
+                assessment.getId(),
+                staffUser != null ? staffUser.getId() : null);
         return mapToQuizResponse(assessment);
     }
 
     @Transactional
     public QuizResponse updateAssessment(Long assessmentId, QuizRequest request) {
-        Assessment assessment = assessmentRepository.findByIdAndIsDeletedFalse(assessmentId)
+        Assessment assessment = assessmentRepository
+                .findByIdAndIsDeletedFalse(assessmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assessment", assessmentId));
 
         assessment.setTitle(request.getTitle());
@@ -88,7 +92,8 @@ public class QuizService {
 
     @Transactional
     public void softDeleteAssessment(Long assessmentId) {
-        Assessment assessment = assessmentRepository.findByIdAndIsDeletedFalse(assessmentId)
+        Assessment assessment = assessmentRepository
+                .findByIdAndIsDeletedFalse(assessmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assessment", assessmentId));
         assessment.setIsDeleted(Boolean.TRUE);
         assessmentRepository.save(assessment);
@@ -104,7 +109,8 @@ public class QuizService {
 
     @Transactional
     public void addQuestions(Long quizId, List<QuestionRequest> questions, StaffUser staffUser) {
-        assessmentRepository.findByIdAndIsDeletedFalse(quizId)
+        assessmentRepository
+                .findByIdAndIsDeletedFalse(quizId)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz", quizId));
 
         int order = 1;
@@ -167,16 +173,17 @@ public class QuizService {
             Kanji.ContentStatus status,
             StudentUser.JlptLevel jlptLevel,
             Pageable pageable) {
-        Page<Assessment> assessments = assessmentRepository
-                .findAllByAssessmentTypeForStaff(type, status, jlptLevel, pageable);
+        Page<Assessment> assessments =
+                assessmentRepository.findAllByAssessmentTypeForStaff(type, status, jlptLevel, pageable);
         return assessments.map(this::toSummaryResponse);
     }
 
     public List<QuestionResponse> getQuestionsOfAssessment(Long assessmentId) {
-        assessmentRepository.findByIdAndIsDeletedFalse(assessmentId)
+        assessmentRepository
+                .findByIdAndIsDeletedFalse(assessmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assessment", assessmentId));
-        List<QuestionAssignment> assignments = questionAssignmentRepository
-                .findByParentTypeAndParentIdOrderByDisplayOrder(
+        List<QuestionAssignment> assignments =
+                questionAssignmentRepository.findByParentTypeAndParentIdOrderByDisplayOrder(
                         QuestionAssignment.ParentType.ASSESSMENT, assessmentId);
         return assignments.stream()
                 .map(QuestionAssignmentSupport::toQuestionResponse)
@@ -252,7 +259,10 @@ public class QuizService {
                 .assessmentId(assessment.getId())
                 .title(assessment.getTitle())
                 .assessmentType(assessment.getAssessmentType().getValue())
-                .jlptLevel(assessment.getJlptLevel() != null ? assessment.getJlptLevel().name() : null)
+                .jlptLevel(
+                        assessment.getJlptLevel() != null
+                                ? assessment.getJlptLevel().name()
+                                : null)
                 .durationMin(assessment.getDurationMin())
                 .passScore(assessment.getPassScore())
                 .totalScore(assessment.getTotalScore())
@@ -337,8 +347,12 @@ public class QuizService {
                 .description("score=" + totalScore + "/" + maxScore)
                 .build());
 
-        log.info("[QuizService] QUIZ_SUBMITTED studentId={} attemptId={} score={}/{}",
-                attempt.getStudent().getId(), attempt.getId(), totalScore, maxScore);
+        log.info(
+                "[QuizService] QUIZ_SUBMITTED studentId={} attemptId={} score={}/{}",
+                attempt.getStudent().getId(),
+                attempt.getId(),
+                totalScore,
+                maxScore);
 
         return ScoreResponse.builder()
                 .attemptId(attempt.getId())

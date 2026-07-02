@@ -7,6 +7,5 @@ import lombok.Data;
 @Data
 public class AssignTicketRequest {
 
-    @NotNull(message = "Phải chọn nhân viên để giao ticket")
-    private Long assignToStaffId;
+    @NotNull(message = "Phải chọn nhân viên để giao ticket") private Long assignToStaffId;
 }

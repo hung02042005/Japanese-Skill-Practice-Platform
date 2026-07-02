@@ -1,3 +1,4 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.reading.controller;
 
 import com.jlpt.feature.learning.Lesson;
@@ -29,8 +30,7 @@ public class StudentReadingController {
             @RequestParam(name = "level") StudentUser.JlptLevel level,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         Page<ReadingLessonSummaryResponse> response = readingService.getLessonList(
                 Lesson.LessonType.READING, level, userDetails.getStudentUser().getId(), page, size);
         return ApiResponse.success(response);
@@ -38,10 +38,9 @@ public class StudentReadingController {
 
     @GetMapping("/{lessonId}/reading")
     public ApiResponse<ReadingDetailResponse> getReadingDetail(
-            @PathVariable Long lessonId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        ReadingDetailResponse response = readingService.getReadingDetail(lessonId, userDetails.getStudentUser().getId());
+            @PathVariable Long lessonId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ReadingDetailResponse response = readingService.getReadingDetail(
+                lessonId, userDetails.getStudentUser().getId());
         return ApiResponse.success(response);
     }
 
@@ -49,9 +48,9 @@ public class StudentReadingController {
     public ApiResponse<ReadingSubmitResponse> submitReading(
             @PathVariable Long lessonId,
             @Valid @RequestBody ReadingSubmitRequest request,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        ReadingSubmitResponse response = readingService.submitReading(lessonId, userDetails.getStudentUser().getId(), request);
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ReadingSubmitResponse response = readingService.submitReading(
+                lessonId, userDetails.getStudentUser().getId(), request);
         return ApiResponse.success(response);
     }
 }

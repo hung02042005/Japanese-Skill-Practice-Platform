@@ -118,7 +118,8 @@ public class StudentFlashcardController {
     @PostMapping("/flashcards/bulk-delete")
     public ResponseEntity<ApiResponse<Integer>> bulkDelete(
             @Valid @RequestBody BulkDeleteRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        int removed = flashcardSrsService.bulkDelete(userDetails.getStudentUser().getId(), request.ids());
+        int removed =
+                flashcardSrsService.bulkDelete(userDetails.getStudentUser().getId(), request.ids());
         return ResponseEntity.ok(ApiResponse.success("Đã gỡ " + removed + " từ khỏi sổ tay", removed));
     }
 

@@ -39,7 +39,8 @@ public class NotificationDispatcher {
             List<StudentUser> targets, SendNotificationRequest req, StaffUser staffCreator) {
         Notification.NotificationType notifType =
                 Notification.NotificationType.valueOf(req.getNotificationType().toUpperCase());
-        Notification.Channel channel = Notification.Channel.valueOf(req.getChannel().toUpperCase());
+        Notification.Channel channel =
+                Notification.Channel.valueOf(req.getChannel().toUpperCase());
         for (StudentUser student : targets) {
             notificationRepository.save(Notification.builder()
                     .student(student)
@@ -73,8 +74,7 @@ public class NotificationDispatcher {
             try {
                 emailService.sendNotificationEmail(n.getStudent().getEmail(), n.getTitle(), n.getContent());
             } catch (Exception e) {
-                log.error("[Notification] email delivery failed for notif {}: {}",
-                        n.getId(), e.getMessage());
+                log.error("[Notification] email delivery failed for notif {}: {}", n.getId(), e.getMessage());
             }
             n.setSentAt(now);
         }

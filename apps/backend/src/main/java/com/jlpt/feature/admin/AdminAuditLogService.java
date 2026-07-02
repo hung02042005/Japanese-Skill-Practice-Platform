@@ -3,9 +3,9 @@ package com.jlpt.feature.admin;
 
 import com.jlpt.feature.admin.dto.AuditLogItemResponse;
 import com.jlpt.feature.staff.StaffUser;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +17,7 @@ public class AdminAuditLogService {
     private final AdminAuditLogRepository adminAuditLogRepository;
 
     @Transactional(readOnly = true)
-    public Page<AuditLogItemResponse> getAuditLogs(
-            String action, String targetTable, int page, int size) {
+    public Page<AuditLogItemResponse> getAuditLogs(String action, String targetTable, int page, int size) {
         String a = action == null || action.isBlank() ? null : action;
         String t = targetTable == null || targetTable.isBlank() ? null : targetTable;
         return adminAuditLogRepository

@@ -16,28 +16,28 @@ import org.springframework.stereotype.Repository;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
     /** Thong bao da den han hien thi (scheduledAt rong hoac <= now) cua 1 student. */
-    @Query("""
+    @Query(
+            """
             SELECT n FROM Notification n
             WHERE n.student.id = :studentId
               AND (n.scheduledAt IS NULL OR n.scheduledAt <= :now)
             ORDER BY n.createdAt DESC
             """)
     Page<Notification> findVisibleByStudentId(
-            @Param("studentId") Long studentId,
-            @Param("now") LocalDateTime now,
-            Pageable pageable);
+            @Param("studentId") Long studentId, @Param("now") LocalDateTime now, Pageable pageable);
 
-    @Query("""
+    @Query(
+            """
             SELECT COUNT(n) FROM Notification n
             WHERE n.student.id = :studentId
               AND n.isRead = false
               AND (n.scheduledAt IS NULL OR n.scheduledAt <= :now)
             """)
-    long countUnreadVisibleByStudentId(
-            @Param("studentId") Long studentId, @Param("now") LocalDateTime now);
+    long countUnreadVisibleByStudentId(@Param("studentId") Long studentId, @Param("now") LocalDateTime now);
 
     @Modifying
-    @Query("""
+    @Query(
+            """
             UPDATE Notification n
             SET n.isRead = true, n.readAt = :readAt
             WHERE n.student.id = :studentId AND n.isRead = false
@@ -45,7 +45,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     int markAllReadByStudentId(@Param("studentId") Long studentId, @Param("readAt") LocalDateTime readAt);
 
     /** Thong bao kenh email/both da den han ma chua gui email — phuc vu scheduler. */
-    @Query("""
+    @Query(
+            """
             SELECT n FROM Notification n
             WHERE n.channel IN :channels
               AND n.sentAt IS NULL

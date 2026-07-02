@@ -1,3 +1,4 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.kanji.dto;
 
 import lombok.AllArgsConstructor;
@@ -22,10 +23,13 @@ public class KanjiDetailResponse {
     private String exampleWord;
     private String exampleReading;
     private String exampleMeaning;
+
     @com.fasterxml.jackson.annotation.JsonProperty("isCompleted")
     private boolean isCompleted;
+
     @com.fasterxml.jackson.annotation.JsonProperty("isInFlashcard")
     private boolean isInFlashcard;
+
     private String progressStatus;
     private Long prevKanjiId;
     private Long nextKanjiId;

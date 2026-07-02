@@ -11,7 +11,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StudentSubmissionRepository extends JpaRepository<StudentSubmission, Long> {
 
-    @Query("""
+    @Query(
+            """
             SELECT s FROM StudentSubmission s
             WHERE (:type IS NULL OR s.submissionType = :type)
               AND (:status IS NULL OR s.status = :status)
@@ -24,6 +25,5 @@ public interface StudentSubmissionRepository extends JpaRepository<StudentSubmis
 
     // ── Dashboard (admin) — đếm theo trạng thái / mốc chấm ────────────────────
     @Query("SELECT COUNT(s) FROM StudentSubmission s WHERE s.status IN :statuses")
-    long countByStatusIn(
-            @Param("statuses") java.util.Collection<StudentSubmission.SubmissionStatus> statuses);
+    long countByStatusIn(@Param("statuses") java.util.Collection<StudentSubmission.SubmissionStatus> statuses);
 }

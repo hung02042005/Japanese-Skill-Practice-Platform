@@ -50,9 +50,8 @@ public class AdminDashboardService {
 
         long pending = 0;
         if (submissionRepository != null) {
-            pending = submissionRepository.countByStatusIn(List.of(
-                    StudentSubmission.SubmissionStatus.PENDING,
-                    StudentSubmission.SubmissionStatus.AI_GRADED));
+            pending = submissionRepository.countByStatusIn(
+                    List.of(StudentSubmission.SubmissionStatus.PENDING, StudentSubmission.SubmissionStatus.AI_GRADED));
         }
 
         return DashboardResponse.builder()
@@ -66,8 +65,7 @@ public class AdminDashboardService {
 
     private AdminDashboardSummaryResponse buildSummary() {
         LocalDateTime dayStart = LocalDate.now().atStartOfDay();
-        long totalUsers =
-                studentUserRepository.count() + staffUserRepository.count() + adminUserRepository.count();
+        long totalUsers = studentUserRepository.count() + staffUserRepository.count() + adminUserRepository.count();
         return AdminDashboardSummaryResponse.builder()
                 .totalUsers(totalUsers)
                 .activeToday(studentUserRepository.countByLastActivityDate(LocalDate.now()))

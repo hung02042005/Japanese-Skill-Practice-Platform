@@ -1,3 +1,4 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.kanji;
 
 import com.jlpt.feature.student.StudentUser;
@@ -23,26 +24,29 @@ public class KanjiWritingServiceImpl implements KanjiWritingService {
 
     /* ── Ngưỡng chất lượng (DTW đã normalize về [0,100]) ── */
     private static final double THRESHOLD_PERFECT = 300.0;
-    private static final double THRESHOLD_GOOD    = 650.0;
-    private static final double THRESHOLD_OK      = 1200.0;
-    private static final int    MAX_DOWNSAMPLE    = 20;
+    private static final double THRESHOLD_GOOD = 650.0;
+    private static final double THRESHOLD_OK = 1200.0;
+    private static final int MAX_DOWNSAMPLE = 20;
 
     private final KanjiWritingAttemptRepository attemptRepository;
     private final StudentUserRepository studentUserRepository;
 
     /* ═══════════════════════════════════════════════════════
-       evaluateStroke — stateless, chỉ tính DTW + trả kết quả
-       ═══════════════════════════════════════════════════════ */
+    evaluateStroke — stateless, chỉ tính DTW + trả kết quả
+    ═══════════════════════════════════════════════════════ */
     @Override
     public KanjiWritingEvaluateResponse evaluateStroke(KanjiWritingEvaluateRequest req) {
         List<double[]> userPath = toDoubleArray(req.getUserPath());
-        List<double[]> refPath  = toDoubleArray(req.getReferencePath());
+        List<double[]> refPath = toDoubleArray(req.getReferencePath());
 
         String direction = computeDirection(refPath);
 
         if (userPath.size() < 2 || refPath.size() < 2) {
-            log.debug("DTW stroke={} skipped — path too short user={} ref={}",
-                    req.getStrokeIndex(), userPath.size(), refPath.size());
+            log.debug(
+                    "DTW stroke={} skipped — path too short user={} ref={}",
+                    req.getStrokeIndex(),
+                    userPath.size(),
+                    refPath.size());
             return KanjiWritingEvaluateResponse.builder()
                     .dtwScore(0.0)
                     .quality("ok")
@@ -52,13 +56,12 @@ public class KanjiWritingServiceImpl implements KanjiWritingService {
         }
 
         List<double[]> normUser = normalize(downsample(userPath, MAX_DOWNSAMPLE));
-        List<double[]> normRef  = normalize(downsample(refPath,  MAX_DOWNSAMPLE));
+        List<double[]> normRef = normalize(downsample(refPath, MAX_DOWNSAMPLE));
 
-        double score   = computeDtw(normUser, normRef);
+        double score = computeDtw(normUser, normRef);
         String quality = qualityFromDtw(score);
 
-        log.debug("DTW stroke={} score={:.1f} quality={} dir={}",
-                req.getStrokeIndex(), score, quality, direction);
+        log.debug("DTW stroke={} score={:.1f} quality={} dir={}", req.getStrokeIndex(), score, quality, direction);
 
         return KanjiWritingEvaluateResponse.builder()
                 .dtwScore(score)
@@ -69,19 +72,20 @@ public class KanjiWritingServiceImpl implements KanjiWritingService {
     }
 
     /* ═══════════════════════════════════════════════════════
-       saveAttempt — lưu DB, tính điểm tổng từ per-stroke DTW
-       ═══════════════════════════════════════════════════════ */
+    saveAttempt — lưu DB, tính điểm tổng từ per-stroke DTW
+    ═══════════════════════════════════════════════════════ */
     @Override
     @Transactional
     public KanjiWritingAttemptResponse saveAttempt(KanjiWritingAttemptRequest req, Long studentId) {
-        StudentUser student = studentUserRepository.findById(studentId)
+        StudentUser student = studentUserRepository
+                .findById(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Student", studentId));
 
-        List<KanjiWritingAttemptRequest.StrokeResult> strokes =
-                req.getStrokes() != null ? req.getStrokes() : List.of();
+        List<KanjiWritingAttemptRequest.StrokeResult> strokes = req.getStrokes() != null ? req.getStrokes() : List.of();
 
-        double avgDtw = strokes.isEmpty() ? 0.0 :
-                strokes.stream()
+        double avgDtw = strokes.isEmpty()
+                ? 0.0
+                : strokes.stream()
                         .mapToDouble(KanjiWritingAttemptRequest.StrokeResult::getDtwScore)
                         .average()
                         .orElse(0.0);
@@ -101,8 +105,12 @@ public class KanjiWritingServiceImpl implements KanjiWritingService {
 
         attempt = attemptRepository.save(attempt);
 
-        log.info("Saved kanji writing attempt id={} student={} kanji='{}' quality={}",
-                attempt.getId(), studentId, req.getCharacterValue(), finalQuality);
+        log.info(
+                "Saved kanji writing attempt id={} student={} kanji='{}' quality={}",
+                attempt.getId(),
+                studentId,
+                req.getCharacterValue(),
+                finalQuality);
 
         return KanjiWritingAttemptResponse.builder()
                 .attemptId(attempt.getId())
@@ -113,8 +121,8 @@ public class KanjiWritingServiceImpl implements KanjiWritingService {
     }
 
     /* ══════════════════════════════════════════════
-       DTW core
-       ══════════════════════════════════════════════ */
+    DTW core
+    ══════════════════════════════════════════════ */
 
     private double computeDtw(List<double[]> s1, List<double[]> s2) {
         int n = s1.size(), m = s2.size();
@@ -128,8 +136,7 @@ public class KanjiWritingServiceImpl implements KanjiWritingService {
         for (int i = 1; i < n; i++) {
             for (int j = 1; j < m; j++) {
                 double cost = euclidean(s1.get(i), s2.get(j));
-                dp[i][j] = cost + Math.min(dp[i - 1][j],
-                                  Math.min(dp[i][j - 1], dp[i - 1][j - 1]));
+                dp[i][j] = cost + Math.min(dp[i - 1][j], Math.min(dp[i][j - 1], dp[i - 1][j - 1]));
             }
         }
         return dp[n - 1][m - 1];
@@ -149,10 +156,7 @@ public class KanjiWritingServiceImpl implements KanjiWritingService {
         double scale = Math.max(Math.max(maxX - minX, maxY - minY), 1.0);
 
         return path.stream()
-                .map(p -> new double[]{
-                    (p[0] - minX) / scale * 100.0,
-                    (p[1] - minY) / scale * 100.0
-                })
+                .map(p -> new double[] {(p[0] - minX) / scale * 100.0, (p[1] - minY) / scale * 100.0})
                 .collect(Collectors.toList());
     }
 
@@ -175,27 +179,27 @@ public class KanjiWritingServiceImpl implements KanjiWritingService {
         double dx = e[0] - s[0], dy = e[1] - s[1];
         double adx = Math.abs(dx), ady = Math.abs(dy);
 
-        if (ady > adx * 2.5) return dy > 0 ? "Lên trên"          : "Xuống";
-        if (adx > ady * 2.5) return dx > 0 ? "Sang phải"         : "Sang trái";
+        if (ady > adx * 2.5) return dy > 0 ? "Lên trên" : "Xuống";
+        if (adx > ady * 2.5) return dx > 0 ? "Sang phải" : "Sang trái";
         if (dx > 0 && dy < 0) return "Chéo phải xuống";
         if (dx < 0 && dy < 0) return "Chéo trái xuống";
-        if (dx > 0)            return "Chéo phải lên";
+        if (dx > 0) return "Chéo phải lên";
         return "Chéo trái lên";
     }
 
     private String qualityFromDtw(double score) {
         if (score < THRESHOLD_PERFECT) return "perfect";
-        if (score < THRESHOLD_GOOD)    return "good";
-        if (score < THRESHOLD_OK)      return "ok";
+        if (score < THRESHOLD_GOOD) return "good";
+        if (score < THRESHOLD_OK) return "ok";
         return "bad";
     }
 
     private String feedbackMessage(String quality) {
         return switch (quality) {
             case "perfect" -> "Hoàn hảo!";
-            case "good"    -> "Tốt lắm!";
-            case "ok"      -> "Đúng rồi!";
-            default        -> "Cần luyện thêm!";
+            case "good" -> "Tốt lắm!";
+            case "ok" -> "Đúng rồi!";
+            default -> "Cần luyện thêm!";
         };
     }
 
@@ -203,7 +207,7 @@ public class KanjiWritingServiceImpl implements KanjiWritingService {
         if (raw == null) return List.of();
         return raw.stream()
                 .filter(p -> p != null && p.size() >= 2)
-                .map(p -> new double[]{p.get(0), p.get(1)})
+                .map(p -> new double[] {p.get(0), p.get(1)})
                 .collect(Collectors.toList());
     }
 
@@ -217,9 +221,8 @@ public class KanjiWritingServiceImpl implements KanjiWritingService {
                     "{\"idx\":%d,\"dtw\":%.2f,\"quality\":\"%s\",\"dir\":\"%s\"}",
                     s.getStrokeIndex(),
                     s.getDtwScore(),
-                    s.getQuality()   != null ? s.getQuality()   : "ok",
-                    s.getDirection() != null ? s.getDirection() : ""
-            ));
+                    s.getQuality() != null ? s.getQuality() : "ok",
+                    s.getDirection() != null ? s.getDirection() : ""));
         }
         sb.append("]");
         return sb.toString();

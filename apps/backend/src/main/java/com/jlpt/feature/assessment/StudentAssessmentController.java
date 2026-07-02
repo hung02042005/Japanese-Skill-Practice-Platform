@@ -1,6 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.assessment;
 
+import com.jlpt.feature.assessment.dto.request.SubmitExamRequest;
 import com.jlpt.feature.assessment.dto.response.AssessmentSummaryResponse;
 import com.jlpt.feature.learning.Kanji;
 import com.jlpt.feature.student.StudentUser;
@@ -16,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import com.jlpt.feature.assessment.dto.request.SubmitExamRequest;
 
 @RestController
 @RequestMapping("/api/assessments")
@@ -60,12 +59,10 @@ public class StudentAssessmentController {
      */
     @PostMapping("/{id}/start")
     public ResponseEntity<ApiResponse<Object>> startAssessment(
-            @PathVariable Long id,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         StudentUser student = userDetails.getStudentUser();
-        Assessment assessment = assessmentRepository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Assessment", id));
+        Assessment assessment =
+                assessmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Assessment", id));
 
         Object response = assessment.getAssessmentType() == Assessment.AssessmentType.EXAM
                 ? mockExamService.startExam(id, student)
@@ -83,9 +80,8 @@ public class StudentAssessmentController {
             @Valid @RequestBody SubmitExamRequest request,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         Long studentId = userDetails.getStudentUser().getId();
-        Assessment assessment = assessmentRepository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Assessment", id));
+        Assessment assessment =
+                assessmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Assessment", id));
 
         Object response = assessment.getAssessmentType() == Assessment.AssessmentType.EXAM
                 ? mockExamService.submitExam(id, studentId, request)

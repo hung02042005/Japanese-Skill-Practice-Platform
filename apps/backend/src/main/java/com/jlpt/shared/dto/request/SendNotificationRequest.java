@@ -17,9 +17,7 @@ public class SendNotificationRequest {
     @NotBlank(message = "Noi dung khong duoc de trong")
     private String content;
 
-    @Pattern(
-            regexp = "^(news|warning|promotion|system|achievement|reminder)$",
-            message = "Loai thong bao khong hop le")
+    @Pattern(regexp = "^(news|warning|promotion|system|achievement|reminder)$", message = "Loai thong bao khong hop le")
     private String notificationType = "system";
 
     @Pattern(regexp = "^(in_app|email|both)$", message = "Kenh gui khong hop le")

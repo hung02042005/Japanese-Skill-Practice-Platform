@@ -1,3 +1,4 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.reading.service;
 
 import com.jlpt.feature.assessment.AttemptAnswer;
@@ -8,15 +9,6 @@ import com.jlpt.feature.learning.Lesson;
 import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.reading.dto.*;
 import com.jlpt.feature.student.reading.repository.*;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,6 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -40,12 +40,7 @@ public class StudentReadingServiceImpl implements StudentReadingService {
     @Override
     @Transactional(readOnly = true)
     public Page<ReadingLessonSummaryResponse> getLessonList(
-            Lesson.LessonType type,
-            StudentUser.JlptLevel level,
-            Long studentId,
-            int page,
-            int size
-    ) {
+            Lesson.LessonType type, StudentUser.JlptLevel level, Long studentId, int page, int size) {
         if (type != Lesson.LessonType.READING && type != Lesson.LessonType.LISTENING) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid type");
         }
@@ -53,27 +48,19 @@ public class StudentReadingServiceImpl implements StudentReadingService {
         updateLastActivityDate(studentId);
 
         Page<Lesson> lessonPage = lessonRepository.findByTypeAndLevelAndStatus(
-                type,
-                level,
-                Lesson.LessonStatus.PUBLISHED,
-                PageRequest.of(page, size)
-        );
+                type, level, Lesson.LessonStatus.PUBLISHED, PageRequest.of(page, size));
 
-        List<Long> lessonIds = lessonPage.getContent().stream()
-                .map(Lesson::getId)
-                .collect(Collectors.toList());
+        List<Long> lessonIds =
+                lessonPage.getContent().stream().map(Lesson::getId).collect(Collectors.toList());
 
         Set<Long> attemptedIds = attemptRepository.findAttemptedParentIds(
-                studentId,
-                TestAttempt.ParentType.LESSON,
-                lessonIds,
-                TestAttempt.AttemptType.valueOf(type.name())
-        );
+                studentId, TestAttempt.ParentType.LESSON, lessonIds, TestAttempt.AttemptType.valueOf(type.name()));
 
         return lessonPage.map(lesson -> {
-            List<QuestionAssignment> assignments = questionAssignmentRepository
-                    .findByParentTypeAndParentIdOrderByDisplayOrderAsc(QuestionAssignment.ParentType.LESSON, lesson.getId());
-            
+            List<QuestionAssignment> assignments =
+                    questionAssignmentRepository.findByParentTypeAndParentIdOrderByDisplayOrderAsc(
+                            QuestionAssignment.ParentType.LESSON, lesson.getId());
+
             return ReadingLessonSummaryResponse.builder()
                     .id(lesson.getId())
                     .title(lesson.getTitle())
@@ -89,11 +76,13 @@ public class StudentReadingServiceImpl implements StudentReadingService {
     public ReadingDetailResponse getReadingDetail(Long lessonId, Long studentId) {
         updateLastActivityDate(studentId);
 
-        Lesson lesson = lessonRepository.findByIdAndTypeAndStatus(lessonId, Lesson.LessonType.READING, Lesson.LessonStatus.PUBLISHED)
+        Lesson lesson = lessonRepository
+                .findByIdAndTypeAndStatus(lessonId, Lesson.LessonType.READING, Lesson.LessonStatus.PUBLISHED)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LESSON_NOT_FOUND"));
 
-        List<QuestionAssignment> assignments = questionAssignmentRepository
-                .findByParentTypeAndParentIdOrderByDisplayOrderAsc(QuestionAssignment.ParentType.LESSON, lessonId);
+        List<QuestionAssignment> assignments =
+                questionAssignmentRepository.findByParentTypeAndParentIdOrderByDisplayOrderAsc(
+                        QuestionAssignment.ParentType.LESSON, lessonId);
 
         List<ReadingQuestionResponse> questions = assignments.stream()
                 .map(qa -> {
@@ -128,11 +117,13 @@ public class StudentReadingServiceImpl implements StudentReadingService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "VALIDATION_FAILED: attemptType must be reading");
         }
 
-        Lesson lesson = lessonRepository.findByIdAndStatus(lessonId, Lesson.LessonStatus.PUBLISHED)
+        Lesson lesson = lessonRepository
+                .findByIdAndStatus(lessonId, Lesson.LessonStatus.PUBLISHED)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LESSON_NOT_FOUND"));
 
-        List<QuestionAssignment> assignments = questionAssignmentRepository
-                .findByParentTypeAndParentIdOrderByDisplayOrderAsc(QuestionAssignment.ParentType.LESSON, lessonId);
+        List<QuestionAssignment> assignments =
+                questionAssignmentRepository.findByParentTypeAndParentIdOrderByDisplayOrderAsc(
+                        QuestionAssignment.ParentType.LESSON, lessonId);
 
         Map<Long, QuestionAssignment> assignmentMap = assignments.stream()
                 .collect(Collectors.toMap(qa -> qa.getQuestion().getId(), qa -> qa));
@@ -142,13 +133,18 @@ public class StudentReadingServiceImpl implements StudentReadingService {
         }
 
         BigDecimal totalScore = BigDecimal.ZERO;
-        BigDecimal maxScore = BigDecimal.valueOf(assignments.size()); // As per spec, maxScore is total_questions or sum of scores. Assuming 1 per question or sum of qa.getScore()
+        BigDecimal maxScore = BigDecimal.valueOf(
+                assignments
+                        .size()); // As per spec, maxScore is total_questions or sum of scores. Assuming 1 per question
+        // or sum
+        // of qa.getScore()
         int correctCount = 0;
 
         List<ReadingResultItemResponse> results = new ArrayList<>();
         List<AttemptAnswer> attemptAnswers = new ArrayList<>();
 
-        StudentUser student = userRepository.findById(studentId)
+        StudentUser student = userRepository
+                .findById(studentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
 
         TestAttempt attempt = TestAttempt.builder()
@@ -160,7 +156,7 @@ public class StudentReadingServiceImpl implements StudentReadingService {
                 .submittedAt(LocalDateTime.now())
                 .startedAt(LocalDateTime.now())
                 .build();
-        
+
         attempt = attemptRepository.save(attempt);
 
         for (ReadingAnswerRequest ans : request.getAnswers()) {
@@ -170,7 +166,7 @@ public class StudentReadingServiceImpl implements StudentReadingService {
             }
             Question q = qa.getQuestion();
             boolean isCorrect = ans.getSelectedOption().equalsIgnoreCase(q.getCorrectOption());
-            
+
             BigDecimal score = isCorrect ? qa.getScore() != null ? qa.getScore() : BigDecimal.ONE : BigDecimal.ZERO;
             if (isCorrect) {
                 totalScore = totalScore.add(score);
@@ -206,7 +202,12 @@ public class StudentReadingServiceImpl implements StudentReadingService {
         attempt.setMaxScore(maxScore);
         attemptRepository.save(attempt);
 
-        log.info("[ReadingService] {studentId: {}, lessonId: {}, attemptId: {}, score: {}}", studentId, lessonId, attempt.getId(), totalScore);
+        log.info(
+                "[ReadingService] {studentId: {}, lessonId: {}, attemptId: {}, score: {}}",
+                studentId,
+                lessonId,
+                attempt.getId(),
+                totalScore);
 
         return ReadingSubmitResponse.builder()
                 .attemptId(attempt.getId())

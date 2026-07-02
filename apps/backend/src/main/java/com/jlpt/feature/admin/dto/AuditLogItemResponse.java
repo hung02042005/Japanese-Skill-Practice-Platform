@@ -16,6 +16,7 @@ public class AuditLogItemResponse {
     private String actorName;
     /** Vai trò người thực hiện: ADMIN | MANAGER | STAFF | STUDENT | SYSTEM. */
     private String actorRole;
+
     private String description;
     private LocalDateTime createdAt;
 }

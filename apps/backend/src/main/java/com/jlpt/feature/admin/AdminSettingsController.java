@@ -28,8 +28,7 @@ public class AdminSettingsController {
 
     /** GET /api/admin/settings/{group} — lấy tất cả setting của một nhóm. */
     @GetMapping("/{group}")
-    public ResponseEntity<ApiResponse<List<SettingResponse>>> getByGroup(
-            @PathVariable String group) {
+    public ResponseEntity<ApiResponse<List<SettingResponse>>> getByGroup(@PathVariable String group) {
         List<SettingResponse> data = settingsService.getByGroup(group);
         return ResponseEntity.ok(ApiResponse.success("Lấy cài đặt thành công", data));
     }
@@ -37,9 +36,7 @@ public class AdminSettingsController {
     /** PUT /api/admin/settings/{group}/{key} — cập nhật giá trị một setting. */
     @PutMapping("/{group}/{key}")
     public ResponseEntity<ApiResponse<SettingResponse>> updateSetting(
-            @PathVariable String group,
-            @PathVariable String key,
-            @Valid @RequestBody UpdateSettingRequest request) {
+            @PathVariable String group, @PathVariable String key, @Valid @RequestBody UpdateSettingRequest request) {
         SettingResponse data = settingsService.updateSetting(group, key, request.getSettingValue());
         return ResponseEntity.ok(ApiResponse.success("Đã cập nhật cài đặt thành công", data));
     }
@@ -47,8 +44,7 @@ public class AdminSettingsController {
     /** PUT /api/admin/settings/{group} — cập nhật nhiều setting cùng nhóm trong 1 request. */
     @PutMapping("/{group}")
     public ResponseEntity<ApiResponse<List<SettingResponse>>> updateSettings(
-            @PathVariable String group,
-            @Valid @RequestBody UpdateSettingsBatchRequest request) {
+            @PathVariable String group, @Valid @RequestBody UpdateSettingsBatchRequest request) {
         List<SettingResponse> data = settingsService.updateSettings(group, request.getSettings());
         return ResponseEntity.ok(ApiResponse.success("Đã cập nhật cài đặt thành công", data));
     }

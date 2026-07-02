@@ -1,3 +1,4 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.reading.dto;
 
 import java.math.BigDecimal;

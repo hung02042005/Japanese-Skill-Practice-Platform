@@ -23,9 +23,7 @@ public class StaffReviewFeedbackController {
 
     @GetMapping("/content/{contentId}/feedback")
     public ResponseEntity<ApiResponse<ReviewFeedbackResponse>> getContentFeedback(
-            @PathVariable Long contentId,
-            @RequestParam String contentType,
-            Authentication authentication) {
+            @PathVariable Long contentId, @RequestParam String contentType, Authentication authentication) {
         ReviewFeedbackResponse data =
                 feedbackService.getContentFeedback(contentId, contentType, authentication.getName());
         return ResponseEntity.ok(ApiResponse.success("OK", data));

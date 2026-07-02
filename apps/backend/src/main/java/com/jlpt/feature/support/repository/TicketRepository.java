@@ -17,11 +17,10 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     @Query("SELECT t FROM Ticket t WHERE t.student.id = :studentId AND t.status = :status ORDER BY t.createdAt DESC")
     Page<Ticket> findByStudentIdAndStatus(
-            @Param("studentId") Long studentId,
-            @Param("status") Ticket.TicketStatus status,
-            Pageable pageable);
+            @Param("studentId") Long studentId, @Param("status") Ticket.TicketStatus status, Pageable pageable);
 
-    @Query("""
+    @Query(
+            """
             SELECT t FROM Ticket t
             WHERE (:status IS NULL OR t.status = :status)
               AND (:category IS NULL OR LOWER(t.category) = LOWER(:category))
@@ -42,15 +41,12 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     /** Ticket dang con xu ly (chua resolved/closed) cua 1 staff — phuc vu can tai khi phan cong. */
     @Query("SELECT COUNT(t) FROM Ticket t WHERE t.assignedTo.id = :staffId AND t.status NOT IN :statuses")
     long countByAssignedToIdAndStatusNotIn(
-            @Param("staffId") Long staffId,
-            @Param("statuses") java.util.Collection<Ticket.TicketStatus> statuses);
+            @Param("staffId") Long staffId, @Param("statuses") java.util.Collection<Ticket.TicketStatus> statuses);
 
     // ── Dashboard (admin) — đếm theo trạng thái ──────────────────────────────
     @Query("SELECT COUNT(t) FROM Ticket t WHERE t.status = :status")
     long countByStatus(@Param("status") Ticket.TicketStatus status);
 
     @Query("SELECT COUNT(t) FROM Ticket t WHERE t.assignedTo.id = :staffId AND t.status = :status")
-    long countByAssignedToIdAndStatus(
-            @Param("staffId") Long staffId, @Param("status") Ticket.TicketStatus status);
+    long countByAssignedToIdAndStatus(@Param("staffId") Long staffId, @Param("status") Ticket.TicketStatus status);
 }
-

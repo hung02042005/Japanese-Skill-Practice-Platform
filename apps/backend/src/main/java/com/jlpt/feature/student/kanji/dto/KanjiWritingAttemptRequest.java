@@ -1,3 +1,4 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.kanji.dto;
 
 import jakarta.validation.constraints.NotBlank;
@@ -8,14 +9,12 @@ import lombok.Data;
 @Data
 public class KanjiWritingAttemptRequest {
 
-    @NotNull
-    private Long kanjiId;
+    @NotNull private Long kanjiId;
 
     @NotBlank
     private String characterValue;
 
-    @NotNull
-    private Integer totalStrokes;
+    @NotNull private Integer totalStrokes;
 
     /** Kết quả từng nét — thu thập từ các lần gọi evaluate-stroke */
     private List<StrokeResult> strokes;

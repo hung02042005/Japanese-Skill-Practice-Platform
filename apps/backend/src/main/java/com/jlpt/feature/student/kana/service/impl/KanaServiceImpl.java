@@ -1,3 +1,4 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.kana.service.impl;
 
 import com.jlpt.feature.learning.KanaCharacter;
@@ -6,20 +7,19 @@ import com.jlpt.feature.learning.repository.KanaCharacterRepository;
 import com.jlpt.feature.student.StudentContentProgress;
 import com.jlpt.feature.student.StudentContentProgress.ContentType;
 import com.jlpt.feature.student.StudentContentProgressRepository;
-import com.jlpt.feature.student.progress.dto.LearningProgressRequest;
-import com.jlpt.feature.student.progress.StudentLearningProgressService;
 import com.jlpt.feature.student.kana.dto.response.KanaListResponse;
 import com.jlpt.feature.student.kana.dto.response.KanaResponse;
 import com.jlpt.feature.student.kana.service.KanaService;
+import com.jlpt.feature.student.progress.StudentLearningProgressService;
+import com.jlpt.feature.student.progress.dto.LearningProgressRequest;
 import com.jlpt.shared.exception.ResourceNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -40,20 +40,18 @@ public class KanaServiceImpl implements KanaService {
         }
 
         List<KanaCharacter> characters = kanaRepository.findByKanaTypeOrderByDisplayOrderAsc(type);
-        
-        List<Long> contentIds = characters.stream()
-                .map(c -> c.getId().longValue())
-                .collect(Collectors.toList());
 
-        List<StudentContentProgress> progresses = progressRepository.findByStudentIdAndContentTypeAndContentIdIn(
-                studentId, ContentType.KANA, contentIds);
+        List<Long> contentIds =
+                characters.stream().map(c -> c.getId().longValue()).collect(Collectors.toList());
+
+        List<StudentContentProgress> progresses =
+                progressRepository.findByStudentIdAndContentTypeAndContentIdIn(studentId, ContentType.KANA, contentIds);
 
         Map<Long, Boolean> completedMap = progresses.stream()
                 .collect(Collectors.toMap(
                         StudentContentProgress::getContentId,
                         p -> p.getStatus() == StudentContentProgress.ProgressStatus.COMPLETED,
-                        (existing, replacement) -> existing
-                ));
+                        (existing, replacement) -> existing));
 
         List<KanaResponse> responses = characters.stream()
                 .map(c -> KanaResponse.builder()
@@ -69,7 +67,8 @@ public class KanaServiceImpl implements KanaService {
                         .build())
                 .collect(Collectors.toList());
 
-        long completedCount = responses.stream().filter(KanaResponse::isCompleted).count();
+        long completedCount =
+                responses.stream().filter(KanaResponse::isCompleted).count();
         long totalCount = responses.size();
 
         return KanaListResponse.builder()
@@ -84,13 +83,13 @@ public class KanaServiceImpl implements KanaService {
         if (!kanaRepository.existsById(kanaId)) {
             throw new ResourceNotFoundException("KanaCharacter", kanaId.longValue());
         }
-        
+
         LearningProgressRequest request = new LearningProgressRequest();
         request.setContentId(kanaId.longValue());
         request.setContentType(ContentType.KANA.getValue());
         request.setStatus(StudentContentProgress.ProgressStatus.COMPLETED.getValue());
         request.setProgressPercent(BigDecimal.valueOf(100));
-        
+
         learningProgressService.markProgress(request, studentId);
     }
 

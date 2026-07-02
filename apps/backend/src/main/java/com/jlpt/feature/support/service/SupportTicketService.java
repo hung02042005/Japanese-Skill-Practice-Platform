@@ -92,7 +92,8 @@ public class SupportTicketService {
             } catch (IllegalArgumentException e) {
                 throw new BusinessException(400, "INVALID_STATUS", "Trang thai ticket khong hop le: " + status);
             }
-            return ticketRepository.findByStudentIdAndStatus(studentId, ts, pageable)
+            return ticketRepository
+                    .findByStudentIdAndStatus(studentId, ts, pageable)
                     .map(this::toTicketResponse);
         }
         return ticketRepository.findByStudentId(studentId, pageable).map(this::toTicketResponse);
@@ -150,11 +151,10 @@ public class SupportTicketService {
         var staff = findStaffOrThrow(staffEmail);
         // Chi staff duoc giao hoac Staff Manager moi duoc ho tro ticket nay
         boolean isManager = staff.getStaffRole() == StaffUser.StaffRole.STAFF_MANAGER;
-        boolean isAssignee = ticket.getAssignedTo() != null
-                && ticket.getAssignedTo().getId().equals(staff.getId());
+        boolean isAssignee =
+                ticket.getAssignedTo() != null && ticket.getAssignedTo().getId().equals(staff.getId());
         if (!isManager && !isAssignee) {
-            throw new ForbiddenException(
-                    "Chi staff duoc phan cong hoac Staff Manager moi duoc ho tro ticket nay");
+            throw new ForbiddenException("Chi staff duoc phan cong hoac Staff Manager moi duoc ho tro ticket nay");
         }
         // Only staffSender set — DB constraint CK_replies_sender
         TicketReply reply = ticketReplyRepository.save(TicketReply.builder()
@@ -163,8 +163,7 @@ public class SupportTicketService {
                 .message(req.getMessage())
                 .attachmentUrl(req.getAttachmentUrl())
                 .build());
-        if (ticket.getStatus() == Ticket.TicketStatus.OPEN
-                || ticket.getStatus() == Ticket.TicketStatus.ASSIGNED) {
+        if (ticket.getStatus() == Ticket.TicketStatus.OPEN || ticket.getStatus() == Ticket.TicketStatus.ASSIGNED) {
             ticket.setStatus(Ticket.TicketStatus.IN_PROGRESS);
         }
         ticket.setLastReplyAt(LocalDateTime.now());
@@ -239,7 +238,8 @@ public class SupportTicketService {
         }
         Ticket ticket = findTicketOrThrow(ticketId);
         checkTicketNotClosed(ticket);
-        var targetStaff = staffUserRepository.findById(assignToStaffId)
+        var targetStaff = staffUserRepository
+                .findById(assignToStaffId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhân viên được giao"));
         ticket.setAssignedTo(targetStaff);
         // Staff Manager duyet + giao -> OPEN chuyen ASSIGNED (da duyet, cho staff xu ly)
@@ -252,7 +252,8 @@ public class SupportTicketService {
                 .action("TICKET_ASSIGNED")
                 .targetTable("tickets")
                 .targetId(ticketId)
-                .description("Ticket '" + ticket.getSubject() + "' assigned to staff " + assignToStaffId + " by " + actorEmail)
+                .description("Ticket '" + ticket.getSubject() + "' assigned to staff " + assignToStaffId + " by "
+                        + actorEmail)
                 .build());
         log.info("[Support] {} assigned ticket {} to staff {}", actorEmail, ticketId, assignToStaffId);
         return toTicketResponse(ticket);
@@ -292,20 +293,21 @@ public class SupportTicketService {
         if (submissionRepository == null) {
             throw new BusinessException(503, "SERVICE_UNAVAILABLE", "Submission service chưa sẵn sàng");
         }
-        var submission = submissionRepository.findById(submissionId)
+        var submission = submissionRepository
+                .findById(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài nộp"));
         return toSubmissionResponse(submission);
     }
 
-    private com.jlpt.feature.support.dto.SubmissionResponse toSubmissionResponse(
-            StudentSubmission s) {
+    private com.jlpt.feature.support.dto.SubmissionResponse toSubmissionResponse(StudentSubmission s) {
         BigDecimal finalScore = s.getManualScore() != null ? s.getManualScore() : s.getAiOverallScore();
         return com.jlpt.feature.support.dto.SubmissionResponse.builder()
                 .submissionId(s.getId())
                 .studentName(s.getStudent().getFullName())
-                .jlptLevel(s.getStudent().getCurrentJlptLevel() != null
-                        ? s.getStudent().getCurrentJlptLevel().name()
-                        : null)
+                .jlptLevel(
+                        s.getStudent().getCurrentJlptLevel() != null
+                                ? s.getStudent().getCurrentJlptLevel().name()
+                                : null)
                 .durationSeconds(s.getDurationSeconds())
                 .submittedAt(s.getSubmittedAt())
                 .status(s.getStatus().getValue())
@@ -331,16 +333,16 @@ public class SupportTicketService {
         if (submissionRepository == null) {
             throw new BusinessException(503, "SERVICE_UNAVAILABLE", "Submission service chưa sẵn sàng");
         }
-        var submission = submissionRepository.findById(submissionId)
+        var submission = submissionRepository
+                .findById(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài nộp"));
 
         if (submission.getSubmissionType() != StudentSubmission.SubmissionType.SPEAKING) {
-            throw new BusinessException(422, "INVALID_SUBMISSION_TYPE",
-                    "Chỉ có thể chấm điểm thủ công bài nói (speaking)");
+            throw new BusinessException(
+                    422, "INVALID_SUBMISSION_TYPE", "Chỉ có thể chấm điểm thủ công bài nói (speaking)");
         }
         if (submission.getStatus() != StudentSubmission.SubmissionStatus.AI_GRADED) {
-            throw new BusinessException(422, "INVALID_STATUS",
-                    "Chỉ chấm được bài đã qua AI chấm (ai_graded)");
+            throw new BusinessException(422, "INVALID_STATUS", "Chỉ chấm được bài đã qua AI chấm (ai_graded)");
         }
 
         var staff = findStaffOrThrow(actorEmail);
@@ -390,23 +392,23 @@ public class SupportTicketService {
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private Ticket findTicketOrThrow(Long id) {
-        return ticketRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ticket"));
+        return ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ticket"));
     }
 
     private StudentUser findStudentOrThrow(Long id) {
-        return studentUserRepository.findById(id)
+        return studentUserRepository
+                .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy học viên"));
     }
 
     private StaffUser findStaffOrThrow(String email) {
-        return staffUserRepository.findByEmail(email)
+        return staffUserRepository
+                .findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhân viên: " + email));
     }
 
     private void checkTicketNotClosed(Ticket ticket) {
-        if (ticket.getStatus() == Ticket.TicketStatus.RESOLVED
-                || ticket.getStatus() == Ticket.TicketStatus.CLOSED) {
+        if (ticket.getStatus() == Ticket.TicketStatus.RESOLVED || ticket.getStatus() == Ticket.TicketStatus.CLOSED) {
             throw new BusinessException(409, "TICKET_CLOSED", "Ticket đã được đóng, không thể phản hồi thêm");
         }
     }
@@ -424,7 +426,8 @@ public class SupportTicketService {
                 .priority(t.getPriority().getValue())
                 .status(t.getStatus().getValue())
                 .assignedToStaffId(t.getAssignedTo() != null ? t.getAssignedTo().getId() : null)
-                .assignedToStaffName(t.getAssignedTo() != null ? t.getAssignedTo().getFullName() : null)
+                .assignedToStaffName(
+                        t.getAssignedTo() != null ? t.getAssignedTo().getFullName() : null)
                 .replyCount(replyCount)
                 .lastReplyAt(t.getLastReplyAt())
                 .createdAt(t.getCreatedAt())
@@ -444,20 +447,24 @@ public class SupportTicketService {
                 .priority(t.getPriority().getValue())
                 .status(t.getStatus().getValue())
                 .assignedToStaffId(t.getAssignedTo() != null ? t.getAssignedTo().getId() : null)
-                .assignedToStaffName(t.getAssignedTo() != null ? t.getAssignedTo().getFullName() : null)
+                .assignedToStaffName(
+                        t.getAssignedTo() != null ? t.getAssignedTo().getFullName() : null)
                 .lastReplyAt(t.getLastReplyAt())
                 .createdAt(t.getCreatedAt())
                 .resolvedAt(t.getResolvedAt())
-                .replies(replies.stream().map(r -> TicketReplyResponse.builder()
-                        .replyId(r.getId())
-                        .senderName(r.getStudentSender() != null
-                                ? r.getStudentSender().getFullName()
-                                : r.getStaffSender().getFullName())
-                        .senderRole(r.getStudentSender() != null ? "STUDENT" : "STAFF")
-                        .message(r.getMessage())
-                        .attachmentUrl(r.getAttachmentUrl())
-                        .createdAt(r.getCreatedAt())
-                        .build()).toList())
+                .replies(replies.stream()
+                        .map(r -> TicketReplyResponse.builder()
+                                .replyId(r.getId())
+                                .senderName(
+                                        r.getStudentSender() != null
+                                                ? r.getStudentSender().getFullName()
+                                                : r.getStaffSender().getFullName())
+                                .senderRole(r.getStudentSender() != null ? "STUDENT" : "STAFF")
+                                .message(r.getMessage())
+                                .attachmentUrl(r.getAttachmentUrl())
+                                .createdAt(r.getCreatedAt())
+                                .build())
+                        .toList())
                 .build();
     }
 
@@ -474,13 +481,19 @@ public class SupportTicketService {
 
     private Ticket.TicketStatus parseStatus(String status) {
         if (status == null) return null;
-        try { return Ticket.TicketStatus.valueOf(status.toUpperCase()); }
-        catch (IllegalArgumentException e) { return null; }
+        try {
+            return Ticket.TicketStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     private Ticket.Priority parsePriority(String priority) {
         if (priority == null) return null;
-        try { return Ticket.Priority.valueOf(priority.toUpperCase()); }
-        catch (IllegalArgumentException e) { return null; }
+        try {
+            return Ticket.Priority.valueOf(priority.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }

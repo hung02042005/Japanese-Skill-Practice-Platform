@@ -22,6 +22,7 @@ public class LessonDetailResponse {
 
     @JsonProperty("isLocked")
     private boolean locked;
+
     private String progressStatus;
     private int progressPercent;
     private String contentHtml;

@@ -20,8 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AvatarStorageService {
 
     private static final long MAX_SIZE = 5L * 1024 * 1024; // 5MB
-    private static final Set<String> ALLOWED_TYPES =
-            Set.of("image/png", "image/jpeg", "image/jpg", "image/webp");
+    private static final Set<String> ALLOWED_TYPES = Set.of("image/png", "image/jpeg", "image/jpg", "image/webp");
 
     @Value("${app.upload-dir:uploads}")
     private String uploadDir;
@@ -38,11 +37,12 @@ public class AvatarStorageService {
             throw new BadRequestException("Định dạng ảnh không hợp lệ (chỉ chấp nhận PNG/JPG/WEBP)");
         }
 
-        String ext = switch (contentType.toLowerCase()) {
-            case "image/png" -> ".png";
-            case "image/webp" -> ".webp";
-            default -> ".jpg";
-        };
+        String ext =
+                switch (contentType.toLowerCase()) {
+                    case "image/png" -> ".png";
+                    case "image/webp" -> ".webp";
+                    default -> ".jpg";
+                };
         String filename = "student-" + studentId + "-" + System.currentTimeMillis() + ext;
 
         try {

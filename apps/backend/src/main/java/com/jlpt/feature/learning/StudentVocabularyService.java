@@ -6,7 +6,6 @@ import com.jlpt.feature.flashcard.repository.FlashcardRepository;
 import com.jlpt.feature.learning.dto.VocabTopicResponse;
 import com.jlpt.feature.learning.dto.VocabularyListItemResponse;
 import com.jlpt.feature.learning.dto.VocabularyListResponse;
-import com.jlpt.feature.student.StudentContentProgress;
 import com.jlpt.feature.student.StudentContentProgress.ContentType;
 import com.jlpt.feature.student.StudentContentProgress.ProgressStatus;
 import com.jlpt.feature.student.StudentContentProgressRepository;
@@ -56,8 +55,7 @@ public class StudentVocabularyService {
         int safeSize = Math.min(Math.max(size, 1), 50);
 
         Page<Vocabulary> result = vocabularyRepository.findPublished(
-                Kanji.ContentStatus.PUBLISHED, jlptLevel, topicId, q,
-                PageRequest.of(Math.max(page, 0), safeSize));
+                Kanji.ContentStatus.PUBLISHED, jlptLevel, topicId, q, PageRequest.of(Math.max(page, 0), safeSize));
 
         List<Long> ids = result.getContent().stream().map(Vocabulary::getId).toList();
 

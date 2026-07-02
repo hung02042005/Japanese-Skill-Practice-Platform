@@ -17,4 +17,3 @@ public interface TicketReplyRepository extends JpaRepository<TicketReply, Long> 
     @Query("SELECT COUNT(r) FROM TicketReply r WHERE r.ticket.id = :ticketId")
     long countByTicketId(@Param("ticketId") Long ticketId);
 }
-

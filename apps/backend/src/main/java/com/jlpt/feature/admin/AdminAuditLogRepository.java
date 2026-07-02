@@ -14,16 +14,15 @@ import org.springframework.stereotype.Repository;
 public interface AdminAuditLogRepository extends JpaRepository<AdminAuditLog, Long> {
 
     /** Audit log viewer (admin) — lọc theo action/targetTable, mới nhất trước. */
-    @Query("""
+    @Query(
+            """
             SELECT l FROM AdminAuditLog l
             WHERE (:action IS NULL OR LOWER(l.action) = LOWER(:action))
               AND (:targetTable IS NULL OR LOWER(l.targetTable) = LOWER(:targetTable))
             ORDER BY l.createdAt DESC
             """)
     Page<AdminAuditLog> findByFilters(
-            @Param("action") String action,
-            @Param("targetTable") String targetTable,
-            Pageable pageable);
+            @Param("action") String action, @Param("targetTable") String targetTable, Pageable pageable);
 
     /** Lấy phản hồi mới nhất (reject/request_changes) cho một nội dung cụ thể. */
     Optional<AdminAuditLog> findFirstByTargetIdAndTargetTableAndActionInOrderByCreatedAtDesc(

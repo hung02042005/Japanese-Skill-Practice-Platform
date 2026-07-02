@@ -1,6 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.shared.email;
 
+import com.jlpt.feature.admin.SystemSettingRepository;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +10,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import com.jlpt.feature.admin.SystemSettingRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -136,10 +136,12 @@ public class EmailService {
     }
 
     private void sendHtmlEmail(String to, String subject, String htmlBody) {
-        String finalFromEmail = settingRepository.findBySettingGroupAndSettingKey("smtp", "from_email")
+        String finalFromEmail = settingRepository
+                .findBySettingGroupAndSettingKey("smtp", "from_email")
                 .map(s -> s.getSettingValue())
                 .orElse(fromEmail);
-        String finalFromName = settingRepository.findBySettingGroupAndSettingKey("smtp", "from_name")
+        String finalFromName = settingRepository
+                .findBySettingGroupAndSettingKey("smtp", "from_name")
                 .map(s -> s.getSettingValue())
                 .orElse("JLPT Platform");
 
@@ -160,7 +162,12 @@ public class EmailService {
                 mailSender.send(message);
                 return; // Success
             } catch (Exception e) {
-                log.warn("[EmailService] Failed to send email to {} (Attempt {}/{}): {}", to, attempt, maxRetries, e.getMessage());
+                log.warn(
+                        "[EmailService] Failed to send email to {} (Attempt {}/{}): {}",
+                        to,
+                        attempt,
+                        maxRetries,
+                        e.getMessage());
                 if (attempt == maxRetries) {
                     log.error("[EmailService] All attempts failed. Could not send email to {}", to, e);
                     throw new RuntimeException("Gửi email thất bại tới " + to + " sau " + maxRetries + " lần thử", e);

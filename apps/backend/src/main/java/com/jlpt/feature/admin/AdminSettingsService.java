@@ -19,9 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminSettingsService {
 
     private static final Set<String> ALLOWED_GROUPS = Set.of(
-            "general", "system", "smtp", "security", "auto_notification",
-            "email_register", "email_otp", "email_reset"
-    );
+            "general", "system", "smtp", "security", "auto_notification", "email_register", "email_otp", "email_reset");
 
     private static final String SENSITIVE_KEY = "password";
 
@@ -90,7 +88,8 @@ public class AdminSettingsService {
         return SettingResponse.builder()
                 .settingKey(key)
                 .settingValue(isPassword(key) ? "" : value)
-                .valueType(setting.getValueType() != null ? setting.getValueType().getValue() : "string")
+                .valueType(
+                        setting.getValueType() != null ? setting.getValueType().getValue() : "string")
                 .build();
     }
 
@@ -100,7 +99,9 @@ public class AdminSettingsService {
             mailSender.testConnection();
         } catch (Exception e) {
             log.error("[AdminSettingsService] SMTP Test failed: ", e);
-            throw new BusinessException(502, "SMTP_TEST_FAILED",
+            throw new BusinessException(
+                    502,
+                    "SMTP_TEST_FAILED",
                     "Kết nối SMTP thất bại. Vui lòng kiểm tra lại thông tin cấu hình. Chi tiết: " + e.getMessage());
         }
     }
@@ -108,45 +109,47 @@ public class AdminSettingsService {
     @jakarta.annotation.PostConstruct
     public void applySmtpSettingsToMailSender() {
         try {
-            settingRepository.findBySettingGroupAndSettingKey("smtp", "host")
+            settingRepository
+                    .findBySettingGroupAndSettingKey("smtp", "host")
                     .ifPresent(s -> mailSender.setHost(s.getSettingValue()));
-            
-            settingRepository.findBySettingGroupAndSettingKey("smtp", "port")
-                    .ifPresent(s -> {
-                        try {
-                            mailSender.setPort(Integer.parseInt(s.getSettingValue()));
-                        } catch (NumberFormatException ignored) {}
-                    });
-            
-            settingRepository.findBySettingGroupAndSettingKey("smtp", "username")
+
+            settingRepository.findBySettingGroupAndSettingKey("smtp", "port").ifPresent(s -> {
+                try {
+                    mailSender.setPort(Integer.parseInt(s.getSettingValue()));
+                } catch (NumberFormatException ignored) {
+                }
+            });
+
+            settingRepository
+                    .findBySettingGroupAndSettingKey("smtp", "username")
                     .ifPresent(s -> mailSender.setUsername(s.getSettingValue()));
-            
-            settingRepository.findBySettingGroupAndSettingKey("smtp", "password")
+
+            settingRepository
+                    .findBySettingGroupAndSettingKey("smtp", "password")
                     .ifPresent(s -> mailSender.setPassword(s.getSettingValue()));
-            
-            settingRepository.findBySettingGroupAndSettingKey("smtp", "secure")
-                    .ifPresent(s -> {
-                        String secure = s.getSettingValue().toUpperCase();
-                        if (secure.contains("STARTTLS") || secure.contains("TLS")) {
-                            mailSender.getJavaMailProperties().put("mail.smtp.starttls.enable", "true");
-                            mailSender.getJavaMailProperties().put("mail.smtp.starttls.required", "true");
-                        } else {
-                            mailSender.getJavaMailProperties().put("mail.smtp.starttls.enable", "false");
-                            mailSender.getJavaMailProperties().put("mail.smtp.starttls.required", "false");
-                        }
-                        if (secure.equals("SSL")) {
-                            mailSender.getJavaMailProperties().put("mail.smtp.ssl.enable", "true");
-                        } else {
-                            mailSender.getJavaMailProperties().put("mail.smtp.ssl.enable", "false");
-                        }
-                    });
+
+            settingRepository.findBySettingGroupAndSettingKey("smtp", "secure").ifPresent(s -> {
+                String secure = s.getSettingValue().toUpperCase();
+                if (secure.contains("STARTTLS") || secure.contains("TLS")) {
+                    mailSender.getJavaMailProperties().put("mail.smtp.starttls.enable", "true");
+                    mailSender.getJavaMailProperties().put("mail.smtp.starttls.required", "true");
+                } else {
+                    mailSender.getJavaMailProperties().put("mail.smtp.starttls.enable", "false");
+                    mailSender.getJavaMailProperties().put("mail.smtp.starttls.required", "false");
+                }
+                if (secure.equals("SSL")) {
+                    mailSender.getJavaMailProperties().put("mail.smtp.ssl.enable", "true");
+                } else {
+                    mailSender.getJavaMailProperties().put("mail.smtp.ssl.enable", "false");
+                }
+            });
 
             if (mailSender.getUsername() != null && !mailSender.getUsername().isEmpty()) {
                 mailSender.getJavaMailProperties().put("mail.smtp.auth", "true");
             } else {
                 mailSender.getJavaMailProperties().put("mail.smtp.auth", "false");
             }
-            
+
             // Force recreation of the Session so that changes take effect immediately
             jakarta.mail.Session newSession = jakarta.mail.Session.getInstance(mailSender.getJavaMailProperties());
             mailSender.setSession(newSession);
@@ -161,8 +164,7 @@ public class AdminSettingsService {
 
     private void validateGroup(String group) {
         if (!ALLOWED_GROUPS.contains(group)) {
-            throw new BusinessException(400, "INVALID_SETTING_GROUP",
-                    "Nhóm cài đặt không hợp lệ: " + group);
+            throw new BusinessException(400, "INVALID_SETTING_GROUP", "Nhóm cài đặt không hợp lệ: " + group);
         }
     }
 
