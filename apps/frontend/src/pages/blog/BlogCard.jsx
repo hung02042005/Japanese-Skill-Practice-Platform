@@ -15,7 +15,7 @@ function BlogCard({ post, featured }) {
           className="blog-card-cover-emoji"
           style={{ color: post.emojiColor }}
         >
-          {post.emoji}
+          {post.Icon ? <post.Icon size={44} /> : post.emoji}
         </span>
       </div>
       <div className="blog-card-body">
@@ -23,7 +23,7 @@ function BlogCard({ post, featured }) {
         <h3 className="blog-card-title">{post.title}</h3>
         <p className="blog-card-excerpt">{post.excerpt}</p>
         <div className="blog-card-meta">
-          <span className="blog-card-author">✍ {post.author}</span>
+          <span className="blog-card-author">{post.author}</span>
           <span className="blog-card-dot" aria-hidden="true">·</span>
           <time className="blog-card-date">{post.date}</time>
           <span className="blog-card-dot" aria-hidden="true">·</span>

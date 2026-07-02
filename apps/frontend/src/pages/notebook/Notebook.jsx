@@ -4,6 +4,7 @@ import TopNav from '../../components/layout/TopNav';
 import { EmptyState } from '../../components/common/EmptyState';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import NotebookWordCard from '../../components/student/NotebookWordCard';
+import { NotebookIcon } from '../../components/student/StudentIcons';
 import {
   getFlashcardDecks,
   getFlashcardsByDeck,
@@ -205,7 +206,7 @@ export default function Notebook() {
         <div className="ntb-header">
           <div>
             <h1 className="ntb-title">
-              <span aria-hidden="true">📓</span> Sổ Tay — Từ cần ôn lại
+              <span aria-hidden="true"><NotebookIcon size={22} /></span> Sổ Tay — Từ cần ôn lại
             </h1>
             <p className="ntb-subtitle">
               {isLoading ? 'Đang tải…' : `${deckTotal} từ cần ôn · ${deckDue} từ đến hạn hôm nay`}
@@ -321,7 +322,7 @@ export default function Notebook() {
             subtitle={query
               ? 'Thử từ khóa khác.'
               : filter === 'due'
-                ? 'Bạn đã ôn hết các từ đến hạn hôm nay — quay lại sau nhé! 🌸'
+                ? 'Bạn đã ôn hết các từ đến hạn hôm nay — quay lại sau nhé!'
                 : 'Trả lời sai khi ôn Flashcard, hoặc lưu từ ở Từ điển — các từ cần ôn sẽ xuất hiện ở đây.'}
             mascotVariant={filter === 'due' && !query ? 'celebrate' : 'thinking'}
             mascotSize={160}

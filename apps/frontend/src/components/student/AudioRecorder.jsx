@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
+import { MicIcon } from './StudentIcons';
+import { StopIcon } from '../common/AppIcons';
 
 export default function AudioRecorder({ maxSeconds = 60, onRecordingComplete, disabled }) {
   const [isRecording, setRecording] = useState(false);
@@ -71,7 +73,7 @@ export default function AudioRecorder({ maxSeconds = 60, onRecordingComplete, di
           disabled={disabled}
           aria-label="Bắt đầu ghi âm"
         >
-          🎙 Bắt đầu ghi âm
+          <MicIcon size={18} /> Bắt đầu ghi âm
         </button>
       )}
 
@@ -87,7 +89,7 @@ export default function AudioRecorder({ maxSeconds = 60, onRecordingComplete, di
             onClick={stopRecording}
             aria-label="Dừng ghi âm"
           >
-            ⏹ Dừng
+            <StopIcon size={16} /> Dừng
           </button>
         </div>
       )}

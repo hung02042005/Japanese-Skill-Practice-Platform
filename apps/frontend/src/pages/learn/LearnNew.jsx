@@ -117,7 +117,7 @@ export default function LearnNew() {
           </>
         ) : (
           <EmptyState
-            title="Xuất sắc! 🎉 Bạn đã học hết bài của level này!"
+            title="Xuất sắc! Bạn đã học hết bài của level này!"
             subtitle="Chúc mừng! Hãy tiếp tục với level tiếp theo hoặc ôn tập lại."
             mascotVariant="celebrate"
             mascotSize={180}

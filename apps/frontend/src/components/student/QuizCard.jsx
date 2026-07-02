@@ -1,4 +1,5 @@
 import { JlptBadge } from '../common/Badges';
+import { QuizIcon } from './StudentIcons';
 
 const SKILL_LABELS = {
   vocabulary: 'Từ vựng',
@@ -12,7 +13,7 @@ export default function QuizCard({ quiz, onStart }) {
     <div className="qz-card">
       <div className="qz-card-main">
         <div className="qz-card-top">
-          <span className="qz-card-icon">📝</span>
+          <span className="qz-card-icon"><QuizIcon size={20} /></span>
           <JlptBadge level={quiz.jlptLevel} />
           <span className="qz-card-skill">{SKILL_LABELS[quiz.skill] ?? quiz.skill}</span>
           <span className="qz-card-count">{quiz.questionCount} câu</span>

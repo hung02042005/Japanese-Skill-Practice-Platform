@@ -8,6 +8,7 @@ import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
 import VocabCard from '../../components/student/VocabCard';
 import VocabResetButton from '../../components/student/VocabResetButton';
+import { FlashcardIcon } from '../../components/student/StudentIcons';
 import {
   getVocabularyList,
   getVocabTopics,
@@ -156,7 +157,7 @@ export default function VocabularyList() {
               id="voc-search"
               type="search"
               className="voc-search"
-              placeholder="🔍 Tìm từ vựng..."
+              placeholder="Tìm từ vựng..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -165,7 +166,7 @@ export default function VocabularyList() {
 
         {topics.length > 0 && (
           <section className="voc-topics" aria-label="Học Flashcard theo chủ đề">
-            <h2 className="voc-topics-title">⚡ Học Flashcard theo chủ đề</h2>
+            <h2 className="voc-topics-title"><FlashcardIcon size={20} /> Học Flashcard theo chủ đề</h2>
             <p className="voc-topics-hint">Bấm vào một chủ đề để bắt đầu phiên ôn tập (thẻ mới + ôn lại).</p>
             <div className="voc-topics-grid">
               {topics.map((t) => (
@@ -177,7 +178,7 @@ export default function VocabularyList() {
                   aria-label={`Học flashcard chủ đề ${t.titleVi}`}
                 >
                   <span className="voc-topic-name" lang="ja">{t.titleVi}</span>
-                  <span className="voc-topic-go" aria-hidden="true">⚡ Học</span>
+                  <span className="voc-topic-go" aria-hidden="true"><FlashcardIcon size={14} /> Học</span>
                 </button>
               ))}
             </div>

@@ -5,6 +5,7 @@ import { UserAvatar } from '../../components/common/UserAvatar';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import TicketStatusBadge from '../../components/support/TicketStatusBadge';
 import PriorityPill from '../../components/support/PriorityPill';
+import { LinkIcon } from '../../components/common/AppIcons';
 import { getTicketDetail, replyTicket, closeMyTicket } from '../../api/studentService';
 import { formatRelativeTime, formatDateTime } from '../../utils/date';
 import './SupportTicketDetail.css';
@@ -152,7 +153,7 @@ export default function SupportTicketDetail() {
                       <p className="tkd-msg-text">{r.message}</p>
                       {r.attachmentUrl && (
                         <a className="tkd-msg-attach" href={r.attachmentUrl} target="_blank" rel="noreferrer">
-                          🔗 Tệp đính kèm
+                          <LinkIcon size={14} /> Tệp đính kèm
                         </a>
                       )}
                       <span className="tkd-msg-time">{formatRelativeTime(r.createdAt)}</span>
@@ -184,7 +185,7 @@ export default function SupportTicketDetail() {
                   type="url"
                   value={attachUrl}
                   onChange={(e) => setAttach(e.target.value)}
-                  placeholder="🔗 Đính kèm URL (tùy chọn)"
+                  placeholder="Đính kèm URL (tùy chọn)"
                   maxLength={500}
                 />
                 <div className="tkd-reply-actions">

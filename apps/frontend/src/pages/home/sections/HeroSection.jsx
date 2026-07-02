@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import sakuChanHero from '../assets/saku-chan-hero.svg';
+import { SakuraIcon } from '../../../components/common/AppIcons';
 import './HeroSection.css';
 
 const KANJI_CARDS = [
@@ -28,7 +29,7 @@ function HeroSection() {
 
         {/* ── ROW 1: Tag + Headline + Sub ── */}
         <div className="hero-top">
-          <span className="hero-tag">🌸 Học tiếng Nhật theo cách của bạn</span>
+          <span className="hero-tag"><SakuraIcon size={16} /> Học tiếng Nhật theo cách của bạn</span>
           <h1 className="hero-headline">
             Memorize <span className="hero-headline-accent">1000 Kanji</span>
             <br />in just 1 month

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import HanziWriter from 'hanzi-writer';
 import KanjiStrokeLayer from './KanjiStrokeLayer';
+import { ConfettiIcon } from '../common/AppIcons';
 import { evaluateKanjiStroke, saveKanjiWritingAttempt } from '../../api/studentService';
 
 /* ── Lưới giấy thư pháp (半紙 / hanshi) ──────────────────────────── */
@@ -381,7 +382,7 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
         <div className="kpw-done-veil">
           <div className="kpw-done-box">
             <div className="kpw-done-k" lang="ja">{character}</div>
-            <h3 className="kpw-done-h">Hoàn thành! 🎉</h3>
+            <h3 className="kpw-done-h">Hoàn thành! <ConfettiIcon size={22} /></h3>
             <FinalScore apiResult={finalScore} />
             <p className="kpw-done-p">
               Bạn đã viết đúng {total} nét của 「{character}」

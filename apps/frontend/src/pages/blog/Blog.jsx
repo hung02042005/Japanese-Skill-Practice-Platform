@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import TopBar from '../home/sections/TopBar';
 import FooterSection from '../home/sections/FooterSection';
 import BlogCard from './BlogCard';
+import { VocabIcon } from '../../components/student/StudentIcons';
+import { LightbulbIcon, RulerIcon, PenIcon, TargetIcon, SakuraIcon } from '../../components/common/AppIcons';
 import './Blog.css';
 
 const CATEGORIES = ['Tất cả', 'Kanji', 'Ngữ pháp', 'Từ vựng', 'Luyện thi', 'Mẹo học'];
@@ -25,7 +27,7 @@ const BLOG_POSTS = [
   {
     id: 2,
     category: 'Mẹo học',
-    emoji: '💡',
+    Icon: LightbulbIcon,
     emojiColor: '#B45309',
     emojiBg: '#FFFDE7',
     title: 'Spaced Repetition — Bí quyết nhớ 1000 từ vựng',
@@ -38,7 +40,7 @@ const BLOG_POSTS = [
   {
     id: 3,
     category: 'Ngữ pháp',
-    emoji: '📐',
+    Icon: RulerIcon,
     emojiColor: '#3730A3',
     emojiBg: '#EEF2FF',
     title: 'Phân biệt は và が — Hướng dẫn chi tiết',
@@ -51,7 +53,7 @@ const BLOG_POSTS = [
   {
     id: 4,
     category: 'Luyện thi',
-    emoji: '📝',
+    Icon: PenIcon,
     emojiColor: '#C2410C',
     emojiBg: '#FFF7ED',
     title: 'Chiến lược ôn thi JLPT N3 trong 3 tháng',
@@ -64,7 +66,7 @@ const BLOG_POSTS = [
   {
     id: 5,
     category: 'Từ vựng',
-    emoji: '🍱',
+    Icon: VocabIcon,
     emojiColor: '#6B21A8',
     emojiBg: '#F3E8FF',
     title: 'Từ vựng chủ đề ăn uống tiếng Nhật (N5–N4)',
@@ -77,7 +79,7 @@ const BLOG_POSTS = [
   {
     id: 6,
     category: 'Mẹo học',
-    emoji: '🎯',
+    Icon: TargetIcon,
     emojiColor: '#0F766E',
     emojiBg: '#F0FDFA',
     title: 'Shadowing — Phương pháp luyện nói hiệu quả nhất',
@@ -123,7 +125,7 @@ function Blog() {
       <main>
         <section className="blog-hero">
           <div className="blog-hero-inner">
-            <span className="blog-hero-badge">📖 Blog</span>
+            <span className="blog-hero-badge"><VocabIcon size={16} /> Blog</span>
             <h1 className="blog-hero-title">
               Mẹo học tiếng Nhật
               <br />
@@ -160,7 +162,7 @@ function Blog() {
 
             {filtered.length === 0 ? (
               <div className="blog-empty" role="status">
-                <span className="blog-empty-icon" aria-hidden="true">🌸</span>
+                <span className="blog-empty-icon" aria-hidden="true"><SakuraIcon size={40} /></span>
                 <p>Chưa có bài viết trong danh mục này. Hãy quay lại sớm nhé!</p>
               </div>
             ) : (

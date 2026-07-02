@@ -10,7 +10,7 @@ import './EmptyState.css';
  */
 export function EmptyState({
   title    = 'Không tìm thấy dữ liệu',
-  subtitle = 'Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm nhé 🌸',
+  subtitle = 'Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm nhé.',
   mascotVariant = 'thinking',
   mascotSize    = 104,
   children,

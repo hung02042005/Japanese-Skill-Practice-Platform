@@ -2,46 +2,48 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '../home/sections/TopBar';
 import FooterSection from '../home/sections/FooterSection';
+import { MicIcon, QuizIcon, VocabIcon } from '../../components/student/StudentIcons';
+import { SakuraIcon, PhoneIcon, ScanTextIcon } from '../../components/common/AppIcons';
 import './Features.css';
 
 const FEATURES = [
   {
-    icon: '🌸',
+    icon: SakuraIcon,
     tag: 'Thời Điểm Vàng',
     tagColor: 'green',
     title: 'Spaced Repetition thông minh',
     desc: 'Thuật toán tự động tính khoảng cách ôn tập tối ưu. Saku-chan nhắc đúng lúc bạn sắp quên — nhớ lâu hơn, học ít hơn.',
   },
   {
-    icon: '📱',
+    icon: PhoneIcon,
     tag: 'Flashcard',
     tagColor: 'pink',
     title: 'Flashcard tương tác',
     desc: 'Lật thẻ, tự đánh giá, học mọi lúc mọi nơi ngay trên trình duyệt. Tiến độ của bạn được lưu tự động theo từng từ.',
   },
   {
-    icon: '🔍',
+    icon: ScanTextIcon,
     tag: 'AI · OCR',
     tagColor: 'blue',
     title: 'Nhận diện Kanji bằng AI',
     desc: 'Chụp ảnh Kanji viết tay, AI phân tích và trả về điểm độ chính xác. Luyện viết thực hành hiệu quả hơn bao giờ hết.',
   },
   {
-    icon: '🎙️',
+    icon: MicIcon,
     tag: 'AI · Speech',
     tagColor: 'purple',
     title: 'Luyện phát âm Shadowing',
     desc: 'Ghi âm câu nói, AI so sánh với phát âm chuẩn và chấm điểm tức thì. Nói tiếng Nhật tự nhiên như người bản ngữ.',
   },
   {
-    icon: '📝',
+    icon: QuizIcon,
     tag: 'Mock Exam',
     tagColor: 'orange',
     title: 'Thi thử JLPT N5 → N1',
     desc: 'Đề thi mô phỏng cấu trúc chính thức. Chấm điểm tự động, phân tích điểm yếu theo từng kỹ năng và chủ đề.',
   },
   {
-    icon: '📖',
+    icon: VocabIcon,
     tag: 'Từ điển',
     tagColor: 'teal',
     title: 'Từ điển thông minh',
@@ -151,7 +153,7 @@ function Features() {
                 style={{ transitionDelay: `${i * 0.07}s` }}
               >
                 <div className={`features-card-icon features-card-icon--${feat.tagColor}`}>
-                  {feat.icon}
+                  <feat.icon size={30} />
                 </div>
                 <span className={`features-card-tag features-card-tag--${feat.tagColor}`}>
                   {feat.tag}

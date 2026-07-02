@@ -3,6 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { EmptyState } from '../../components/common/EmptyState';
+import { ReadingIcon } from '../../components/student/StudentIcons';
+import { ConfettiIcon, ThumbsUpIcon, LightbulbIcon, MusicIcon } from '../../components/common/AppIcons';
 import './Listening.css';
 
 const LEVELS = ['All', 'N5', 'N4', 'N3'];
@@ -210,7 +212,7 @@ export default function Listening() {
               </button>
               {audioPlaying && (
                 <div className="lst-audio-demo-note" role="status">
-                  🎵 Demo UI — audio sẽ kết nối sau khi có backend
+                  <MusicIcon size={15} /> Demo UI — audio sẽ kết nối sau khi có backend
                 </div>
               )}
             </div>
@@ -265,9 +267,9 @@ export default function Listening() {
             <div className={`lst-score-card${results.score === results.total ? ' lst-score-card--perfect' : ''}`}>
               <div className="lst-score-num">{results.score}<span>/{results.total}</span></div>
               <div className="lst-score-label">
-                {results.score === results.total ? '🎉 Hoàn hảo!'
-                  : results.score >= results.total / 2 ? '👍 Làm tốt!'
-                  : '📚 Cần ôn thêm'}
+                {results.score === results.total ? <><ConfettiIcon size={18} /> Hoàn hảo!</>
+                  : results.score >= results.total / 2 ? <><ThumbsUpIcon size={18} /> Làm tốt!</>
+                  : <><ReadingIcon size={18} /> Cần ôn thêm</>}
               </div>
               <div className="lst-score-pct">{Math.round((results.score / results.total) * 100)}% chính xác</div>
             </div>
@@ -321,7 +323,7 @@ export default function Listening() {
                       </div>
                     ))}
                   </div>
-                  <p className="lst-ri-explain">💡 {r.explanation}</p>
+                  <p className="lst-ri-explain"><LightbulbIcon size={14} /> {r.explanation}</p>
                 </div>
               ))}
             </div>

@@ -3,11 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ExamTopBar from '../../components/student/ExamTopBar';
 import ExamNavigator from '../../components/student/ExamNavigator';
 import { startAssessment, submitAssessment } from '../../api/studentService';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../utils/apiMessage';
 import './MockTestAttempt.css';
 
 export default function MockTestAttempt() {
   const { id }   = useParams();
   const navigate = useNavigate();
+  const { success, error: toastError } = useToast();
 
   const [exam,        setExam]    = useState(null);
   const [attemptId,   setAttemptId] = useState(null);
@@ -87,9 +90,12 @@ export default function MockTestAttempt() {
       }));
       const result = await submitAssessment(id, { attemptId, isAutoSubmit, answers: payload });
       localStorage.removeItem(DRAFT_KEY);
+      success(isAutoSubmit ? 'Hết giờ — bài thi đã được nộp tự động.' : 'Đã nộp bài thi thành công.');
       navigate(`/mock-test/${id}/results?attemptId=${result.attemptId}`);
-    } catch {
-      setError('Nộp bài thất bại. Vui lòng thử lại.');
+    } catch (err) {
+      const msg = getErrorMessage(err, 'Nộp bài thất bại. Vui lòng thử lại.');
+      setError(msg);
+      toastError(msg);
       submitted.current = false;
       setSubmit(false);
     }

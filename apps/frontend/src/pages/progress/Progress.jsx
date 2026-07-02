@@ -6,6 +6,8 @@ import { EmptyState } from '../../components/common/EmptyState';
 import { JlptBadge } from '../../components/common/Badges';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import SkillRadarChart from '../../components/student/SkillRadarChart';
+import { FlameIcon, StarIcon, ReadingIcon, CalendarIcon } from '../../components/student/StudentIcons';
+import { CheckCircleIcon, XCircleIcon } from '../../components/common/AppIcons';
 import { getMyStats, getMyExamHistory } from '../../api/studentService';
 import { DEMO_MODE, MOCK_STATS, MOCK_EXAM_HISTORY } from '../../api/mockData';
 import './Progress.css';
@@ -64,10 +66,10 @@ export default function Progress() {
   }, [page]);
 
   const statItems = stats ? [
-    { icon: '🔥', value: stats.currentStreak, label: 'ngày streak', sub: `Dài nhất: ${stats.longestStreak} ngày` },
-    { icon: '⭐', value: stats.wordCount,       label: 'từ đã học' },
-    { icon: '📚', value: stats.lessonsCompleted,label: 'bài đã học' },
-    { icon: '📅', value: stats.daysThisMonth,   label: 'ngày học tháng này' },
+    { Icon: FlameIcon,    value: stats.currentStreak, label: 'ngày streak', sub: `Dài nhất: ${stats.longestStreak} ngày` },
+    { Icon: StarIcon,     value: stats.wordCount,       label: 'từ đã học' },
+    { Icon: ReadingIcon,  value: stats.lessonsCompleted,label: 'bài đã học' },
+    { Icon: CalendarIcon, value: stats.daysThisMonth,   label: 'ngày học tháng này' },
   ] : [];
 
   return (
@@ -82,7 +84,7 @@ export default function Progress() {
             ? [1, 2, 3, 4].map((i) => <div key={i} className="prg-skel prg-skel--stat" aria-hidden="true" />)
             : statItems.map((s, i) => (
               <div key={i} className="prg-stat-card">
-                <span className="prg-stat-icon" aria-hidden="true">{s.icon}</span>
+                <span className="prg-stat-icon" aria-hidden="true"><s.Icon size={24} /></span>
                 <div className="prg-stat-body">
                   <span className="prg-stat-value">{s.value}</span>
                   <span className="prg-stat-label">{s.label}</span>
@@ -172,7 +174,7 @@ export default function Progress() {
                             <td className="prg-td-score">{h.totalScore}/{h.maxScore}</td>
                             <td>
                               <span className={`prg-result-badge${h.isPassed ? ' prg-result-badge--pass' : ' prg-result-badge--fail'}`}>
-                                {h.isPassed ? '✅ Đậu' : '❌ Không đậu'}
+                                {h.isPassed ? <><CheckCircleIcon size={15} /> Đậu</> : <><XCircleIcon size={15} /> Không đậu</>}
                               </span>
                             </td>
                             <td>

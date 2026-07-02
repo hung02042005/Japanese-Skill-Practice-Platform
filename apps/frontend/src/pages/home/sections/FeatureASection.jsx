@@ -3,6 +3,7 @@ import sakuChanFloat from '../assets/saku-chan-float.svg';
 import sakuChanPhone from '../assets/saku-chan-phone.svg';
 import spacedRepCurve from '../assets/spaced-rep-curve.svg';
 import phoneMockup from '../assets/phone-mockup.svg';
+import { SparkleIcon, PhoneIcon } from '../../../components/common/AppIcons';
 import './FeatureASection.css';
 
 const ORBIT_CARDS = [
@@ -48,7 +49,7 @@ function FeatureASection() {
         </div>
 
         <div className="feat-a-text">
-          <span className="feat-a-tag feat-a-tag--green">Thời Điểm Vàng ✦</span>
+          <span className="feat-a-tag feat-a-tag--green">Thời Điểm Vàng <SparkleIcon size={13} /></span>
           <h3 className="feat-a-heading feat-a-heading--green">
             Ghi nhớ Kanji và từ vựng với tính năng Thời Điểm Vàng
           </h3>
@@ -66,7 +67,7 @@ function FeatureASection() {
       {/* Row 2: Flashcard on phone */}
       <div className="feat-a-row feat-a-row--reversed reveal">
         <div className="feat-a-text">
-          <span className="feat-a-tag feat-a-tag--pink">Flashcard thông minh 📱</span>
+          <span className="feat-a-tag feat-a-tag--pink">Flashcard thông minh <PhoneIcon size={13} /></span>
           <h3 className="feat-a-heading">
             Luyện Kanji mọi lúc, mọi nơi với Flashcard tương tác
           </h3>

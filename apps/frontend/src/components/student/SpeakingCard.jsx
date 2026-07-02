@@ -1,9 +1,11 @@
+import { MicIcon } from './StudentIcons';
+
 export default function SpeakingCard({ exercise, onStart }) {
   return (
     <div className="spk-exercise-card">
       <div className="spk-exercise-main">
         <div className="spk-exercise-top">
-          <span className="spk-exercise-icon">🎤</span>
+          <span className="spk-exercise-icon"><MicIcon size={20} /></span>
           <h3 className="spk-exercise-title">
             {exercise.title}{' '}
             <span className="spk-exercise-level">({exercise.level} — {exercise.category})</span>

@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logoutThunk } from '../../store/slices/authSlice';
 import AppLogo from '../common/AppLogo';
-import { VocabIcon } from '../student/StudentIcons';
+import { VocabIcon, FlameIcon, StarIcon, CalendarIcon } from '../student/StudentIcons';
+import { MoonIcon } from '../common/AppIcons';
 import NotificationBell from '../notifications/NotificationBell';
 import './TopNav.css';
 
@@ -122,7 +123,7 @@ function UserDropdown({ user, streak, wordCount, daysThisMonth, onClose, onLogou
       <div className="ud-stats">
         <div className="ud-stat ud-stat--streak">
           <span className="ud-stat-icon" aria-hidden="true">
-            {hasStreak ? '🔥' : '💤'}
+            {hasStreak ? <FlameIcon size={22} /> : <MoonIcon size={22} />}
           </span>
           <div className="ud-stat-body">
             <div className="ud-stat-value">{streak} ngày</div>
@@ -132,7 +133,7 @@ function UserDropdown({ user, streak, wordCount, daysThisMonth, onClose, onLogou
         </div>
 
         <div className="ud-stat ud-stat--words">
-          <span className="ud-stat-icon" aria-hidden="true">⭐</span>
+          <span className="ud-stat-icon" aria-hidden="true"><StarIcon size={22} /></span>
           <div className="ud-stat-body">
             <div className="ud-stat-value">{wordCount}</div>
             <div className="ud-stat-label">Từ đã học</div>
@@ -140,7 +141,7 @@ function UserDropdown({ user, streak, wordCount, daysThisMonth, onClose, onLogou
         </div>
 
         <div className="ud-stat ud-stat--days">
-          <span className="ud-stat-icon" aria-hidden="true">📅</span>
+          <span className="ud-stat-icon" aria-hidden="true"><CalendarIcon size={22} /></span>
           <div className="ud-stat-body">
             <div className="ud-stat-value">{daysThisMonth} ngày</div>
             <div className="ud-stat-label">Học trong tháng</div>

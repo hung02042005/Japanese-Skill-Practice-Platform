@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logoutThunk } from '../../store/slices/authSlice';
 import AppLogo from '../common/AppLogo';
+import { CrownIcon } from '../common/AppIcons';
 import './AdminTopNav.css';
 
 const ADMIN_TABS = [
@@ -157,7 +158,7 @@ function AdminTopNav({ activeTab = '' }) {
               <div className="atnd-info">
                 <div className="atnd-name">{user?.fullName ?? 'Administrator'}</div>
                 <div className="atnd-email">{user?.email ?? ''}</div>
-                <span className="atnd-role-chip">👑 Quản trị viên</span>
+                <span className="atnd-role-chip"><CrownIcon size={13} /> Quản trị viên</span>
               </div>
             </div>
             <div className="atnd-divider" />

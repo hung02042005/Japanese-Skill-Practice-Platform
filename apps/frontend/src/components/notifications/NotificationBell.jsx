@@ -135,7 +135,7 @@ export default function NotificationBell() {
           )}
 
           {!isLoading && !error && items.length === 0 && (
-            <div className="ntf-panel-msg">Bạn chưa có thông báo nào 🌸</div>
+            <div className="ntf-panel-msg">Bạn chưa có thông báo nào.</div>
           )}
 
           {!isLoading && !error && items.length > 0 && (

@@ -59,11 +59,13 @@ import SpeakingPage     from './pages/speaking/SpeakingPage';
 import SupportTickets       from './pages/support/SupportTickets';
 import SupportTicketDetail  from './pages/support/SupportTicketDetail';
 import Notifications        from './pages/notifications/Notifications';
+import { ToastProvider } from './context/ToastContext';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <ToastProvider>
+      <BrowserRouter>
+        <Routes>
         {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/tinh-nang" element={<Features />} />
@@ -131,8 +133,9 @@ function App() {
 
         {/* Catch-all */}
         <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </ToastProvider>
   );
 }
 

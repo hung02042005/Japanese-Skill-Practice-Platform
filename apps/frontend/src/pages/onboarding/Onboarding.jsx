@@ -5,6 +5,8 @@ import { setUser } from '../../store/slices/authSlice';
 import AppLogo from '../../components/common/AppLogo';
 import SakuChan from '../../components/auth/SakuChan';
 import { submitOnboarding } from '../../api/studentService';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../utils/apiMessage';
 import './Onboarding.css';
 
 const JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
@@ -26,6 +28,7 @@ const SKILL_OPTIONS = [
 export default function Onboarding() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { error: toastError } = useToast();
 
   const [step, setStep] = useState(1);
   const [jlptGoal, setJlpt] = useState('N5');
@@ -49,8 +52,8 @@ export default function Onboarding() {
       // Đồng bộ user (currentJlptLevel mới + onboardingCompleted=true) để Dashboard hiển thị đúng cấp độ.
       dispatch(setUser(updated));
       navigate('/dashboard', { replace: true });
-    } catch {
-      /* ignore — hiếm lỗi ở bước này */
+    } catch (err) {
+      toastError(getErrorMessage(err, 'Không lưu được lựa chọn onboarding. Vui lòng thử lại.'));
     } finally {
       setSubmit(false);
     }
@@ -158,7 +161,7 @@ export default function Onboarding() {
                 aria-busy={isSubmitting}
               >
                 {isSubmitting && <span className="onb-spinner onb-spinner--white" aria-hidden="true" />}
-                {isSubmitting ? 'Đang lưu…' : 'Bắt đầu học! 🌸'}
+                {isSubmitting ? 'Đang lưu…' : 'Bắt đầu học!'}
               </button>
             </div>
           </div>

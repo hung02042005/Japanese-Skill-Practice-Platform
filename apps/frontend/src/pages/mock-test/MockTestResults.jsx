@@ -1,6 +1,7 @@
 import { Fragment, useState, useEffect } from 'react';
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import TopNav from '../../components/layout/TopNav';
+import { CheckCircleIcon, XCircleIcon, LightbulbIcon } from '../../components/common/AppIcons';
 import { getExamReview } from '../../api/studentService';
 import './MockTestResults.css';
 
@@ -64,7 +65,7 @@ export default function MockTestResults() {
                   <span className="mxr-score-label">điểm</span>
                 </div>
                 <div className={`mxr-pass-badge${result.isPassed ? ' mxr-pass-badge--passed' : ' mxr-pass-badge--failed'}`}>
-                  {result.isPassed ? '✅ ĐẬU' : '❌ KHÔNG ĐẬU'}
+                  {result.isPassed ? <><CheckCircleIcon size={18} /> ĐẬU</> : <><XCircleIcon size={18} /> KHÔNG ĐẬU</>}
                 </div>
               </div>
 
@@ -106,15 +107,15 @@ export default function MockTestResults() {
                             <td className="mxr-td-option mxr-td-correct">{qr.correctOption}</td>
                             <td className="mxr-td-result">
                               {qr.isCorrect
-                                ? <span aria-label="Đúng">✅</span>
-                                : <span aria-label={qr.selectedOption ? 'Sai' : 'Bỏ qua'}>❌</span>
+                                ? <span aria-label="Đúng"><CheckCircleIcon size={16} /></span>
+                                : <span aria-label={qr.selectedOption ? 'Sai' : 'Bỏ qua'}><XCircleIcon size={16} /></span>
                               }
                             </td>
                           </tr>
                           {!qr.isCorrect && qr.explanation && (
                             <tr className="mxr-tr-explanation">
                               <td />
-                              <td colSpan={3} className="mxr-td-explanation">💡 {qr.explanation}</td>
+                              <td colSpan={3} className="mxr-td-explanation"><LightbulbIcon size={14} /> {qr.explanation}</td>
                             </tr>
                           )}
                         </Fragment>

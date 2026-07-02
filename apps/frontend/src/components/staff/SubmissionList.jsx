@@ -1,3 +1,4 @@
+import { ClockIcon } from '../common/AppIcons';
 import './SubmissionList.css';
 
 const LEVEL_COLORS = {
@@ -74,7 +75,7 @@ export default function SubmissionList({ submissions, selectedId, statusTab, pen
                 </div>
                 <div className="grd-sub-meta">
                   <span>{formatDate(sub.submittedAt)}</span>
-                  <span>⏱ {formatDuration(sub.durationSeconds)}</span>
+                  <span><ClockIcon size={14} /> {formatDuration(sub.durationSeconds)}</span>
                 </div>
                 <div className="grd-sub-footer">
                   <span className="grd-sub-ai">

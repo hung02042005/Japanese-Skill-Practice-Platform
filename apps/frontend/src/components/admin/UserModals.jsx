@@ -2,22 +2,25 @@ import { useState, useEffect } from 'react';
 import SakuChan from '../auth/SakuChan';
 
 import { IcBloomCheck } from './ManageUsersIcons';
+import { StarIcon } from '../student/StudentIcons';
+import { CheckCircleIcon, KeyIcon, TrashIcon, LockIcon, LeafIcon, PencilIcon } from '../common/AppIcons';
 /* CSS: classes are defined in pages/admin/ManageUsers.css */
 
 export function ConfirmModal({ modal, onConfirm, onClose, isSubmitting }) {
   if (!modal.open) return null;
   const cfg = {
-    activate:      { icon: '✅', title: 'Kích hoạt tài khoản?',        variant: 'success', confirmLabel: 'Kích hoạt',     sakuVariant: 'happy'    },
-    'reset-pass':  { icon: '🔑', title: 'Gửi email đặt lại mật khẩu?', variant: 'primary', confirmLabel: 'Gửi ngay',      sakuVariant: 'idle'     },
-    delete:        { icon: '🗑️', title: 'Xóa tài khoản?',              variant: 'danger',  confirmLabel: 'Xóa tài khoản', sakuVariant: 'thinking' },
+    activate:      { Icon: CheckCircleIcon, title: 'Kích hoạt tài khoản?',        variant: 'success', confirmLabel: 'Kích hoạt',     sakuVariant: 'happy'    },
+    'reset-pass':  { Icon: KeyIcon,         title: 'Gửi email đặt lại mật khẩu?', variant: 'primary', confirmLabel: 'Gửi ngay',      sakuVariant: 'idle'     },
+    delete:        { Icon: TrashIcon,       title: 'Xóa tài khoản?',              variant: 'danger',  confirmLabel: 'Xóa tài khoản', sakuVariant: 'thinking' },
   }[modal.action] ?? {};
+  const CfgIcon = cfg.Icon;
 
   return (
     <div className="mu-overlay" role="dialog" aria-modal="true" onClick={onClose}>
       <div className="mu-modal" onClick={(e) => e.stopPropagation()}>
         <button type="button" className="mu-modal-x" onClick={onClose}>×</button>
         <div className="mu-modal-mascot"><SakuChan variant={cfg.sakuVariant} size={80} /></div>
-        <h2 className="mu-modal-title">{cfg.icon} {cfg.title}</h2>
+        <h2 className="mu-modal-title">{CfgIcon && <CfgIcon size={20} />} {cfg.title}</h2>
         <p className="mu-modal-desc">
           {modal.action === 'activate'   && <>Kích hoạt lại tài khoản <strong>&quot;{modal.userName}&quot;</strong>? Người dùng có thể đăng nhập trở lại.</>}
           {modal.action === 'reset-pass' && <>Email đặt lại mật khẩu sẽ được gửi đến <strong>&quot;{modal.userName}&quot;</strong>. Liên kết có hiệu lực 15 phút.</>}
@@ -46,7 +49,7 @@ export function SuspendModal({ modal, onConfirm, onClose, isSubmitting }) {
       <div className="mu-modal mu-modal--form" onClick={(e) => e.stopPropagation()}>
         <button type="button" className="mu-modal-x" onClick={onClose}>×</button>
         <div className="mu-modal-mascot"><SakuChan variant="thinking" size={80} /></div>
-        <h2 className="mu-modal-title">🔒 Đình chỉ tài khoản?</h2>
+        <h2 className="mu-modal-title"><LockIcon size={20} /> Đình chỉ tài khoản?</h2>
         <p className="mu-modal-desc">Đình chỉ tài khoản <strong>&quot;{modal.userName}&quot;</strong>. Người dùng sẽ không thể đăng nhập cho đến khi được kích hoạt lại.</p>
         <div className="mu-form-field">
           <label className="mu-form-label">Lý do đình chỉ <span className="mu-required">*</span></label>
@@ -89,7 +92,7 @@ export function CreateStaffModal({ open, onConfirm, onClose, isSubmitting }) {
       <div className="mu-modal mu-modal--form" onClick={(e) => e.stopPropagation()}>
         <button type="button" className="mu-modal-x" onClick={onClose}>×</button>
         <div className="mu-modal-mascot"><SakuChan variant="happy" size={80} /></div>
-        <h2 className="mu-modal-title">🌿 Tạo nhân viên mới</h2>
+        <h2 className="mu-modal-title"><LeafIcon size={20} /> Tạo nhân viên mới</h2>
         <p className="mu-modal-desc">Email mời sẽ được gửi để nhân viên thiết lập mật khẩu.</p>
         <div className="mu-form-fields">
           <div className="mu-form-field">
@@ -105,8 +108,8 @@ export function CreateStaffModal({ open, onConfirm, onClose, isSubmitting }) {
           <div className="mu-form-field">
             <label className="mu-form-label">Vai trò</label>
             <select className="mu-form-select" value={form.staffRole} onChange={(e) => setForm(p=>({...p,staffRole:e.target.value}))}>
-              <option value="staff">🌿 Nhân viên</option>
-              <option value="staff_manager">⭐ Quản lý nhân viên</option>
+              <option value="staff">Nhân viên</option>
+              <option value="staff_manager">Quản lý nhân viên</option>
             </select>
           </div>
         </div>
@@ -127,8 +130,8 @@ export function ChangeStaffRoleModal({ modal, onConfirm, onClose, isSubmitting }
   if (!modal.open) return null;
 
   const OPTS = [
-    { value: 'staff',         icon: '🌿', label: 'Nhân viên',         desc: 'Quản lý và cập nhật nội dung khoá học' },
-    { value: 'staff_manager', icon: '⭐', label: 'Quản lý nhân viên', desc: 'Giám sát nhóm nhân viên và phân công'   },
+    { value: 'staff',         Icon: LeafIcon, label: 'Nhân viên',         desc: 'Quản lý và cập nhật nội dung khoá học' },
+    { value: 'staff_manager', Icon: StarIcon, label: 'Quản lý nhân viên', desc: 'Giám sát nhóm nhân viên và phân công'   },
   ];
 
   return (
@@ -136,13 +139,13 @@ export function ChangeStaffRoleModal({ modal, onConfirm, onClose, isSubmitting }
       <div className="mu-modal mu-modal--edit" onClick={(e) => e.stopPropagation()}>
         <button type="button" className="mu-modal-x" onClick={onClose}>×</button>
         <div className="mu-modal-mascot"><SakuChan variant="idle" size={72} /></div>
-        <h2 className="mu-modal-title">✏️ Đổi vai trò nhân viên</h2>
+        <h2 className="mu-modal-title"><PencilIcon size={20} /> Đổi vai trò nhân viên</h2>
         <p className="mu-modal-desc">Thay đổi vai trò cho <strong>&quot;{modal.userName}&quot;</strong></p>
         <div className="mu-role-opts">
           {OPTS.map((r) => (
             <label key={r.value} className={`mu-role-opt${selected===r.value?' mu-role-opt--on':''}`}>
               <input type="radio" name="staff-role" value={r.value} checked={selected===r.value} onChange={() => setSelected(r.value)} className="mu-role-radio" />
-              <span className="mu-role-opt-icon">{r.icon}</span>
+              <span className="mu-role-opt-icon"><r.Icon size={20} /></span>
               <div className="mu-role-opt-body">
                 <span className="mu-role-opt-label">{r.label}</span>
                 <span className="mu-role-opt-desc">{r.desc}</span>

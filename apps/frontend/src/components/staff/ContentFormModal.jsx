@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import HanziWriter from 'hanzi-writer';
 import { getStaffVocabularyTopics, createStaffVocabularyTopic } from '../../api/staffService';
 import { lookupKanjiByReading, getKanjiInfo } from '../../utils/kanjiLookup';
+import { PlusIcon, SpinnerIcon, CheckIcon, XIcon } from '../common/AppIcons';
 
 const TYPE_LABELS = {
   course: 'Khóa học',
@@ -408,7 +409,7 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
                     style={{ marginTop: 6, alignSelf: 'flex-start' }}
                     onClick={() => { setShowNewTopic(true); setTopicError(''); }}
                   >
-                    ➕ Tạo chủ đề mới
+                    <PlusIcon size={15} /> Tạo chủ đề mới
                   </button>
                 ) : (
                   <div className="sfc-newtopic" style={{ marginTop: 8, display: 'grid', gap: 6 }}>
@@ -611,17 +612,17 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
                 />
                 {kanjiCheck.status === 'checking' && (
                   <span className="sfc-field-hint" style={{ color: '#6B7280' }}>
-                    ⏳ Đang kiểm tra dữ liệu nét…
+                    <SpinnerIcon size={14} /> Đang kiểm tra dữ liệu nét…
                   </span>
                 )}
                 {kanjiCheck.status === 'valid' && (
                   <span className="sfc-field-hint" style={{ color: '#16A34A' }}>
-                    ✔ Có dữ liệu nét — học viên tô được ({kanjiCheck.strokeCount} nét).
+                    <CheckIcon size={14} /> Có dữ liệu nét — học viên tô được ({kanjiCheck.strokeCount} nét).
                   </span>
                 )}
                 {kanjiCheck.status === 'invalid' && (
                   <span className="sfc-field-error" style={{ color: 'var(--color-danger, #c0392b)' }}>
-                    ✖ Ký tự này chưa có dữ liệu nét (kana hoặc kanji riêng của Nhật chưa được hỗ trợ).
+                    <XIcon size={14} /> Ký tự này chưa có dữ liệu nét (kana hoặc kanji riêng của Nhật chưa được hỗ trợ).
                     Học viên sẽ không tô được — vui lòng chọn ký tự khác.
                   </span>
                 )}

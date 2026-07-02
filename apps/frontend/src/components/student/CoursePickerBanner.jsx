@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setSelectedLevel } from '../../store/slices/studentSlice';
+import { SakuraIcon } from '../common/AppIcons';
 import './CoursePickerBanner.css';
 
 /* ─────────────────────────────────────────────
@@ -338,8 +339,8 @@ function CoursePickerBanner() {
     <div className="cpb-wrapper" ref={wrapperRef}>
       {/* ── Main card ── */}
       <div className={`cpb-card${isOpen ? ' cpb-card--open' : ''}`}>
-        <span className="cpb-petal cpb-petal--1" aria-hidden="true">🌸</span>
-        <span className="cpb-petal cpb-petal--2" aria-hidden="true">🌸</span>
+        <span className="cpb-petal cpb-petal--1" aria-hidden="true"><SakuraIcon size={16} /></span>
+        <span className="cpb-petal cpb-petal--2" aria-hidden="true"><SakuraIcon size={16} /></span>
 
         <div className="cpb-icon">
           <BookshelfSVG />
@@ -378,12 +379,12 @@ function CoursePickerBanner() {
       {/* ── Dropdown panel ── */}
       {isOpen && (
         <div className="cpb-dropdown" role="listbox" aria-label="Chọn cấp độ JLPT">
-          <span className="cpb-dp-petal cpb-dp-petal--1" aria-hidden="true">🌸</span>
-          <span className="cpb-dp-petal cpb-dp-petal--2" aria-hidden="true">🌸</span>
-          <span className="cpb-dp-petal cpb-dp-petal--3" aria-hidden="true">🌸</span>
+          <span className="cpb-dp-petal cpb-dp-petal--1" aria-hidden="true"><SakuraIcon size={16} /></span>
+          <span className="cpb-dp-petal cpb-dp-petal--2" aria-hidden="true"><SakuraIcon size={16} /></span>
+          <span className="cpb-dp-petal cpb-dp-petal--3" aria-hidden="true"><SakuraIcon size={16} /></span>
 
           <div className="cpb-dp-header">
-            <span className="cpb-dp-header-icon" aria-hidden="true">🌸</span>
+            <span className="cpb-dp-header-icon" aria-hidden="true"><SakuraIcon size={16} /></span>
             <span className="cpb-dp-header-title">Chọn lộ trình học của bạn</span>
             <div className="cpb-dp-header-line" aria-hidden="true" />
           </div>

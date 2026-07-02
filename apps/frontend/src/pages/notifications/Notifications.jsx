@@ -126,7 +126,7 @@ export default function Notifications() {
 
         {!isLoading && !error && visible.length === 0 && (
           tab === 'unread'
-            ? <EmptyState title="Bạn đã đọc hết thông báo!" subtitle="Không còn thông báo chưa đọc nào 🌸" mascotVariant="happy" mascotSize={140} />
+            ? <EmptyState title="Bạn đã đọc hết thông báo!" subtitle="Không còn thông báo chưa đọc nào" mascotVariant="happy" mascotSize={140} />
             : <EmptyState title="Chưa có thông báo" subtitle="Khi có cập nhật mới, SakuJi sẽ báo cho bạn ở đây." mascotVariant="idle" mascotSize={140} />
         )}
 

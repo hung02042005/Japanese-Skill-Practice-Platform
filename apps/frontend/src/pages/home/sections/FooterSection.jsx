@@ -34,7 +34,7 @@ function FooterSection() {
           </a>
 
           <p className="footer-tagline">
-            Hành trình tiếng Nhật của bạn bắt đầu từ một cánh hoa 🌸
+            Hành trình tiếng Nhật của bạn bắt đầu từ một cánh hoa.
           </p>
 
           <div className="footer-socials" aria-label="Mạng xã hội">

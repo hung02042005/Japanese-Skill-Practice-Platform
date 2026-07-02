@@ -5,6 +5,8 @@ import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { ProgressBar } from '../../components/common/ProgressBar';
 import { EmptyState } from '../../components/common/EmptyState';
+import { NotebookIcon } from '../../components/student/StudentIcons';
+import { SproutIcon, RepeatIcon, SpeakerIcon } from '../../components/common/AppIcons';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import {
   getVocabFlashcardSession,
@@ -154,7 +156,7 @@ export default function VocabFlashcardSession() {
         <div className="vfs-head">
           <h1 className="vfs-title">
             {deckId ? (
-              <span>📓 Từ cần ôn lại</span>
+              <span><NotebookIcon size={20} /> Từ cần ôn lại</span>
             ) : (
               <>
                 <JlptBadge level={session?.level ?? level} />
@@ -192,7 +194,7 @@ export default function VocabFlashcardSession() {
         {status === 'ready' && total === 0 && (
           <EmptyState
             title="Chưa có từ để học hôm nay"
-            subtitle="Chủ đề này chưa có từ vựng, hoặc bạn đã ôn hết các thẻ đến hạn. Quay lại sau nhé! 🌸"
+            subtitle="Chủ đề này chưa có từ vựng, hoặc bạn đã ôn hết các thẻ đến hạn. Quay lại sau nhé!"
             mascotVariant="idle"
             mascotSize={150}
           >
@@ -204,7 +206,7 @@ export default function VocabFlashcardSession() {
         {status === 'ready' && total > 0 && done && (
           <div className="vfs-summary">
             <EmptyState
-              title="Hoàn thành phiên học! 🎉"
+              title="Hoàn thành phiên học!"
               subtitle={`Bạn trả lời đúng ${correctCnt}/${quizTotal} câu.`}
               mascotVariant="celebrate"
               mascotSize={170}
@@ -244,7 +246,7 @@ export default function VocabFlashcardSession() {
               <div className="vfs-progress-meta">
                 <span>{idx + 1} / {total}</span>
                 <span className={`vfs-stage vfs-stage--${isNew ? 'new' : 'review'}`}>
-                  {isNew ? '🌱 Từ mới' : '🔁 Ôn tập'}
+                  {isNew ? <><SproutIcon size={14} /> Từ mới</> : <><RepeatIcon size={14} /> Ôn tập</>}
                 </span>
               </div>
             </div>
@@ -301,7 +303,7 @@ export default function VocabFlashcardSession() {
                               onClick={(e) => { e.stopPropagation(); playAudio(card.learn.audioUrl); }}
                               aria-label="Nghe phát âm"
                             >
-                              🔊 Phát âm
+                              <SpeakerIcon size={16} /> Phát âm
                             </button>
                           )}
                         </>
@@ -355,7 +357,7 @@ export default function VocabFlashcardSession() {
                 {result && (
                   <div className={`vfs-feedback${result.correct ? ' vfs-feedback--ok' : ' vfs-feedback--no'}`} aria-live="polite">
                     <span className="vfs-feedback-text">
-                      {result.correct ? 'Chính xác! 🎉' : `Chưa đúng — nghĩa đúng: ${result.correctMeaning ?? ''}`}
+                      {result.correct ? 'Chính xác!' : `Chưa đúng — nghĩa đúng: ${result.correctMeaning ?? ''}`}
                     </span>
                     <button className="vfs-btn vfs-btn--primary" onClick={handleNext}>
                       {isLast ? 'Hoàn thành →' : 'Tiếp theo →'}

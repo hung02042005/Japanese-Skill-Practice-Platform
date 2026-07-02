@@ -8,6 +8,7 @@ import SakuChan from '../../components/auth/SakuChan';
 import EyeIcon from '../../components/auth/EyeIcon';
 import AuthBanner from '../../components/auth/AuthBanner';
 import AuthDivider from '../../components/auth/AuthDivider';
+import { SakuraIcon, WrenchIcon } from '../../components/common/AppIcons';
 import './Login.css';
 
 function Login() {
@@ -62,9 +63,9 @@ function Login() {
       <AuthTopBar />
 
       <main className="login-main">
-        <span className="login-petal login-petal--1" aria-hidden="true">🌸</span>
-        <span className="login-petal login-petal--2" aria-hidden="true">🌸</span>
-        <span className="login-petal login-petal--3" aria-hidden="true">🌸</span>
+        <span className="login-petal login-petal--1" aria-hidden="true"><SakuraIcon size={18} /></span>
+        <span className="login-petal login-petal--2" aria-hidden="true"><SakuraIcon size={18} /></span>
+        <span className="login-petal login-petal--3" aria-hidden="true"><SakuraIcon size={18} /></span>
 
         <div className="auth-card" role="main">
           <SakuChan />
@@ -72,7 +73,7 @@ function Login() {
           <h1 className="auth-title">Chào mừng trở lại</h1>
           <p className="auth-subtitle">Đăng nhập để tiếp tục hành trình học tiếng Nhật</p>
 
-          {isMaintenance && <AuthBanner type="warning">🛠️ {error}</AuthBanner>}
+          {isMaintenance && <AuthBanner type="warning"><WrenchIcon size={16} /> {error}</AuthBanner>}
           {isLocked && <AuthBanner type="warning">{error}</AuthBanner>}
           {needVerify && (
             <AuthBanner type="info">

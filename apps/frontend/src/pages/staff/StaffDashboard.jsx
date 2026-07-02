@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
 import StaffTopNav from '../../components/layout/StaffTopNav';
 import StaffPageHero from '../../components/staff/StaffPageHero';
+import { WaveIcon } from '../../components/common/AppIcons';
 import { getStaffDashboard } from '../../api/staffService';
 import './StaffDashboard.css';
 
@@ -167,7 +168,7 @@ function StaffDashboard() {
         />
         {/* Greeting */}
         <div className="sfd-header">
-          <h1 className="sfd-greeting">Xin chào, {user?.fullName ?? 'Staff'} 👋</h1>
+          <h1 className="sfd-greeting">Xin chào, {user?.fullName ?? 'Staff'} <WaveIcon size={22} /></h1>
           <span className="sfd-date">Thứ Ba, 03/06/2026</span>
         </div>
 

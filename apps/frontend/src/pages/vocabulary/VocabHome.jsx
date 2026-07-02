@@ -76,7 +76,7 @@ export default function VocabHome() {
               mascotVariant="thinking"
               mascotSize={160}
               title="Chưa có bài học nào"
-              subtitle="Bài học đang được cập nhật. Hãy quay lại sau nhé! 🌸"
+              subtitle="Bài học đang được cập nhật. Hãy quay lại sau nhé!"
             >
               <button
                 type="button"

@@ -6,6 +6,7 @@ import AuthTopBar from '../../components/auth/AuthTopBar';
 import SakuChan from '../../components/auth/SakuChan';
 import AuthBanner from '../../components/auth/AuthBanner';
 import EyeIcon from '../../components/auth/EyeIcon';
+import { SakuraIcon } from '../../components/common/AppIcons';
 import './ResetPassword.css';
 
 function ResetPassword() {
@@ -90,9 +91,9 @@ function ResetPassword() {
       <AuthTopBar />
 
       <main className="rp-main">
-        <span className="rp-petal rp-petal--1" aria-hidden="true">🌸</span>
-        <span className="rp-petal rp-petal--2" aria-hidden="true">🌸</span>
-        <span className="rp-petal rp-petal--3" aria-hidden="true">🌸</span>
+        <span className="rp-petal rp-petal--1" aria-hidden="true"><SakuraIcon size={18} /></span>
+        <span className="rp-petal rp-petal--2" aria-hidden="true"><SakuraIcon size={18} /></span>
+        <span className="rp-petal rp-petal--3" aria-hidden="true"><SakuraIcon size={18} /></span>
 
         <div className="auth-card" role="main">
           <SakuChan />

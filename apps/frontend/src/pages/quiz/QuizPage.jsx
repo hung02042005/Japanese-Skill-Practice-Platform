@@ -5,6 +5,9 @@ import { EmptyState } from '../../components/common/EmptyState';
 import QuizCard from '../../components/student/QuizCard';
 import QuizQuestion from '../../components/student/QuizQuestion';
 import { getQuizzes, startAssessment, submitAssessment } from '../../api/studentService';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../utils/apiMessage';
+import { ConfettiIcon } from '../../components/common/AppIcons';
 import './QuizPage.css';
 
 // Chuyển câu hỏi từ payload assessment (optionA..D) sang shape QuizQuestion mong đợi.
@@ -26,6 +29,7 @@ const SKILLS = [
 
 export default function QuizPage() {
   const { user } = useAppSelector((s) => s.auth);
+  const { error: toastError } = useToast();
 
   // List state
   const [view,      setView]    = useState('list');
@@ -101,8 +105,10 @@ export default function QuizPage() {
         : 0;
       setResult({ score: correct, totalQuestions: total, scorePct: pct, results: res.results });
       setView('result');
-    } catch {
-      setError('Không thể nộp bài. Vui lòng thử lại.');
+    } catch (err) {
+      const msg = getErrorMessage(err, 'Không thể nộp bài. Vui lòng thử lại.');
+      setError(msg);
+      toastError(msg);
     } finally {
       setSubmitting(false);
     }
@@ -200,7 +206,7 @@ export default function QuizPage() {
         <TopNav activeTab="quiz" />
         <main className="qz-body">
           <div className="qz-result-card">
-            <div className="qz-result-emoji">🎉</div>
+            <div className="qz-result-emoji"><ConfettiIcon size={48} /></div>
             <h2 className="qz-result-title">Hoàn thành Quiz!</h2>
             <div className="qz-result-score">
               {result.score} / {result.totalQuestions}

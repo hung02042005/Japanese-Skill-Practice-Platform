@@ -79,7 +79,7 @@ export default function CourseList() {
             mascotVariant="thinking"
             mascotSize={160}
             title="Chưa có khoá học nào"
-            subtitle="Khoá học đang được cập nhật. Hãy quay lại sau nhé! 🌸"
+            subtitle="Khoá học đang được cập nhật. Hãy quay lại sau nhé!"
           >
             <button type="button" className="cl-empty-cta" onClick={() => navigate('/vocabulary')}>
               Về trang Từ vựng

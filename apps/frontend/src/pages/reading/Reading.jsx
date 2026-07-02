@@ -4,6 +4,8 @@ import { useAppSelector } from '../../store/hooks';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { EmptyState } from '../../components/common/EmptyState';
+import { ReadingIcon } from '../../components/student/StudentIcons';
+import { ConfettiIcon, ThumbsUpIcon, LightbulbIcon } from '../../components/common/AppIcons';
 import { getReadingLessons, getReadingDetail, submitReading } from '../../api/studentService';
 import './Reading.css';
 
@@ -273,10 +275,10 @@ export default function Reading() {
               <div className="rdg-score-num">{results.score}<span>/{results.total}</span></div>
               <div className="rdg-score-label">
                 {results.score === results.total
-                  ? '🎉 Hoàn hảo!'
+                  ? <><ConfettiIcon size={18} /> Hoàn hảo!</>
                   : results.score >= results.total / 2
-                  ? '👍 Làm tốt!'
-                  : '📚 Cần ôn thêm'}
+                  ? <><ThumbsUpIcon size={18} /> Làm tốt!</>
+                  : <><ReadingIcon size={18} /> Cần ôn thêm</>}
               </div>
               <div className="rdg-score-pct">
                 {results.total > 0 ? Math.round((results.score / results.total) * 100) : 0}% chính xác
@@ -308,7 +310,7 @@ export default function Reading() {
                       </div>
                     ))}
                   </div>
-                  {r.explanation && <p className="rdg-ri-explain">💡 {r.explanation}</p>}
+                  {r.explanation && <p className="rdg-ri-explain"><LightbulbIcon size={14} /> {r.explanation}</p>}
                 </div>
               ))}
             </div>

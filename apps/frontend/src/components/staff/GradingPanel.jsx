@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import SakuChan from '../auth/SakuChan';
 import { ProgressBar } from '../common/ProgressBar';
+import { CheckCircleIcon } from '../common/AppIcons';
 import './GradingPanel.css';
 
 const LEVEL_COLORS = {
@@ -184,7 +185,7 @@ export default function GradingPanel({ submission, detail, onGrade }) {
               </div>
               <div className="grd-readonly-row">
                 <strong>Điểm kết quả</strong>
-                <span className="grd-final-score">{detail.finalScore} / 100 ✅ Hoàn thành</span>
+                <span className="grd-final-score">{detail.finalScore} / 100 <CheckCircleIcon size={15} /> Hoàn thành</span>
               </div>
             </div>
           ) : (

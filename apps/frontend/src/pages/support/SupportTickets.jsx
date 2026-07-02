@@ -107,7 +107,7 @@ export default function SupportTickets() {
         {!isLoading && !error && tickets.length === 0 && (
           <EmptyState
             title="Chưa có yêu cầu hỗ trợ"
-            subtitle="Gặp khó khăn? Hãy tạo yêu cầu, đội ngũ SakuJi luôn sẵn sàng giúp bạn 🌸"
+            subtitle="Gặp khó khăn? Hãy tạo yêu cầu, đội ngũ SakuJi luôn sẵn sàng giúp bạn."
             mascotVariant="idle"
             mascotSize={140}
           >

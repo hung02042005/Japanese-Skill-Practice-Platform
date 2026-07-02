@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../store/hooks';
 import ManagerTopNav from '../../components/layout/ManagerTopNav';
 import StaffPageHero from '../../components/staff/StaffPageHero';
+import { WaveIcon } from '../../components/common/AppIcons';
 import { fetchReviewQueueThunk } from '../../store/slices/managerReviewSlice';
 import { fetchPublishedContentsThunk } from '../../store/slices/publishedContentSlice';
 import './ManagerDashboard.css';
@@ -76,7 +77,7 @@ function ManagerDashboard() {
         />
 
         <div className="mgd-header">
-          <h1 className="mgd-greeting">Xin chào, {user?.fullName ?? 'Manager'} 👋</h1>
+          <h1 className="mgd-greeting">Xin chào, {user?.fullName ?? 'Manager'} <WaveIcon size={22} /></h1>
           <span className="mgd-date">{today}</span>
         </div>
 

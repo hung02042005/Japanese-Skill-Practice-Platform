@@ -59,7 +59,7 @@ export default function LessonDetail() {
     try {
       if (!DEMO_MODE) await markProgress('lesson', id, 'completed');
       setCompleted(true);
-      addToast('success', 'Đã đánh dấu hoàn thành! 🌸');
+      addToast('success', 'Đã đánh dấu hoàn thành!');
     } catch {
       addToast('error', 'Không thể lưu tiến độ. Thử lại sau.');
     } finally {

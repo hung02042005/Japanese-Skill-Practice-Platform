@@ -1,3 +1,5 @@
+import { ReadingIcon } from '../student/StudentIcons';
+import { LeafIcon, CrownIcon, UserIcon } from './AppIcons';
 import './Badges.css';
 
 export const STATUS_LABELS = {
@@ -18,7 +20,7 @@ export const STAFF_ROLE_LABELS = {
   staff_manager: 'Quản lý nhân viên',
 };
 
-const ROLE_ICONS = { student: '📚', staff: '🌿', admin: '👑' };
+const ROLE_ICONS = { student: ReadingIcon, staff: LeafIcon, admin: CrownIcon };
 
 export function StatusBadge({ status }) {
   return (
@@ -30,13 +32,13 @@ export function StatusBadge({ status }) {
 }
 
 export function RoleBadge({ userType, staffRole }) {
-  const icon  = ROLE_ICONS[userType] ?? '👤';
+  const Icon  = ROLE_ICONS[userType] ?? UserIcon;
   const label = userType === 'staff' && staffRole
     ? (STAFF_ROLE_LABELS[staffRole] ?? staffRole)
     : (ROLE_LABELS[userType] ?? userType);
   return (
     <span className={`badge badge--role badge--role-${userType}`}>
-      {icon} {label}
+      <Icon size={14} /> {label}
     </span>
   );
 }

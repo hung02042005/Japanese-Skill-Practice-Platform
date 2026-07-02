@@ -6,6 +6,7 @@ import { ToastContainer, useToast } from '../../components/common/Toast';
 import DictResultGroup from '../../components/student/DictResultGroup';
 import DictDetailPanel from '../../components/student/DictDetailPanel';
 import DictGrammarPanel from '../../components/student/DictGrammarPanel';
+import { NotebookIcon } from '../../components/student/StudentIcons';
 import { searchDictionary, searchDictionaryByType, saveToNotebook } from '../../api/studentService';
 import './Dictionary.css';
 
@@ -173,7 +174,7 @@ export default function Dictionary() {
             <p className="dct-subtitle">Tra cứu từ vựng, Kanji, ngữ pháp</p>
           </div>
           <button className="dct-notebook-btn" onClick={() => navigate('/notebook')}>
-            📓 Sổ tay
+            <NotebookIcon size={16} /> Sổ tay
           </button>
         </div>
 

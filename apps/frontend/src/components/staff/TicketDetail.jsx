@@ -3,6 +3,7 @@ import SakuChan from '../auth/SakuChan';
 import PriorityPill from '../support/PriorityPill';
 import TicketStatusBadge from '../support/TicketStatusBadge';
 import { formatDateTime, formatRelativeTime } from '../../utils/date';
+import { LinkIcon } from '../common/AppIcons';
 import './TicketDetail.css';
 
 const CLOSED_STATUSES = ['resolved', 'closed'];
@@ -123,7 +124,7 @@ export default function TicketDetail({
                 <span className="tkt-msg-name">{r.senderName}</span>
                 <p className="tkt-msg-text">{r.message}</p>
                 {r.attachmentUrl && (
-                  <a className="tkt-msg-attach" href={r.attachmentUrl} target="_blank" rel="noreferrer">🔗 Tệp đính kèm</a>
+                  <a className="tkt-msg-attach" href={r.attachmentUrl} target="_blank" rel="noreferrer"><LinkIcon size={14} /> Tệp đính kèm</a>
                 )}
                 <span className="tkt-msg-time">{formatRelativeTime(r.createdAt)}</span>
               </div>
@@ -151,7 +152,7 @@ export default function TicketDetail({
           <input
             className="tkt-attach-input"
             type="url"
-            placeholder="🔗 Đính kèm URL (tùy chọn)"
+            placeholder="Đính kèm URL (tùy chọn)"
             value={attachUrl}
             maxLength={500}
             onChange={(e) => setAttach(e.target.value)}

@@ -6,6 +6,7 @@ import { StatusBadge, RoleBadge, JlptBadge, ROLE_LABELS, STAFF_ROLE_LABELS } fro
 import { UserAvatar }                from '../../components/common/UserAvatar';
 import { Pagination }                from '../../components/common/Pagination';
 import { EmptyState }                from '../../components/common/EmptyState';
+import { FlameIcon }                 from '../../components/student/StudentIcons';
 import { ToastContainer, useToast }  from '../../components/common/Toast';
 import {
   IcAdminChip, IcAddStaff, IcSearchGlass,
@@ -334,10 +335,10 @@ function ManageUsers() {
           <div className="mu-selects">
             <select className="mu-sel" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="">Tất cả trạng thái</option>
-              <option value="active">✅ Hoạt động</option>
-              <option value="suspended">🔒 Đình chỉ</option>
-              <option value="pending">⏳ Chờ kích hoạt</option>
-              <option value="deleted">🗑️ Đã xóa</option>
+              <option value="active">Hoạt động</option>
+              <option value="suspended">Đình chỉ</option>
+              <option value="pending">Chờ kích hoạt</option>
+              <option value="deleted">Đã xóa</option>
             </select>
 
             {activeType === 'student' && (
@@ -350,8 +351,8 @@ function ManageUsers() {
             {activeType === 'staff' && (
               <select className="mu-sel" value={staffRoleFilter} onChange={(e) => setStaffRole(e.target.value)}>
                 <option value="">Tất cả vai trò staff</option>
-                <option value="staff">🌿 Nhân viên</option>
-                <option value="staff_manager">⭐ Quản lý nhân viên</option>
+                <option value="staff">Nhân viên</option>
+                <option value="staff_manager">Quản lý nhân viên</option>
               </select>
             )}
           </div>
@@ -386,7 +387,7 @@ function ManageUsers() {
                         <td colSpan={9} className="mu-empty-cell">
                           <EmptyState
                             title="Không tìm thấy ai cả!"
-                            subtitle="Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm nhé 🌸"
+                            subtitle="Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm nhé."
                           />
                         </td>
                       </tr>
@@ -414,7 +415,7 @@ function ManageUsers() {
                         {activeType === 'student' && (
                           <td className="mu-td">
                             <span className="mu-streak">
-                              <span className={u.currentStreak > 0 ? 'mu-fire mu-fire--on' : 'mu-fire'} aria-hidden="true">🔥</span>
+                              <span className={u.currentStreak > 0 ? 'mu-fire mu-fire--on' : 'mu-fire'} aria-hidden="true"><FlameIcon size={16} /></span>
                               {u.currentStreak ?? 0}
                             </span>
                           </td>

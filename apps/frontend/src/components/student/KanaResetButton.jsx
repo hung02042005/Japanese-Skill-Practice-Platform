@@ -1,25 +1,29 @@
 import { useState } from 'react';
 import { resetProgress } from '../../api/studentService';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../utils/apiMessage';
 
 export default function KanaResetButton({ onResetSuccess }) {
   const [isResetting, setIsResetting] = useState(false);
+  const { success, error: toastError } = useToast();
 
   const handleReset = async () => {
     if (!window.confirm("Bạn có chắc chắn muốn reset toàn bộ tiến độ học Kana không?")) {
       return;
     }
-    
+
     setIsResetting(true);
     try {
       await resetProgress('kana');
+      success('Đã reset tiến độ học Kana.');
       if (onResetSuccess) {
         onResetSuccess();
       } else {
         // Fallback tự động tải lại trang nếu không truyền prop
-        window.location.reload(); 
+        window.location.reload();
       }
     } catch (error) {
-      alert("Lỗi khi reset tiến độ: " + (error?.response?.data?.message || error.message));
+      toastError(getErrorMessage(error, 'Lỗi khi reset tiến độ.'));
     } finally {
       setIsResetting(false);
     }

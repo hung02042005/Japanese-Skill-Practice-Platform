@@ -1,4 +1,5 @@
 import { JlptBadge } from '../common/Badges';
+import { SpeakerIcon } from '../common/AppIcons';
 
 /**
  * Một từ trong Sổ tay "Từ cần ôn lại" — SPEC-notebook §7.
@@ -45,7 +46,7 @@ export default function NotebookWordCard({
           {furigana && <span className="nwc-furi" lang="ja">・{furigana}</span>}
           {audioUrl && (
             <button type="button" className="nwc-audio" onClick={playAudio} aria-label="Nghe phát âm">
-              🔊
+              <SpeakerIcon size={18} />
             </button>
           )}
           {isDue && <span className="nwc-due" aria-label="Đến hạn ôn">● đến hạn</span>}

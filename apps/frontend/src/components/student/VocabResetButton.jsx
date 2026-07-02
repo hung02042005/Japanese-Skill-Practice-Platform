@@ -1,24 +1,28 @@
 import { useState } from 'react';
 import { resetProgress } from '../../api/studentService';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../utils/apiMessage';
 
 export default function VocabResetButton({ onResetSuccess }) {
   const [isResetting, setIsResetting] = useState(false);
+  const { success, error: toastError } = useToast();
 
   const handleReset = async () => {
     if (!window.confirm("Bạn có chắc chắn muốn reset toàn bộ tiến độ học Từ vựng không?")) {
       return;
     }
-    
+
     setIsResetting(true);
     try {
       await resetProgress('vocabulary');
+      success('Đã reset tiến độ học Từ vựng.');
       if (onResetSuccess) {
         onResetSuccess();
       } else {
-        window.location.reload(); 
+        window.location.reload();
       }
     } catch (error) {
-      alert("Lỗi khi reset tiến độ: " + (error?.response?.data?.message || error.message));
+      toastError(getErrorMessage(error, 'Lỗi khi reset tiến độ.'));
     } finally {
       setIsResetting(false);
     }

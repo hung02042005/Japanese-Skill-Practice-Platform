@@ -11,6 +11,8 @@ import StreakCard from '../../components/student/StreakCard';
 import AccountPanel from '../vocabulary/AccountPanel';
 import CourseListCard from '../vocabulary/CourseListCard';
 import { getKanjiList, getKanjiDetail, resetProgress } from '../../api/studentService';
+import { useToast } from '../../context/ToastContext';
+import { getErrorMessage } from '../../utils/apiMessage';
 import './KanjiList.css';
 
 export default function KanjiList() {
@@ -18,6 +20,7 @@ export default function KanjiList() {
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const { user } = useAppSelector((s) => s.auth);
+  const { success, error: toastError } = useToast();
 
   // Streak data từ vocabHome slice (cùng nguồn với VocabHome)
   const { vocabHome, vocabHomeStatus } = useAppSelector((s) => s.student);
@@ -124,10 +127,10 @@ export default function KanjiList() {
                     if (window.confirm('Bạn có chắc muốn reset toàn bộ tiến độ Kanji?')) {
                       try {
                         await resetProgress('KANJI');
+                        success('Đã reset tiến độ học Kanji.');
                         fetchKanji();
                       } catch (e) {
-                        // silently swallow error — alert already shown
-                        alert('Lỗi khi reset tiến độ!');
+                        toastError(getErrorMessage(e, 'Lỗi khi reset tiến độ.'));
                       }
                     }
                   }}

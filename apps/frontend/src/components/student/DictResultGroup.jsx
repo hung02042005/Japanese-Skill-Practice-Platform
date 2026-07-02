@@ -1,4 +1,5 @@
 import { JlptBadge } from '../common/Badges';
+import { SpeakerIcon, HeartIcon } from '../common/AppIcons';
 
 /**
  * Một nhóm kết quả tra cứu (vocab/kanji/grammar/lesson) — SPEC-dictionary §7.
@@ -51,7 +52,7 @@ export default function DictResultGroup({
                   onClick={() => playAudio(it.audio)}
                   aria-label={`Nghe phát âm ${it.main}`}
                 >
-                  🔊
+                  <SpeakerIcon size={18} />
                 </button>
               )}
               {canSave && (
@@ -64,7 +65,9 @@ export default function DictResultGroup({
                 >
                   {savingId === key
                     ? <span className="dct-spinner dct-spinner--sm" aria-hidden="true" />
-                    : (saved ? '♥ Đã lưu' : '♡ Lưu vào sổ tay')}
+                    : (saved
+                        ? <><HeartIcon size={15} filled /> Đã lưu</>
+                        : <><HeartIcon size={15} filled={false} /> Lưu vào sổ tay</>)}
                 </button>
               )}
             </div>

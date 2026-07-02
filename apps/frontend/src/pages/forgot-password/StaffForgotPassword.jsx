@@ -5,6 +5,7 @@ import { staffForgotPasswordThunk, clearError } from '../../store/slices/authSli
 import AuthTopBar from '../../components/auth/AuthTopBar';
 import SakuChan from '../../components/auth/SakuChan';
 import AuthBanner from '../../components/auth/AuthBanner';
+import { SakuraIcon } from '../../components/common/AppIcons';
 import './ForgotPassword.css';
 
 function StaffForgotPassword() {
@@ -62,9 +63,9 @@ function StaffForgotPassword() {
     <div className="fp-page">
       <AuthTopBar />
       <main className="fp-main">
-        <span className="fp-petal fp-petal--1" aria-hidden="true">🌸</span>
-        <span className="fp-petal fp-petal--2" aria-hidden="true">🌸</span>
-        <span className="fp-petal fp-petal--3" aria-hidden="true">🌸</span>
+        <span className="fp-petal fp-petal--1" aria-hidden="true"><SakuraIcon size={18} /></span>
+        <span className="fp-petal fp-petal--2" aria-hidden="true"><SakuraIcon size={18} /></span>
+        <span className="fp-petal fp-petal--3" aria-hidden="true"><SakuraIcon size={18} /></span>
 
         <div className="auth-card" role="main">
           <SakuChan />
