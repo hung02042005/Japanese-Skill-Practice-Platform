@@ -1,20 +1,29 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { useAppSelector } from '../../store/hooks';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { fetchVocabHomeThunk } from '../../store/slices/studentSlice';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { EmptyState } from '../../components/common/EmptyState';
 import { Pagination } from '../../components/common/Pagination';
+import StreakCard from '../../components/student/StreakCard';
+import AccountPanel from '../vocabulary/AccountPanel';
+import CourseListCard from '../vocabulary/CourseListCard';
 import { getGrammarList, getGrammarDetail, markProgress } from '../../api/studentService';
 import './Grammar.css';
 
-const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
-
 export default function Grammar() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { user } = useAppSelector((s) => s.auth);
 
-  const [level,      setLevel]      = useState(searchParams.get('level') ?? user?.jlptLevel ?? 'N5');
+  // Streak data từ vocabHome slice
+  const { vocabHome, vocabHomeStatus } = useAppSelector((s) => s.student);
+  const { streak, weekDays } = vocabHome;
+  const isSidebarLoading = vocabHomeStatus === 'loading' || vocabHomeStatus === 'idle';
+
+  const [level]                     = useState(searchParams.get('level') ?? user?.jlptLevel ?? 'N5');
   const [search,     setSearch]     = useState('');
   const [grammar,    setGrammar]    = useState([]);
   const [isLoading,  setLoading]    = useState(true);
@@ -43,6 +52,11 @@ export default function Grammar() {
 
   useEffect(() => { fetchGrammar(); }, [fetchGrammar]);
   useEffect(() => { setPage(1); }, [level]);
+
+  // Fetch streak/account data nếu chưa có
+  useEffect(() => {
+    if (vocabHomeStatus === 'idle') dispatch(fetchVocabHomeThunk());
+  }, [dispatch, vocabHomeStatus]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -89,24 +103,23 @@ export default function Grammar() {
   return (
     <div className="grm-page">
       <TopNav activeTab="grammar" />
-      <main className="grm-body">
+
+      <div className="grm-layout">
+        {/* ─── LEFT: Streak ─── */}
+        <aside className="grm-left" aria-label="Tiến độ streak">
+          {isSidebarLoading
+            ? <div className="grm-skel grm-skel--streak" aria-hidden="true" />
+            : <StreakCard streak={streak} weekDays={weekDays} />}
+        </aside>
+
+        {/* ─── CENTER: Grammar content ─── */}
+        <main className="grm-body">
         <div className="grm-header">
           <h1 className="grm-title">Ngữ Pháp</h1>
           <p className="grm-subtitle">Tổng hợp cấu trúc ngữ pháp theo cấp độ JLPT</p>
         </div>
 
         <div className="grm-controls">
-          <div className="grm-levels">
-            {LEVELS.map((l) => (
-              <button
-                key={l}
-                className={`grm-lvl-btn${level === l ? ' grm-lvl-btn--active' : ''}`}
-                onClick={() => setLevel(l)}
-              >
-                {l}
-              </button>
-            ))}
-          </div>
           <div className="grm-search-wrap">
             <svg className="grm-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
@@ -152,7 +165,7 @@ export default function Grammar() {
               return (
                 <div
                   key={g.grammarId}
-                  className={`grm-card${isOpen ? ' grm-card--open' : ''}`}
+                  className={`grm-card${isOpen ? ' grm-card--open' : ''}${g.isCompleted ? ' grm-card--done' : ''}`}
                   onClick={() => toggle(g)}
                   role="button"
                   tabIndex={0}
@@ -160,13 +173,16 @@ export default function Grammar() {
                   aria-expanded={isOpen}
                 >
                   <div className="grm-card-main">
-                    <div className="grm-card-left">
-                      <JlptBadge level={g.jlptLevel} />
-                      <span className="grm-structure">{g.structure}</span>
-                      {g.isCompleted && <span className="grm-done-tick" aria-hidden="true">✓</span>}
+                    <span className="grm-card-thumb" aria-hidden="true">
+                      <span className="grm-card-thumb-char" lang="ja">{(g.structure ?? '').trim().charAt(0)}</span>
+                    </span>
+                    <div className="grm-card-content">
+                      <span className="grm-structure" lang="ja">{g.structure}</span>
+                      <span className="grm-meaning">{g.meaning}</span>
                     </div>
                     <div className="grm-card-right">
-                      <span className="grm-meaning">{g.meaning}</span>
+                      <JlptBadge level={g.jlptLevel} />
+                      {g.isCompleted && <span className="grm-done-tick" aria-hidden="true">✓</span>}
                       <svg
                         className={`grm-chevron${isOpen ? ' grm-chevron--up' : ''}`}
                         width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
@@ -216,7 +232,16 @@ export default function Grammar() {
         {!isLoading && totalPages > 1 && (
           <Pagination currentPage={page} totalPages={totalPages} onChange={setPage} />
         )}
-      </main>
+        </main>
+
+        {/* ─── RIGHT: Account ─── */}
+        <aside className="grm-right" aria-label="Tài khoản">
+          {isSidebarLoading
+            ? <div className="grm-skel grm-skel--account" aria-hidden="true" />
+            : <AccountPanel user={user} />}
+          <CourseListCard onClick={() => navigate('/courses')} />
+        </aside>
+      </div>
     </div>
   );
 }

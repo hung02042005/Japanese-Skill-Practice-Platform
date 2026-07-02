@@ -135,7 +135,6 @@ export default function MockTestResults() {
                 </button>
               )}
               <Link to="/dashboard" className="mxr-btn mxr-btn--ghost">Về Dashboard</Link>
-              <Link to="/learn"      className="mxr-btn mxr-btn--primary">Học bài liên quan</Link>
             </div>
           </>
         )}

@@ -1,7 +1,30 @@
 /* ===== Kanji List (SakuJi Hanami Theme) ===== */
 
 .knj-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); font-family: var(--font-base); }
-.knj-body { flex: 1; max-width: 1100px; width: 100%; margin: 0 auto; padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; }
+
+/* ─── Body layout 3 cột (desktop ≥ 1024px) ─── */
+.knj-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr 220px;
+  gap: 24px;
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+  align-items: start;
+  box-sizing: border-box;
+}
+
+.knj-left,
+.knj-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.knj-center { min-width: 0; }
+
+.knj-body { flex: 1; display: flex; flex-direction: column; gap: 20px; }
 
 .knj-page-header { display: flex; flex-direction: column; gap: 4px; }
 .knj-title    { font-size: 26px; font-weight: 700; color: var(--color-text); margin: 0; }
@@ -20,23 +43,164 @@
 .knj-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--color-error-tint); border: 1px solid var(--color-error); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; color: var(--color-error); }
 .knj-retry-btn { background: transparent; border: 1.5px solid var(--color-error); border-radius: var(--radius-full); color: var(--color-error); font-size: 12px; font-weight: 700; padding: 4px 12px; cursor: pointer; }
 
-.knj-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+/* ── Kanji cards (kiểu thẻ bài học bên Vocabulary) ── */
+.knj-grid { display: flex; flex-direction: column; gap: 14px; }
 
-.knj-cell { position: relative; aspect-ratio: 1; background: var(--color-card); border: 2px solid var(--color-border); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color var(--transition), background var(--transition), transform var(--transition), box-shadow var(--transition); }
-.knj-cell:hover { border-color: var(--color-primary-light); background: var(--color-primary-bg); transform: scale(1.06); box-shadow: var(--shadow-sm); }
-.knj-cell:active { transform: scale(0.97); }
-.knj-cell--done { background: var(--color-primary); border-color: var(--color-primary-dark, var(--color-primary)); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.knj-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 20px;
+  text-align: left;
+  font-family: inherit;
+  background: var(--color-card);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+.knj-card:hover,
+.knj-card:focus-visible {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-light);
+}
+.knj-card:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.knj-card:active { transform: scale(0.98); }
 
-.knj-char { font-size: 26px; font-weight: 700; color: var(--color-text); line-height: 1; transition: color 0.2s; }
-.knj-cell--done .knj-char { color: #ffffff; font-weight: 900; }
-.knj-done-tick { position: absolute; bottom: 3px; right: 5px; font-size: 14px; color: #ffffff; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+.knj-card-thumb {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-bg);
+}
+.knj-card-char {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-primary);
+  line-height: 1;
+}
 
-.knj-cell-skel { aspect-ratio: 1; border-radius: var(--radius-md); background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%); background-size: 200% 100%; animation: skelPulse 1.4s ease infinite; }
+.knj-card-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.knj-card-title { font-size: 17px; font-weight: 800; color: var(--color-text); }
+.knj-card-sub {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.knj-card-trail { flex-shrink: 0; display: inline-flex; color: var(--color-text-disabled); }
+.knj-card:hover .knj-card-trail { color: var(--color-secondary); }
+
+/* Đã học: nền xanh giống thẻ active bên Vocabulary */
+.knj-card--done {
+  background: linear-gradient(135deg, #66BB6A 0%, var(--color-secondary) 100%);
+  box-shadow: 0 8px 20px rgba(93, 187, 105, 0.28);
+}
+.knj-card--done .knj-card-thumb { background: #ffffff; }
+.knj-card--done .knj-card-title { color: #ffffff; }
+.knj-card--done .knj-card-sub   { color: rgba(255, 255, 255, 0.9); }
+.knj-card--done .knj-card-trail { color: #ffffff; }
+.knj-done-tick { flex-shrink: 0; font-size: 14px; font-weight: 900; color: #ffffff; }
+
+.knj-card-skel { height: 94px; border-radius: var(--radius-lg); background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%); background-size: 200% 100%; animation: skelPulse 1.4s ease infinite; }
 @keyframes skelPulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-@media (max-width: 1199px) { .knj-grid { grid-template-columns: repeat(6, 1fr); } .knj-char { font-size: 22px; } }
-@media (max-width: 767px)  { .knj-body { padding: 16px 16px 32px; } .knj-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; } .knj-char { font-size: 20px; } }
+@media (max-width: 1023px) { .knj-layout { grid-template-columns: 1fr 220px; } .knj-left { display: none; } }
+@media (max-width: 767px)  { .knj-layout { grid-template-columns: 1fr; padding: 16px; gap: 16px; } .knj-right { display: none; } .knj-grid { gap: 10px; } .knj-card { padding: 14px 16px; } }
 @media (prefers-reduced-motion: reduce) { .knj-page * { animation: none !important; transition-duration: 0ms !important; } }
+
+/* ============================================================
+   ACCOUNT PANEL (right sidebar) — copy từ VocabHome.css
+   ============================================================ */
+.vh-account {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 16px;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.vh-account-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-primary-light);
+  background: var(--color-primary-bg);
+  color: var(--color-primary-dark);
+  font-size: 22px;
+  font-weight: 800;
+}
+.vh-account-name { font-size: 15px; font-weight: 800; color: var(--color-text); }
+.vh-account-meta { font-size: 12px; font-weight: 600; color: var(--color-text-sub); }
+
+.vh-courselist {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 18px 16px;
+  font-family: inherit;
+  text-align: left;
+  background: var(--color-card);
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.vh-courselist:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.vh-courselist:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+.vh-courselist-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+  border-radius: var(--radius-full);
+}
+.vh-courselist-label { flex: 1; font-size: 15px; font-weight: 800; color: var(--color-text); }
+.vh-courselist-arrow {
+  display: inline-flex;
+  color: var(--color-text-disabled);
+  transition: transform var(--transition), color var(--transition);
+}
+.vh-courselist:hover .vh-courselist-arrow { transform: translateX(3px); color: var(--color-primary); }
+
+/* ============================================================
+   SKELETON cho sidebar
+   ============================================================ */
+.knj-skel {
+  background: linear-gradient(90deg, #f0ebe8 25%, #f8f4f2 50%, #f0ebe8 75%);
+  background-size: 200% 100%;
+  animation: knjSkel 1.4s ease infinite;
+  border-radius: var(--radius-lg);
+}
+.knj-skel--streak  { height: 210px; border-radius: var(--radius-xl, var(--radius-lg)); }
+.knj-skel--account { height: 130px; }
+@keyframes knjSkel {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 
 /* ===== Kanji Detail Modal ===== */
 .knj-overlay {

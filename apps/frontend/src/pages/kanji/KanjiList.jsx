@@ -1,22 +1,30 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAppSelector } from '../../store/hooks';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { fetchVocabHomeThunk } from '../../store/slices/studentSlice';
 import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { ProgressBar } from '../../components/common/ProgressBar';
 import { Pagination } from '../../components/common/Pagination';
 import { EmptyState } from '../../components/common/EmptyState';
+import StreakCard from '../../components/student/StreakCard';
+import AccountPanel from '../vocabulary/AccountPanel';
+import CourseListCard from '../vocabulary/CourseListCard';
 import { getKanjiList, getKanjiDetail, resetProgress } from '../../api/studentService';
 import './KanjiList.css';
 
-const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
-
 export default function KanjiList() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const { user } = useAppSelector((s) => s.auth);
 
-  const [level,    setLevel]  = useState(searchParams.get('level') ?? user?.jlptLevel ?? 'N5');
+  // Streak data từ vocabHome slice (cùng nguồn với VocabHome)
+  const { vocabHome, vocabHomeStatus } = useAppSelector((s) => s.student);
+  const { streak, weekDays } = vocabHome;
+  const isSidebarLoading = vocabHomeStatus === 'loading' || vocabHomeStatus === 'idle';
+
+  const [level]               = useState(searchParams.get('level') ?? user?.jlptLevel ?? 'N5');
   const [kanji,    setKanji]  = useState([]);
   const [stats,    setStats]  = useState({ completed: 0, total: 0 });
   const [isLoading,setLoading]= useState(true);
@@ -45,6 +53,11 @@ export default function KanjiList() {
 
   useEffect(() => { fetchKanji(); }, [fetchKanji]);
   useEffect(() => { setPage(1); }, [level]);
+
+  // Fetch streak/account data nếu chưa có
+  useEffect(() => {
+    if (vocabHomeStatus === 'idle') dispatch(fetchVocabHomeThunk());
+  }, [dispatch, vocabHomeStatus]);
 
   const openKanji = useCallback(async (k) => {
     setSelected(k);
@@ -78,24 +91,20 @@ export default function KanjiList() {
   return (
     <div className="knj-page">
       <TopNav activeTab="kanji" />
-      <main className="knj-body">
+
+      <div className="knj-layout">
+        {/* ─── LEFT: Streak ─── */}
+        <aside className="knj-left" aria-label="Tiến độ streak">
+          {isSidebarLoading
+            ? <div className="knj-skel knj-skel--streak" aria-hidden="true" />
+            : <StreakCard streak={streak} weekDays={weekDays} />}
+        </aside>
+
+        {/* ─── CENTER: Kanji content ─── */}
+        <main className="knj-body">
         <div className="knj-page-header">
           <h1 className="knj-title"><span lang="ja">漢字</span> Kanji</h1>
           <p className="knj-subtitle">Luyện tập và tra cứu Kanji theo cấp độ JLPT.</p>
-        </div>
-
-        <div className="knj-level-tabs" role="tablist" aria-label="Chọn cấp độ JLPT">
-          {LEVELS.map((l) => (
-            <button
-              key={l}
-              role="tab"
-              aria-selected={level === l}
-              className={`knj-level-tab${level === l ? ' knj-level-tab--active' : ''}`}
-              onClick={() => setLevel(l)}
-            >
-              {l}
-            </button>
-          ))}
         </div>
 
         {!isLoading && (
@@ -149,8 +158,8 @@ export default function KanjiList() {
 
         {isLoading ? (
           <div className="knj-grid">
-            {Array.from({ length: 40 }).map((_, i) => (
-              <div key={i} className="knj-cell-skel" aria-hidden="true" />
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="knj-card-skel" aria-hidden="true" />
             ))}
           </div>
         ) : kanji.length === 0 ? (
@@ -166,13 +175,23 @@ export default function KanjiList() {
               <button
                 key={k.kanjiId}
                 role="listitem"
-                className={`knj-cell${k.isCompleted ? ' knj-cell--done' : ''}`}
+                className={`knj-card${k.isCompleted ? ' knj-card--done' : ''}`}
                 onClick={() => openKanji(k)}
                 aria-label={`${k.characterValue} — ${k.meaning}${k.isCompleted ? ' (đã học)' : ''}`}
-                title={k.meaning}
               >
-                <span className="knj-char" lang="ja">{k.characterValue}</span>
+                <span className="knj-card-thumb" aria-hidden="true">
+                  <span className="knj-card-char" lang="ja">{k.characterValue}</span>
+                </span>
+                <span className="knj-card-content">
+                  <span className="knj-card-title" lang="ja">{k.characterValue}</span>
+                  <span className="knj-card-sub">{k.meaning}</span>
+                </span>
                 {k.isCompleted && <span className="knj-done-tick" aria-hidden="true">✓</span>}
+                <span className="knj-card-trail" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
               </button>
             ))}
           </div>
@@ -181,7 +200,16 @@ export default function KanjiList() {
         {!isLoading && totalPages > 1 && (
           <Pagination currentPage={page} totalPages={totalPages} onChange={setPage} />
         )}
-      </main>
+        </main>
+
+        {/* ─── RIGHT: Account ─── */}
+        <aside className="knj-right" aria-label="Tài khoản">
+          {isSidebarLoading
+            ? <div className="knj-skel knj-skel--account" aria-hidden="true" />
+            : <AccountPanel user={user} />}
+          <CourseListCard onClick={() => navigate('/courses')} />
+        </aside>
+      </div>
 
       {selected && (
         <div className="knj-overlay" role="dialog" aria-modal="true" aria-label={`Chi tiết kanji ${selected.characterValue}`} onClick={closeModal}>
