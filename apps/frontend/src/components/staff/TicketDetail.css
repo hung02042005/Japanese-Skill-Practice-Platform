@@ -98,7 +98,7 @@
 .tkt-status-select { height: 40px; padding: 0 12px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); font-size: 13px; background: var(--color-bg); font-family: var(--font-base); color: var(--color-text); min-width: 200px; }
 .tkt-status-select:focus { outline: none; border-color: var(--color-primary); }
 .tkt-reply-btn {
-  height: 40px; padding: 0 24px; background: var(--color-secondary);
+  height: 40px; padding: 0 24px; background: var(--color-primary);
   color: white; border: none; border-radius: var(--radius-full);
   font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font-base);
   transition: filter var(--transition); white-space: nowrap;

@@ -44,7 +44,7 @@
   cursor: pointer; text-decoration: none;
   transition: filter var(--transition), transform var(--transition);
 }
-.err-btn--primary { background: var(--color-secondary); color: white; border: none; }
+.err-btn--primary { background: var(--color-primary); color: white; border: none; }
 .err-btn--primary:hover { filter: brightness(1.07); }
 .err-btn--ghost { background: transparent; border: 1.5px solid var(--color-border); color: var(--color-text-sub); }
 .err-btn--ghost:hover { color: var(--color-text); background: var(--color-bg); }

@@ -33,7 +33,7 @@ function TopBar() {
             onClick={() => navigate('/register')}
             aria-label="Đăng ký học miễn phí"
           >
-            Get started →
+            Đăng Kí
           </button>
         </div>
 
@@ -56,7 +56,7 @@ function TopBar() {
               Đăng nhập
             </button>
             <button className="topbar-btn-start" onClick={() => { navigate('/register'); closeMenu(); }}>
-              Get started →
+              Đăng Kí
             </button>
           </div>
         </nav>

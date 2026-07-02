@@ -196,7 +196,7 @@
 .ast-btn:active:not(:disabled) { transform: scale(0.97); }
 
 .ast-btn--primary {
-  background: var(--color-secondary);
+  background: var(--color-primary);
   color: white;
   box-shadow: 0 2px 8px rgba(93,187,105,0.25);
 }

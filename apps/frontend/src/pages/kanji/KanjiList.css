@@ -1,6 +1,12 @@
 /* ===== Kanji List (SakuJi Hanami Theme) ===== */
 
-.knj-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); font-family: var(--font-base); }
+.knj-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  font-family: var(--font-base);
+}
 
 /* ─── Body layout 3 cột (desktop ≥ 1024px) ─── */
 .knj-layout {
@@ -22,29 +28,117 @@
   gap: 16px;
 }
 
-.knj-center { min-width: 0; }
+.knj-center {
+  min-width: 0;
+}
 
-.knj-body { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+.knj-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-.knj-page-header { display: flex; flex-direction: column; gap: 4px; }
-.knj-title    { font-size: 26px; font-weight: 700; color: var(--color-text); margin: 0; }
-.knj-subtitle { font-size: 14px; color: var(--color-text-sub); margin: 0; }
+.knj-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
-.knj-level-tabs { display: flex; border-bottom: 2px solid var(--color-border); }
-.knj-level-tab { padding: 10px 20px; font-size: 15px; font-weight: 700; color: var(--color-text-sub); background: transparent; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; transition: color var(--transition), border-color var(--transition); }
-.knj-level-tab:hover { color: var(--color-text); }
-.knj-level-tab--active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+.knj-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
 
-.knj-stats-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.knj-stats-text { font-size: 14px; color: var(--color-text-sub); }
-.knj-stats-progress { flex: 1; min-width: 120px; max-width: 300px; }
-.knj-stats-pct { font-size: 14px; font-weight: 700; color: var(--color-text); }
+.knj-subtitle {
+  font-size: 14px;
+  color: var(--color-text-sub);
+  margin: 0;
+}
 
-.knj-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--color-error-tint); border: 1px solid var(--color-error); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; color: var(--color-error); }
-.knj-retry-btn { background: transparent; border: 1.5px solid var(--color-error); border-radius: var(--radius-full); color: var(--color-error); font-size: 12px; font-weight: 700; padding: 4px 12px; cursor: pointer; }
+.knj-level-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.knj-level-tab {
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-sub);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition);
+}
+
+.knj-level-tab:hover {
+  color: var(--color-text);
+}
+
+.knj-level-tab--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.knj-stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.knj-stats-text {
+  font-size: 14px;
+  color: var(--color-text-sub);
+}
+
+.knj-stats-progress {
+  flex: 1;
+  min-width: 120px;
+  max-width: 300px;
+}
+
+.knj-stats-pct {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.knj-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--color-error-tint);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--color-error);
+}
+
+.knj-retry-btn {
+  background: transparent;
+  border: 1.5px solid var(--color-error);
+  border-radius: var(--radius-full);
+  color: var(--color-error);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  cursor: pointer;
+}
 
 /* ── Kanji cards (kiểu thẻ bài học bên Vocabulary) ── */
-.knj-grid { display: flex; flex-direction: column; gap: 14px; }
+.knj-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
 
 .knj-card {
   display: flex;
@@ -61,14 +155,22 @@
   cursor: pointer;
   transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
 }
+
 .knj-card:hover,
 .knj-card:focus-visible {
   transform: scale(1.02);
   box-shadow: var(--shadow-md);
   border-color: var(--color-primary-light);
 }
-.knj-card:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
-.knj-card:active { transform: scale(0.98); }
+
+.knj-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.knj-card:active {
+  transform: scale(0.98);
+}
 
 .knj-card-thumb {
   flex-shrink: 0;
@@ -80,6 +182,7 @@
   border-radius: var(--radius-full);
   background: var(--color-primary-bg);
 }
+
 .knj-card-char {
   font-family: 'Noto Sans JP', sans-serif;
   font-size: 22px;
@@ -88,8 +191,20 @@
   line-height: 1;
 }
 
-.knj-card-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.knj-card-title { font-size: 17px; font-weight: 800; color: var(--color-text); }
+.knj-card-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.knj-card-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
 .knj-card-sub {
   font-size: 13px;
   font-weight: 600;
@@ -99,26 +214,99 @@
   text-overflow: ellipsis;
 }
 
-.knj-card-trail { flex-shrink: 0; display: inline-flex; color: var(--color-text-disabled); }
-.knj-card:hover .knj-card-trail { color: var(--color-secondary); }
+.knj-card-trail {
+  flex-shrink: 0;
+  display: inline-flex;
+  color: var(--color-text-disabled);
+}
+
+.knj-card:hover .knj-card-trail {
+  color: var(--color-secondary);
+}
 
 /* Đã học: nền xanh giống thẻ active bên Vocabulary */
 .knj-card--done {
   background: linear-gradient(135deg, #66BB6A 0%, var(--color-secondary) 100%);
   box-shadow: 0 8px 20px rgba(93, 187, 105, 0.28);
 }
-.knj-card--done .knj-card-thumb { background: #ffffff; }
-.knj-card--done .knj-card-title { color: #ffffff; }
-.knj-card--done .knj-card-sub   { color: rgba(255, 255, 255, 0.9); }
-.knj-card--done .knj-card-trail { color: #ffffff; }
-.knj-done-tick { flex-shrink: 0; font-size: 14px; font-weight: 900; color: #ffffff; }
 
-.knj-card-skel { height: 94px; border-radius: var(--radius-lg); background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%); background-size: 200% 100%; animation: skelPulse 1.4s ease infinite; }
-@keyframes skelPulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.knj-card--done .knj-card-thumb {
+  background: #ffffff;
+}
 
-@media (max-width: 1023px) { .knj-layout { grid-template-columns: 1fr 280px; } .knj-left { display: none; } }
-@media (max-width: 767px)  { .knj-layout { grid-template-columns: 1fr; padding: 16px; gap: 16px; } .knj-right { display: none; } .knj-grid { gap: 10px; } .knj-card { padding: 14px 16px; } }
-@media (prefers-reduced-motion: reduce) { .knj-page * { animation: none !important; transition-duration: 0ms !important; } }
+.knj-card--done .knj-card-title {
+  color: #ffffff;
+}
+
+.knj-card--done .knj-card-sub {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.knj-card--done .knj-card-trail {
+  color: #ffffff;
+}
+
+.knj-done-tick {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.knj-card-skel {
+  height: 94px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%);
+  background-size: 200% 100%;
+  animation: skelPulse 1.4s ease infinite;
+}
+
+@keyframes skelPulse {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 1023px) {
+  .knj-layout {
+    grid-template-columns: 1fr 280px;
+  }
+
+  .knj-left {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .knj-layout {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .knj-right {
+    display: none;
+  }
+
+  .knj-grid {
+    gap: 10px;
+  }
+
+  .knj-card {
+    padding: 14px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .knj-page * {
+    animation: none !important;
+    transition-duration: 0ms !important;
+  }
+}
 
 /* ============================================================
    ACCOUNT PANEL (right sidebar) — copy từ VocabHome.css
@@ -133,6 +321,7 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
 }
+
 .vh-account-avatar {
   display: flex;
   align-items: center;
@@ -146,8 +335,18 @@
   font-size: 22px;
   font-weight: 800;
 }
-.vh-account-name { font-size: 15px; font-weight: 800; color: var(--color-text); }
-.vh-account-meta { font-size: 12px; font-weight: 600; color: var(--color-text-sub); }
+
+.vh-account-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.vh-account-meta {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+}
 
 .vh-courselist {
   display: flex;
@@ -164,8 +363,16 @@
   cursor: pointer;
   transition: transform var(--transition), box-shadow var(--transition);
 }
-.vh-courselist:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.vh-courselist:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+.vh-courselist:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.vh-courselist:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
 .vh-courselist-icon {
   display: flex;
@@ -178,13 +385,24 @@
   background: var(--color-primary-bg);
   border-radius: var(--radius-full);
 }
-.vh-courselist-label { flex: 1; font-size: 15px; font-weight: 800; color: var(--color-text); }
+
+.vh-courselist-label {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
 .vh-courselist-arrow {
   display: inline-flex;
   color: var(--color-text-disabled);
   transition: transform var(--transition), color var(--transition);
 }
-.vh-courselist:hover .vh-courselist-arrow { transform: translateX(3px); color: var(--color-primary); }
+
+.vh-courselist:hover .vh-courselist-arrow {
+  transform: translateX(3px);
+  color: var(--color-primary);
+}
 
 /* ============================================================
    SKELETON cho sidebar
@@ -195,84 +413,179 @@
   animation: knjSkel 1.4s ease infinite;
   border-radius: var(--radius-lg);
 }
-.knj-skel--streak  { height: 210px; border-radius: var(--radius-xl, var(--radius-lg)); }
-.knj-skel--account { height: 130px; }
+
+.knj-skel--streak {
+  height: 210px;
+  border-radius: var(--radius-xl, var(--radius-lg));
+}
+
+.knj-skel--account {
+  height: 130px;
+}
+
 @keyframes knjSkel {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* ===== Kanji Detail Modal ===== */
 .knj-overlay {
-  position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,0.45);
-  display: flex; align-items: center; justify-content: center;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   animation: overlayIn 0.18s ease;
 }
-@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
 
 .knj-modal {
   position: relative;
   background: var(--color-card);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 40px rgba(0,0,0,0.22);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.22);
   padding: 36px 40px 28px;
-  min-width: 300px; max-width: 400px; width: 90%;
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
-  animation: modalIn 0.2s cubic-bezier(.34,1.26,.64,1);
+  min-width: 300px;
+  max-width: 400px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: modalIn 0.2s cubic-bezier(.34, 1.26, .64, 1);
   outline: none;
 }
-@keyframes modalIn { from { opacity: 0; transform: scale(0.88) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
 
 .knj-modal-close {
-  position: absolute; top: 12px; right: 14px;
-  background: transparent; border: none; font-size: 22px; line-height: 1;
-  color: var(--color-text-sub); cursor: pointer; padding: 2px 6px;
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--color-text-sub);
+  cursor: pointer;
+  padding: 2px 6px;
   border-radius: var(--radius-sm);
   transition: color var(--transition), background var(--transition);
 }
-.knj-modal-close:hover { color: var(--color-text); background: var(--color-border); }
+
+.knj-modal-close:hover {
+  color: var(--color-text);
+  background: var(--color-border);
+}
 
 .knj-modal-char {
-  font-size: 96px; font-weight: 700; line-height: 1;
+  font-size: 96px;
+  font-weight: 700;
+  line-height: 1;
   color: var(--color-primary);
-  text-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
 }
 
 .knj-modal-meaning {
-  font-size: 18px; font-weight: 600; color: var(--color-text);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
   text-align: center;
 }
 
-.knj-modal-loading { font-size: 13px; color: var(--color-text-sub); }
-
-.knj-modal-detail {
-  width: 100%; display: flex; flex-direction: column; gap: 8px;
-  background: var(--color-bg); border-radius: var(--radius-md);
-  padding: 14px 16px; margin-top: 4px;
+.knj-modal-loading {
+  font-size: 13px;
+  color: var(--color-text-sub);
 }
 
-.knj-modal-row, .knj-modal-example {
-  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+.knj-modal-detail {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-top: 4px;
+}
+
+.knj-modal-row,
+.knj-modal-example {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .knj-modal-label {
-  font-size: 12px; font-weight: 700; color: var(--color-text-sub);
-  text-transform: uppercase; letter-spacing: 0.04em;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   min-width: 72px;
 }
 
-.knj-modal-val { font-size: 15px; font-weight: 600; color: var(--color-text); }
+.knj-modal-val {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
 
-.knj-modal-reading { font-size: 13px; color: var(--color-text-sub); }
-.knj-modal-exmeaning { font-size: 13px; color: var(--color-text-sub); }
+.knj-modal-reading {
+  font-size: 13px;
+  color: var(--color-text-sub);
+}
+
+.knj-modal-exmeaning {
+  font-size: 13px;
+  color: var(--color-text-sub);
+}
 
 .knj-modal-practice-btn {
-  margin-top: 8px; padding: 10px 28px;
-  background: var(--color-primary); color: #fff;
-  border: none; border-radius: var(--radius-full);
-  font-size: 14px; font-weight: 700; cursor: pointer;
+  margin-top: 8px;
+  padding: 10px 28px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
   transition: background var(--transition), transform var(--transition);
 }
-.knj-modal-practice-btn:hover { background: var(--color-primary-dark, var(--color-primary)); transform: scale(1.04); }
-.knj-modal-practice-btn:active { transform: scale(0.97); }
+
+.knj-modal-practice-btn:hover {
+  background: var(--color-primary-dark, var(--color-primary));
+  transform: scale(1.04);
+}
+
+.knj-modal-practice-btn:active {
+  transform: scale(0.97);
+}

@@ -127,7 +127,7 @@
 .nfs-btn-send {
   height: 44px;
   padding: 0 28px;
-  background: var(--color-secondary);
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: var(--radius-full);

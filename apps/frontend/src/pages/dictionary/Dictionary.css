@@ -153,7 +153,7 @@
   transition: all var(--transition);
 }
 .dct-save-btn:hover:not(:disabled) { background: var(--color-secondary-bg); }
-.dct-save-btn--saved { background: var(--color-secondary); color: #fff; border-color: var(--color-secondary); cursor: default; }
+.dct-save-btn--saved { background: var(--color-primary); color: #fff; border-color: var(--color-primary); cursor: default; }
 .dct-save-btn:disabled:not(.dct-save-btn--saved) { opacity: 0.6; cursor: default; }
 
 /* 3A: lịch sử tra cứu */

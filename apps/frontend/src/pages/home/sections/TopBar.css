@@ -70,25 +70,7 @@
 }
 
 .topbar-btn-login {
-  background: transparent;
-  border: none;
-  font-family: var(--font-base);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text-sub);
-  cursor: pointer;
-  padding: 8px 14px;
-  border-radius: var(--radius-full);
-  transition: color var(--transition), background var(--transition);
-}
-
-.topbar-btn-login:hover {
-  color: var(--color-text);
-  background: var(--color-primary-bg);
-}
-
-.topbar-btn-start {
-  background: var(--color-secondary);
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: var(--radius-full);
@@ -101,13 +83,31 @@
   transition: filter var(--transition), transform var(--transition);
 }
 
-.topbar-btn-start:hover {
+.topbar-btn-login:hover {
   filter: brightness(1.08);
   transform: translateY(-1px);
 }
 
-.topbar-btn-start:active {
+.topbar-btn-login:active {
   transform: scale(0.97);
+}
+
+.topbar-btn-start {
+  background: transparent;
+  border: none;
+  font-family: var(--font-base);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  transition: color var(--transition), background var(--transition);
+}
+
+.topbar-btn-start:hover {
+  color: var(--color-text);
+  background: var(--color-primary-bg);
 }
 
 /* Hamburger */
@@ -143,8 +143,15 @@
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .topbar-drawer-link {

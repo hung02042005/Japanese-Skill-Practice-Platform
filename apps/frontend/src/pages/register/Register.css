@@ -27,12 +27,32 @@
   pointer-events: none;
   animation: petal-drift 6s ease-in-out infinite alternate;
 }
-.reg-petal--1 { top: 10%; right: 8%;   animation-delay: 0s;    font-size: 26px; }
-.reg-petal--2 { top: 55%; left: 5%;    animation-delay: 1.5s;  font-size: 20px; }
-.reg-petal--3 { bottom: 14%; right: 16%; animation-delay: 2.8s; font-size: 22px; }
+
+.reg-petal--1 {
+  top: 10%;
+  right: 8%;
+  animation-delay: 0s;
+  font-size: 26px;
+}
+
+.reg-petal--2 {
+  top: 55%;
+  left: 5%;
+  animation-delay: 1.5s;
+  font-size: 20px;
+}
+
+.reg-petal--3 {
+  bottom: 14%;
+  right: 16%;
+  animation-delay: 2.8s;
+  font-size: 22px;
+}
 
 @media (max-width: 768px) {
-  .reg-petal { display: none; }
+  .reg-petal {
+    display: none;
+  }
 }
 
 /* ─── Auth card ─── */
@@ -93,7 +113,10 @@
   line-height: 1.5;
 }
 
-.auth-banner svg { flex-shrink: 0; margin-top: 1px; }
+.auth-banner svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
 
 .auth-banner--error {
   background: #FEF2F2;
@@ -106,7 +129,10 @@
   font-weight: 700;
   text-decoration: underline;
 }
-.auth-banner-link:hover { color: var(--color-primary-dark); }
+
+.auth-banner-link:hover {
+  color: var(--color-primary-dark);
+}
 
 /* ─── Form ─── */
 .auth-form {
@@ -150,7 +176,9 @@
   box-sizing: border-box;
 }
 
-.form-input::placeholder { color: var(--color-text-disabled); }
+.form-input::placeholder {
+  color: var(--color-text-disabled);
+}
 
 .form-input:focus {
   border-color: var(--color-primary);
@@ -162,12 +190,15 @@
   border-color: var(--color-error);
   background: #FEF2F2;
 }
+
 .has-error .form-input:focus {
   box-shadow: 0 0 0 3px rgba(229, 115, 115, 0.12);
 }
 
 /* right-padded for icon */
-.form-input-wrapper .form-input { padding-right: 48px; }
+.form-input-wrapper .form-input {
+  padding-right: 48px;
+}
 
 .form-eye-btn {
   position: absolute;
@@ -186,7 +217,10 @@
   padding: 0;
   transition: color var(--transition);
 }
-.form-eye-btn:hover { color: var(--color-text); }
+
+.form-eye-btn:hover {
+  color: var(--color-text);
+}
 
 /* confirm password match icons */
 .form-match-icon {
@@ -200,8 +234,14 @@
   align-items: center;
   justify-content: center;
 }
-.form-match-icon--ok  { color: var(--color-secondary); }
-.form-match-icon--err { color: var(--color-error); }
+
+.form-match-icon--ok {
+  color: var(--color-secondary);
+}
+
+.form-match-icon--err {
+  color: var(--color-error);
+}
 
 .field-error {
   font-family: var(--font-base);
@@ -258,7 +298,7 @@
   width: 100%;
   height: 50px;
   margin-top: 4px;
-  background: var(--color-secondary);
+  background: var(--color-primary);
   color: #ffffff;
   font-family: var(--font-base);
   font-size: 15px;
@@ -277,8 +317,15 @@
   filter: brightness(1.08);
   box-shadow: 0 6px 16px rgba(93, 187, 105, 0.38);
 }
-.btn-submit:active:not(:disabled) { transform: scale(0.97); }
-.btn-submit:disabled { opacity: 0.65; cursor: not-allowed; }
+
+.btn-submit:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
 
 /* ─── Spinner inside button ─── */
 .btn-spinner {
@@ -320,7 +367,7 @@
   justify-content: center;
 }
 
-.google-login-wrapper > div {
+.google-login-wrapper>div {
   width: 100% !important;
 }
 
@@ -348,7 +395,10 @@
   border-color: var(--color-primary-light);
   box-shadow: 0 2px 8px rgba(232, 154, 170, 0.14);
 }
-.btn-google:active { transform: scale(0.98); }
+
+.btn-google:active {
+  transform: scale(0.98);
+}
 
 /* ─── Redirect + terms ─── */
 .auth-redirect {
@@ -364,7 +414,10 @@
   font-weight: 600;
   text-decoration: none;
 }
-.auth-redirect-link:hover { text-decoration: underline; }
+
+.auth-redirect-link:hover {
+  text-decoration: underline;
+}
 
 .reg-terms {
   font-family: var(--font-base);
@@ -380,7 +433,10 @@
   text-decoration: underline;
   font-weight: 600;
 }
-.reg-terms-link:hover { color: var(--color-primary); }
+
+.reg-terms-link:hover {
+  color: var(--color-primary);
+}
 
 /* ─── Success state ─── */
 .reg-success-card {
@@ -417,29 +473,56 @@
 
 /* ─── Animations ─── */
 @keyframes saku-sway {
-  0%, 100% { transform: rotate(-3.5deg); }
-  50%       { transform: rotate(3.5deg); }
+
+  0%,
+  100% {
+    transform: rotate(-3.5deg);
+  }
+
+  50% {
+    transform: rotate(3.5deg);
+  }
 }
 
 @keyframes saku-bounce {
-  0%   { transform: translateY(0) rotate(0); }
-  30%  { transform: translateY(-14px) rotate(-6deg); }
-  60%  { transform: translateY(-8px) rotate(5deg); }
-  100% { transform: translateY(0) rotate(0); }
+  0% {
+    transform: translateY(0) rotate(0);
+  }
+
+  30% {
+    transform: translateY(-14px) rotate(-6deg);
+  }
+
+  60% {
+    transform: translateY(-8px) rotate(5deg);
+  }
+
+  100% {
+    transform: translateY(0) rotate(0);
+  }
 }
 
 @keyframes petal-drift {
-  0%   { transform: translateY(0) rotate(0deg); }
-  100% { transform: translateY(-12px) rotate(18deg); }
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  100% {
+    transform: translateY(-12px) rotate(18deg);
+  }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
-  .auth-card { padding: 28px 24px; }
+  .auth-card {
+    padding: 28px 24px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -447,19 +530,29 @@
     padding: 24px 12px;
     align-items: flex-start;
   }
+
   .auth-card {
     border-radius: var(--radius-lg);
     padding: 24px 20px;
   }
-  .auth-title { font-size: 20px; }
+
+  .auth-title {
+    font-size: 20px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .saku-chan,
   .reg-petal,
-  .btn-spinner        { animation: none !important; }
+  .btn-spinner {
+    animation: none !important;
+  }
+
   .btn-submit,
   .btn-google,
   .form-input,
-  .pwd-strength-fill  { transition: none !important; }
+  .pwd-strength-fill {
+    transition: none !important;
+  }
 }
