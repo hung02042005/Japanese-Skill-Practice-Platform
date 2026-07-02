@@ -21,7 +21,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> success(T data) {
         return ApiResponse.<T>builder()
                 .status(200)
-                .message("Operation successful")
+                .message("Thao tác thành công.")
                 .data(data)
                 .build();
     }
@@ -33,7 +33,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> created(T data) {
         return ApiResponse.<T>builder()
                 .status(201)
-                .message("Created successfully")
+                .message("Tạo mới thành công.")
                 .data(data)
                 .build();
     }

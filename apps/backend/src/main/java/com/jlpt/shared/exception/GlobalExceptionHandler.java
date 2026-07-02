@@ -26,7 +26,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException ex) {
         log.warn("No route or static resource found: {}", ex.getResourcePath());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(404, "Resource not found"));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(404, "Không tìm thấy tài nguyên yêu cầu."));
     }
 
     @ExceptionHandler(BusinessException.class)
@@ -62,7 +63,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
         log.warn("Access denied: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error(403, "Access denied"));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(403, "Bạn không có quyền thực hiện thao tác này."));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -71,7 +73,8 @@ public class GlobalExceptionHandler {
                 .map(e -> e.getField() + ": " + e.getDefaultMessage())
                 .collect(Collectors.joining(", "));
         log.warn("Validation failed: {}", message);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(400, "Validation failed", message));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(400, "Dữ liệu không hợp lệ.", message));
     }
 
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
@@ -85,6 +88,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
         log.error("Unexpected error", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error(500, "Internal server error"));
+                .body(ApiResponse.error(500, "Đã xảy ra lỗi hệ thống, vui lòng thử lại sau."));
     }
 }
