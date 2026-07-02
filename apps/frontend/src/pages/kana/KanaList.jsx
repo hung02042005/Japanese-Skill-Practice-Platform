@@ -1,8 +1,13 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { fetchVocabHomeThunk } from '../../store/slices/studentSlice';
 import TopNav from '../../components/layout/TopNav';
 import { ProgressBar } from '../../components/common/ProgressBar';
 import KanaDetailModal from '../../components/student/KanaDetailModal';
+import StreakCard from '../../components/student/StreakCard';
+import AccountPanel from '../vocabulary/AccountPanel';
+import CourseListCard from '../vocabulary/CourseListCard';
 import { getKanaList, markKanaComplete } from '../../api/studentService';
 import './KanaList.css';
 import KanaResetButton from '../../components/student/KanaResetButton';
@@ -14,7 +19,16 @@ const SCRIPTS = [
 ];
 
 export default function KanaList() {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
+  const { user } = useAppSelector((s) => s.auth);
+
+  // Streak data từ vocabHome slice (cùng nguồn với VocabHome)
+  const { vocabHome, vocabHomeStatus } = useAppSelector((s) => s.student);
+  const { streak, weekDays } = vocabHome;
+  const isSidebarLoading = vocabHomeStatus === 'loading' || vocabHomeStatus === 'idle';
+
   const [script, setScript] = useState(searchParams.get('script') ?? 'hiragana');
   const [chars, setChars] = useState([]);
   const [stats, setStats] = useState({ completed: 0, total: 0 });
@@ -38,6 +52,11 @@ export default function KanaList() {
   useEffect(() => {
     loadKana();
   }, [loadKana]);
+
+  // Fetch streak/account data nếu chưa có
+  useEffect(() => {
+    if (vocabHomeStatus === 'idle') dispatch(fetchVocabHomeThunk());
+  }, [dispatch, vocabHomeStatus]);
 
   const rows = useMemo(() => {
     const map = {};
@@ -69,7 +88,17 @@ export default function KanaList() {
   return (
     <div className="kna-page">
       <TopNav activeTab="kana" />
-      <main className="kna-body">
+
+      <div className="kna-layout">
+        {/* ─── LEFT: Streak ─── */}
+        <aside className="kna-left" aria-label="Tiến độ streak">
+          {isSidebarLoading
+            ? <div className="kna-sb-skel kna-sb-skel--streak" aria-hidden="true" />
+            : <StreakCard streak={streak} weekDays={weekDays} />}
+        </aside>
+
+        {/* ─── CENTER: Kana content ─── */}
+        <main className="kna-body">
         <div className="kna-header">
           <h1 className="kna-title"><span lang="ja">かな</span> Kana</h1>
           <p className="kna-subtitle">Học bảng chữ Hiragana và Katakana cơ bản.</p>
@@ -138,7 +167,16 @@ export default function KanaList() {
             ))}
           </div>
         )}
-      </main>
+        </main>
+
+        {/* ─── RIGHT: Account + Course List ─── */}
+        <aside className="kna-right" aria-label="Tài khoản & khoá học">
+          {isSidebarLoading
+            ? <div className="kna-sb-skel kna-sb-skel--account" aria-hidden="true" />
+            : <AccountPanel user={user} />}
+          <CourseListCard onClick={() => navigate('/courses')} />
+        </aside>
+      </div>
 
       {selected && (
         <KanaDetailModal

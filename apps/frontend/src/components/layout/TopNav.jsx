@@ -9,16 +9,17 @@ import './TopNav.css';
 
 const NAV_TABS = [
   {
-    id: 'learn',
-    label: 'Học từ mới',
-    route: '/learn',
+    id: 'dashboard',
+    label: 'Trang chủ',
+    route: '/dashboard',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" stroke="currentColor" strokeWidth="2"/>
-        <path d="M12 8v4l3 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M3 11l9-8 9 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
   },
+
   {
     id: 'vocabulary',
     label: 'Từ vựng',

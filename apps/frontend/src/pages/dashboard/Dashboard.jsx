@@ -83,7 +83,7 @@ function Dashboard() {
                   <button
                     type="button"
                     className="db-empty-cta"
-                    onClick={() => navigate('/learn')}
+                    onClick={() => navigate('/vocabulary')}
                   >
                     Bắt đầu học ngay
                   </button>

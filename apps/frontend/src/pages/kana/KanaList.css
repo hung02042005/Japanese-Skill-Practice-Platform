@@ -1,7 +1,37 @@
 /* ===== Kana List — SakuJi Hanami Theme ===== */
 
 .kna-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); font-family: var(--font-base); }
-.kna-body { flex: 1; max-width: 900px; width: 100%; margin: 0 auto; padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; }
+
+/* Layout 3 cột: Streak | Kana | Account (giống KanjiList) */
+.kna-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr 280px;
+  gap: 24px;
+  max-width: 1360px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+  align-items: start;
+  box-sizing: border-box;
+}
+.kna-left,
+.kna-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kna-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; }
+
+/* Skeleton cho sidebar */
+.kna-sb-skel {
+  background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%);
+  background-size: 200% 100%;
+  animation: knaSkelPulse 1.4s ease infinite;
+  border-radius: var(--radius-lg);
+}
+.kna-sb-skel--streak  { height: 210px; border-radius: var(--radius-xl, var(--radius-lg)); }
+.kna-sb-skel--account { height: 130px; }
 
 .kna-header   { display: flex; flex-direction: column; gap: 4px; }
 .kna-title    { font-size: 26px; font-weight: 700; color: var(--color-text); margin: 0; }
@@ -126,8 +156,13 @@
 .kna-btn-complete--done { background: var(--color-secondary); cursor: default; }
 .kna-btn-complete:disabled { opacity: 0.65; cursor: not-allowed; }
 
+@media (max-width: 1023px) {
+  .kna-layout { grid-template-columns: 1fr 280px; }
+  .kna-left { display: none; }
+}
 @media (max-width: 767px) {
-  .kna-body { padding: 16px 16px 32px; }
+  .kna-layout { grid-template-columns: 1fr; padding: 16px 16px 32px; gap: 16px; }
+  .kna-right { display: none; }
   .kna-cell { width: 52px; height: 52px; }
   .kna-char { font-size: 18px; }
 }

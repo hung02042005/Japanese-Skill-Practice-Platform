@@ -14,7 +14,6 @@ import VerifyEmail from './pages/verify-email/VerifyEmail';
 import Onboarding from './pages/onboarding/Onboarding';
 import Profile from './pages/profile/Profile';
 import ChangePassword from './pages/settings/ChangePassword';
-import LearnNew from './pages/learn/LearnNew';
 import LessonDetail from './pages/lessons/LessonDetail';
 import MockTestList from './pages/mock-test/MockTestList';
 import MockTestAttempt from './pages/mock-test/MockTestAttempt';
@@ -84,7 +83,6 @@ function App() {
         <Route path="/onboarding"   element={<PrivateRoute><Onboarding /></PrivateRoute>} />
         <Route path="/profile"      element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/settings/change-password" element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
-        <Route path="/learn"        element={<PrivateRoute><LearnNew /></PrivateRoute>} />
         <Route path="/lessons/:id"  element={<PrivateRoute><LessonDetail /></PrivateRoute>} />
         <Route path="/mock-test"                    element={<PrivateRoute><MockTestList /></PrivateRoute>} />
         <Route path="/mock-test/:id/attempt"        element={<PrivateRoute><MockTestAttempt /></PrivateRoute>} />

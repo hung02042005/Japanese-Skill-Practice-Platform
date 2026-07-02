@@ -15,9 +15,9 @@
 /* ─── Body grid (desktop ≥ 1024px) ─── */
 .vh-body {
   display: grid;
-  grid-template-columns: 220px 1fr 220px;
+  grid-template-columns: 280px 1fr 280px;
   gap: 24px;
-  max-width: 1240px;
+  max-width: 1360px;
   width: 100%;
   margin: 0 auto;
   padding: 24px 24px 48px;
@@ -296,7 +296,7 @@
    RESPONSIVE (§14)
    ============================================================ */
 @media (max-width: 1023px) {
-  .vh-body { grid-template-columns: 1fr 220px; }
+  .vh-body { grid-template-columns: 1fr 280px; }
   .vh-left { display: none; }
 }
 @media (max-width: 767px) {

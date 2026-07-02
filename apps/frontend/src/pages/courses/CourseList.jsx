@@ -10,7 +10,14 @@ import './CourseList.css';
 /**
  * CourseList — chọn khoá học theo cấp độ JLPT (SPEC-course-list, route /courses).
  * VIP/subscription đã bỏ khỏi phạm vi → mọi khoá đều mở được.
+ * Mỗi kỹ năng (Từ vựng / Kanji / Ngữ pháp) là một nhóm thẻ N5→N1 riêng.
  */
+const SKILLS = [
+  { key: 'vocabulary', title: 'Từ vựng', route: '/vocabulary' },
+  { key: 'kanji',      title: 'Kanji',   route: '/kanji' },
+  { key: 'grammar',    title: 'Ngữ pháp', route: '/grammar' },
+];
+
 export default function CourseList() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -26,7 +33,7 @@ export default function CourseList() {
 
   return (
     <div className="cl-page">
-      <TopNav activeTab="vocabulary" />
+      <TopNav activeTab="courses" />
 
       <main className="cl-content">
         <nav className="cl-breadcrumb" aria-label="Breadcrumb">
@@ -36,25 +43,37 @@ export default function CourseList() {
         </nav>
 
         <h1 className="cl-title">Khoá học theo cấp độ</h1>
-        <p className="cl-subtitle">Chọn cấp JLPT bạn muốn học</p>
+        <p className="cl-subtitle">Chọn cấp JLPT bạn muốn học cho từng kỹ năng</p>
 
         {isLoading ? (
-          <div className="cl-grid" aria-busy="true">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="cl-skel cl-skel--card" aria-hidden="true" />
-            ))}
-          </div>
+          SKILLS.map((skill) => (
+            <section key={skill.key} className="cl-section">
+              <h2 className="cl-section-title">{skill.title}</h2>
+              <div className="cl-grid" aria-busy="true">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="cl-skel cl-skel--card" aria-hidden="true" />
+                ))}
+              </div>
+            </section>
+          ))
         ) : isFailed ? (
           <div className="cl-error" role="alert">
             <p>{coursesError || 'Không thể tải danh sách khoá học.'}</p>
             <button type="button" onClick={() => dispatch(fetchCoursesThunk())}>Thử lại</button>
           </div>
         ) : hasCourses ? (
-          <CourseGrid
-            courses={courses}
-            currentLevel={currentLevel}
-            onOpen={(level) => navigate(`/vocabulary?level=${encodeURIComponent(level)}`)}
-          />
+          SKILLS.map((skill) => (
+            <section key={skill.key} className="cl-section">
+              <h2 className="cl-section-title">{skill.title}</h2>
+              <CourseGrid
+                courses={courses}
+                currentLevel={currentLevel}
+                onOpen={(level) =>
+                  navigate(`${skill.route}?level=${encodeURIComponent(level)}`)
+                }
+              />
+            </section>
+          ))
         ) : (
           <EmptyState
             mascotVariant="thinking"
