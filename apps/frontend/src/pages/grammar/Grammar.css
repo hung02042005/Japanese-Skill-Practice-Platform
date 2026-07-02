@@ -11,9 +11,9 @@
 /* ─── Body layout 3 cột (desktop ≥ 1024px) ─── */
 .grm-layout {
   display: grid;
-  grid-template-columns: 220px 1fr 220px;
+  grid-template-columns: 280px 1fr 280px;
   gap: 24px;
-  max-width: 1240px;
+  max-width: 1360px;
   width: 100%;
   margin: 0 auto;
   padding: 24px 24px 48px;
@@ -317,7 +317,7 @@
   border-color: var(--color-border);
 }
 
-@media (max-width: 1199px) { .grm-layout { grid-template-columns: 1fr 220px; } .grm-left { display: none; } }
+@media (max-width: 1199px) { .grm-layout { grid-template-columns: 1fr 280px; } .grm-left { display: none; } }
 @media (max-width: 767px) {
   .grm-layout   { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
   .grm-right    { display: none; }

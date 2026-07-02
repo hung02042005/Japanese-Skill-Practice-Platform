@@ -5,9 +5,9 @@
 /* ─── Body layout 3 cột (desktop ≥ 1024px) ─── */
 .knj-layout {
   display: grid;
-  grid-template-columns: 220px 1fr 220px;
+  grid-template-columns: 280px 1fr 280px;
   gap: 24px;
-  max-width: 1240px;
+  max-width: 1360px;
   width: 100%;
   margin: 0 auto;
   padding: 24px 24px 48px;
@@ -116,7 +116,7 @@
 .knj-card-skel { height: 94px; border-radius: var(--radius-lg); background: linear-gradient(90deg, var(--skeleton-from) 25%, var(--skeleton-to) 50%, var(--skeleton-from) 75%); background-size: 200% 100%; animation: skelPulse 1.4s ease infinite; }
 @keyframes skelPulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-@media (max-width: 1023px) { .knj-layout { grid-template-columns: 1fr 220px; } .knj-left { display: none; } }
+@media (max-width: 1023px) { .knj-layout { grid-template-columns: 1fr 280px; } .knj-left { display: none; } }
 @media (max-width: 767px)  { .knj-layout { grid-template-columns: 1fr; padding: 16px; gap: 16px; } .knj-right { display: none; } .knj-grid { gap: 10px; } .knj-card { padding: 14px 16px; } }
 @media (prefers-reduced-motion: reduce) { .knj-page * { animation: none !important; transition-duration: 0ms !important; } }
 
