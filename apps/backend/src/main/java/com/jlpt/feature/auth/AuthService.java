@@ -31,11 +31,12 @@ import com.jlpt.feature.student.dto.request.OnboardingRequest;
 import com.jlpt.feature.student.dto.request.UpdateProfileRequest;
 import com.jlpt.feature.student.dto.response.StudentResponse;
 import com.jlpt.shared.common.JlptLevels;
-import com.jlpt.shared.email.EmailService;
 import com.jlpt.shared.exception.BusinessException;
 import com.jlpt.shared.security.JwtProvider;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import com.jlpt.feature.auth.event.SendPasswordResetEmailEvent;
+import com.jlpt.feature.auth.event.SendVerificationEmailEvent;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
@@ -70,7 +71,6 @@ public class AuthService {
     private final AdminUserRepository adminUserRepository;
     private final AuthTokenRepository authTokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
     private final ApplicationEventPublisher eventPublisher;
     private final AdminAuthService adminAuthService;
     private final com.jlpt.feature.admin.MaintenanceModeService maintenanceModeService;
@@ -382,68 +382,89 @@ public class AuthService {
                 .findById(tokenEntity.getStudentId())
                 .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"));
 
+        // BUG-06 FIX: Kiểm tra trạng thái trước khi cho phép verify.
+        // Nếu đã ACTIVE → coi như thành công (idempotent), xóa token thừa.
+        // Nếu SUSPENDED/DELETED → không cho phép verify lại.
+        if (user.getStatus() == StudentUser.StudentStatus.ACTIVE) {
+            log.info("[AuthService] Email already verified for userId={}, cleaning up stale tokens.", user.getId());
+            authTokenRepository.deleteByStudentIdAndTokenType(user.getId(), AuthToken.TokenType.EMAIL_VERIFICATION);
+            return;
+        }
+        if (user.getStatus() != StudentUser.StudentStatus.PENDING) {
+            throw new BusinessException(400, "ACCOUNT_NOT_VERIFIABLE",
+                    "Tài khoản không thể xác minh ở trạng thái hiện tại");
+        }
+
         user.setStatus(StudentUser.StudentStatus.ACTIVE);
         user.setEmailVerifiedAt(LocalDateTime.now());
         studentUserRepository.save(user);
 
-        authTokenRepository.bulkDeleteByTokenValueAndType(request.getToken(), AuthToken.TokenType.EMAIL_VERIFICATION);
+        // BUG-05 FIX: Xóa TẤT CẢ EMAIL_VERIFICATION token của student này,
+        // không chỉ token vừa dùng — tránh sót token cũ có thể tái sử dụng.
+        authTokenRepository.deleteByStudentIdAndTokenType(user.getId(), AuthToken.TokenType.EMAIL_VERIFICATION);
+        log.info("[AuthService] Email verified successfully for userId={}", user.getId());
     }
 
     @Transactional
     public void resendVerification(ResendVerificationRequest request) {
-        StudentUser user = studentUserRepository
-                .findByEmail(request.getEmail())
-                .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"));
+        // BUG-04 FIX: Không lộ thông tin người dùng (User Enumeration).
+        // Dùng ifPresent + filter để chỉ xử lý khi email hợp lệ VÀ đang PENDING.
+        // Mọi trường hợp khác đều im lặng trả về 200 OK (controller không thay đổi).
+        studentUserRepository.findByEmail(request.getEmail().trim().toLowerCase())
+                .filter(u -> u.getStatus() == StudentUser.StudentStatus.PENDING)
+                .ifPresent(user -> {
+                    // Rate limit: kiểm tra token cuối cùng trong DB
+                    Optional<AuthToken> lastToken = authTokenRepository
+                            .findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(
+                                    user.getId(), AuthToken.TokenType.EMAIL_VERIFICATION);
+                    if (lastToken.isPresent()
+                            && lastToken.get().getCreatedAt().plusSeconds(60).isAfter(LocalDateTime.now())) {
+                        throw new BusinessException(429, "TOO_MANY_REQUESTS",
+                                "Vui lòng đợi 60 giây trước khi yêu cầu gửi lại email");
+                    }
 
-        if (user.getStatus() != StudentUser.StudentStatus.PENDING) {
-            throw new BusinessException(400, "ALREADY_VERIFIED", "Tài khoản đã được xác minh hoặc bị khóa");
-        }
+                    authTokenRepository.deleteByStudentIdAndTokenType(
+                            user.getId(), AuthToken.TokenType.EMAIL_VERIFICATION);
 
-        Optional<AuthToken> lastToken = authTokenRepository.findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(
-                user.getId(), AuthToken.TokenType.EMAIL_VERIFICATION);
+                    String verificationToken = UUID.randomUUID().toString();
+                    AuthToken tokenEntity = AuthToken.builder()
+                            .actorType(AuthToken.ActorType.STUDENT)
+                            .studentId(user.getId())
+                            .tokenType(AuthToken.TokenType.EMAIL_VERIFICATION)
+                            .tokenValue(verificationToken)
+                            .expiresAt(LocalDateTime.now().plusHours(24))
+                            .build();
+                    authTokenRepository.save(tokenEntity);
 
-        if (lastToken.isPresent()
-                && lastToken.get().getCreatedAt().plusSeconds(60).isAfter(LocalDateTime.now())) {
-            throw new BusinessException(
-                    429, "TOO_MANY_REQUESTS", "Vui lòng đợi 60 giây trước khi yêu cầu gửi lại email");
-        }
-
-        authTokenRepository.deleteByStudentIdAndTokenType(user.getId(), AuthToken.TokenType.EMAIL_VERIFICATION);
-
-        String verificationToken = UUID.randomUUID().toString();
-        AuthToken tokenEntity = AuthToken.builder()
-                .actorType(AuthToken.ActorType.STUDENT)
-                .studentId(user.getId())
-                .tokenType(AuthToken.TokenType.EMAIL_VERIFICATION)
-                .tokenValue(verificationToken)
-                .expiresAt(LocalDateTime.now().plusHours(24))
-                .build();
-        authTokenRepository.save(tokenEntity);
-
-        log.info("[AuthService] Resending verification email event to: {}", user.getEmail());
-        eventPublisher.publishEvent(new SendVerificationEmailEvent(user.getEmail(), verificationToken));
+                    log.info("[AuthService] Resending verification email to: {}", user.getEmail());
+                    eventPublisher.publishEvent(new SendVerificationEmailEvent(user.getEmail(), verificationToken));
+                });
     }
 
     @Transactional
     public void forgotPassword(ForgotPasswordRequest request) {
-        StudentUser user = studentUserRepository
-                .findByEmail(request.getEmail())
-                .orElseThrow(() -> new BusinessException(404, "USER_NOT_FOUND", "Người dùng không tồn tại"));
+        // BUG-02 FIX: Dùng event pattern (AFTER_COMMIT) nhất quán với register/resend.
+        //   → Email chỉ gửi SAU KHI transaction commit → tránh gửi email khi DB rollback.
+        // BUG-03 FIX: Không lộ thông tin người dùng (User Enumeration).
+        //   → ifPresent: nếu email không tồn tại, không throw 404, luôn return 200 OK.
+        studentUserRepository.findByEmail(request.getEmail().trim().toLowerCase())
+                .ifPresent(user -> {
+                    authTokenRepository.deleteByStudentIdAndTokenType(
+                            user.getId(), AuthToken.TokenType.PASSWORD_RESET);
 
-        authTokenRepository.deleteByStudentIdAndTokenType(user.getId(), AuthToken.TokenType.PASSWORD_RESET);
+                    String resetToken = UUID.randomUUID().toString();
+                    AuthToken tokenEntity = AuthToken.builder()
+                            .actorType(AuthToken.ActorType.STUDENT)
+                            .studentId(user.getId())
+                            .tokenType(AuthToken.TokenType.PASSWORD_RESET)
+                            .tokenValue(resetToken)
+                            .expiresAt(LocalDateTime.now().plusHours(1))
+                            .build();
+                    authTokenRepository.save(tokenEntity);
 
-        String resetToken = UUID.randomUUID().toString();
-        AuthToken tokenEntity = AuthToken.builder()
-                .actorType(AuthToken.ActorType.STUDENT)
-                .studentId(user.getId())
-                .tokenType(AuthToken.TokenType.PASSWORD_RESET)
-                .tokenValue(resetToken)
-                .expiresAt(LocalDateTime.now().plusHours(1))
-                .build();
-        authTokenRepository.save(tokenEntity);
-
-        log.info("[AuthService] Sending password reset email to: {}", user.getEmail());
-        emailService.sendPasswordResetEmail(user.getEmail(), resetToken);
+                    log.info("[AuthService] Password reset token created for: {}", user.getEmail());
+                    eventPublisher.publishEvent(new SendPasswordResetEmailEvent(user.getEmail(), resetToken));
+                });
     }
 
     @Transactional

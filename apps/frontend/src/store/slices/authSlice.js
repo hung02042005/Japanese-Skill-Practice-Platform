@@ -13,6 +13,18 @@ export const verifyEmailThunk = createAsyncThunk(
   },
 );
 
+export const resendVerificationThunk = createAsyncThunk(
+  'auth/resendVerification',
+  async (email, { rejectWithValue }) => {
+    try {
+      const res = await authService.resendVerification(email);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message ?? 'Gửi lại email xác minh thất bại');
+    }
+  },
+);
+
 // ─── Thunks ───────────────────────────────────────────────────────────────────
 
 export const loginThunk = createAsyncThunk(
@@ -403,6 +415,19 @@ const authSlice = createSlice({
         state.status = 'succeeded';
       })
       .addCase(verifyEmailThunk.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // resendVerification — BUG-09 FIX: thunk còn thiếu
+      .addCase(resendVerificationThunk.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(resendVerificationThunk.fulfilled, (state) => {
+        state.status = 'succeeded';
+      })
+      .addCase(resendVerificationThunk.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       })

@@ -169,14 +169,19 @@ public class EmailService {
                         maxRetries,
                         e.getMessage());
                 if (attempt == maxRetries) {
-                    log.error("[EmailService] All attempts failed. Could not send email to {}", to, e);
-                    throw new RuntimeException("Gửi email thất bại tới " + to + " sau " + maxRetries + " lần thử", e);
+                    // BUG-01 FIX: Không throw RuntimeException trong @Async context —
+                    // exception sẽ bị AsyncUncaughtExceptionHandler bắt nhưng caller không nhận được.
+                    // Log ERROR rõ ràng và return gracefully thay vì throw.
+                    log.error("[EmailService] All {} attempts failed. Email NOT delivered to {}. Subject: '{}'",
+                            maxRetries, to, subject, e);
+                    return;
                 }
                 try {
                     Thread.sleep(retryDelayMs);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
-                    throw new RuntimeException("Tiến trình gửi email bị gián đoạn", ie);
+                    log.error("[EmailService] Email send thread interrupted for recipient: {}", to, ie);
+                    return;
                 }
             }
         }
