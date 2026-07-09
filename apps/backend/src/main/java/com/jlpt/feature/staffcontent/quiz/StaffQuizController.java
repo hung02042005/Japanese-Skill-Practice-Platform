@@ -9,11 +9,14 @@ import com.jlpt.feature.staffcontent.quiz.dto.QuizListResponse;
 import com.jlpt.feature.staffcontent.quiz.dto.UpdateQuizRequest;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/staff/assessments")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
+@Validated
 public class StaffQuizController {
 
     private final StaffQuizService staffQuizService;
@@ -52,8 +56,11 @@ public class StaffQuizController {
             @RequestParam(required = false) String jlptLevel,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Long lessonId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page phải >= 0") int page,
+            @RequestParam(defaultValue = "20")
+                    @Min(value = 1, message = "size phải >= 1")
+                    @Max(value = 100, message = "size tối đa 100")
+                    int size,
             Authentication authentication) {
         QuizListResponse data =
                 staffQuizService.listQuizzes(jlptLevel, status, lessonId, page, size, authentication.getName());

@@ -23,15 +23,3 @@ export function getErrorMessage(err, fallback = DEFAULT_ERROR) {
     return 'Không kết nối được máy chủ. Kiểm tra mạng và thử lại.';
   return fallback;
 }
-
-/**
- * Lấy message thành công (ưu tiên message backend, sau đó fallback của flow).
- * @param {unknown} res  response axios
- * @param {string} fallback  message mặc định của flow
- * @returns {string}
- */
-export function getSuccessMessage(res, fallback) {
-  const backendMsg = res?.data?.message;
-  if (typeof backendMsg === 'string' && backendMsg.trim()) return backendMsg;
-  return fallback;
-}

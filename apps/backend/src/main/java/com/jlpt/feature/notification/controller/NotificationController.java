@@ -5,18 +5,22 @@ import com.jlpt.feature.notification.dto.NotificationResponse;
 import com.jlpt.feature.notification.service.NotificationService;
 import com.jlpt.shared.common.ApiResponse;
 import com.jlpt.shared.security.UserDetailsImpl;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STUDENT')")
+@Validated
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -26,8 +30,11 @@ public class NotificationController {
     @GetMapping
     public ResponseEntity<ApiResponse<Map<String, Object>>> getMyNotifications(
             @AuthenticationPrincipal UserDetailsImpl principal,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page phải >= 0") int page,
+            @RequestParam(defaultValue = "20")
+                    @Min(value = 1, message = "size phải >= 1")
+                    @Max(value = 100, message = "size tối đa 100")
+                    int size) {
         Long studentId = principal.getStudentUser().getId();
         Page<NotificationResponse> result = notificationService.getMyNotifications(studentId, page, size);
         long unreadCount = notificationService.getUnreadCount(studentId);

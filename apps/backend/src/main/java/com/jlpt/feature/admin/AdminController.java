@@ -18,6 +18,8 @@ import com.jlpt.feature.staff.dto.response.CreateStaffResponse;
 import com.jlpt.feature.student.dto.request.UpdateStudentRequest;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +28,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+@Validated
 public class AdminController {
 
     private final AdminUserService adminUserService;
@@ -46,8 +50,11 @@ public class AdminController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String jlptLevel,
             @RequestParam(required = false) String staffRole,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page phải >= 0") int page,
+            @RequestParam(defaultValue = "20")
+                    @Min(value = 1, message = "size phải >= 1")
+                    @Max(value = 100, message = "size tối đa 100")
+                    int size) {
 
         Page<UserSummaryResponse> result =
                 adminUserService.listUsers(type, q, status, jlptLevel, staffRole, page, size);

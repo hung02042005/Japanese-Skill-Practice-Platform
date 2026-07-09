@@ -5,11 +5,14 @@ import com.jlpt.feature.learning.dto.VocabTopicResponse;
 import com.jlpt.feature.learning.dto.VocabularyListResponse;
 import com.jlpt.shared.common.ApiResponse;
 import com.jlpt.shared.security.UserDetailsImpl;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/vocabulary")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STUDENT')")
+@Validated
 public class StudentVocabularyController {
 
     private final StudentVocabularyService vocabularyService;
@@ -40,8 +44,11 @@ public class StudentVocabularyController {
             @RequestParam(required = false) String level,
             @RequestParam(required = false) Long topicId,
             @RequestParam(required = false) String search,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page phải >= 0") int page,
+            @RequestParam(defaultValue = "20")
+                    @Min(value = 1, message = "size phải >= 1")
+                    @Max(value = 100, message = "size tối đa 100")
+                    int size,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         VocabularyListResponse data = vocabularyService.getVocabularyList(
                 level, topicId, search, page, size, userDetails.getStudentUser().getId());

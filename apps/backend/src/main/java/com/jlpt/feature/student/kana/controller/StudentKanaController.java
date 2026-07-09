@@ -29,11 +29,4 @@ public class StudentKanaController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @PostMapping("/{kanaId}/complete")
-    public ResponseEntity<ApiResponse<Void>> markKanaComplete(
-            @PathVariable Integer kanaId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
-        kanaService.markKanaComplete(kanaId, userDetails.getStudentUser().getId());
-        return ResponseEntity.ok(ApiResponse.success(null));
-    }
 }

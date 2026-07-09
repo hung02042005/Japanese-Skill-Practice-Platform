@@ -7,6 +7,8 @@ import com.jlpt.feature.staffcontent.grammar.dto.GrammarSummaryResponse;
 import com.jlpt.feature.staffcontent.grammar.dto.UpdateGrammarRequest;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/staff/grammar")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
+@Validated
 public class StaffGrammarController {
 
     private final StaffGrammarService staffGrammarService;
@@ -47,8 +51,11 @@ public class StaffGrammarController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> listGrammars(
             @RequestParam(required = false) String jlptLevel,
             @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page phải >= 0") int page,
+            @RequestParam(defaultValue = "20")
+                    @Min(value = 1, message = "size phải >= 1")
+                    @Max(value = 100, message = "size tối đa 100")
+                    int size,
             Authentication authentication) {
 
         int effectiveSize = Math.min(size, 100);

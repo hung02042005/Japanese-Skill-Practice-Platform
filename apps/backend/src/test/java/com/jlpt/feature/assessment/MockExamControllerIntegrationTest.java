@@ -176,11 +176,6 @@ class MockExamControllerIntegrationTest {
                 .andExpect(jsonPath("$.data.sectionScores.languageKnowledge").value(20))
                 .andExpect(jsonPath("$.data.sectionScores.reading").value(0));
 
-        mockMvc.perform(get("/api/test-attempts/" + attemptId + "/status")
-                        .header("Authorization", "Bearer " + accessToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.status").value("submitted"));
-
         mockMvc.perform(get("/api/test-attempts/" + attemptId + "/review")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())

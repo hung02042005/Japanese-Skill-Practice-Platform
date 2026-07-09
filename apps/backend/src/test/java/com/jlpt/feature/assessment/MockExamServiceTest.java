@@ -11,7 +11,6 @@ import com.jlpt.feature.assessment.dto.request.SubmitExamRequest;
 import com.jlpt.feature.assessment.dto.response.ExamHistoryResponse;
 import com.jlpt.feature.assessment.dto.response.ExamReviewResponse;
 import com.jlpt.feature.assessment.dto.response.ExamStartResponse;
-import com.jlpt.feature.assessment.dto.response.ExamStatusResponse;
 import com.jlpt.feature.assessment.dto.response.ExamSubmitResponse;
 import com.jlpt.feature.assessment.dto.response.QuestionResponse;
 import com.jlpt.feature.learning.Kanji;
@@ -367,56 +366,6 @@ class MockExamServiceTest {
 
         assertThrows(BusinessRuleException.class, () -> mockExamService.submitExam(10L, 1L, request));
         verify(attemptAnswerRepository, never()).saveAll(any());
-    }
-
-    // ── getExamStatus ───────────────────────────────────────────────────────
-
-    @Test
-    void getExamStatus_notExpired_returnsRemainingSeconds() {
-        TestAttempt attempt = buildAttempt(
-                500L,
-                student,
-                TestAttempt.AttemptStatus.IN_PROGRESS,
-                LocalDateTime.now().minusMinutes(10));
-
-        when(testAttemptRepository.findById(500L)).thenReturn(Optional.of(attempt));
-        when(assessmentRepository.findById(10L)).thenReturn(Optional.of(exam));
-
-        ExamStatusResponse response = mockExamService.getExamStatus(500L, 1L);
-
-        assertFalse(response.isExpired());
-        assertTrue(response.getRemainingSeconds() > 0);
-    }
-
-    @Test
-    void getExamStatus_expired_remainingSecondsZero() {
-        TestAttempt attempt = buildAttempt(
-                500L,
-                student,
-                TestAttempt.AttemptStatus.IN_PROGRESS,
-                LocalDateTime.now().minusMinutes(70));
-
-        when(testAttemptRepository.findById(500L)).thenReturn(Optional.of(attempt));
-        when(assessmentRepository.findById(10L)).thenReturn(Optional.of(exam));
-
-        ExamStatusResponse response = mockExamService.getExamStatus(500L, 1L);
-
-        assertTrue(response.isExpired());
-        assertEquals(0, response.getRemainingSeconds());
-    }
-
-    @Test
-    void getExamStatus_wrongStudent_throwsForbidden() {
-        StudentUser otherStudent = StudentUser.builder().id(2L).build();
-        TestAttempt attempt = buildAttempt(
-                500L,
-                otherStudent,
-                TestAttempt.AttemptStatus.IN_PROGRESS,
-                LocalDateTime.now().minusMinutes(10));
-
-        when(testAttemptRepository.findById(500L)).thenReturn(Optional.of(attempt));
-
-        assertThrows(ForbiddenException.class, () -> mockExamService.getExamStatus(500L, 1L));
     }
 
     // ── getExamHistory ──────────────────────────────────────────────────────

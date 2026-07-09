@@ -5,6 +5,7 @@ import com.jlpt.feature.student.progress.dto.LearningProgressRequest;
 import com.jlpt.feature.student.progress.dto.LearningProgressResponse;
 import com.jlpt.shared.common.ApiResponse;
 import com.jlpt.shared.security.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +22,7 @@ public class StudentLearningProgressController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<LearningProgressResponse>> markProgress(
-            @RequestBody LearningProgressRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @Valid @RequestBody LearningProgressRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         LearningProgressResponse response = progressService.markProgress(
                 request, userDetails.getStudentUser().getId());

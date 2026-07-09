@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 
 import com.jlpt.feature.admin.AdminAuthService;
 import com.jlpt.feature.admin.AdminUserRepository;
+import com.jlpt.feature.admin.MaintenanceModeService;
 import com.jlpt.feature.auth.dto.request.LoginRequest;
 import com.jlpt.feature.auth.dto.response.LoginApiResponse;
 import com.jlpt.feature.staff.StaffUser;
@@ -59,6 +60,9 @@ class AuthServiceTest {
 
     @Mock
     private AdminAuthService adminAuthService;
+
+    @Mock
+    private MaintenanceModeService maintenanceModeService;
 
     @InjectMocks
     private AuthService authService;

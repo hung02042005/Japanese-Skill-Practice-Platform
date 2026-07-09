@@ -6,7 +6,6 @@ import com.jlpt.feature.flashcard.dto.BulkDeleteRequest;
 import com.jlpt.feature.flashcard.dto.DeckCreateRequest;
 import com.jlpt.feature.flashcard.dto.DeckSummaryResponse;
 import com.jlpt.feature.flashcard.dto.FlashcardResponse;
-import com.jlpt.feature.flashcard.dto.FlashcardRevealResponse;
 import com.jlpt.feature.flashcard.dto.ReviewDeckAddRequest;
 import com.jlpt.feature.flashcard.dto.ReviewDeckAddResponse;
 import com.jlpt.feature.flashcard.dto.ReviewRequest;
@@ -86,14 +85,6 @@ public class StudentFlashcardController {
         SessionResponse session =
                 flashcardSrsService.getSession(userDetails.getStudentUser().getId(), deckId, topicId, newLimit);
         return ResponseEntity.ok(ApiResponse.success(session));
-    }
-
-    @GetMapping("/flashcards/{id}/reveal")
-    public ResponseEntity<ApiResponse<FlashcardRevealResponse>> revealCard(
-            @PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        FlashcardRevealResponse response =
-                flashcardSrsService.revealCard(id, userDetails.getStudentUser().getId());
-        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping("/flashcards/{id}/review")

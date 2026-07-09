@@ -10,10 +10,7 @@ import com.jlpt.feature.student.StudentContentProgressRepository;
 import com.jlpt.feature.student.kana.dto.response.KanaListResponse;
 import com.jlpt.feature.student.kana.dto.response.KanaResponse;
 import com.jlpt.feature.student.kana.service.KanaService;
-import com.jlpt.feature.student.progress.StudentLearningProgressService;
-import com.jlpt.feature.student.progress.dto.LearningProgressRequest;
 import com.jlpt.shared.exception.ResourceNotFoundException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,7 +25,6 @@ public class KanaServiceImpl implements KanaService {
 
     private final KanaCharacterRepository kanaRepository;
     private final StudentContentProgressRepository progressRepository;
-    private final StudentLearningProgressService learningProgressService;
 
     @Override
     public KanaListResponse getKanaChart(String script, Long studentId) {
@@ -76,21 +72,6 @@ public class KanaServiceImpl implements KanaService {
                 .completedCount(completedCount)
                 .totalCount(totalCount)
                 .build();
-    }
-
-    @Override
-    public void markKanaComplete(Integer kanaId, Long studentId) {
-        if (!kanaRepository.existsById(kanaId)) {
-            throw new ResourceNotFoundException("KanaCharacter", kanaId.longValue());
-        }
-
-        LearningProgressRequest request = new LearningProgressRequest();
-        request.setContentId(kanaId.longValue());
-        request.setContentType(ContentType.KANA.getValue());
-        request.setStatus(StudentContentProgress.ProgressStatus.COMPLETED.getValue());
-        request.setProgressPercent(BigDecimal.valueOf(100));
-
-        learningProgressService.markProgress(request, studentId);
     }
 
     private String determineRow(String romaji) {

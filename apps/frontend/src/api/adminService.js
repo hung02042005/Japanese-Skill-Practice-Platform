@@ -12,27 +12,9 @@ export async function listUsers({ type, q, status, jlptLevel, staffRole, page = 
   return res.data.data;
 }
 
-// ── UC-37-02: Get user detail ───────────────────────────────────────────────
-export async function getUserDetail(type, userId) {
-  const res = await api.get(`/admin/users/${type}/${userId}`);
-  return res.data.data;
-}
-
 // ── UC-37-03: Create Staff ──────────────────────────────────────────────────
 export async function createStaff({ fullName, email, staffRole }) {
   const res = await api.post('/admin/staff', { fullName, email, staffRole });
-  return res.data.data;
-}
-
-// ── UC-37-04: Edit student info ─────────────────────────────────────────────
-export async function updateStudent(userId, data) {
-  const res = await api.put(`/admin/users/student/${userId}`, data);
-  return res.data.data;
-}
-
-// ── UC-37-04: Edit staff info ───────────────────────────────────────────────
-export async function updateStaff(userId, data) {
-  const res = await api.put(`/admin/users/staff/${userId}`, data);
   return res.data.data;
 }
 

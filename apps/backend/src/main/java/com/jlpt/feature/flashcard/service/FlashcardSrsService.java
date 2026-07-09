@@ -7,7 +7,6 @@ import com.jlpt.feature.flashcard.FlashcardDeck;
 import com.jlpt.feature.flashcard.dto.AddFlashcardRequest;
 import com.jlpt.feature.flashcard.dto.DeckSummaryResponse;
 import com.jlpt.feature.flashcard.dto.FlashcardResponse;
-import com.jlpt.feature.flashcard.dto.FlashcardRevealResponse;
 import com.jlpt.feature.flashcard.dto.ReviewDeckAddRequest;
 import com.jlpt.feature.flashcard.dto.ReviewDeckAddResponse;
 import com.jlpt.feature.flashcard.dto.ReviewRequest;
@@ -223,12 +222,6 @@ public class FlashcardSrsService {
             default -> Comparator.comparing(
                     FlashcardResponse::nextReviewDate, Comparator.nullsLast(Comparator.naturalOrder()));
         };
-    }
-
-    @Transactional(readOnly = true)
-    public FlashcardRevealResponse revealCard(Long flashcardId, Long studentId) {
-        Flashcard card = ownCardOrThrow(flashcardId, studentId);
-        return buildRevealResponse(card);
     }
 
     /** Gỡ một thẻ khỏi sổ tay (soft-delete, ADR-004 — SPEC-notebook §5). */
@@ -683,19 +676,6 @@ public class FlashcardSrsService {
         }
         Collections.shuffle(options);
         return new SessionResponse.Quiz(options);
-    }
-
-    private FlashcardRevealResponse buildRevealResponse(Flashcard card) {
-        ResolvedCard r = resolve(card, loadContentMaps(List.of(card)));
-        return new FlashcardRevealResponse(
-                card.getId(),
-                r.front(),
-                r.back(),
-                r.furigana(),
-                r.exampleJp(),
-                r.exampleVi(),
-                r.audioUrl(),
-                r.strokeUrl());
     }
 
     /**

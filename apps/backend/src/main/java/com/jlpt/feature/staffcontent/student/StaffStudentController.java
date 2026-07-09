@@ -6,10 +6,14 @@ import com.jlpt.feature.staffcontent.student.dto.StaffStudentProgressResponse;
 import com.jlpt.feature.staffcontent.student.dto.StaffStudentSummaryResponse;
 import com.jlpt.feature.staffcontent.student.dto.SuspendStudentRequest;
 import com.jlpt.shared.common.ApiResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/staff/students")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
+@Validated
 public class StaffStudentController {
 
     private final StaffStudentService staffStudentService;
@@ -32,8 +37,11 @@ public class StaffStudentController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String level,
             @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page phải >= 0") int page,
+            @RequestParam(defaultValue = "20")
+                    @Min(value = 1, message = "size phải >= 1")
+                    @Max(value = 100, message = "size tối đa 100")
+                    int size) {
         return ResponseEntity.ok(
                 ApiResponse.success(staffStudentService.listStudents(search, level, status, page, size)));
     }
@@ -46,7 +54,7 @@ public class StaffStudentController {
     @PostMapping("/{studentId}/suspend")
     public ResponseEntity<ApiResponse<StaffStudentSummaryResponse>> suspend(
             @PathVariable Long studentId,
-            @RequestBody(required = false) SuspendStudentRequest request,
+            @Valid @RequestBody(required = false) SuspendStudentRequest request,
             Authentication authentication) {
         String reason = request != null ? request.getReason() : null;
         return ResponseEntity.ok(ApiResponse.success(

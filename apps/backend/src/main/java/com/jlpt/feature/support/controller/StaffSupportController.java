@@ -9,12 +9,15 @@ import com.jlpt.feature.support.dto.TicketResponse;
 import com.jlpt.feature.support.service.SupportTicketService;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/staff/tickets")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
+@Validated
 public class StaffSupportController {
 
     private final SupportTicketService supportTicketService;
@@ -38,8 +42,11 @@ public class StaffSupportController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String priority,
             @RequestParam(required = false) String q,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page phải >= 0") int page,
+            @RequestParam(defaultValue = "10")
+                    @Min(value = 1, message = "size phải >= 1")
+                    @Max(value = 100, message = "size tối đa 100")
+                    int size) {
         Page<TicketResponse> result = supportTicketService.getAllTickets(status, category, priority, q, page, size);
         return ResponseEntity.ok(ApiResponse.success(Map.of(
                 "content", result.getContent(),

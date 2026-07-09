@@ -12,6 +12,8 @@ import com.jlpt.feature.staffcontent.learning.dto.UpdateVocabularyRequest;
 import com.jlpt.feature.staffcontent.learning.dto.VocabularyDetailResponse;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/staff")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
+@Validated
 public class StaffLearningContentController {
 
     private final LearningContentService learningContentService;
@@ -70,8 +74,11 @@ public class StaffLearningContentController {
             @RequestParam(required = false) String jlptLevel,
             @RequestParam(required = false) String lessonType,
             @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page phải >= 0") int page,
+            @RequestParam(defaultValue = "20")
+                    @Min(value = 1, message = "size phải >= 1")
+                    @Max(value = 100, message = "size tối đa 100")
+                    int size,
             Authentication authentication) {
         Page<LessonDetailResponse> resultPage = learningContentService.listLessons(
                 q, jlptLevel, lessonType, status, page, size, authentication.getName());
@@ -119,8 +126,11 @@ public class StaffLearningContentController {
             @RequestParam(required = false) String jlptLevel,
             @RequestParam(required = false) Long topicId,
             @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page phải >= 0") int page,
+            @RequestParam(defaultValue = "20")
+                    @Min(value = 1, message = "size phải >= 1")
+                    @Max(value = 100, message = "size tối đa 100")
+                    int size,
             Authentication authentication) {
         Page<VocabularyDetailResponse> resultPage = learningContentService.listVocabulary(
                 q, jlptLevel, topicId, status, page, size, authentication.getName());
@@ -164,8 +174,11 @@ public class StaffLearningContentController {
             @RequestParam(required = false) String q,
             @RequestParam(required = false) String jlptLevel,
             @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page phải >= 0") int page,
+            @RequestParam(defaultValue = "20")
+                    @Min(value = 1, message = "size phải >= 1")
+                    @Max(value = 100, message = "size tối đa 100")
+                    int size,
             Authentication authentication) {
         Page<KanjiDetailResponse> resultPage =
                 learningContentService.listKanji(q, jlptLevel, status, page, size, authentication.getName());

@@ -56,16 +56,6 @@ export async function getStudentProgress(studentId) {
   return res.data.data;
 }
 
-export async function suspendStudent(studentId, reason = '') {
-  const res = await api.post(`/staff/students/${studentId}/suspend`, { reason });
-  return res.data.data;
-}
-
-export async function activateStudent(studentId) {
-  const res = await api.post(`/staff/students/${studentId}/activate`);
-  return res.data.data;
-}
-
 // --- Staff Dashboard ----------------------------------------------------------
 export async function getStaffDashboard() {
   const res = await api.get('/staff/dashboard');

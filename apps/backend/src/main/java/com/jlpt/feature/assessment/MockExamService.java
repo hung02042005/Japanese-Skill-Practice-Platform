@@ -10,7 +10,6 @@ import com.jlpt.feature.assessment.dto.response.ExamResultItem;
 import com.jlpt.feature.assessment.dto.response.ExamReviewItem;
 import com.jlpt.feature.assessment.dto.response.ExamReviewResponse;
 import com.jlpt.feature.assessment.dto.response.ExamStartResponse;
-import com.jlpt.feature.assessment.dto.response.ExamStatusResponse;
 import com.jlpt.feature.assessment.dto.response.ExamSubmitResponse;
 import com.jlpt.feature.assessment.dto.response.SectionScoresResponse;
 import com.jlpt.feature.learning.Kanji;
@@ -112,29 +111,6 @@ public class MockExamService {
                 .expiresAt(computeExpiresAt(assessment, startedAt))
                 .sections(QuestionAssignmentSupport.groupBySection(assignments))
                 .listeningAudioUrl(assessment.getAudioUrl())
-                .build();
-    }
-
-    public ExamStatusResponse getExamStatus(Long attemptId, Long studentId) {
-        TestAttempt attempt = findOwnedAttempt(attemptId, studentId);
-        Assessment assessment = assessmentRepository
-                .findById(attempt.getParentId())
-                .orElseThrow(() -> new ResourceNotFoundException("Assessment", attempt.getParentId()));
-
-        LocalDateTime expiresAt = computeExpiresAt(assessment, attempt.getStartedAt());
-        long remainingSeconds = 0;
-        boolean isExpired = true;
-        if (expiresAt != null) {
-            long rawSeconds = Duration.between(LocalDateTime.now(), expiresAt).getSeconds();
-            remainingSeconds = Math.max(0, rawSeconds);
-            isExpired = rawSeconds <= 0;
-        }
-
-        return ExamStatusResponse.builder()
-                .attemptId(attempt.getId())
-                .status(attempt.getStatus().getValue())
-                .remainingSeconds(remainingSeconds)
-                .isExpired(attempt.getStatus() != TestAttempt.AttemptStatus.IN_PROGRESS || isExpired)
                 .build();
     }
 

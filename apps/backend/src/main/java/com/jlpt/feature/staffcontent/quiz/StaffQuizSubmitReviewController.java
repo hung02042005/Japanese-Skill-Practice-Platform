@@ -9,6 +9,7 @@ import com.jlpt.feature.staffcontent.learning.dto.SubmitReviewRequest;
 import com.jlpt.feature.staffcontent.learning.dto.SubmitReviewResponse;
 import com.jlpt.feature.staffcontent.quiz.dto.QuizSubmitReviewResponse;
 import com.jlpt.shared.common.ApiResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,7 @@ public class StaffQuizSubmitReviewController {
 
     @PostMapping("/submit-review")
     public ResponseEntity<ApiResponse<QuizSubmitReviewResponse>> submitReview(
-            @RequestBody QuizSubmitReviewRequest request, Authentication authentication) {
+            @Valid @RequestBody QuizSubmitReviewRequest request, Authentication authentication) {
         String contentType = request.getContentType();
         if (contentType == null) {
             return ResponseEntity.badRequest()

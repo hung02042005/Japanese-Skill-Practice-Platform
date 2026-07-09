@@ -5,9 +5,12 @@ import com.jlpt.feature.dictionary.dto.SearchResponse;
 import com.jlpt.feature.dictionary.dto.TypeSearchResponse;
 import com.jlpt.feature.dictionary.service.DictionaryService;
 import com.jlpt.shared.common.ApiResponse;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/dictionary")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STUDENT')")
+@Validated
 public class StudentDictionaryController {
 
     private final DictionaryService dictionaryService;
@@ -37,8 +41,11 @@ public class StudentDictionaryController {
             @PathVariable String type,
             @RequestParam String q,
             @RequestParam(required = false) String jlptLevel,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page phải >= 0") int page,
+            @RequestParam(defaultValue = "10")
+                    @Min(value = 1, message = "size phải >= 1")
+                    @Max(value = 100, message = "size tối đa 100")
+                    int size) {
         TypeSearchResponse response = dictionaryService.searchByType(q, jlptLevel, type, page, size);
         return ResponseEntity.ok(ApiResponse.success(response));
     }

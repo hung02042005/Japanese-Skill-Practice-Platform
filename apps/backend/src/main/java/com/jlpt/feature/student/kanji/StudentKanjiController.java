@@ -3,7 +3,6 @@ package com.jlpt.feature.student.kanji;
 
 import com.jlpt.feature.student.kanji.dto.KanjiDetailResponse;
 import com.jlpt.feature.student.kanji.dto.KanjiListResponse;
-import com.jlpt.feature.student.kanji.dto.KanjiProgressSummaryResponse;
 import com.jlpt.feature.student.kanji.dto.KanjiWritingAttemptRequest;
 import com.jlpt.feature.student.kanji.dto.KanjiWritingAttemptResponse;
 import com.jlpt.feature.student.kanji.dto.KanjiWritingEvaluateRequest;
@@ -11,16 +10,20 @@ import com.jlpt.feature.student.kanji.dto.KanjiWritingEvaluateResponse;
 import com.jlpt.shared.common.ApiResponse;
 import com.jlpt.shared.security.UserDetailsImpl;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/kanji")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STUDENT')")
+@Validated
 public class StudentKanjiController {
 
     private final StudentKanjiService studentKanjiService;
@@ -29,8 +32,11 @@ public class StudentKanjiController {
     @GetMapping
     public ResponseEntity<ApiResponse<KanjiListResponse>> getKanjiList(
             @RequestParam String level,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page phải >= 0") int page,
+            @RequestParam(defaultValue = "20")
+                    @Min(value = 1, message = "size phải >= 1")
+                    @Max(value = 100, message = "size tối đa 100")
+                    int size,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         int validPage = Math.max(0, page);
@@ -38,15 +44,6 @@ public class StudentKanjiController {
 
         KanjiListResponse response = studentKanjiService.getKanjiList(
                 level, userDetails.getStudentUser().getId(), validPage, validSize);
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
-
-    @GetMapping("/progress-summary")
-    public ResponseEntity<ApiResponse<KanjiProgressSummaryResponse>> getProgressSummary(
-            @RequestParam String level, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
-        KanjiProgressSummaryResponse response = studentKanjiService.getProgressSummary(
-                level, userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

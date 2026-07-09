@@ -132,11 +132,6 @@ export async function verifyEmail(token) {
   return response.data;
 }
 
-export async function resendVerification(email) {
-  const response = await api.post('/auth/resend-verification', { email });
-  return response.data;
-}
-
 export async function forgotPassword(email) {
   const response = await api.post('/auth/forgot-password', { email });
   return response.data;
