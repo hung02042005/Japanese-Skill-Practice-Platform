@@ -34,20 +34,6 @@ const NAV_TABS = [
     ),
   },
   {
-    id: 'manager-staff-performance',
-    label: 'Hiệu suất Staff',
-    route: '/manager/staff-performance',
-    icon: (
-      // Biểu đồ tăng trưởng — hiệu suất nhóm
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <rect x="2" y="13" width="4" height="8" rx="1"/>
-        <rect x="9" y="8" width="4" height="13" rx="1"/>
-        <rect x="16" y="3" width="4" height="18" rx="1"/>
-        <polyline points="3 11 11 6 19 2" strokeDasharray="2 1"/>
-      </svg>
-    ),
-  },
-  {
     id: 'manager-pipeline',
     label: 'Pipeline nội dung',
     route: '/manager/content-pipeline',
@@ -57,19 +43,6 @@ const NAV_TABS = [
         <rect x="2" y="4" width="5" height="16" rx="1"/>
         <rect x="9.5" y="4" width="5" height="11" rx="1"/>
         <rect x="17" y="4" width="5" height="7" rx="1"/>
-      </svg>
-    ),
-  },
-  {
-    id: 'manager-reports',
-    label: 'Báo cáo',
-    route: '/manager/reports',
-    icon: (
-      // Tài liệu báo cáo với biểu đồ
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M5 3h9l5 5v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/>
-        <polyline points="14 3 14 8 19 8"/>
-        <polyline points="8 17 10 15 12.5 17.5 16 13"/>
       </svg>
     ),
   },

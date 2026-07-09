@@ -25,11 +25,6 @@ export async function submitOnboarding({ jlptGoal, dailyMinutes, focusSkills }) 
 }
 
 // ─── Profile ─────────────────────────────────────────────────────────────────
-export async function getMyProfile() {
-  const res = await api.get('/students/me');
-  return res.data.data;
-}
-
 export async function updateProfile({ fullName, phone }) {
   const res = await api.put('/students/me', { fullName, phone });
   return res.data.data;
@@ -53,11 +48,6 @@ export async function changePassword({ currentPassword, newPassword, confirmPass
 // ─── Lessons ─────────────────────────────────────────────────────────────────
 export async function getLessonDetail(lessonId) {
   const res = await api.get(`/lessons/${lessonId}`);
-  return res.data.data;
-}
-
-export async function getNextLesson() {
-  const res = await api.get('/students/next-lesson');
   return res.data.data;
 }
 
@@ -176,18 +166,9 @@ export async function bulkDeleteFlashcards(ids) {
   return res.data.data;
 }
 
-export async function createDeck(deckName) {
-  const res = await api.post('/flashcard-decks', { deckName });
-  return res.data.data;
-}
-
-export async function deleteDeck(deckId) {
-  const res = await api.delete(`/flashcard-decks/${deckId}`);
-  return res.data;
-}
-
 export async function addToFlashcard(contentType, contentId, deckName = 'Mặc định') {
-  const res = await api.post('/flashcards', { contentType, contentId, deckName });
+  // Backend đòi enum CHỮ HOA (VOCABULARY|KANJI|GRAMMAR|CUSTOM); caller truyền chữ thường
+  const res = await api.post('/flashcards', { contentType: contentType.toUpperCase(), contentId, deckName });
   return res.data.data;
 }
 

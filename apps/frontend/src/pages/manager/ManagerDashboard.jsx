@@ -131,20 +131,6 @@ function ManagerDashboard() {
             </div>
           </Link>
 
-          <Link to="/manager/staff-performance" className="mgd-action-card mgd-action-card--indigo">
-            <div className="mgd-action-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <rect x="2" y="13" width="4" height="8" rx="1"/>
-                <rect x="9" y="8" width="4" height="13" rx="1"/>
-                <rect x="16" y="3" width="4" height="18" rx="1"/>
-              </svg>
-            </div>
-            <div>
-              <p className="mgd-action-title">Hiệu Suất Staff</p>
-              <p className="mgd-action-desc">Theo dõi năng suất từng thành viên</p>
-            </div>
-          </Link>
-
           <Link to="/manager/content-pipeline" className="mgd-action-card mgd-action-card--pink">
             <div className="mgd-action-icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -156,20 +142,6 @@ function ManagerDashboard() {
             <div>
               <p className="mgd-action-title">Pipeline Nội Dung</p>
               <p className="mgd-action-desc">Toàn bộ nội dung theo trạng thái</p>
-            </div>
-          </Link>
-
-          <Link to="/manager/reports" className="mgd-action-card mgd-action-card--green">
-            <div className="mgd-action-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M5 3h9l5 5v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/>
-                <polyline points="14 3 14 8 19 8"/>
-                <polyline points="8 17 10 15 12.5 17.5 16 13"/>
-              </svg>
-            </div>
-            <div>
-              <p className="mgd-action-title">Xem Báo Cáo</p>
-              <p className="mgd-action-desc">Phân tích nội dung và học viên</p>
             </div>
           </Link>
         </div>

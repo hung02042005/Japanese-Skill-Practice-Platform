@@ -51,21 +51,6 @@ function IconMail() {
   );
 }
 
-// Quạt xếp (扇子) — bài nói / chấm điểm
-function IconMic() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <line x1="12" y1="18" x2="4" y2="8"/>
-      <line x1="12" y1="18" x2="8" y2="5"/>
-      <line x1="12" y1="18" x2="12" y2="4"/>
-      <line x1="12" y1="18" x2="16" y2="5"/>
-      <line x1="12" y1="18" x2="20" y2="8"/>
-      <path d="M4 8 Q8 3.5 12 4 Q16 3.5 20 8"/>
-      <circle cx="12" cy="18" r="1.5" fill="currentColor" stroke="none"/>
-    </svg>
-  );
-}
-
 // Cuộn giấy Nhật (巻物) — soạn nội dung
 function IconEdit() {
   return (
@@ -102,20 +87,6 @@ function IconMessage() {
   );
 }
 
-// Quạt xếp (扇子) — chấm bài nói (quick action)
-function IconMicAction() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <line x1="12" y1="18" x2="4" y2="8"/>
-      <line x1="12" y1="18" x2="8" y2="5"/>
-      <line x1="12" y1="18" x2="12" y2="4"/>
-      <line x1="12" y1="18" x2="16" y2="5"/>
-      <line x1="12" y1="18" x2="20" y2="8"/>
-      <path d="M4 8 Q8 3.5 12 4 Q16 3.5 20 8"/>
-      <circle cx="12" cy="18" r="1.5" fill="currentColor" stroke="none"/>
-    </svg>
-  );
-}
 
 // ---- Component ----
 
@@ -221,22 +192,7 @@ function StaffDashboard() {
               <span className="sfd-stat-label">Tickets mở</span>
             </div>
           </div>
-
-          <div
-            className="sfd-stat-card sfd-stat-card--grading"
-            onClick={() => navigate('/staff/grading')}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && navigate('/staff/grading')}
-          >
-            <div className="sfd-stat-icon" style={{ background: 'var(--color-secondary-bg)', color: 'var(--color-secondary)' }}>
-              <IconMic />
-            </div>
-            <div>
-              <span className="sfd-stat-value">{stats.pendingGradingCount}</span>
-              <span className="sfd-stat-label">Bài nói chờ chấm</span>
-            </div>
-          </div>
+          {/* DEFER: bỏ thẻ "Bài nói chờ chấm" (/staff/grading) — Speaking chưa có backend (xem SPEC_DEAD_CODE_AUDIT F4) */}
         </div>
 
         {/* Quick actions */}
@@ -271,16 +227,7 @@ function StaffDashboard() {
               <p className="sfd-action-desc">Xử lý tickets đang chờ phản hồi</p>
             </div>
           </Link>
-
-          <Link to="/staff/grading" className="sfd-action-card">
-            <div className="sfd-action-icon">
-              <IconMicAction />
-            </div>
-            <div>
-              <p className="sfd-action-title">Chấm Bài Nói</p>
-              <p className="sfd-action-desc">Chấm điểm thủ công bài luyện speaking</p>
-            </div>
-          </Link>
+          {/* DEFER: bỏ tác vụ "Chấm Bài Nói" (/staff/grading) — Speaking chưa có backend (xem SPEC_DEAD_CODE_AUDIT F4) */}
         </div>
 
         {/* Activity table */}

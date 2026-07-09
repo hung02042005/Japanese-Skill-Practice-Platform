@@ -25,7 +25,6 @@ import Grammar from './pages/grammar/Grammar';
 import Dictionary from './pages/dictionary/Dictionary';
 import Notebook from './pages/notebook/Notebook';
 import Reading from './pages/reading/Reading';
-import Listening from './pages/listening/Listening';
 import NotFound from './pages/error/NotFound';
 import Forbidden from './pages/error/Forbidden';
 import ManageUsers     from './pages/admin/ManageUsers';
@@ -38,9 +37,7 @@ import StaffRoute        from './components/common/StaffRoute';
 import ManagerRoute      from './components/common/ManagerRoute';
 import ManagerDashboard      from './pages/manager/ManagerDashboard';
 import ManagerReviewQueue    from './pages/manager/ManagerReviewQueue';
-import ManagerStaffPerformance from './pages/manager/ManagerStaffPerformance';
 import ManagerContentPipeline  from './pages/manager/ManagerContentPipeline';
-import ManagerReports          from './pages/manager/ManagerReports';
 import ManagerNotifications    from './pages/manager/ManagerNotifications';
 import ManagerTickets          from './pages/manager/ManagerTickets';
 import StaffDashboard    from './pages/staff/StaffDashboard';
@@ -96,12 +93,12 @@ function App() {
         <Route path="/dictionary"   element={<PrivateRoute><Dictionary /></PrivateRoute>} />
         <Route path="/notebook"     element={<PrivateRoute><Notebook /></PrivateRoute>} />
         <Route path="/reading"      element={<PrivateRoute><Reading /></PrivateRoute>} />
-        <Route path="/listening"    element={<PrivateRoute><Listening /></PrivateRoute>} />
         <Route path="/kana"         element={<PrivateRoute><KanaList /></PrivateRoute>} />
         <Route path="/vocabulary"           element={<PrivateRoute><VocabularyRoute /></PrivateRoute>} />
         <Route path="/vocabulary/flashcard" element={<PrivateRoute><VocabFlashcardSession /></PrivateRoute>} />
         <Route path="/courses"              element={<PrivateRoute><CourseList /></PrivateRoute>} />
         <Route path="/quiz"         element={<PrivateRoute><QuizPage /></PrivateRoute>} />
+        {/* DEFER: Speaking chưa có backend — gỡ khỏi nav, giữ route cho dev nội bộ (xem SPEC_DEAD_CODE_AUDIT F4) */}
         <Route path="/speaking"     element={<PrivateRoute><SpeakingPage /></PrivateRoute>} />
         <Route path="/support"                  element={<PrivateRoute><SupportTickets /></PrivateRoute>} />
         <Route path="/support/tickets/:ticketId" element={<PrivateRoute><SupportTicketDetail /></PrivateRoute>} />
@@ -113,15 +110,14 @@ function App() {
         <Route path="/staff/questions"       element={<StaffRoute><StaffQuestions /></StaffRoute>} />
         <Route path="/staff/assessments"     element={<StaffRoute><StaffAssessments /></StaffRoute>} />
         <Route path="/staff/tickets"         element={<StaffRoute><StaffTickets /></StaffRoute>} />
+        {/* DEFER: Speaking chưa có backend — gỡ khỏi nav, giữ route cho dev nội bộ (xem SPEC_DEAD_CODE_AUDIT F4) */}
         <Route path="/staff/grading"         element={<StaffRoute><StaffGrading /></StaffRoute>} />
         <Route path="/staff/students"        element={<StaffRoute><StaffStudents /></StaffRoute>} />
 
         {/* Protected — Manager (staff_manager role) */}
         <Route path="/manager"                    element={<ManagerRoute><ManagerDashboard /></ManagerRoute>} />
         <Route path="/manager/review-queue"       element={<ManagerRoute><ManagerReviewQueue /></ManagerRoute>} />
-        <Route path="/manager/staff-performance"  element={<ManagerRoute><ManagerStaffPerformance /></ManagerRoute>} />
         <Route path="/manager/content-pipeline"   element={<ManagerRoute><ManagerContentPipeline /></ManagerRoute>} />
-        <Route path="/manager/reports"            element={<ManagerRoute><ManagerReports /></ManagerRoute>} />
         <Route path="/manager/notifications"      element={<ManagerRoute><ManagerNotifications /></ManagerRoute>} />
         <Route path="/manager/tickets"            element={<ManagerRoute><ManagerTickets /></ManagerRoute>} />
 

@@ -21,7 +21,6 @@ const TYPE_ROUTES = {
   VOCAB:     (level) => `/vocabulary?level=${level}`,
   GRAMMAR:   (level) => `/grammar?level=${level}`,
   READING:   (level) => `/reading?level=${level}`,
-  LISTENING: (level) => `/listening?level=${level}`,
   KANA:      (_,     title) => title?.toLowerCase().includes('katakana') ? '/kana?script=katakana' : '/kana?script=hiragana',
 };
 
