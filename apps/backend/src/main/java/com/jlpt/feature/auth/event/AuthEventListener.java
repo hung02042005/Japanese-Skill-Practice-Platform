@@ -17,7 +17,16 @@ public class AuthEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onSendVerificationEmailEvent(SendVerificationEmailEvent event) {
-        log.info("[AuthEventListener] Triggering email sending for: {}", event.email());
+        log.info("[AuthEventListener] Triggering verification email for: {}", event.email());
         emailService.sendVerificationEmail(event.email(), event.token());
     }
+
+    // BUG-02 FIX: forgotPassword dùng event pattern nhất quán với register/resend.
+    // Email chỉ gửi SAU KHI transaction commit thành công → tránh gửi email khi DB rollback.
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onSendPasswordResetEmailEvent(SendPasswordResetEmailEvent event) {
+        log.info("[AuthEventListener] Triggering password reset email for: {}", event.email());
+        emailService.sendPasswordResetEmail(event.email(), event.token());
+    }
 }
+

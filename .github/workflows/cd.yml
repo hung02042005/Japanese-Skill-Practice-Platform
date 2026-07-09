@@ -1,0 +1,40 @@
+name: CD (Deploy to VPS)
+
+on:
+  push:
+    branches: [ "main" ]
+
+# Chỉ chạy CD khi CI thành công
+# Nếu bạn không muốn đợi CI, có thể comment phần này lại
+# needs: [backend-ci, frontend-ci] (Not strictly enforced across files unless configured, but good practice if combined)
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Execute SSH commands on VPS
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USERNAME }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        script: |
+          # Di chuyển tới thư mục chứa project
+          cd ${{ secrets.PROJECT_PATH }}
+          
+          # Lấy code mới nhất từ nhánh main
+          git checkout main
+          git fetch origin main
+          git reset --hard origin/main
+          
+          # Đảm bảo các quyền chạy script nếu cần
+          # chmod +x apps/backend/mvnw
+          
+          # Build lại các Docker image và chạy lại container ở chế độ background
+          # Dùng cả 2 file yml (cho dev/base và cho prod)
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+          
+          # Dọn dẹp các images lơ lửng (dangling) để tiết kiệm dung lượng ổ cứng VPS
+          docker image prune -f

@@ -64,3 +64,56 @@
   color: var(--color-text-sub);
   font-size: 0.95rem;
 }
+
+/* ── Resend form (BUG-08 fix) ── */
+.ve-resend-form {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.ve-resend-label {
+  font-size: 0.88rem;
+  color: var(--color-text-sub);
+  margin: 0;
+  text-align: left;
+}
+
+.ve-resend-input {
+  width: 100%;
+}
+
+.ve-resend-error {
+  font-size: 0.83rem;
+  color: #e03131;
+  margin: 0;
+  text-align: left;
+}
+
+.ve-resend-success {
+  font-size: 0.9rem;
+  color: var(--color-text-sub);
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+.ve-back-link {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.88rem;
+  color: var(--color-text-sub);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.ve-back-link:hover {
+  color: var(--color-primary);
+}
+
