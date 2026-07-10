@@ -18,3 +18,15 @@ services:
     # volumes:
     #   - /etc/letsencrypt:/etc/letsencrypt:ro
     #   - ./certbot-www:/var/www/certbot
+
+  backend:
+    environment:
+      - DATABASE_URL=jdbc:sqlserver://db:1433;databaseName=JLPT_LearningDB;encrypt=true;trustServerCertificate=true
+      - DATABASE_USERNAME=sa
+      - DATABASE_PASSWORD=${MSSQL_SA_PASSWORD}
+      - SPRING_DATA_REDIS_HOST=redis
+      - APP_FRONTEND_URL=https://sakuji.online
+      # Bắt buộc cho Google OAuth2
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - JWT_SECRET=${JWT_SECRET}
