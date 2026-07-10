@@ -428,7 +428,7 @@ function ManageUsers() {
                             {(u.status === 'active' || u.status === 'pending') && (
                               <button type="button" className="mu-act-ic mu-act-ic--suspend" onClick={() => openSuspend(u)} title="Đình chỉ tài khoản" aria-label="Đình chỉ tài khoản"><IcBan /></button>
                             )}
-                            {u.status === 'suspended' && (
+                            {(u.status === 'suspended' || u.status === 'deleted') && (
                               <button type="button" className="mu-act-ic mu-act-ic--activate" onClick={() => openConfirm('activate', u)} title="Kích hoạt lại" aria-label="Kích hoạt lại tài khoản"><IcCheck /></button>
                             )}
                             {u.status !== 'deleted' && (
