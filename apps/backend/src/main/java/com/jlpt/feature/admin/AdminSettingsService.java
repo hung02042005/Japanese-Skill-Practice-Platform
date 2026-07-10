@@ -154,7 +154,7 @@ public class AdminSettingsService {
             } else {
                 mailSender.getJavaMailProperties().put("mail.smtp.auth", "false");
             }
-            
+
             // Set timeouts to prevent hanging (e.g. 10 seconds)
             mailSender.getJavaMailProperties().put("mail.smtp.connectiontimeout", "10000");
             mailSender.getJavaMailProperties().put("mail.smtp.timeout", "10000");
