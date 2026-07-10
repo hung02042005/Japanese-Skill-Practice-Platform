@@ -61,7 +61,7 @@ app:
   frontend-url: ${APP_FRONTEND_URL:http://localhost:3000}
   upload-dir: ${UPLOAD_DIR:uploads}
   cors:
-    allowed-origins: http://localhost:3000,http://localhost:5173
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,https://sakuji.online}
 
 google:
   client-id: ${GOOGLE_CLIENT_ID:}
