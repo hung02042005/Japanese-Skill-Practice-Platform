@@ -76,7 +76,12 @@ export const registerThunk = createAsyncThunk(
       const res = await authService.register(formData);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message ?? 'Đăng ký thất bại');
+      const resData = err.response?.data;
+      if (resData) {
+        const detail = (typeof resData.data === 'string') ? `: ${resData.data}` : '';
+        return rejectWithValue((resData.message || 'Đăng ký thất bại') + detail);
+      }
+      return rejectWithValue('Đăng ký thất bại');
     }
   },
 );
