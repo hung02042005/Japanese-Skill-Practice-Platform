@@ -2,9 +2,10 @@ name: CI (Build & Test)
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "develop", "branch_for_hung" ]
   pull_request:
     branches: [ "main", "develop" ]
+  workflow_dispatch:
 
 jobs:
   backend-ci:
