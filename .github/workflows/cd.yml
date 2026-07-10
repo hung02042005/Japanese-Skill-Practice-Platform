@@ -2,7 +2,7 @@ name: CD (Deploy to VPS)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "branch_for_hung" ]
 
 # Chỉ chạy CD khi CI thành công
 # Nếu bạn không muốn đợi CI, có thể comment phần này lại
@@ -36,11 +36,11 @@ jobs:
           cd ${{ secrets.PROJECT_PATH }}
           echo "Đang ở thư mục: $(pwd)"
           
-          # 2. Lấy code mới nhất từ nhánh main
-          echo "Đang tải code mới nhất từ nhánh main..."
-          git checkout main
-          git fetch origin main
-          git reset --hard origin/main
+          # 2. Lấy code mới nhất từ nhánh branch_for_hung
+          echo "Đang tải code mới nhất từ nhánh branch_for_hung..."
+          git checkout branch_for_hung
+          git fetch origin branch_for_hung
+          git reset --hard origin/branch_for_hung
           
           # 3. Kiểm tra file .env (BẮT BUỘC để chạy docker compose)
           if [ ! -f ".env" ]; then
