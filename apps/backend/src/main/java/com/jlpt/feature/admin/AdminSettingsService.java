@@ -126,7 +126,12 @@ public class AdminSettingsService {
 
             settingRepository
                     .findBySettingGroupAndSettingKey("smtp", "password")
-                    .ifPresent(s -> mailSender.setPassword(s.getSettingValue()));
+                    .ifPresent(s -> {
+                        String pass = s.getSettingValue();
+                        if (pass != null) {
+                            mailSender.setPassword(pass.replace(" ", ""));
+                        }
+                    });
 
             settingRepository.findBySettingGroupAndSettingKey("smtp", "secure").ifPresent(s -> {
                 String secure = s.getSettingValue().toUpperCase();
@@ -149,6 +154,11 @@ public class AdminSettingsService {
             } else {
                 mailSender.getJavaMailProperties().put("mail.smtp.auth", "false");
             }
+            
+            // Set timeouts to prevent hanging (e.g. 10 seconds)
+            mailSender.getJavaMailProperties().put("mail.smtp.connectiontimeout", "10000");
+            mailSender.getJavaMailProperties().put("mail.smtp.timeout", "10000");
+            mailSender.getJavaMailProperties().put("mail.smtp.writetimeout", "10000");
 
             // Force recreation of the Session so that changes take effect immediately
             jakarta.mail.Session newSession = jakarta.mail.Session.getInstance(mailSender.getJavaMailProperties());

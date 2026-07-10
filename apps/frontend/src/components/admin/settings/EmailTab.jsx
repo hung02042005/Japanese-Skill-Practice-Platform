@@ -123,13 +123,19 @@ function SmtpCard({ addToast }) {
     }
   }
 
-  async function handleTest() {
+  async function handleTest(e) {
+    if (e) e.preventDefault();
     setTesting(true);
     try {
+      // Auto-save before testing
+      await updateSettings('smtp', SMTP_FIELDS.map((f) => ({
+        settingKey: f.key,
+        settingValue: form[f.key] ?? '',
+      })));
       await testSmtp();
-      addToast('success', 'Kết nối SMTP thành công ✓');
+      addToast('success', 'Đã lưu và kết nối SMTP thành công ✓');
     } catch (err) {
-      addToast('error', `Lỗi kết nối SMTP: ${err?.response?.data?.message ?? 'Không xác định'}`);
+      addToast('error', `Lỗi kết nối SMTP: ${err?.response?.data?.message ?? 'Vui lòng kiểm tra lại cấu hình (hoặc Mật khẩu ứng dụng)'}`);
     } finally {
       setTesting(false);
     }
@@ -186,6 +192,9 @@ function SmtpCard({ addToast }) {
                     {showPass ? <EyeOffIcon /> : <EyeOpenIcon />}
                   </button>
                   <p className="ast-field-hint">Để trống để giữ nguyên mật khẩu hiện tại</p>
+                  <p className="ast-field-hint" style={{ color: '#d97706', marginTop: '4px' }}>
+                    * Nếu dùng Gmail, bạn bắt buộc phải dùng <strong>Mật khẩu ứng dụng (App Password)</strong> thay vì mật khẩu đăng nhập thông thường.
+                  </p>
                 </div>
 
               ) : (
