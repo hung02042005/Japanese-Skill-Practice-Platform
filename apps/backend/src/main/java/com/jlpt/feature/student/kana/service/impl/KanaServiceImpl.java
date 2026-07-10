@@ -10,7 +10,6 @@ import com.jlpt.feature.student.StudentContentProgressRepository;
 import com.jlpt.feature.student.kana.dto.response.KanaListResponse;
 import com.jlpt.feature.student.kana.dto.response.KanaResponse;
 import com.jlpt.feature.student.kana.service.KanaService;
-import com.jlpt.shared.exception.ResourceNotFoundException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

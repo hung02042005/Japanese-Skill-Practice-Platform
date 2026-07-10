@@ -172,8 +172,12 @@ public class EmailService {
                     // BUG-01 FIX: Không throw RuntimeException trong @Async context —
                     // exception sẽ bị AsyncUncaughtExceptionHandler bắt nhưng caller không nhận được.
                     // Log ERROR rõ ràng và return gracefully thay vì throw.
-                    log.error("[EmailService] All {} attempts failed. Email NOT delivered to {}. Subject: '{}'",
-                            maxRetries, to, subject, e);
+                    log.error(
+                            "[EmailService] All {} attempts failed. Email NOT delivered to {}. Subject: '{}'",
+                            maxRetries,
+                            to,
+                            subject,
+                            e);
                     return;
                 }
                 try {

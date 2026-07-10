@@ -29,4 +29,3 @@ public class AuthEventListener {
         emailService.sendPasswordResetEmail(event.email(), event.token());
     }
 }
-

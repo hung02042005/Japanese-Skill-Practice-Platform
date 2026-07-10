@@ -22,6 +22,7 @@ import com.jlpt.feature.auth.dto.response.AccountTypeResponse;
 import com.jlpt.feature.auth.dto.response.AuthResponse;
 import com.jlpt.feature.auth.dto.response.LoginApiResponse;
 import com.jlpt.feature.auth.dto.response.RefreshTokenResponse;
+import com.jlpt.feature.auth.event.SendPasswordResetEmailEvent;
 import com.jlpt.feature.auth.event.SendVerificationEmailEvent;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
@@ -35,8 +36,6 @@ import com.jlpt.shared.exception.BusinessException;
 import com.jlpt.shared.security.JwtProvider;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import com.jlpt.feature.auth.event.SendPasswordResetEmailEvent;
-import com.jlpt.feature.auth.event.SendVerificationEmailEvent;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
@@ -391,8 +390,8 @@ public class AuthService {
             return;
         }
         if (user.getStatus() != StudentUser.StudentStatus.PENDING) {
-            throw new BusinessException(400, "ACCOUNT_NOT_VERIFIABLE",
-                    "Tài khoản không thể xác minh ở trạng thái hiện tại");
+            throw new BusinessException(
+                    400, "ACCOUNT_NOT_VERIFIABLE", "Tài khoản không thể xác minh ở trạng thái hiện tại");
         }
 
         user.setStatus(StudentUser.StudentStatus.ACTIVE);
@@ -410,17 +409,18 @@ public class AuthService {
         // BUG-04 FIX: Không lộ thông tin người dùng (User Enumeration).
         // Dùng ifPresent + filter để chỉ xử lý khi email hợp lệ VÀ đang PENDING.
         // Mọi trường hợp khác đều im lặng trả về 200 OK (controller không thay đổi).
-        studentUserRepository.findByEmail(request.getEmail().trim().toLowerCase())
+        studentUserRepository
+                .findByEmail(request.getEmail().trim().toLowerCase())
                 .filter(u -> u.getStatus() == StudentUser.StudentStatus.PENDING)
                 .ifPresent(user -> {
                     // Rate limit: kiểm tra token cuối cùng trong DB
-                    Optional<AuthToken> lastToken = authTokenRepository
-                            .findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(
+                    Optional<AuthToken> lastToken =
+                            authTokenRepository.findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(
                                     user.getId(), AuthToken.TokenType.EMAIL_VERIFICATION);
                     if (lastToken.isPresent()
                             && lastToken.get().getCreatedAt().plusSeconds(60).isAfter(LocalDateTime.now())) {
-                        throw new BusinessException(429, "TOO_MANY_REQUESTS",
-                                "Vui lòng đợi 60 giây trước khi yêu cầu gửi lại email");
+                        throw new BusinessException(
+                                429, "TOO_MANY_REQUESTS", "Vui lòng đợi 60 giây trước khi yêu cầu gửi lại email");
                     }
 
                     authTokenRepository.deleteByStudentIdAndTokenType(
@@ -447,10 +447,10 @@ public class AuthService {
         //   → Email chỉ gửi SAU KHI transaction commit → tránh gửi email khi DB rollback.
         // BUG-03 FIX: Không lộ thông tin người dùng (User Enumeration).
         //   → ifPresent: nếu email không tồn tại, không throw 404, luôn return 200 OK.
-        studentUserRepository.findByEmail(request.getEmail().trim().toLowerCase())
+        studentUserRepository
+                .findByEmail(request.getEmail().trim().toLowerCase())
                 .ifPresent(user -> {
-                    authTokenRepository.deleteByStudentIdAndTokenType(
-                            user.getId(), AuthToken.TokenType.PASSWORD_RESET);
+                    authTokenRepository.deleteByStudentIdAndTokenType(user.getId(), AuthToken.TokenType.PASSWORD_RESET);
 
                     String resetToken = UUID.randomUUID().toString();
                     AuthToken tokenEntity = AuthToken.builder()

@@ -13,7 +13,6 @@ import com.jlpt.feature.student.StudentUserRepository;
 import com.jlpt.feature.student.kanji.dto.KanjiDetailResponse;
 import com.jlpt.feature.student.kanji.dto.KanjiItemResponse;
 import com.jlpt.feature.student.kanji.dto.KanjiListResponse;
-import com.jlpt.shared.common.JlptLevels;
 import com.jlpt.shared.exception.ResourceNotFoundException;
 import java.time.LocalDate;
 import java.util.List;

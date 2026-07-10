@@ -28,5 +28,4 @@ public class StudentKanaController {
                 kanaService.getKanaChart(script, userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
-
 }
