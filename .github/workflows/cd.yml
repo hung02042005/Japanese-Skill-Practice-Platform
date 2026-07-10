@@ -21,23 +21,51 @@ jobs:
         username: ${{ secrets.VPS_USERNAME }}
         key: ${{ secrets.VPS_SSH_KEY }}
         script: |
+          set -e # Dừng ngay lập tức nếu có bất kỳ lệnh nào bị lỗi
+          
+          echo "Bắt đầu triển khai lên VPS..."
+          
+          # 1. Kiểm tra xem thư mục có tồn tại không
+          if [ ! -d "${{ secrets.PROJECT_PATH }}" ]; then
+            echo "LỖI NGHIÊM TRỌNG: Thư mục ${{ secrets.PROJECT_PATH }} không tồn tại trên VPS."
+            echo "Vui lòng SSH vào VPS và chạy lệnh git clone dự án vào đường dẫn này."
+            exit 1
+          fi
+          
           # Di chuyển tới thư mục chứa project
           cd ${{ secrets.PROJECT_PATH }}
+          echo "Đang ở thư mục: $(pwd)"
           
-          # Lấy code mới nhất từ nhánh main
+          # 2. Lấy code mới nhất từ nhánh main
+          echo "Đang tải code mới nhất từ nhánh main..."
           git checkout main
           git fetch origin main
           git reset --hard origin/main
           
+          # 3. Kiểm tra file .env (BẮT BUỘC để chạy docker compose)
+          if [ ! -f ".env" ]; then
+            echo "LỖI NGHIÊM TRỌNG: Không tìm thấy file .env tại $(pwd)/.env"
+            echo "Bạn phải tạo file .env trên VPS chứa biến MSSQL_SA_PASSWORD."
+            exit 1
+          fi
+          
+          # 4. Kiểm tra thư mục certbot-www (để tránh lỗi docker-compose.prod.yml)
+          if [ ! -d "./certbot-www" ]; then
+            echo "Đang tạo thư mục certbot-www..."
+            mkdir -p ./certbot-www
+          fi
+          
           # Đảm bảo các quyền chạy script nếu cần
           # chmod +x apps/backend/mvnw
           
-          # Build lại các Docker image và chạy lại container ở chế độ background
-          # Dùng cả 2 file yml (cho dev/base và cho prod)
+          # 5. Build lại các Docker image và chạy lại container ở chế độ background
+          echo "Đang build và khởi động các Docker containers..."
           docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
           
-          # Dọn dẹp các images lơ lửng (dangling) để tiết kiệm dung lượng ổ cứng VPS
+          # 6. Dọn dẹp các images lơ lửng (dangling) để tiết kiệm dung lượng
+          echo "Đang dọn dẹp Docker images cũ..."
           docker image prune -f
+          echo "Triển khai hoàn tất!"
 
     - name: Purge Cloudflare Cache
       run: |
