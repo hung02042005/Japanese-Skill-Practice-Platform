@@ -5,6 +5,7 @@ import com.jlpt.feature.admin.dto.request.SuspendUserRequest;
 import com.jlpt.feature.admin.dto.response.ActivateUserResponse;
 import com.jlpt.feature.admin.dto.response.AdminDetailResponse;
 import com.jlpt.feature.admin.dto.response.SoftDeleteUserResponse;
+import com.jlpt.feature.admin.dto.response.RestoreUserResponse;
 import com.jlpt.feature.admin.dto.response.SuspendUserResponse;
 import com.jlpt.feature.admin.dto.response.UserSummaryResponse;
 import com.jlpt.feature.auth.AuthToken;
@@ -517,6 +518,54 @@ public class AdminUserService {
             }
             case "admin" -> throw new BusinessRuleException(
                     "Không thể xóa tài khoản Admin đang hoạt động qua giao diện này");
+            default -> throw new BadRequestException("Loại người dùng không hợp lệ");
+        };
+    }
+
+    // ── UC-37-08B: Restore deleted user ─────────────────────────────────────
+
+    @Transactional
+    public RestoreUserResponse restoreUser(String adminEmail, String type, Long userId) {
+        AdminUser actor = resolveAdmin(adminEmail);
+        checkSelfModification(actor.getId(), type, userId);
+        LocalDateTime now = LocalDateTime.now();
+
+        return switch (normalizeType(type)) {
+            case "student" -> {
+                StudentUser s = studentUserRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
+                if (s.getStatus() != StudentUser.StudentStatus.DELETED) {
+                    throw new BusinessRuleException("Tài khoản không ở trạng thái đã xóa");
+                }
+                s.setStatus(StudentUser.StudentStatus.ACTIVE);
+                studentUserRepository.save(s);
+                auditLog(actor, "restore_user", "student_users", userId, null);
+                yield RestoreUserResponse.builder()
+                        .userId(userId)
+                        .userType("student")
+                        .status("active")
+                        .restoredAt(now)
+                        .build();
+            }
+            case "staff" -> {
+                StaffUser st = staffUserRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
+                if (st.getStatus() != StaffUser.StaffStatus.DELETED) {
+                    throw new BusinessRuleException("Tài khoản không ở trạng thái đã xóa");
+                }
+                st.setStatus(StaffUser.StaffStatus.ACTIVE);
+                staffUserRepository.save(st);
+                auditLog(actor, "restore_user", "staff_users", userId, null);
+                yield RestoreUserResponse.builder()
+                        .userId(userId)
+                        .userType("staff")
+                        .status("active")
+                        .restoredAt(now)
+                        .build();
+            }
+            case "admin" -> throw new BusinessRuleException("Không áp dụng cho Admin");
             default -> throw new BadRequestException("Loại người dùng không hợp lệ");
         };
     }

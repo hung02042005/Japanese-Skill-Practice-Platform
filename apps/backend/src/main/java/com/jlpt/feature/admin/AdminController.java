@@ -3,6 +3,7 @@ package com.jlpt.feature.admin;
 
 import com.jlpt.feature.admin.dto.request.SuspendUserRequest;
 import com.jlpt.feature.admin.dto.response.ActivateUserResponse;
+import com.jlpt.feature.admin.dto.response.RestoreUserResponse;
 import com.jlpt.feature.admin.dto.response.SoftDeleteUserResponse;
 import com.jlpt.feature.admin.dto.response.SuspendUserResponse;
 import com.jlpt.feature.admin.dto.response.UserSummaryResponse;
@@ -158,6 +159,15 @@ public class AdminController {
             Authentication auth, @PathVariable String type, @PathVariable Long userId) {
         SoftDeleteUserResponse response = adminUserService.softDeleteUser(auth.getName(), type, userId);
         return ResponseEntity.ok(ApiResponse.success("Đã xóa tài khoản thành công (soft delete)", response));
+    }
+
+    // ── UC-37-08B: Restore deleted user ─────────────────────────────────────
+
+    @PostMapping("/users/{type}/{userId}/restore")
+    public ResponseEntity<ApiResponse<RestoreUserResponse>> restoreUser(
+            Authentication auth, @PathVariable String type, @PathVariable Long userId) {
+        RestoreUserResponse response = adminUserService.restoreUser(auth.getName(), type, userId);
+        return ResponseEntity.ok(ApiResponse.success("Đã khôi phục tài khoản thành công", response));
     }
 
     // ── UC-37-09: Change Staff role ─────────────────────────────────────────

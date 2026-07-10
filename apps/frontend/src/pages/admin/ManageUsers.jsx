@@ -10,7 +10,7 @@ import { FlameIcon }                 from '../../components/student/StudentIcons
 import { ToastContainer, useToast }  from '../../components/common/Toast';
 import {
   IcAdminChip, IcAddStaff, IcSearchGlass,
-  IcBan, IcCheck, IcKey, IcSwap, IcTrash,
+  IcBan, IcCheck, IcKey, IcSwap, IcTrash, IcRestore,
   TAB_ICONS, STAT_ICONS,
 } from '../../components/admin/ManageUsersIcons';
 import { ConfirmModal, SuspendModal, CreateStaffModal, ChangeStaffRoleModal } from '../../components/admin/UserModals';
@@ -18,7 +18,7 @@ import { SkeletonRow } from '../../components/admin/SkeletonRow';
 import {
   listUsers, createStaff, suspendUser, activateUser,
   resetPassword, softDeleteUser, changeStaffRole,
-  listStaffResetRequests, issueTempPassword,
+  listStaffResetRequests, issueTempPassword, restoreUser,
 } from '../../api/adminService';
 import './ManageUsers.css';
 
@@ -172,7 +172,8 @@ function ManageUsers() {
       if (action === 'activate')   await activateUser(userType, userId);
       if (action === 'reset-pass') await resetPassword(userType, userId);
       if (action === 'delete')     await softDeleteUser(userType, userId);
-      const msgs = { activate: 'Đã kích hoạt lại tài khoản!', 'reset-pass': 'Email đặt lại mật khẩu đã được gửi!', delete: 'Đã xóa tài khoản thành công!' };
+      if (action === 'restore')    await restoreUser(userType, userId);
+      const msgs = { activate: 'Đã kích hoạt lại tài khoản!', 'reset-pass': 'Email đặt lại mật khẩu đã được gửi!', delete: 'Đã xóa tài khoản thành công!', restore: 'Đã khôi phục tài khoản thành công!' };
       addToast('success', msgs[action]);
       setConfirmModal((m) => ({ ...m, open: false }));
       reload();
@@ -428,8 +429,11 @@ function ManageUsers() {
                             {(u.status === 'active' || u.status === 'pending') && (
                               <button type="button" className="mu-act-ic mu-act-ic--suspend" onClick={() => openSuspend(u)} title="Đình chỉ tài khoản" aria-label="Đình chỉ tài khoản"><IcBan /></button>
                             )}
-                            {(u.status === 'suspended' || u.status === 'deleted') && (
+                            {u.status === 'suspended' && (
                               <button type="button" className="mu-act-ic mu-act-ic--activate" onClick={() => openConfirm('activate', u)} title="Kích hoạt lại" aria-label="Kích hoạt lại tài khoản"><IcCheck /></button>
+                            )}
+                            {u.status === 'deleted' && (
+                              <button type="button" className="mu-act-ic mu-act-ic--restore" onClick={() => openConfirm('restore', u)} title="Khôi phục tài khoản" aria-label="Khôi phục tài khoản"><IcRestore /></button>
                             )}
                             {u.status !== 'deleted' && (
                               <button type="button" className="mu-act-ic mu-act-ic--reset" onClick={() => openConfirm('reset-pass', u)} title="Đặt lại mật khẩu" aria-label="Đặt lại mật khẩu"><IcKey /></button>

@@ -42,6 +42,12 @@ export async function softDeleteUser(type, userId) {
   return res.data.data;
 }
 
+// ── UC-37-08B: Restore deleted user ─────────────────────────────────────────
+export async function restoreUser(type, userId) {
+  const res = await api.post(`/admin/users/${type}/${userId}/restore`);
+  return res.data.data;
+}
+
 // ── UC-37-09: Change staff role (staff ↔ staff_manager) ────────────────────
 export async function changeStaffRole(staffId, staffRole) {
   const res = await api.put(`/admin/staff/${staffId}/role`, { staffRole });
