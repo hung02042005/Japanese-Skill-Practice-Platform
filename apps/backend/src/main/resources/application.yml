@@ -51,6 +51,15 @@ management:
   endpoint:
     health:
       show-details: never
+  health:
+    # SMTP chưa cấu hình thật ở nhiều môi trường (username/password rỗng) khiến
+    # MailHealthIndicator tự động của Spring Boot báo DOWN — kéo cả status tổng
+    # của /actuator/health xuống DOWN dù ứng dụng vẫn phục vụ request bình
+    # thường. Tắt riêng health indicator này để /actuator/health chỉ phản ánh
+    # đúng các phụ thuộc thực sự bắt buộc (DB, disk) — dùng làm điều kiện
+    # post-deploy smoke test trong cd.yml (xem Deploy_Improvement_Plan.md P0.1).
+    mail:
+      enabled: false
 
 jwt:
   secret: ${JWT_SECRET:changeme_secret_key_needs_to_be_long_enough_for_hs256}

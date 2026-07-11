@@ -93,11 +93,51 @@ jobs:
           # 6. Build và khởi động các service còn lại (backend, frontend)
           echo "Đang build và khởi động Backend, Frontend..."
           docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build backend frontend
-          
-          # 6. Dọn dẹp các images lơ lửng (dangling) để tiết kiệm dung lượng
+
+          # 7. POST-DEPLOY SMOKE TEST (P0.1 — xem Deploy_Improvement_Plan.md)
+          # `docker compose up -d` chỉ đợi container được TẠO, không đợi ứng dụng
+          # bên trong THỰC SỰ chạy được — đây chính là lý do sự cố backend
+          # crash-loop ngày 11/07/2026 báo "deploy thành công" trên GitHub Actions
+          # dù site trả 502 cho mọi request. Không được coi "container Started"
+          # là đủ; phải tự gọi vào endpoint sức khoẻ và xác nhận trả về UP thật.
+          echo "Đang xác minh backend thực sự sống (không chỉ container đã start)..."
+          BACKEND_HEALTHY=0
+          for i in $(seq 1 20); do
+            if curl -sf -m 5 http://127.0.0.1:8080/actuator/health | grep -q '"status":"UP"'; then
+              BACKEND_HEALTHY=1
+              break
+            fi
+            echo "  backend chưa healthy, thử lại sau 5 giây (lần $i/20)..."
+            sleep 5
+          done
+          if [ "$BACKEND_HEALTHY" -ne 1 ]; then
+            echo "LỖI NGHIÊM TRỌNG: backend không lên healthy sau 100 giây. Log 100 dòng cuối:"
+            docker logs jlpt-backend --tail 100
+            exit 1
+          fi
+          echo "Backend xác nhận UP."
+
+          echo "Đang xác minh frontend (Nginx) trả response..."
+          FRONTEND_HEALTHY=0
+          for i in $(seq 1 10); do
+            if curl -sf -m 5 -o /dev/null http://127.0.0.1:80; then
+              FRONTEND_HEALTHY=1
+              break
+            fi
+            echo "  frontend chưa sẵn sàng, thử lại sau 3 giây (lần $i/10)..."
+            sleep 3
+          done
+          if [ "$FRONTEND_HEALTHY" -ne 1 ]; then
+            echo "LỖI NGHIÊM TRỌNG: frontend (Nginx) không phản hồi sau 30 giây. Log 50 dòng cuối:"
+            docker logs jlpt-frontend --tail 50
+            exit 1
+          fi
+          echo "Frontend xác nhận UP."
+
+          # 8. Dọn dẹp các images lơ lửng (dangling) để tiết kiệm dung lượng
           echo "Đang dọn dẹp Docker images cũ..."
           docker image prune -f
-          echo "Triển khai hoàn tất!"
+          echo "Triển khai hoàn tất và đã xác minh backend + frontend đều sống!"
 
     - name: Purge Cloudflare Cache
       run: |
