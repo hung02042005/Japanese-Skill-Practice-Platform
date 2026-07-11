@@ -146,13 +146,8 @@ export async function resetPassword({ token, newPassword, confirmPassword }) {
   return response.data;
 }
 
-export async function getProfile() {
-  const response = await api.get('/students/me');
-  return response.data;
-}
-
-export async function updateProfile(data) {
-  const response = await api.put('/students/me', data);
+export async function resendVerification(email) {
+  const response = await api.post('/auth/resend-verification', { email });
   return response.data;
 }
 

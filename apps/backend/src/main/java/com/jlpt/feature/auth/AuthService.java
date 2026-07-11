@@ -73,6 +73,13 @@ public class AuthService {
     private final ApplicationEventPublisher eventPublisher;
     private final AdminAuthService adminAuthService;
     private final com.jlpt.feature.admin.MaintenanceModeService maintenanceModeService;
+
+    // Rate limit in-memory: bị reset khi container restart, và không share state giữa
+    // nhiều instance nếu backend scale ngang (mỗi instance có giới hạn riêng thay vì
+    // giới hạn chung). Chấp nhận được ở quy mô hiện tại (single instance); nếu scale
+    // ngang hoặc cần chống brute-force nghiêm ngặt hơn, chuyển sang Redis (lưu ý:
+    // backend hiện CHƯA có spring-boot-starter-data-redis/RedisTemplate dù docker-compose
+    // đã chạy sẵn container redis — cần thêm dependency + config, không chỉ đổi Map).
     private final Map<String, Deque<LocalDateTime>> checkAccountTypeAttempts = new ConcurrentHashMap<>();
 
     @Value("${google.client-id}")

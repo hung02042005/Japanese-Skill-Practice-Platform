@@ -20,7 +20,6 @@ import com.jlpt.shared.exception.BusinessRuleException;
 import com.jlpt.shared.exception.ForbiddenException;
 import com.jlpt.shared.exception.ResourceNotFoundException;
 import com.jlpt.shared.exception.TimeExceededException;
-import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -34,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /** Business logic cho JLPT Mock Exam (UC-10) — xem {@code .sdd/specs/backend/feat-mock-test}. */
 @Slf4j
@@ -151,6 +151,7 @@ public class MockExamService {
         return gradeAndPersist(attempt, assessment, assignments, request.getAnswers(), isAutoSubmit, now);
     }
 
+    @Transactional(readOnly = true)
     public Page<ExamHistoryResponse> getExamHistory(Long studentId, Pageable pageable) {
         Page<TestAttempt> attempts =
                 testAttemptRepository.findByStudent_IdAndAttemptTypeAndStatusInOrderBySubmittedAtDesc(
@@ -169,6 +170,7 @@ public class MockExamService {
         return attempts.map(attempt -> toHistoryResponse(attempt, assessmentsById.get(attempt.getParentId())));
     }
 
+    @Transactional(readOnly = true)
     public ExamReviewResponse getExamReview(Long attemptId, Long studentId) {
         TestAttempt attempt = findOwnedAttempt(attemptId, studentId);
         if (attempt.getStatus() == TestAttempt.AttemptStatus.IN_PROGRESS) {

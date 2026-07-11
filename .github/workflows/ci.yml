@@ -34,8 +34,8 @@ jobs:
         DATABASE_USERNAME: sa
         DATABASE_PASSWORD: ""
         JWT_SECRET: super_secret_test_key_must_be_long_enough
-        JWT_EXPIRATION_HOURS: 24
-        JWT_REFRESH_EXPIRATION_HOURS: 168
+        JWT_ACCESS_EXPIRATION_MS: 900000
+        JWT_REFRESH_EXPIRATION_MS: 604800000
 
   frontend-ci:
     name: Frontend CI (Node 20)

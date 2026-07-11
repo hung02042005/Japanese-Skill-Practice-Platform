@@ -19,7 +19,6 @@ import com.jlpt.shared.exception.AttemptAlreadySubmittedException;
 import com.jlpt.shared.exception.BusinessRuleException;
 import com.jlpt.shared.exception.ForbiddenException;
 import com.jlpt.shared.exception.ResourceNotFoundException;
-import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -32,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -168,6 +168,7 @@ public class QuizService {
         log.info("[QuizService] QUESTIONS_ADDED quizId={} count={}", quizId, questions.size());
     }
 
+    @Transactional(readOnly = true)
     public Page<AssessmentSummaryResponse> listAssessmentsForStaff(
             Assessment.AssessmentType type,
             Kanji.ContentStatus status,
@@ -178,6 +179,7 @@ public class QuizService {
         return assessments.map(this::toSummaryResponse);
     }
 
+    @Transactional(readOnly = true)
     public List<QuestionResponse> getQuestionsOfAssessment(Long assessmentId) {
         assessmentRepository
                 .findByIdAndIsDeletedFalse(assessmentId)

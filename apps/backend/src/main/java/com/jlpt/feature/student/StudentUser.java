@@ -31,10 +31,12 @@ public class StudentUser {
     @Column(name = "full_name", nullable = false, length = 150)
     private String fullName;
 
+    // Default PENDING (không phải ACTIVE): nếu ai tạo StudentUser qua builder mà quên set
+    // .status(), fail-safe phải là "chưa xác minh email", không phải "đã kích hoạt".
     @Convert(converter = StudentStatusConverter.class)
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private StudentStatus status = StudentStatus.ACTIVE;
+    private StudentStatus status = StudentStatus.PENDING;
 
     @Column(name = "suspend_reason", length = 500)
     private String suspendReason;

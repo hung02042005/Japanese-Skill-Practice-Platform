@@ -174,30 +174,6 @@ export const changeTempPasswordThunk = createAsyncThunk(
   },
 );
 
-export const fetchProfileThunk = createAsyncThunk(
-  'auth/fetchProfile',
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await authService.getProfile();
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message ?? 'Tải hồ sơ thất bại');
-    }
-  },
-);
-
-export const updateProfileThunk = createAsyncThunk(
-  'auth/updateProfile',
-  async (data, { rejectWithValue }) => {
-    try {
-      const res = await authService.updateProfile(data);
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message ?? 'Cập nhật hồ sơ thất bại');
-    }
-  },
-);
-
 export const loginWithGoogleThunk = createAsyncThunk(
   'auth/loginWithGoogle',
   async (idToken, { rejectWithValue }) => {
@@ -377,36 +353,6 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
       })
       .addCase(changeTempPasswordThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
-      })
-
-      // fetchProfile
-      .addCase(fetchProfileThunk.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(fetchProfileThunk.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.user = action.payload;
-        localStorage.setItem('jlpt-user', JSON.stringify(action.payload));
-      })
-      .addCase(fetchProfileThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
-      })
-
-      // updateProfile
-      .addCase(updateProfileThunk.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(updateProfileThunk.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.user = action.payload;
-        localStorage.setItem('jlpt-user', JSON.stringify(action.payload));
-      })
-      .addCase(updateProfileThunk.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       })
