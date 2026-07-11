@@ -31,8 +31,14 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - JWT_SECRET=${JWT_SECRET}
       # Bắt buộc để email xác minh / đặt lại mật khẩu hoạt động trên production
-      # (root .env trên VPS phải khai báo đủ 4 biến này — xem apps/backend/.env.example)
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_PORT=${SMTP_PORT}
-      - SMTP_USERNAME=${SMTP_USERNAME}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      # (root .env trên VPS nên khai báo đủ 4 biến này — xem apps/backend/.env.example).
+      # QUAN TRỌNG: dùng "${VAR:-default}" chứ KHÔNG phải "${VAR}" trần — nếu root .env
+      # chưa set, "${VAR}" substitute ra CHUỖI RỖNG (khác với "biến không tồn tại"),
+      # và Spring bind spring.mail.port (kiểu int) với chuỗi rỗng sẽ crash ngay lúc khởi
+      # động ứng dụng (BindException) → backend crash-loop → Nginx trả 502 cho mọi API.
+      # Đây chính là lỗi thực tế đã xảy ra khi deploy commit ae85d7b6 — sửa bằng cách
+      # giữ nguyên default giống hệt application.yml khi root .env chưa khai báo.
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USERNAME=${SMTP_USERNAME:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}

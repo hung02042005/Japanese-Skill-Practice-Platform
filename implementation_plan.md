@@ -178,9 +178,9 @@ Nghĩa là healthcheck của `db` **tồn tại sẵn từ trước** (không ph
 
 ---
 
-#### BUG-09: SMTP env thiếu ở `docker-compose.prod.yml` (xem mục 7 ở trên để hiểu rõ 2 loại `.env`)
+#### BUG-09: SMTP env thiếu ở `docker-compose.prod.yml` (xem mục 7 ở trên để hiểu rõ 2 loại `.env`) — **fix ban đầu gây ra một sự cố production mới, đã sửa**
 
-**Fix:**
+**Fix ban đầu:**
 ```yaml
 # docker-compose.prod.yml, backend.environment
 - SMTP_HOST=${SMTP_HOST}
@@ -188,6 +188,21 @@ Nghĩa là healthcheck của `db` **tồn tại sẵn từ trước** (không ph
 - SMTP_USERNAME=${SMTP_USERNAME}
 - SMTP_PASSWORD=${SMTP_PASSWORD}
 ```
+
+**Sự cố thật xảy ra (commit `ae85d7b6`, deploy "success" nhưng web trả 502 Bad Gateway toàn bộ API):** root `.env` trên VPS không khai báo `SMTP_PORT` → cú pháp `${SMTP_PORT}` trần (không có default) khiến Docker Compose substitute ra **chuỗi rỗng** (khác hẳn "biến không tồn tại"). Container backend nhận `SMTP_PORT=""`. Spring Boot bind `spring.mail.port` (kiểu `int`) với chuỗi rỗng → `BindException` ngay khi khởi động `ApplicationContext` → backend crash-loop liên tục (không bao giờ thực sự lắng nghe port 8080) → Nginx không có upstream để forward → mọi request (kể cả `/api/auth/login`) đều nhận `502 Bad Gateway`.
+
+Vì `docker compose up -d --build` chạy ở chế độ detached, lệnh trả về thành công (exit 0) ngay khi container được *khởi tạo*, không đợi xác nhận nó *sống sót* sau đó — nên CD run báo "success" dù backend thực chất đang crash-loop phía sau. Đây là lớp lỗi hoàn toàn khác BUG-06/BUG-13 (không phải deploy fail, mà là "deploy báo thành công nhưng app không chạy được").
+
+**Fix đã áp dụng:** đổi sang cú pháp `${VAR:-default}` (Docker Compose default value), khớp đúng default đã khai báo trong `application.yml`, để khi root `.env` chưa set thì hành vi giữ nguyên như trước khi có BUG-09 fix (không phá gì thêm), chỉ thực sự override khi root `.env` có set thật:
+```yaml
+- SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+- SMTP_PORT=${SMTP_PORT:-587}
+- SMTP_USERNAME=${SMTP_USERNAME:-}
+- SMTP_PASSWORD=${SMTP_PASSWORD:-}
+```
+Đã verify lại bằng `docker compose -f docker-compose.yml -f docker-compose.prod.yml config` — không còn warning "not set, defaulting to a blank string", `SMTP_PORT` resolve ra `"587"` (không rỗng).
+
+**Bài học (bổ sung cho mục 1-7 ở trên):** khi thêm biến môi trường override cho một property **không phải kiểu String** (int, boolean, enum...), PHẢI dùng cú pháp có default (`${VAR:-default}`) chứ không được dùng `${VAR}` trần — "biến rỗng" và "biến không tồn tại" là hai trạng thái khác nhau với Spring property binding, và `docker compose up -d` không phải bằng chứng ứng dụng thực sự chạy được, chỉ là container đã được tạo.
 Kèm ghi chú vào README/runbook deploy: root `.env` trên VPS phải bổ sung 4 biến này.
 
 ---
