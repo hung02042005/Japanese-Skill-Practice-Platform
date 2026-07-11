@@ -4,6 +4,32 @@
 
 ---
 
+## 🚑 Sự cố Production sau khi deploy (2026-07-11) — đã xử lý xong
+
+Sau khi merge các fix trong tài liệu này, quá trình deploy thật gặp **4 lần fail liên tiếp** trước khi ổn định. Tóm tắt để tra cứu sau này:
+
+1. **Commit `687ef159`** (15 fix gốc) → CD fail ngay ở bước SSH: `Error: can't connect without a private SSH key or password`. Nguyên nhân: BUG-13 xoá `password:` khỏi `cd.yml` dựa trên giả định `VPS_SSH_KEY` đã cấu hình — thực tế secret này chưa từng tồn tại. → Revert khôi phục `password:`.
+2. **Commit `b2b2ea25`** → SSH OK, build OK, nhưng CD fail vì `dependency failed to start: container jlpt-db is unhealthy`. Nguyên nhân: BUG-06 thêm `depends_on: db: condition: service_healthy`, phơi bày một healthcheck vốn có sẵn nhưng chưa từng được ai verify pass thật trên VPS. → Revert về `service_started`.
+3. **Commit `7f25cd2c`** → Deploy "success" nhưng web trả `502` toàn bộ API. Nguyên nhân: BUG-09 thêm `SMTP_PORT=${SMTP_PORT}` không có default; root `.env` chưa set biến này → Compose substitute chuỗi rỗng → Spring bind `spring.mail.port` (kiểu `int`) với `""` → `BindException` lúc khởi động → backend crash-loop (nhưng `docker compose up -d` vẫn báo exit 0 vì không đợi app thực sự sống). → Sửa sang `${VAR:-default}`.
+4. **Commit `01550e87`** (do người dùng tự đẩy thêm, cải thiện cơ chế chờ DB) → CD vẫn fail, lần này timeout 150s chờ `sqlcmd` — **không phải lỗi cấu hình nữa, mà là lỗi dữ liệu thật**: `Login failed for user 'sa'. Reason: Password did not match that for the login provided.` Root `.env` trên VPS bị đổi `MSSQL_SA_PASSWORD` vào tối 10/07 (23:46) — SAU KHI volume `sqlserver_data` đã được khởi tạo từ 30/06 với mật khẩu khác. SQL Server chỉ set mật khẩu SA lúc init lần đầu, đổi env var sau đó không đổi được mật khẩu thật trong volume.
+
+   **Fix (được cấp quyền SSH trực tiếp vào VPS để xử lý):** không biết mật khẩu cũ, và volume có 231MB dữ liệu thật (13 student, 27 bảng) nên **không xoá volume**. Vì SQL Server for Linux không có cơ chế "local admin bypass" như Windows, single-user mode không giúp reset được mật khẩu đã quên. Giải pháp đúng: mật khẩu sa chỉ nằm trong `master.mdf` (hệ thống), KHÔNG nằm trong file dữ liệu ứng dụng (`JLPT_LearningDB.mdf`/`.ldf`) — nên:
+   1. Backup toàn bộ volume (`tar czf` qua container tạm) trước khi đụng vào bất cứ thứ gì.
+   2. Dừng `jlpt-db` cũ (không xoá volume gốc).
+   3. Tạo volume + container SQL Server mới hoàn toàn sạch, dùng đúng mật khẩu hiện tại trong `.env`.
+   4. Copy riêng 2 file `JLPT_LearningDB.mdf`/`JLPT_LearningDB_log.ldf` (đã backup) vào volume mới, đúng UID:GID (`10001:10001`).
+   5. `CREATE DATABASE JLPT_LearningDB ... FOR ATTACH` — gắn dữ liệu cũ vào instance mới.
+   6. Verify: 27 bảng, `student_users` = 13 dòng — dữ liệu nguyên vẹn.
+   7. Hoán đổi nội dung volume `sqlserver_data_recovered` (mới, đã verify) vào đúng volume `sqlserver_data` mà `docker-compose.yml` tham chiếu, để không phải sửa compose file.
+   8. Recreate `jlpt-db` + rebuild/restart `jlpt-backend` qua `docker compose up -d`.
+   9. Verify: `jlpt-db` → `Up (healthy)`, `POST /api/auth/login` trả JSON lỗi nghiệp vụ bình thường (không còn `502`).
+
+   **Đã giữ lại làm lưới an toàn** (chưa xoá): volume `sqlserver_data_recovered` (bản sao đã verify) và file `/opt/db-backup/mssql-data-backup-20260711112907.tar.gz` trên VPS. Có thể xoá sau khi xác nhận hệ thống ổn định vài ngày.
+
+**Bài học tổng quát cho cả 4 sự cố:** audit tĩnh (đọc code, `mvn verify`, `docker compose config`) không thể thay thế việc **chạy deploy thật và quan sát**. Một fix đúng về logic vẫn có thể phá production nếu phụ thuộc vào giả định về hạ tầng/secret/dữ liệu không kiểm chứng được từ code (secret có tồn tại không, healthcheck có thực sự pass không, biến môi trường rỗng vs không tồn tại, và — nghiêm trọng nhất — `.env` trên server có đồng bộ với dữ liệu đã khởi tạo hay không).
+
+---
+
 ## 🚨 User Review Required
 
 > [!CAUTION]
