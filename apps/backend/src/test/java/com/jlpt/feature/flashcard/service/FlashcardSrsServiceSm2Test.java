@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
  */
 class FlashcardSrsServiceSm2Test {
 
-    // Service không dùng repository nào trong applySm2 -> khởi tạo với null.
-    private final FlashcardSrsService service = new FlashcardSrsService(null, null, null, null, null, null, null);
+    // Service không dùng collaborator nào trong applySm2 -> khởi tạo với null.
+    private final FlashcardSrsService service = new FlashcardSrsService(null, null, null, null, null, null);
 
     private static Flashcard card(int intervalDays, int repetitionCount) {
         return Flashcard.builder()

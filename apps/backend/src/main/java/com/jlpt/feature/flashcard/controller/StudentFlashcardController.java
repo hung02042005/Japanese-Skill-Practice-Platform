@@ -3,7 +3,6 @@ package com.jlpt.feature.flashcard.controller;
 
 import com.jlpt.feature.flashcard.dto.AddFlashcardRequest;
 import com.jlpt.feature.flashcard.dto.BulkDeleteRequest;
-import com.jlpt.feature.flashcard.dto.DeckCreateRequest;
 import com.jlpt.feature.flashcard.dto.DeckSummaryResponse;
 import com.jlpt.feature.flashcard.dto.FlashcardResponse;
 import com.jlpt.feature.flashcard.dto.ReviewDeckAddRequest;
@@ -12,6 +11,7 @@ import com.jlpt.feature.flashcard.dto.ReviewRequest;
 import com.jlpt.feature.flashcard.dto.ReviewResultResponse;
 import com.jlpt.feature.flashcard.dto.SessionResponse;
 import com.jlpt.feature.flashcard.service.FlashcardSrsService;
+import com.jlpt.feature.flashcard.service.NotebookService;
 import com.jlpt.shared.common.ApiResponse;
 import com.jlpt.shared.security.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -32,28 +32,14 @@ import org.springframework.web.bind.annotation.*;
 public class StudentFlashcardController {
 
     private final FlashcardSrsService flashcardSrsService;
+    private final NotebookService notebookService;
 
     @GetMapping("/flashcard-decks")
     public ResponseEntity<ApiResponse<List<DeckSummaryResponse>>> getDecks(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         List<DeckSummaryResponse> decks =
-                flashcardSrsService.getDecks(userDetails.getStudentUser().getId());
+                notebookService.getDecks(userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(decks));
-    }
-
-    @PostMapping("/flashcard-decks")
-    public ResponseEntity<ApiResponse<DeckSummaryResponse>> createDeck(
-            @Valid @RequestBody DeckCreateRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        DeckSummaryResponse deck =
-                flashcardSrsService.createDeck(userDetails.getStudentUser().getId(), request.deckName());
-        return ResponseEntity.status(201).body(ApiResponse.created(deck));
-    }
-
-    @DeleteMapping("/flashcard-decks/{deckId}")
-    public ResponseEntity<ApiResponse<Void>> deleteDeck(
-            @PathVariable Long deckId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        flashcardSrsService.deleteDeck(userDetails.getStudentUser().getId(), deckId);
-        return ResponseEntity.ok(ApiResponse.success("Đã xóa sổ tay", null));
     }
 
     @GetMapping("/flashcards")
@@ -67,8 +53,8 @@ public class StudentFlashcardController {
             // 2 mệnh đề ORDER BY → 500 (đúng cảnh báo cũ). Sort thật xử lý ở Service.
             @RequestParam(name = "sortBy", required = false) String sortBy,
             @PageableDefault(size = 20) Pageable pageable) {
-        Page<FlashcardResponse> cards = flashcardSrsService.getCards(
-                userDetails.getStudentUser().getId(), deckId, dueOnly, q, sortBy, pageable);
+        Page<FlashcardResponse> cards =
+                notebookService.getCards(userDetails.getStudentUser().getId(), deckId, dueOnly, q, sortBy, pageable);
         return ResponseEntity.ok(ApiResponse.success(cards));
     }
 
@@ -101,7 +87,7 @@ public class StudentFlashcardController {
     @DeleteMapping("/flashcards/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteCard(
             @PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        flashcardSrsService.deleteCard(userDetails.getStudentUser().getId(), id);
+        notebookService.deleteCard(userDetails.getStudentUser().getId(), id);
         return ResponseEntity.ok(ApiResponse.success("Đã gỡ thẻ khỏi sổ tay", null));
     }
 
@@ -109,8 +95,7 @@ public class StudentFlashcardController {
     @PostMapping("/flashcards/bulk-delete")
     public ResponseEntity<ApiResponse<Integer>> bulkDelete(
             @Valid @RequestBody BulkDeleteRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        int removed =
-                flashcardSrsService.bulkDelete(userDetails.getStudentUser().getId(), request.ids());
+        int removed = notebookService.bulkDelete(userDetails.getStudentUser().getId(), request.ids());
         return ResponseEntity.ok(ApiResponse.success("Đã gỡ " + removed + " từ khỏi sổ tay", removed));
     }
 
@@ -118,7 +103,7 @@ public class StudentFlashcardController {
     public ResponseEntity<ApiResponse<FlashcardResponse>> addCard(
             @Valid @RequestBody AddFlashcardRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         FlashcardResponse response =
-                flashcardSrsService.addCard(userDetails.getStudentUser().getId(), request);
+                notebookService.addCard(userDetails.getStudentUser().getId(), request);
         return ResponseEntity.status(201).body(ApiResponse.created(response));
     }
 
@@ -126,7 +111,7 @@ public class StudentFlashcardController {
     @PostMapping("/flashcards/review-deck/add")
     public ResponseEntity<ApiResponse<ReviewDeckAddResponse>> addToReviewDeck(
             @Valid @RequestBody ReviewDeckAddRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ReviewDeckAddResponse response = flashcardSrsService.addWrongWordsToReviewDeck(
+        ReviewDeckAddResponse response = notebookService.addWrongWordsToReviewDeck(
                 userDetails.getStudentUser().getId(), request);
         return ResponseEntity.ok(ApiResponse.success("Đã thêm vào Từ cần ôn lại", response));
     }

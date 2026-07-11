@@ -2,22 +2,13 @@
 package com.jlpt.feature.flashcard.service;
 
 import com.jlpt.feature.flashcard.Flashcard;
-import com.jlpt.feature.flashcard.FlashcardConstants;
 import com.jlpt.feature.flashcard.FlashcardDeck;
-import com.jlpt.feature.flashcard.dto.AddFlashcardRequest;
-import com.jlpt.feature.flashcard.dto.DeckSummaryResponse;
-import com.jlpt.feature.flashcard.dto.FlashcardResponse;
-import com.jlpt.feature.flashcard.dto.ReviewDeckAddRequest;
-import com.jlpt.feature.flashcard.dto.ReviewDeckAddResponse;
 import com.jlpt.feature.flashcard.dto.ReviewRequest;
 import com.jlpt.feature.flashcard.dto.ReviewResultResponse;
 import com.jlpt.feature.flashcard.dto.SessionResponse;
-import com.jlpt.feature.flashcard.repository.FlashcardDeckRepository;
 import com.jlpt.feature.flashcard.repository.FlashcardRepository;
-import com.jlpt.feature.learning.GrammarPoint;
-import com.jlpt.feature.learning.GrammarPointRepository;
+import com.jlpt.feature.flashcard.service.FlashcardResolver.ContentMaps;
 import com.jlpt.feature.learning.Kanji;
-import com.jlpt.feature.learning.KanjiRepository;
 import com.jlpt.feature.learning.Vocabulary;
 import com.jlpt.feature.learning.VocabularyRepository;
 import com.jlpt.feature.learning.VocabularyTopic;
@@ -25,21 +16,16 @@ import com.jlpt.feature.learning.VocabularyTopicRepository;
 import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.StudentUserRepository;
 import com.jlpt.shared.exception.BadRequestException;
-import com.jlpt.shared.exception.DuplicateResourceException;
-import com.jlpt.shared.exception.ForbiddenException;
 import com.jlpt.shared.exception.ResourceNotFoundException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -47,13 +33,15 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Thuật toán ôn tập Flashcard (SRS): dựng phiên học trộn NEW+REVIEW (§3.6/§3.7), chấm lượt ôn và
+ * lịch lại theo SM-2. CRUD sổ/thẻ nằm ở {@link NotebookService}; hai service chia sẻ
+ * {@link FlashcardResolver} (resolve mặt thẻ) và {@link FlashcardDeckSupport} (sở hữu + get-or-create).
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -86,227 +74,16 @@ public class FlashcardSrsService {
     private static final Map<String, Object> SESSION_LOCKS = new ConcurrentHashMap<>();
 
     private final FlashcardRepository flashcardRepository;
-    private final FlashcardDeckRepository flashcardDeckRepository;
     private final VocabularyRepository vocabularyRepository;
     private final VocabularyTopicRepository vocabularyTopicRepository;
-    private final KanjiRepository kanjiRepository;
-    private final GrammarPointRepository grammarPointRepository;
     private final StudentUserRepository studentUserRepository;
-
-    // ── Deck CRUD ────────────────────────────────────────────────────────────
-
-    @Transactional(readOnly = true)
-    public List<DeckSummaryResponse> getDecks(Long studentId) {
-        LocalDate today = LocalDate.now();
-        // Object[]: {deckId, name, description, jlptLevel, topic, color, isSystem, total, due, isReviewDeck}
-        return flashcardDeckRepository.findDeckSummaries(studentId, today).stream()
-                .map(r -> new DeckSummaryResponse(
-                        ((Number) r[0]).longValue(),
-                        (String) r[1],
-                        r[7] != null ? ((Number) r[7]).intValue() : 0,
-                        r[8] != null ? ((Number) r[8]).intValue() : 0,
-                        (String) r[3],
-                        (String) r[4],
-                        Boolean.TRUE.equals(r[6]),
-                        Boolean.TRUE.equals(r[9])))
-                .toList();
-    }
-
-    public DeckSummaryResponse createDeck(Long studentId, String deckName) {
-        if (flashcardDeckRepository.existsByStudentIdAndName(studentId, deckName)) {
-            // 409 Conflict cho tài nguyên trùng (AGENTS.md §6.3), không phải 400.
-            throw new DuplicateResourceException("Sổ tay '" + deckName + "' đã tồn tại");
-        }
-        StudentUser student = studentUserRepository.getReferenceById(studentId);
-        // Deck first-class (V9): deck rỗng là bản ghi thật, KHÔNG cần thẻ giữ chỗ (FR-FC-07).
-        FlashcardDeck deck = getOrCreateDeck(student, deckName);
-        return new DeckSummaryResponse(
-                deck.getId(), deckName, 0, 0, deck.getJlptLevel(), deck.getTopic(), false, false);
-    }
-
-    public void deleteDeck(Long studentId, Long deckId) {
-        FlashcardDeck deck = ownDeckOrThrow(studentId, deckId);
-        if (Boolean.TRUE.equals(deck.getIsSystem())) {
-            throw new ForbiddenException("Không thể xóa sổ tay hệ thống");
-        }
-        // Soft delete (ADR-004): deck + toàn bộ thẻ của deck.
-        deck.setIsDeleted(true);
-        flashcardDeckRepository.save(deck);
-        flashcardRepository.softDeleteByDeckId(deckId);
-    }
-
-    // ── Card list / reveal (live-resolve §3.4) ───────────────────────────────
-
-    @Transactional(readOnly = true)
-    public Page<FlashcardResponse> getCards(
-            Long studentId, Long deckId, boolean dueOnly, String q, String sort, Pageable pageable) {
-        LocalDate today = LocalDate.now();
-        String needle = q == null ? null : q.trim().toLowerCase();
-        String sortKey = normalizeSort(sort);
-
-        // Tìm kiếm server-side (SPEC-notebook): resolve live rồi lọc theo mặt trước — không bị giới
-        // hạn bởi paging DB nên không bỏ sót thẻ ngoài trang đầu. Khi không có deckId thì tìm trên
-        // toàn bộ thẻ của student (trước đây bỏ qua `q` âm thầm — anti-pattern silent ignore).
-        if (needle != null && !needle.isEmpty()) {
-            List<Flashcard> all = deckId != null
-                    ? flashcardRepository.findByStudentAndDeck(studentId, deckId)
-                    : flashcardRepository.findByStudent(studentId);
-            ContentMaps maps = loadContentMaps(all);
-            List<FlashcardResponse> matched = all.stream()
-                    .filter(c -> !dueOnly || isDue(c, today))
-                    .map(c -> toFlashcardResponse(c, maps))
-                    .filter(r ->
-                            r.frontText() != null && r.frontText().toLowerCase().contains(needle))
-                    .sorted(responseComparator(sortKey))
-                    .toList();
-            int from = (int) Math.min(pageable.getOffset(), matched.size());
-            int to = Math.min(from + pageable.getPageSize(), matched.size());
-            return new PageImpl<>(matched.subList(from, to), pageable, matched.size());
-        }
-
-        Page<Flashcard> cards;
-        if (deckId != null && !"due".equals(sortKey)) {
-            // Sort sổ tay (3B) — deck-scoped; alpha/level join Vocabulary (review deck = vocab-only).
-            cards = switch (sortKey) {
-                case "recent" -> flashcardRepository.findByDeckOrderByRecent(
-                        studentId, deckId, dueOnly, today, pageable);
-                case "alpha" -> flashcardRepository.findByDeckOrderByWord(
-                        studentId, deckId, PUBLISHED, dueOnly, today, pageable);
-                default -> flashcardRepository.findByDeckOrderByLevel(
-                        studentId, deckId, PUBLISHED, dueOnly, today, pageable);};
-        } else if (dueOnly) {
-            cards = deckId != null
-                    ? flashcardRepository.findDueByDeck(studentId, deckId, today, pageable)
-                    : flashcardRepository.findAllDue(studentId, today, pageable);
-        } else {
-            cards = deckId != null
-                    ? flashcardRepository.findAllByDeck(studentId, deckId, pageable)
-                    : flashcardRepository.findAllByStudent(studentId, pageable);
-        }
-        ContentMaps maps = loadContentMaps(cards.getContent());
-        List<FlashcardResponse> items = cards.getContent().stream()
-                .map(c -> toFlashcardResponse(c, maps))
-                // Ẩn thẻ tích hợp có nguồn đã xóa/không published (FR-FC-34); custom luôn có text.
-                .filter(r -> r.frontText() != null)
-                .toList();
-        return new PageImpl<>(items, pageable, cards.getTotalElements());
-    }
-
-    /** Soft-delete (ADR-004) nhiều thẻ — quyền sở hữu ép trong query; trả số thẻ đã gỡ (3B). */
-    public int bulkDelete(Long studentId, List<Long> ids) {
-        if (ids == null || ids.isEmpty()) {
-            return 0;
-        }
-        return flashcardRepository.softDeleteByIds(ids, studentId);
-    }
-
-    /** Khoá sort hợp lệ; mặc định "due" (lịch ôn) cho client cũ/giá trị lạ. */
-    private static String normalizeSort(String sort) {
-        if (sort == null) return "due";
-        return switch (sort.trim().toLowerCase()) {
-            case "recent", "alpha", "level" -> sort.trim().toLowerCase();
-            default -> "due";
-        };
-    }
-
-    /** Comparator FlashcardResponse khớp thứ tự DB cho nhánh tìm kiếm in-memory (recency ≈ id DESC). */
-    private static Comparator<FlashcardResponse> responseComparator(String sortKey) {
-        return switch (sortKey) {
-            case "recent" -> Comparator.comparing(FlashcardResponse::flashcardId)
-                    .reversed();
-            case "alpha" -> Comparator.comparing(
-                    FlashcardResponse::frontText, Comparator.nullsLast(Comparator.naturalOrder()));
-            case "level" -> Comparator.comparing(
-                            FlashcardResponse::jlptLevel, Comparator.nullsLast(Comparator.naturalOrder()))
-                    .thenComparing(FlashcardResponse::frontText, Comparator.nullsLast(Comparator.naturalOrder()));
-            default -> Comparator.comparing(
-                    FlashcardResponse::nextReviewDate, Comparator.nullsLast(Comparator.naturalOrder()));
-        };
-    }
-
-    /** Gỡ một thẻ khỏi sổ tay (soft-delete, ADR-004 — SPEC-notebook §5). */
-    public void deleteCard(Long studentId, Long flashcardId) {
-        Flashcard card = ownCardOrThrow(flashcardId, studentId);
-        card.setIsDeleted(true);
-        flashcardRepository.save(card);
-    }
-
-    // ── Add card (live-resolve: KHÔNG copy text cho thẻ tích hợp, §3.4) ───────
-
-    public FlashcardResponse addCard(Long studentId, AddFlashcardRequest request) {
-        Flashcard.ContentType contentType = Flashcard.ContentType.valueOf(request.contentType());
-
-        if (contentType != Flashcard.ContentType.CUSTOM && request.contentId() == null) {
-            throw new BadRequestException("contentId is required for integrated flashcards");
-        }
-
-        if (contentType != Flashcard.ContentType.CUSTOM) {
-            // FR-FC-31: trùng (student, content_type, content_id) -> 409, không tạo trùng.
-            if (flashcardRepository
-                    .findByStudentAndContent(studentId, contentType, request.contentId())
-                    .isPresent()) {
-                throw new DuplicateResourceException("Nội dung này đã có trong Flashcard");
-            }
-        }
-
-        StudentUser student = studentUserRepository.getReferenceById(studentId);
-        Flashcard.FlashcardBuilder builder = Flashcard.builder()
-                .student(student)
-                .contentType(contentType)
-                .contentId(request.contentId())
-                .isSystem(false)
-                .addedReason("manual")
-                .nextReviewDate(LocalDate.now());
-
-        String requestedDeckName = normalizeDeckName(request.deckName());
-        String deckName;
-        switch (contentType) {
-            case VOCABULARY -> {
-                Vocabulary vocab = vocabularyRepository
-                        .findById(request.contentId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Vocabulary", request.contentId()));
-                deckName = requestedDeckName != null ? requestedDeckName : buildVocabDeckName(vocab);
-                // Thẻ tích hợp: front/back NULL, resolve live khi đọc (FR-FC-30).
-            }
-            case KANJI -> {
-                Kanji kanji = kanjiRepository
-                        .findById(request.contentId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Kanji", request.contentId()));
-                deckName = requestedDeckName != null
-                        ? requestedDeckName
-                        : kanji.getJlptLevel().name() + "_KANJI";
-            }
-            case GRAMMAR -> {
-                GrammarPoint grammar = grammarPointRepository
-                        .findById(request.contentId())
-                        .orElseThrow(() -> new ResourceNotFoundException("GrammarPoint", request.contentId()));
-                deckName = requestedDeckName != null
-                        ? requestedDeckName
-                        : grammar.getJlptLevel().name() + "_GRAMMAR";
-            }
-            case CUSTOM -> {
-                if (request.frontText() == null || request.backText() == null) {
-                    throw new BadRequestException("frontText và backText là bắt buộc cho thẻ tùy chỉnh");
-                }
-                deckName = requestedDeckName != null ? requestedDeckName : FlashcardConstants.DEFAULT_DECK_NAME;
-                builder.frontText(request.frontText()).backText(request.backText());
-            }
-            default -> throw new BadRequestException("contentType không hợp lệ");
-        }
-
-        FlashcardDeck deck = request.deckId() != null
-                ? ownDeckOrThrow(studentId, request.deckId())
-                : getOrCreateDeck(student, deckName);
-        builder.deck(deck);
-
-        Flashcard saved = flashcardRepository.save(builder.build());
-        return toFlashcardResponse(saved, loadContentMaps(List.of(saved)));
-    }
+    private final FlashcardResolver resolver;
+    private final FlashcardDeckSupport deckSupport;
 
     // ── Review (vocab quiz §3.6 / flip §3.2) + gợi ý từ sai (§3.5) ────────────
 
     public ReviewResultResponse submitReview(Long flashcardId, Long studentId, ReviewRequest request) {
-        Flashcard card = ownCardOrThrow(flashcardId, studentId);
+        Flashcard card = deckSupport.ownCardOrThrow(flashcardId, studentId);
         boolean isVocab = card.getContentType() == Flashcard.ContentType.VOCABULARY;
 
         Boolean correct = null;
@@ -352,7 +129,7 @@ public class FlashcardSrsService {
                     flashcardRepository.findWrongVocabCardsInSession(studentId, card.getLastSessionId());
             if (!wrong.isEmpty()) {
                 suggest = true;
-                ContentMaps maps = loadContentMaps(wrong);
+                ContentMaps maps = resolver.loadContentMaps(wrong);
                 wrongWords = wrong.stream()
                         .filter(c -> c.getContentId() != null)
                         .map(c -> {
@@ -376,52 +153,6 @@ public class FlashcardSrsService {
                 card.getRepetitionCount(),
                 suggest,
                 wrongWords);
-    }
-
-    /** Xác nhận thêm các từ sai vào sổ "Từ cần ôn lại" (§3.5, FR-FC-43/44). */
-    public ReviewDeckAddResponse addWrongWordsToReviewDeck(Long studentId, ReviewDeckAddRequest request) {
-        StudentUser student = studentUserRepository.getReferenceById(studentId);
-        FlashcardDeck deck = getOrCreateReviewDeck(student);
-        // Nguồn thẻ (SPEC-notebook §7): 'wrong' từ phiên ôn, 'manual' từ Từ điển. Mặc định 'manual'.
-        String reason = (request.reason() != null && !request.reason().isBlank()) ? request.reason() : "manual";
-        int added = 0;
-        int skipped = 0;
-        for (ReviewDeckAddRequest.Item item : request.items()) {
-            Long contentId = item.contentId();
-            // Mỗi nội dung chỉ 1 thẻ (FR-FC-31/44). Nếu thẻ đã tồn tại ở sổ khác (vd đã học
-            // trong phiên level_topic) thì CHUYỂN sang sổ "Từ cần ôn lại"; chỉ bỏ qua khi đã ở
-            // sẵn trong sổ này — nếu không, lưu thủ công từ Từ điển sẽ "im lặng" không vào sổ.
-            Optional<Flashcard> existing =
-                    flashcardRepository.findByStudentAndContent(studentId, Flashcard.ContentType.VOCABULARY, contentId);
-            if (existing.isPresent()) {
-                Flashcard card = existing.get();
-                if (card.getDeck() != null && deck.getId().equals(card.getDeck().getId())) {
-                    skipped++;
-                } else {
-                    card.setDeck(deck);
-                    card.setAddedReason(reason);
-                    flashcardRepository.save(card);
-                    added++;
-                }
-                continue;
-            }
-            Vocabulary vocab = vocabularyRepository.findById(contentId).orElse(null);
-            if (vocab == null) {
-                skipped++;
-                continue;
-            }
-            flashcardRepository.save(Flashcard.builder()
-                    .student(student)
-                    .deck(deck)
-                    .contentType(Flashcard.ContentType.VOCABULARY)
-                    .contentId(contentId)
-                    .isSystem(false)
-                    .addedReason(reason)
-                    .nextReviewDate(LocalDate.now())
-                    .build());
-            added++;
-        }
-        return new ReviewDeckAddResponse(deck.getId(), deck.getName(), added, skipped);
     }
 
     // ── Phiên học trộn NEW + REVIEW (§3.6/§3.7) ───────────────────────────────
@@ -448,13 +179,13 @@ public class FlashcardSrsService {
         List<WordCard> words = new ArrayList<>();
 
         if (deckId != null) {
-            sessionDeck = ownDeckOrThrow(studentId, deckId);
+            sessionDeck = deckSupport.ownDeckOrThrow(studentId, deckId);
             sessionLevel = sessionDeck.getJlptLevel();
             sessionTopicTitle = sessionDeck.getName();
             List<Flashcard> cards = flashcardRepository.findByStudentAndDeck(studentId, deckId).stream()
                     .filter(c -> c.getContentType() == Flashcard.ContentType.VOCABULARY && c.getContentId() != null)
                     .toList();
-            Map<Long, Vocabulary> vocabMap = toMap(
+            Map<Long, Vocabulary> vocabMap = FlashcardResolver.toMap(
                     vocabularyRepository.findAllById(
                             cards.stream().map(Flashcard::getContentId).collect(Collectors.toSet())),
                     Vocabulary::getId);
@@ -476,7 +207,7 @@ public class FlashcardSrsService {
             StudentUser.JlptLevel jl = topic.getJlptLevel();
             sessionLevel = jl != null ? jl.name() : null;
             sessionTopicTitle = topic.getTitleVi();
-            sessionDeck = getOrCreateDeck(student, jl.name() + "_" + topic.getSlug());
+            sessionDeck = deckSupport.getOrCreateDeck(student, jl.name() + "_" + topic.getSlug());
             List<Vocabulary> vocabList = vocabularyRepository.findPublishedByTopicId(PUBLISHED, topicId);
             Map<Long, Flashcard> byContent = flashcardRepository
                     .findByStudentAndContentIds(
@@ -551,8 +282,8 @@ public class FlashcardSrsService {
 
     /** Thứ tự ưu tiên chọn từ vào phiên: chưa học (0) → đến hạn ôn (1) → đã học chưa đến hạn (2). */
     private static int rank(Flashcard c, LocalDate today) {
-        if (c == null || isNew(c)) return 0;
-        return isDue(c, today) ? 1 : 2;
+        if (c == null || FlashcardResolver.isNew(c)) return 0;
+        return FlashcardResolver.isDue(c, today) ? 1 : 2;
     }
 
     // ── SM-2 ──────────────────────────────────────────────────────────────────
@@ -599,53 +330,7 @@ public class FlashcardSrsService {
         return Math.max(EASE_MIN, Math.min(EASE_MAX, ease));
     }
 
-    // ── Helpers ─────────────────────────────────────────────────────────────
-
-    private FlashcardDeck ownDeckOrThrow(Long studentId, Long deckId) {
-        return flashcardDeckRepository
-                .findByIdAndStudentId(deckId, studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Sổ tay", deckId));
-    }
-
-    private Flashcard ownCardOrThrow(Long flashcardId, Long studentId) {
-        if (!flashcardRepository.existsByIdAndStudentId(flashcardId, studentId)) {
-            throw new ForbiddenException("Flashcard không thuộc về bạn");
-        }
-        return flashcardRepository
-                .findById(flashcardId)
-                .orElseThrow(() -> new ResourceNotFoundException("Flashcard", flashcardId));
-    }
-
-    private FlashcardDeck getOrCreateDeck(StudentUser student, String name) {
-        return flashcardDeckRepository
-                .findByStudentIdAndName(student.getId(), name)
-                .orElseGet(() -> {
-                    FlashcardDeck.FlashcardDeckBuilder b =
-                            FlashcardDeck.builder().student(student).name(name);
-                    // Tách jlpt_level/topic từ pattern "{level}_{topic}" để deck có metadata.
-                    if (name.matches("N[1-5]_.+")) {
-                        b.jlptLevel(name.substring(0, 2)).topic(name.substring(3));
-                    }
-                    return flashcardDeckRepository.save(b.build());
-                });
-    }
-
-    private FlashcardDeck getOrCreateReviewDeck(StudentUser student) {
-        return flashcardDeckRepository
-                .findByStudentIdAndIsReviewDeckTrue(student.getId())
-                .orElseGet(() -> flashcardDeckRepository.save(FlashcardDeck.builder()
-                        .student(student)
-                        .name(FlashcardConstants.REVIEW_DECK_NAME)
-                        .isReviewDeck(true)
-                        .build()));
-    }
-
-    private String normalizeDeckName(String deckName) {
-        if (deckName == null || deckName.isBlank()) {
-            return null;
-        }
-        return deckName.trim();
-    }
+    // ── Helpers phiên ─────────────────────────────────────────────────────────
 
     private SessionResponse.QueueItem toQueueItem(SessionEntry e, List<Vocabulary> pool) {
         SessionResponse.Front front = new SessionResponse.Front(e.vocab.getWord(), e.vocab.getFurigana());
@@ -677,137 +362,6 @@ public class FlashcardSrsService {
         Collections.shuffle(options);
         return new SessionResponse.Quiz(options);
     }
-
-    /**
-     * Resolve live toàn bộ mặt thẻ (front/back/furigana/ví dụ/audio/stroke/level) dùng chung cho cả
-     * reveal lẫn danh sách (Notebook §7) — một chỗ switch theo contentType, tránh lệch logic khi sửa.
-     * Nguồn tích hợp đã xóa/không PUBLISHED → {@link ResolvedCard#EMPTY} (FR-FC-34). CUSTOM dùng text thẻ.
-     */
-    private ResolvedCard resolve(Flashcard card, ContentMaps maps) {
-        Long cid = card.getContentId();
-        return switch (card.getContentType()) {
-            case VOCABULARY -> {
-                Vocabulary v = maps.vocab().get(cid);
-                yield (v != null && v.getStatus() == PUBLISHED)
-                        ? new ResolvedCard(
-                                v.getWord(),
-                                v.getMeaning(),
-                                v.getFurigana(),
-                                v.getExampleSentenceJp(),
-                                v.getExampleSentenceVi(),
-                                v.getAudioUrl(),
-                                null,
-                                levelName(v.getJlptLevel()))
-                        : ResolvedCard.EMPTY;
-            }
-            case KANJI -> {
-                Kanji k = maps.kanji().get(cid);
-                yield (k != null && k.getStatus() == PUBLISHED)
-                        ? new ResolvedCard(
-                                k.getCharacterValue(),
-                                k.getMeaning(),
-                                null,
-                                null,
-                                null,
-                                null,
-                                k.getStrokeOrderUrl(),
-                                levelName(k.getJlptLevel()))
-                        : ResolvedCard.EMPTY;
-            }
-            case GRAMMAR -> {
-                GrammarPoint g = maps.grammar().get(cid);
-                yield (g != null && g.getStatus() == PUBLISHED)
-                        ? new ResolvedCard(
-                                g.getStructure(),
-                                g.getMeaning(),
-                                null,
-                                g.getExampleSentenceJp(),
-                                g.getExampleSentenceVi(),
-                                null,
-                                null,
-                                levelName(g.getJlptLevel()))
-                        : ResolvedCard.EMPTY;
-            }
-            case CUSTOM -> new ResolvedCard(
-                    card.getFrontText(), card.getBackText(), null, null, null, null, null, null);
-        };
-    }
-
-    private record ResolvedCard(
-            String front,
-            String back,
-            String furigana,
-            String exampleJp,
-            String exampleVi,
-            String audioUrl,
-            String strokeUrl,
-            String jlptLevel) {
-        static final ResolvedCard EMPTY = new ResolvedCard(null, null, null, null, null, null, null, null);
-    }
-
-    private FlashcardResponse toFlashcardResponse(Flashcard card, ContentMaps maps) {
-        boolean isDue = isDue(card, LocalDate.now());
-        ResolvedCard r = resolve(card, maps);
-        return new FlashcardResponse(
-                card.getId(),
-                card.getDeck() != null ? card.getDeck().getId() : null,
-                card.getContentType().name(),
-                card.getContentId(),
-                r.front(),
-                r.back(),
-                r.furigana(),
-                r.audioUrl(),
-                r.jlptLevel(),
-                Boolean.TRUE.equals(card.getIsSystem()),
-                card.getNextReviewDate(),
-                card.getIntervalDays(),
-                card.getRepetitionCount(),
-                card.getLastRating() != null ? card.getLastRating().getValue() : null,
-                card.getAddedReason(),
-                isDue);
-    }
-
-    private static String levelName(StudentUser.JlptLevel level) {
-        return level != null ? level.name() : null;
-    }
-
-    private String buildVocabDeckName(Vocabulary vocab) {
-        String level = vocab.getJlptLevel() != null ? vocab.getJlptLevel().name() : "UNKNOWN";
-        String topic = vocab.getTopicRef() != null ? vocab.getTopicRef().getSlug() : "other";
-        return level + "_" + topic;
-    }
-
-    private static boolean isNew(Flashcard c) {
-        return c.getRepetitionCount() != null && c.getRepetitionCount() == 0 && c.getLastReviewedAt() == null;
-    }
-
-    private static boolean isDue(Flashcard c, LocalDate today) {
-        return c.getNextReviewDate() != null && !c.getNextReviewDate().isAfter(today);
-    }
-
-    // ── Batch live-resolve (tránh N+1, tái dùng pattern loadContentMaps) ──────
-
-    private ContentMaps loadContentMaps(Collection<Flashcard> cards) {
-        List<Vocabulary> vocab = vocabularyRepository.findAllById(idsOfType(cards, Flashcard.ContentType.VOCABULARY));
-        List<Kanji> kanji = kanjiRepository.findAllById(idsOfType(cards, Flashcard.ContentType.KANJI));
-        List<GrammarPoint> grammar =
-                grammarPointRepository.findAllById(idsOfType(cards, Flashcard.ContentType.GRAMMAR));
-        return new ContentMaps(
-                toMap(vocab, Vocabulary::getId), toMap(kanji, Kanji::getId), toMap(grammar, GrammarPoint::getId));
-    }
-
-    private static Set<Long> idsOfType(Collection<Flashcard> cards, Flashcard.ContentType type) {
-        return cards.stream()
-                .filter(c -> c.getContentType() == type && c.getContentId() != null)
-                .map(Flashcard::getContentId)
-                .collect(Collectors.toSet());
-    }
-
-    private static <T> Map<Long, T> toMap(List<T> entities, Function<T, Long> idFn) {
-        return entities.stream().collect(Collectors.toMap(idFn, Function.identity(), (a, b) -> a));
-    }
-
-    private record ContentMaps(Map<Long, Vocabulary> vocab, Map<Long, Kanji> kanji, Map<Long, GrammarPoint> grammar) {}
 
     /** Mục trong hàng đợi phiên — mỗi từ sinh 1 mục NEW (lật) và 1 mục REVIEW (quiz). */
     private static final class SessionEntry {

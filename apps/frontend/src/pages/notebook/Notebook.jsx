@@ -14,14 +14,13 @@ import {
 import './Notebook.css';
 
 /**
- * Sổ Tay "Từ cần ôn lại" (SPEC-notebook.md) — kho gom từ cần học/ôn lại.
- * Đầu vào: tự động (từ sai cuối phiên, FR-FC-81) + thủ công (lưu từ Từ điển).
- * Trang chỉ liệt kê + điều hướng "Ôn lại ngay" → phiên Flashcard theo deckId.
+ * Sổ Tay "Từ cần ôn lại" — kho gom các từ đã ghi chú.
+ * Đầu vào: tự động (từ trả lời sai) + thủ công (lưu từ Từ điển).
+ * Trang chỉ liệt kê từ kèm cách đọc + giải thích; không còn phiên ôn Flashcard.
  */
 const REVIEW_DECK_NAME = 'Từ cần ôn lại';
-const PAGE_SIZE = 30;   // 1A: tải theo trang + cuộn vô hạn, thay vì cứng 200 (mất từ khi >200)
-const SORT_OPTIONS = [  // 3B: thứ tự hiển thị trong sổ
-  { value: 'due',    label: 'Lịch ôn' },
+const PAGE_SIZE = 30;   // tải theo trang + cuộn vô hạn, thay vì cứng 200 (mất từ khi >200)
+const SORT_OPTIONS = [  // thứ tự hiển thị trong sổ
   { value: 'recent', label: 'Mới thêm' },
   { value: 'alpha',  label: 'A → Z' },
   { value: 'level',  label: 'Cấp độ' },
@@ -33,21 +32,19 @@ export default function Notebook() {
 
   const [deckId,    setDeckId]  = useState(null);
   const [deckReady, setDeckReady] = useState(false);
-  const [deckTotal, setDeckTotal] = useState(0);     // tổng/đến hạn lấy từ deck summary (toàn deck)
-  const [deckDue,   setDeckDue]   = useState(0);
+  const [deckTotal, setDeckTotal] = useState(0);     // tổng lấy từ deck summary (toàn deck)
   const [words,     setWords]   = useState([]);
-  const [filter,    setFilter]  = useState('all');   // 'all' | 'due'
-  const [sort,      setSort]    = useState('due');   // 3B: due | recent | alpha | level
+  const [sort,      setSort]    = useState('recent'); // recent | alpha | level
   const [query,     setQuery]   = useState('');
   const [debounced, setDebounced] = useState('');    // từ khóa đã debounce → gửi server
   const [isLoading, setLoading] = useState(true);
   const [confirmDel, setConfirm] = useState(null);   // { flashcardId, label }
-  const [selectMode, setSelectMode] = useState(false);      // 3B: bật chế độ chọn nhiều
+  const [selectMode, setSelectMode] = useState(false);      // bật chế độ chọn nhiều
   const [selected,   setSelected]   = useState(() => new Set()); // flashcardId đã chọn
   const [bulkConfirm, setBulkConfirm] = useState(false);    // mở hộp xác nhận gỡ hàng loạt
   const [bulkBusy,    setBulkBusy]    = useState(false);
   const [error,     setError]   = useState('');
-  const [page,      setPage]    = useState(0);        // 1A: trang hiện tại đã tải
+  const [page,      setPage]    = useState(0);        // trang hiện tại đã tải
   const [hasMore,   setHasMore] = useState(false);    // còn trang sau không
   const [loadingMore, setLoadingMore] = useState(false);
   const timerRef = useRef(null);
@@ -63,7 +60,6 @@ export default function Notebook() {
       );
       setDeckId(deck?.deckId ?? null);
       setDeckTotal(deck?.totalCards ?? 0);
-      setDeckDue(deck?.dueToday ?? 0);
       setError('');
     } catch {
       setError('Không thể tải sổ tay. Thử lại sau.');
@@ -72,13 +68,13 @@ export default function Notebook() {
     }
   }, []);
 
-  // Tải thẻ theo trang — tìm kiếm + lọc "đến hạn" chạy ở server (SPEC-notebook): không bỏ sót thẻ.
-  // append=true → nối thêm trang kế (cuộn vô hạn); ngược lại thay danh sách (đổi filter/từ khóa).
-  const loadCards = useCallback(async (id, q, dueOnly, sortKey, pageNum = 0, append = false) => {
+  // Tải thẻ theo trang — tìm kiếm chạy ở server: không bỏ sót thẻ.
+  // append=true → nối thêm trang kế (cuộn vô hạn); ngược lại thay danh sách (đổi từ khóa/thứ tự).
+  const loadCards = useCallback(async (id, q, sortKey, pageNum = 0, append = false) => {
     if (!id) { setWords([]); setHasMore(false); setLoading(false); return; }
     if (append) setLoadingMore(true); else setLoading(true);
     try {
-      const res = await getFlashcardsByDeck(id, pageNum, PAGE_SIZE, q, dueOnly, sortKey);
+      const res = await getFlashcardsByDeck(id, pageNum, PAGE_SIZE, q, false, sortKey);
       const content = res.content ?? [];
       setWords((prev) => (append ? [...prev, ...content] : content));
       setHasMore(!res.last);
@@ -93,9 +89,9 @@ export default function Notebook() {
 
   // Thử lại: nếu chưa có deck thì tải lại deck, ngược lại tải lại thẻ.
   const reload = useCallback(() => {
-    if (deckId) loadCards(deckId, debounced, filter === 'due', sort);
+    if (deckId) loadCards(deckId, debounced, sort);
     else loadDeck();
-  }, [deckId, debounced, filter, sort, loadCards, loadDeck]);
+  }, [deckId, debounced, sort, loadCards, loadDeck]);
 
   useEffect(() => { loadDeck(); }, [loadDeck]);
 
@@ -107,16 +103,16 @@ export default function Notebook() {
   }, []);
   useEffect(() => () => clearTimeout(timerRef.current), []);
 
-  // Tải/làm mới thẻ (trang 0) khi deck sẵn sàng, từ khóa, bộ lọc hoặc thứ tự thay đổi.
+  // Tải/làm mới thẻ (trang 0) khi deck sẵn sàng, từ khóa hoặc thứ tự thay đổi.
   useEffect(() => {
-    if (deckReady) loadCards(deckId, debounced, filter === 'due', sort, 0, false);
-  }, [deckReady, deckId, debounced, filter, sort, loadCards]);
+    if (deckReady) loadCards(deckId, debounced, sort, 0, false);
+  }, [deckReady, deckId, debounced, sort, loadCards]);
 
   // Cuộn vô hạn: khi mốc cuối danh sách lọt vào khung nhìn thì tải trang kế.
   const loadMore = useCallback(() => {
     if (!deckId || isLoading || loadingMore || !hasMore) return;
-    loadCards(deckId, debounced, filter === 'due', sort, page + 1, true);
-  }, [deckId, isLoading, loadingMore, hasMore, page, debounced, filter, sort, loadCards]);
+    loadCards(deckId, debounced, sort, page + 1, true);
+  }, [deckId, isLoading, loadingMore, hasMore, page, debounced, sort, loadCards]);
 
   useEffect(() => {
     const node = sentinelRef.current;
@@ -129,7 +125,6 @@ export default function Notebook() {
     return () => obs.disconnect();
   }, [loadMore]);
 
-  // Đếm tab lấy từ deck summary (toàn deck), độc lập với danh sách đã lọc.
   const visible = words;
 
   async function handleRemove(card) {
@@ -143,7 +138,6 @@ export default function Notebook() {
         return next;
       });
       setDeckTotal((n) => Math.max(0, n - 1));
-      if (card.isDue) setDeckDue((n) => Math.max(0, n - 1));
       setConfirm(null);
       addToast('success', 'Đã gỡ từ khỏi sổ tay.');
     } catch {
@@ -151,12 +145,7 @@ export default function Notebook() {
     }
   }
 
-  function handleStudy() {
-    if (!deckId || deckTotal === 0) return;
-    navigate(`/vocabulary/flashcard?deckId=${deckId}`);
-  }
-
-  // ── Chọn nhiều + gỡ hàng loạt (3B) ──────────────────────────────────────────
+  // ── Chọn nhiều + gỡ hàng loạt ───────────────────────────────────────────────
   function toggleSelect(id) {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -182,11 +171,8 @@ export default function Notebook() {
     try {
       const removed = await bulkDeleteFlashcards(ids);
       const idSet = new Set(ids);
-      // Trừ "đến hạn" theo đúng số thẻ due bị gỡ (đếm trong danh sách đang hiển thị).
-      const dueRemoved = words.filter((w) => idSet.has(w.flashcardId) && w.isDue).length;
       setWords((prev) => prev.filter((w) => !idSet.has(w.flashcardId)));
       setDeckTotal((n) => Math.max(0, n - ids.length));
-      setDeckDue((n) => Math.max(0, n - dueRemoved));
       setBulkConfirm(false);
       exitSelectMode();
       addToast('success', `Đã gỡ ${removed} từ khỏi sổ tay.`);
@@ -209,38 +195,13 @@ export default function Notebook() {
               <span aria-hidden="true"><NotebookIcon size={22} /></span> Sổ Tay — Từ cần ôn lại
             </h1>
             <p className="ntb-subtitle">
-              {isLoading ? 'Đang tải…' : `${deckTotal} từ cần ôn · ${deckDue} từ đến hạn hôm nay`}
+              {isLoading ? 'Đang tải…' : `${deckTotal} từ trong sổ`}
             </p>
           </div>
-          <button
-            className="ntb-btn ntb-btn--primary"
-            onClick={handleStudy}
-            disabled={isLoading || deckTotal === 0}
-          >
-            ▶ Ôn lại ngay{deckTotal > 0 ? ` (${deckTotal})` : ''}
-          </button>
         </div>
 
-        {/* Filter + search */}
+        {/* Search + sort */}
         <div className="ntb-controls">
-          <div className="ntb-tabs" role="tablist" aria-label="Lọc từ trong sổ">
-            <button
-              role="tab"
-              aria-selected={filter === 'all'}
-              className={`ntb-tab${filter === 'all' ? ' ntb-tab--active' : ''}`}
-              onClick={() => setFilter('all')}
-            >
-              Tất cả <span className="ntb-tab-count">{deckTotal}</span>
-            </button>
-            <button
-              role="tab"
-              aria-selected={filter === 'due'}
-              className={`ntb-tab${filter === 'due' ? ' ntb-tab--active' : ''}`}
-              onClick={() => setFilter('due')}
-            >
-              Đến hạn <span className="ntb-tab-count">{deckDue}</span>
-            </button>
-          </div>
           <div className="ntb-search">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
@@ -279,7 +240,7 @@ export default function Notebook() {
           </button>
         </div>
 
-        {/* Thanh thao tác hàng loạt (3B) */}
+        {/* Thanh thao tác hàng loạt */}
         {selectMode && (
           <div className="ntb-bulkbar" role="region" aria-label="Thao tác hàng loạt">
             <label className="ntb-bulk-all">
@@ -316,18 +277,14 @@ export default function Notebook() {
         {/* Empty */}
         {!isLoading && !error && visible.length === 0 && (
           <EmptyState
-            title={query
-              ? 'Không tìm thấy từ nào'
-              : filter === 'due' ? 'Không có từ đến hạn' : 'Sổ tay đang trống'}
+            title={query ? 'Không tìm thấy từ nào' : 'Sổ tay đang trống'}
             subtitle={query
               ? 'Thử từ khóa khác.'
-              : filter === 'due'
-                ? 'Bạn đã ôn hết các từ đến hạn hôm nay — quay lại sau nhé!'
-                : 'Trả lời sai khi ôn Flashcard, hoặc lưu từ ở Từ điển — các từ cần ôn sẽ xuất hiện ở đây.'}
-            mascotVariant={filter === 'due' && !query ? 'celebrate' : 'thinking'}
+              : 'Trả lời sai khi ôn Flashcard, hoặc lưu từ ở Từ điển — các từ đã ghi chú sẽ xuất hiện ở đây.'}
+            mascotVariant="thinking"
             mascotSize={160}
           >
-            {!query && filter === 'all' && deckTotal === 0 && (
+            {!query && deckTotal === 0 && (
               <div className="ntb-empty-actions">
                 <button className="ntb-btn ntb-btn--primary" onClick={() => navigate('/vocabulary')}>Học Flashcard</button>
                 <button className="ntb-btn ntb-btn--ghost" onClick={() => navigate('/dictionary')}>Mở Từ điển</button>
@@ -368,7 +325,7 @@ export default function Notebook() {
           <div className="ntb-modal">
             <h2 className="ntb-modal-title">Gỡ khỏi sổ tay</h2>
             <p className="ntb-modal-body">
-              Gỡ <strong lang="ja">&quot;{confirmDel.label}&quot;</strong> khỏi sổ tay? Từ này sẽ không còn trong danh sách cần ôn.
+              Gỡ <strong lang="ja">&quot;{confirmDel.label}&quot;</strong> khỏi sổ tay? Từ này sẽ không còn trong danh sách.
             </p>
             <div className="ntb-modal-footer">
               <button className="ntb-modal-cancel" onClick={() => setConfirm(null)}>Hủy</button>
@@ -378,7 +335,7 @@ export default function Notebook() {
         </div>
       )}
 
-      {/* Confirm gỡ hàng loạt (3B) */}
+      {/* Confirm gỡ hàng loạt */}
       {bulkConfirm && (
         <div
           className="ntb-modal-backdrop"
@@ -390,7 +347,7 @@ export default function Notebook() {
           <div className="ntb-modal">
             <h2 className="ntb-modal-title">Gỡ {selected.size} từ khỏi sổ tay</h2>
             <p className="ntb-modal-body">
-              Gỡ <strong>{selected.size}</strong> từ đã chọn khỏi sổ tay? Các từ này sẽ không còn trong danh sách cần ôn.
+              Gỡ <strong>{selected.size}</strong> từ đã chọn khỏi sổ tay? Các từ này sẽ không còn trong danh sách.
             </p>
             <div className="ntb-modal-footer">
               <button className="ntb-modal-cancel" onClick={() => setBulkConfirm(false)} disabled={bulkBusy}>Hủy</button>

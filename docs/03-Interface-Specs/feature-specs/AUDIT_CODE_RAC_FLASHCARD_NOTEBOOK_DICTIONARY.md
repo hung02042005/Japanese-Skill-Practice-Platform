@@ -1,189 +1,62 @@
 # AUDIT — Code Rác: Flashcard · Sổ tay (Notebook) · Từ điển (Dictionary)
 
-> **Phạm vi quét:** `feature/flashcard`, `feature/dictionary` (backend).
-> **Ngày:** 2026-06-21 | **Người quét:** Claude (đối chiếu code thực tế)
-> **Mục đích:** Liệt kê dead code, method không dùng, field thừa, trùng lặp, bug ngầm và smell — kèm `file:line` và đề xuất xử lý.
+> **Phạm vi quét:** `feature/flashcard`, `feature/dictionary` (backend) + trang Notebook/Dictionary/VocabFlashcardSession (frontend).
+> **Lần quét gần nhất:** 2026-07-11 | **Người quét:** Claude (đối chiếu code thực tế)
+> **Mục đích:** Theo dõi dead code / field thừa / trùng lặp — kèm `file:line`, trạng thái xử lý.
 > **Spec liên quan:** [`SPEC_BACKEND_FLASHCARD_NOTEBOOK_DICTIONARY.md`](SPEC_BACKEND_FLASHCARD_NOTEBOOK_DICTIONARY.md)
 
 ---
 
-## 0. BẢNG TỔNG HỢP (xử lý theo thứ tự ưu tiên)
+## 0. TRẠNG THÁI HIỆN TẠI (2026-07-11)
 
-| # | Mức | Loại | Vị trí | Tóm tắt |
-|:--:|:--:|:---|:---|:---|
-| 1 | 🔴 Cao | Dead code | `FlashcardRepository.java:118-126` | `findVocabContentIdsByStudent` không có caller nào |
-| 2 | 🟠 TB | Field thừa | `DeckSummaryResponse.java:7` | `displayName` luôn = `deckName` (nhân đôi vô nghĩa) |
-| 3 | 🟠 TB | Bug ngầm | `FlashcardSrsService.java:281` | Nhánh CUSTOM bỏ qua `requestedDeckName` đã normalize → không trim |
-| 4 | 🟠 TB | Field gây hiểu nhầm | `SessionResponse.java:12` | `newCount` == `reviewCount` luôn bằng nhau |
-| 5 | 🟠 TB | Logic gap | `FlashcardSrsService.java:176` | Tìm kiếm `q` bị bỏ qua âm thầm khi `deckId == null` |
-| 6 | 🟡 Thấp | Constraint lệch | `AddFlashcardRequest.java:13` | `deckName` max 255 vs deck khác max 100 |
-| 7 | 🟡 Thấp | Magic string | `FlashcardSrsService.java:281` | `"Mặc định"` hard-code, không hằng số |
-| 8 | 🟡 Thấp | Trùng lặp logic | `FlashcardSrsService.java:656-779` | `buildRevealResponse` lặp lại resolve của `resolveFront/resolveBackMeta` |
-| 9 | 🟡 Thấp | Micro | `FlashcardSrsService.java:508,640` | `new Random()` mỗi lần gọi (nên `ThreadLocalRandom`) |
-| 10 | 🟡 Thấp | Naming lệch | `ReviewResultResponse.java:25` | `WrongWord.frontText` thực ra chứa `word` |
-| 11 | ⚪ Doc | Spec rác | `.sdd/.../feat-flashcard/SPEC.md` (rỗng) + `feat-dictionary-bookmark/SPEC.md` (lỗi thời) | Tài liệu chết / sai lệch |
-| 12 | ⚪ Repo | Cây trùng | `project-git/` | Bản sao gần như toàn bộ repo (rác lớn nếu không chủ đích) |
+Sau đợt refactor lớn (tách `FlashcardResolver` / `FlashcardDeckSupport` / `NotebookService`, hợp nhất SM-2) + đợt dọn 2026-07-11, **toàn bộ 12 phát hiện của lần audit 2026-06-21 đã được xử lý**. Không còn dead code đáng kể trong 3 phần này.
 
----
-
-## 1. 🔴 Dead code — `findVocabContentIdsByStudent`
-
-**File:** [`FlashcardRepository.java:118-126`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/repository/FlashcardRepository.java)
-
-```java
-@Query("SELECT f.contentId FROM Flashcard f WHERE f.student.id = :studentId AND ...")
-java.util.Set<Long> findVocabContentIdsByStudent(Long studentId, Flashcard.ContentType contentType);
-```
-
-**Bằng chứng:** grep toàn `apps/` chỉ có 2 hit: (a) chính dòng định nghĩa; (b) comment trong migration `V14__flashcard_content_index.sql:7`. **Không có service/test nào gọi.**
-
-**Đề xuất:** Xóa method (ADR: Dead Code → xóa ngay, Git recover). Cập nhật/bỏ dòng comment tham chiếu trong V14 (không sửa nội dung migration đã chạy, chỉ comment).
+| # | Loại | Vị trí (audit cũ) | Trạng thái |
+|:--:|:---|:---|:---|
+| 1 | Dead method `findVocabContentIdsByStudent` | FlashcardRepository | ✅ Đã xóa (không còn trong repo) |
+| 2 | Field thừa `DeckSummaryResponse.displayName` | DeckSummaryResponse | ✅ Đã xóa (2026-07-11 cắt tiếp còn 4 field) |
+| 3 | Bug CUSTOM bỏ qua tên đã normalize | NotebookService.addCard | ✅ Dùng `requestedDeckName != null ? … : DEFAULT_DECK_NAME` |
+| 4 | `newCount == reviewCount` | SessionResponse | ✅ Gộp còn `wordCount` |
+| 5 | Search `q` bị nuốt khi `deckId == null` | NotebookService.getCards | ✅ Tìm trên `findByStudent` khi không có deck |
+| 6 | Constraint tên sổ lệch (255 vs 100) | *Request DTOs | ✅ Thống nhất `FlashcardConstants.DECK_NAME_MAX`; `DeckCreate/UpdateRequest` đã gỡ |
+| 7 | Magic string `"Mặc định"` | FlashcardSrsService | ✅ `FlashcardConstants.DEFAULT_DECK_NAME` / `REVIEW_DECK_NAME` |
+| 8 | Trùng resolve `buildRevealResponse` | FlashcardSrsService | ✅ Hợp nhất vào `FlashcardResolver` |
+| 9 | `new Random()` mỗi lần gọi | FlashcardSrsService | ✅ `ThreadLocalRandom.current()` |
+| 10 | Naming `WrongWord.frontText` | ReviewResultResponse | ✅ Đổi thành `word` |
+| 11 | Spec `.sdd/.../feat-flashcard`, `feat-dictionary-bookmark` | docs | ✅ Không còn (thư mục `.sdd` đã gỡ) |
+| 12 | Cây trùng `project-git/` | repo root | ✅ Không còn |
 
 ---
 
-## 2. 🟠 Field thừa — `DeckSummaryResponse.displayName`
+## 1. ĐỢT DỌN 2026-07-11 (đã áp dụng)
 
-**File:** [`DeckSummaryResponse.java:5-7`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/dto/DeckSummaryResponse.java)
+Rà lại cả BE + FE, phát hiện & xử lý các mục còn sót:
 
-`displayName` **luôn** được gán cùng giá trị với `deckName` tại mọi nơi tạo DTO:
+### 1.1 Dead branch `sourceTopic` (FE)
+[`NotebookWordCard.jsx`](../../apps/frontend/src/components/student/NotebookWordCard.jsx) đọc `word.sourceTopic`, nhưng [`FlashcardResponse`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/dto/FlashcardResponse.java) **không có** field này → nhánh `(Topic: …)` không bao giờ chạy.
+→ **Đã bỏ** `sourceTopic` khỏi destructure + template.
 
-- `getDecks` → `FlashcardSrsService.java:102-103`: truyền `(String) r[1]` hai lần.
-- `createDeck` → `:122`: `deckName, deckName`.
-- `updateDeck` → `:146-147`: `deck.getName(), deck.getName()`.
+### 1.2 `DeckSummaryResponse` trả field không client nào đọc (BE)
+`getFlashcardDecks()` chỉ được dùng ở [`Notebook.jsx`](../../apps/frontend/src/pages/notebook/Notebook.jsx), và chỉ đọc `deckId, deckName, totalCards, isReviewDeck`. Các field `dueToday, jlptLevel, topic, isSystem` bị bỏ phí; query còn `SELECT` cả `description, color` rồi không map.
+→ **Đã cắt** [`DeckSummaryResponse`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/dto/DeckSummaryResponse.java) còn 4 field; [`findDeckSummaries`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/repository/FlashcardDeckRepository.java) gọn `SELECT`/`GROUP BY`, bỏ hẳn `SUM(CASE…)` + tham số `today`; [`NotebookService.getDecks`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/NotebookService.java) map theo shape mới.
 
-Grep frontend không thấy dùng `displayName` riêng biệt.
-
-**Đề xuất:** Bỏ field `displayName` khỏi record + 3 call-site. Nếu FE thực sự đọc `displayName`, đổi FE sang `deckName` trước khi xóa.
-
----
-
-## 3. 🟠 Bug ngầm — nhánh CUSTOM không dùng tên đã normalize
-
-**File:** [`FlashcardSrsService.java:251` & `:281`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/FlashcardSrsService.java)
-
-```java
-String requestedDeckName = normalizeDeckName(request.deckName()); // :251 — trim + null nếu blank
-...
-case CUSTOM -> {
-    deckName = request.deckName() != null ? request.deckName() : "Mặc định"; // :281 — dùng RAW, bỏ qua requestedDeckName
-}
-```
-
-3 nhánh VOCABULARY/KANJI/GRAMMAR dùng `requestedDeckName` (đã trim, blank→null), riêng CUSTOM dùng `request.deckName()` thô → deck tên `"   "` (toàn space) hoặc không trim sẽ lọt. Không nhất quán.
-
-**Đề xuất:** CUSTOM dùng `deckName = requestedDeckName != null ? requestedDeckName : DEFAULT_DECK_NAME;`.
+### 1.3 `ownCardOrThrow` 2 query → 1 (BE)
+[`FlashcardDeckSupport.ownCardOrThrow`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/FlashcardDeckSupport.java) trước gọi `existsByIdAndStudentId` **rồi** `findById`.
+→ **Đã gộp** `findById` một lần rồi so chủ sở hữu trên FK id (`student` LAZY, `getId()` không hit DB). Giữ nguyên ngữ nghĩa 404 (không tồn tại) vs 403 (không phải của bạn).
 
 ---
 
-## 4. 🟠 Field gây hiểu nhầm — `newCount` luôn == `reviewCount`
+## 2. XEM XÉT — KHÔNG xử lý (có chủ đích / không phải rác)
 
-**File:** [`SessionResponse.java:11-12`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/dto/SessionResponse.java) — gán tại [`FlashcardSrsService.java:523-524`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/FlashcardSrsService.java)
-
-```java
-return new SessionResponse(..., chosen.size(), chosen.size(), items); // newCount == reviewCount
-```
-
-Vì mỗi từ sinh đúng 1 NEW + 1 REVIEW nên 2 con số **luôn bằng nhau** — một trong hai là thừa, hoặc tên sai nghĩa (thực chất cả hai = "số từ").
-
-**Đề xuất:** Gộp còn 1 field `wordCount` (hoặc `totalWords`), hoặc tính `reviewCount` đúng nghĩa (số mục REVIEW thực = số quiz). Cập nhật FE tương ứng.
+- **`addVocabToFlashcard` vs `addToFlashcard`** ([studentService.js](../../apps/frontend/src/api/studentService.js)): trông giống nhưng **khác hành vi** — bản không gửi `deckName` dồn thẻ vào deck `{level}_{topic}`, bản gửi `'Mặc định'` dồn vào deck "Mặc định". Là quyết định sản phẩm, giữ nguyên.
+- **Nhánh `dueOnly` trong `getCards`** + `findDueByDeck`/`findAllDue`: hiện FE luôn truyền `dueOnly=false`, nhưng là bề mặt API hợp lệ → giữ.
+- **Field SRS trong `ReviewResultResponse`** (`newEaseFactor`, `newIntervalDays`, `repetitionCount`, `nextReviewDate`, `rating`): FE chưa đọc hết, nhưng là payload kết quả ôn hợp lý → giữ.
 
 ---
 
-## 5. 🟠 Logic gap — tìm kiếm `q` bị nuốt âm thầm khi không có deck
+## 3. XÁC MINH (2026-07-11)
 
-**File:** [`FlashcardSrsService.java:176`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/FlashcardSrsService.java)
-
-```java
-if (needle != null && !needle.isEmpty() && deckId != null) { ... search ... }
-// else: rơi xuống nhánh thường — bỏ qua q hoàn toàn
-```
-
-Khi client gửi `?q=...` **không kèm `deckId`**, server trả danh sách bình thường, **lờ đi từ khoá** (không lỗi, không lọc) → người dùng tưởng đã tìm. Anti-pattern "silent ignore".
-
-**Đề xuất:** Hoặc hỗ trợ search toàn bộ thẻ của student khi `deckId == null`, hoặc trả 400 yêu cầu `deckId`. Không nên nuốt im lặng.
-
----
-
-## 6. 🟡 Constraint lệch — giới hạn độ dài tên sổ
-
-| File | Field | Max |
-|:---|:---|:--:|
-| [`AddFlashcardRequest.java:13`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/dto/AddFlashcardRequest.java) | `deckName` | 255 |
-| [`DeckCreateRequest.java:7`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/dto/DeckCreateRequest.java) | `deckName` | 100 |
-| [`DeckUpdateRequest.java:9`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/dto/DeckUpdateRequest.java) | `name` | 100 |
-
-Cùng một khái niệm "tên sổ" nhưng 3 ràng buộc khác nhau (DB cột `name` là 255). Tạo qua `addCard` cho 255, tạo trực tiếp chỉ 100 → không nhất quán.
-
-**Đề xuất:** Thống nhất 1 hằng số (`DECK_NAME_MAX`) cho cả 3.
-
----
-
-## 7. 🟡 Magic string — `"Mặc định"`
-
-**File:** [`FlashcardSrsService.java:281`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/FlashcardSrsService.java) + `"Từ cần ôn lại"` tại `:613`.
-
-Chuỗi nghiệp vụ hard-code rải rác. **Đề xuất:** đưa lên `private static final String DEFAULT_DECK_NAME` / `REVIEW_DECK_NAME`.
-
----
-
-## 8. 🟡 Trùng lặp logic resolve
-
-**File:** [`FlashcardSrsService.java:656-779`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/FlashcardSrsService.java)
-
-`buildRevealResponse` (switch theo `contentType` lấy word/meaning/furigana/example) **lặp lại** phần lớn logic của `resolveFront` + `resolveBackMeta`. 3 hàm cùng switch `VOCABULARY/KANJI/GRAMMAR/CUSTOM` + cùng check `status == PUBLISHED`.
-
-**Đề xuất:** Trích một `ResolvedCard` (front, back, furigana, exampleJp/Vi, audio, stroke) dùng chung cho cả reveal lẫn list, tránh lệch logic khi sửa.
-
----
-
-## 9. 🟡 Micro — khởi tạo `Random` lặp lại
-
-**File:** [`FlashcardSrsService.java:508`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/FlashcardSrsService.java) (`new Random()` mỗi `getSession`) và truyền vào `buildQuiz` `:640`.
-
-**Đề xuất:** Dùng `ThreadLocalRandom.current()` (không cần giữ instance), giảm cấp phát.
-
----
-
-## 10. 🟡 Naming lệch — `WrongWord.frontText`
-
-**File:** [`ReviewResultResponse.java:25`](../../apps/backend/src/main/java/com/jlpt/feature/flashcard/dto/ReviewResultResponse.java)
-
-```java
-public record WrongWord(String contentType, Long contentId, String frontText) {}
-```
-
-Service gán `new WrongWord("vocabulary", id, v.getWord())` → field tên `frontText` nhưng chứa `word`. Gây nhầm khi đọc.
-
-**Đề xuất:** Đổi tên field thành `word` cho khớp ngữ nghĩa (cập nhật FE).
-
----
-
-## 11. ⚪ Doc rác / spec lỗi thời
-
-- [`.sdd/specs/backend/feat-flashcard/SPEC.md`](../../.sdd/specs/backend/feat-flashcard/SPEC.md): **rỗng** (1 dòng) → spec chết. Đã có spec mới đầy đủ; nên trỏ tới hoặc xoá file rỗng.
-- [`.sdd/specs/backend/feat-dictionary-bookmark/SPEC.md`](../../.sdd/specs/backend/feat-dictionary-bookmark/SPEC.md): mô tả bookmark qua `student_content_progress` — **code đã thay** bằng sổ "Từ cần ôn lại". Đánh dấu DEPRECATED để khỏi gây hiểu nhầm.
-
----
-
-## 12. ⚪ Cây thư mục trùng — `project-git/`
-
-`project-git/` chứa bản sao gần như toàn bộ `docs/` + `.sdd/specs/` của repo (xem kết quả glob: `project-git\.sdd\specs\backend\feat-flashcard\SPEC.md` …). Nếu không phải submodule/backup có chủ đích thì đây là **rác lớn nhất** (file lỗi thời lẫn lộn với bản chính khi tìm kiếm).
-
-**Đề xuất:** Xác nhận mục đích; nếu là backup cũ → xoá khỏi repo hoặc thêm `.gitignore`. (Cần hỏi trước khi xoá vì có thể chủ đích.)
-
----
-
-## 13. KHÔNG phải rác (đã kiểm, vẫn dùng)
-
-Để tránh xoá nhầm — các method dưới đây **có caller**, giữ nguyên:
-`findAllByStudent` (getCards, deckId null), `findAllDue`, `softDeleteByDeckId`, `findWrongVocabCardsInSession`, `findByStudentAndContentIds`, `existsByStudentIdAndName`, `findByStudentIdAndIsReviewDeckTrue`, cả 2 converter (`FlashcardContentTypeConverter`, `FlashcardLastRatingConverter`).
-
----
-
-## 14. THỨ TỰ DỌN ĐỀ XUẤT
-
-1. **Xoá ngay (an toàn):** #1 dead method, #7 magic string, #9 Random.
-2. **Refactor nhỏ + sửa FE:** #2 displayName, #4 newCount/reviewCount, #10 naming, #6 constraint.
-3. **Sửa hành vi (cần test):** #3 CUSTOM normalize, #5 search gap.
-4. **Refactor lớn:** #8 gộp resolve.
-5. **Dọn doc/repo (hỏi trước):** #11, #12.
+- `mvn -o compile` — ✅ pass
+- `mvn -o test -Dtest=FlashcardSrsServiceSm2Test` — ✅ pass
+- `mvn -o spotless:check` — ✅ pass
+- `eslint` (NotebookWordCard / Notebook / Dictionary) — ✅ pass

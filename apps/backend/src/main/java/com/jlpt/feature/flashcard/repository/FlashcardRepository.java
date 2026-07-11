@@ -152,11 +152,6 @@ public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
 
     boolean existsByIdAndStudentId(Long flashcardId, Long studentId);
 
-    // Soft delete (ADR-004) toàn bộ thẻ của một deck khi xóa sổ tay.
-    @Modifying
-    @Query("UPDATE Flashcard f SET f.isDeleted = true WHERE f.deck.id = :deckId")
-    void softDeleteByDeckId(@Param("deckId") Long deckId);
-
     // Soft delete (ADR-004) nhiều thẻ cùng lúc — gỡ hàng loạt khỏi sổ tay (3B). Quyền sở hữu ép
     // ngay trong WHERE (AND student.id) → không xóa nhầm thẻ của người khác; trả số dòng đã gỡ.
     @Modifying

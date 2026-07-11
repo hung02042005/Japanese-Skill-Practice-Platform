@@ -25,27 +25,6 @@
 
 /* Controls */
 .ntb-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.ntb-tabs { display: flex; gap: 8px; }
-.ntb-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: var(--radius-full);
-  border: 1.5px solid var(--color-border);
-  background: var(--color-card);
-  color: var(--color-text-sub);
-  font-family: var(--font-base);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition);
-}
-.ntb-tab:hover { background: var(--color-primary-bg); }
-.ntb-tab--active { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-bg); }
-.ntb-tab-count { font-size: 11px; font-weight: 700; background: var(--color-bg); border-radius: var(--radius-full); padding: 1px 7px; }
-.ntb-tab--active .ntb-tab-count { background: var(--color-card); }
 
 .ntb-search {
   display: flex;
@@ -92,12 +71,10 @@
 /* NotebookWordCard */
 .nwc-card { background: var(--color-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 16px 20px; transition: box-shadow var(--transition); }
 .nwc-card:hover { box-shadow: var(--shadow-md); }
-.nwc-card--due { border-left: 3px solid var(--color-primary); }
 .nwc-main { display: flex; flex-direction: column; gap: 6px; }
 .nwc-head { display: flex; align-items: center; gap: 10px; }
 .nwc-word { font-size: 22px; font-weight: 700; color: var(--color-text); }
 .nwc-furi { font-size: 13px; color: var(--color-text-sub); }
-.nwc-due { font-size: 12px; font-weight: 700; color: var(--color-primary); }
 .nwc-del {
   margin-left: auto;
   width: 30px;
