@@ -161,7 +161,7 @@
 | Mục | Trạng thái | Ghi chú |
 |---|---|---|
 | P0.1 — Post-deploy smoke test | 🟢 Xong, verify qua deploy thật | `/actuator/health` từng trả `DOWN` giả do `MailHealthIndicator` — đã tắt riêng (`management.health.mail.enabled: false`) trước khi bật smoke test, tránh false-positive fail mọi lần deploy |
-| P0.2 — Backup DB tự động | 🟡 Gần xong | Script + systemd timer (3h sáng hàng ngày) đã chạy thật, **đã test restore thành công** (27 bảng, 14 dòng `student_users` khớp dữ liệu sống). Còn thiếu: đẩy bản backup ra **ngoài VPS** — cần credential cloud storage của chủ dự án, đang chờ xác nhận dịch vụ muốn dùng |
+| P0.2 — Backup DB tự động | 🟡 Gần xong (quyết định hoãn có chủ đích) | Script (`/opt/scripts/backup-db.sh`) + systemd timer (`backup-db.timer`, 3h sáng hàng ngày, giữ 14 bản gần nhất) đã chạy thật trên VPS, **đã test restore thành công** (27 bảng, 14 dòng `student_users` khớp dữ liệu sống, container/volume test đã dọn dẹp sạch). **Chưa làm — hoãn theo yêu cầu chủ dự án (11/07/2026):** đẩy bản backup ra ngoài VPS (rclone/S3/Google Drive...), cần credential cloud storage mà AI không tự có. **Rủi ro còn tồn tại:** nếu VPS hỏng ổ cứng/mất toàn bộ, backup nằm cùng máy cũng mất theo — ưu tiên làm nốt phần này trước khi coi P0 hoàn tất 100%. |
 | P0.3 — Đồng bộ tài liệu CI/CD | 🟢 Xong | `CI_CD.md` viết lại khớp `cd.yml`/`ci.yml` thật + thêm mục "Lịch sử sự cố"; `README.md` xoá mật khẩu ví dụ cứng, **sửa thêm 1 lỗi phát hiện được**: lệnh SSH tunnel hướng dẫn sai cổng phía VPS (`1433` → phải là `14330`) |
 | P1.4 — Staging environment | ⚪ Chưa làm | |
 | P1.5 — Tag image theo SHA + rollback workflow | ⚪ Chưa làm | |
