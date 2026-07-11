@@ -134,10 +134,37 @@ jobs:
           fi
           echo "Frontend xác nhận UP."
 
-          # 8. Dọn dẹp các images lơ lửng (dangling) để tiết kiệm dung lượng
+          # 8. TAG IMAGE THEO COMMIT SHA (P1.5 — xem Deploy_Improvement_Plan.md)
+          # Chỉ gắn tag SHA SAU KHI đã xác nhận backend + frontend healthy ở bước
+          # trên — nghĩa là mọi tag SHA còn lại trên VPS đều là bản "đã biết chạy
+          # được", dùng làm ứng viên rollback an toàn (xem rollback.yml). `:latest`
+          # vẫn luôn trỏ tới bản mới nhất như trước; tag SHA chỉ là 1 con trỏ thêm
+          # tới cùng image, không tốn thêm dung lượng đáng kể.
+          echo "Đang gắn tag image theo commit SHA (${{ github.event.workflow_run.head_sha }})..."
+          DEPLOY_SHA="${{ github.event.workflow_run.head_sha }}"
+          docker tag jlpt-backend:latest jlpt-backend:$DEPLOY_SHA
+          docker tag jlpt-frontend:latest jlpt-frontend:$DEPLOY_SHA
+          # deploy-history.log: nhật ký các SHA từng deploy thành công + thời điểm,
+          # dùng để tra cứu "SHA nào đang chạy trước lần rollback này" (đang ở
+          # $(pwd) = PROJECT_PATH, xem bước 2 của script).
+          echo "$DEPLOY_SHA $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> deploy-history.log
+
+          # Giữ tối đa 5 bản SHA gần nhất cho mỗi image (đủ để rollback vài bước
+          # gần đây), xoá tag cũ hơn để không phình ổ đĩa VPS vô hạn theo thời gian.
+          # Sắp theo CreatedAt giảm dần (mới nhất trước) rồi bỏ tag từ vị trí thứ 6.
+          for IMG in jlpt-backend jlpt-frontend; do
+            docker images "$IMG" --format '{{.CreatedAt}}|{{.Tag}}' \
+              | grep -v -E '\|(latest|<none>)$' \
+              | sort -r \
+              | tail -n +6 \
+              | cut -d'|' -f2 \
+              | xargs -r -I{} docker rmi "$IMG:{}" || true
+          done
+
+          # 9. Dọn dẹp các images lơ lửng (dangling) để tiết kiệm dung lượng
           echo "Đang dọn dẹp Docker images cũ..."
           docker image prune -f
-          echo "Triển khai hoàn tất và đã xác minh backend + frontend đều sống!"
+          echo "Triển khai hoàn tất và đã xác minh backend + frontend đều sống! (SHA: $DEPLOY_SHA)"
 
     - name: Purge Cloudflare Cache
       run: |

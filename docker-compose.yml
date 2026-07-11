@@ -31,6 +31,10 @@ services:
     build:
       context: ./apps/backend
       dockerfile: Dockerfile
+    # Tên image cố định (thay vì để Compose tự đặt theo tên thư mục project) — cần
+    # thiết để cd.yml gắn thêm tag theo commit SHA (P1.5) và rollback.yml có thể
+    # `docker tag` lại đúng image này khi quay về bản cũ.
+    image: jlpt-backend:latest
     container_name: jlpt-backend
     env_file:
       - path: ./apps/backend/.env
@@ -53,6 +57,7 @@ services:
     build:
       context: ./apps/frontend
       dockerfile: Dockerfile
+    image: jlpt-frontend:latest
     container_name: jlpt-frontend
     ports:
       - "80:80" # Expose frontend ra cổng 80 (HTTP mặc định)
