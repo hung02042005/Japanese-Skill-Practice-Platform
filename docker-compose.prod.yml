@@ -27,9 +27,9 @@ services:
       - SPRING_DATA_REDIS_HOST=redis
       - APP_FRONTEND_URL=https://sakuji.online
       # Bắt buộc cho Google OAuth2
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - JWT_SECRET=${JWT_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - JWT_SECRET=${JWT_SECRET:-changeme_secret_key_needs_to_be_long_enough_for_hs256}
       # Bắt buộc để email xác minh / đặt lại mật khẩu hoạt động trên production
       # (root .env trên VPS nên khai báo đủ 4 biến này — xem apps/backend/.env.example).
       # QUAN TRỌNG: dùng "${VAR:-default}" chứ KHÔNG phải "${VAR}" trần — nếu root .env

@@ -68,9 +68,29 @@ jobs:
           # Đảm bảo các quyền chạy script nếu cần
           # chmod +x apps/backend/mvnw
           
-          # 5. Build lại các Docker image và chạy lại container ở chế độ background
-          echo "Đang build và khởi động các Docker containers..."
-          docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+          # 5. Khởi động DB và Redis trước
+          echo "Đang khởi động Database và Redis..."
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d db redis
+          
+          # Đợi DB sẵn sàng và tạo Database JLPT_LearningDB (Fix triệt để lỗi crash-loop)
+          echo "Đang chờ DB sẵn sàng và tạo cơ sở dữ liệu..."
+          export $(grep -v '^#' .env | xargs)
+          MAX_RETRIES=30
+          RETRY_COUNT=0
+          until docker exec jlpt-db /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -C -Q "IF NOT EXISTS(SELECT * FROM sys.databases WHERE name='JLPT_LearningDB') CREATE DATABASE JLPT_LearningDB"; do
+            if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+              echo "LỖI: DB không sẵn sàng sau 150 giây."
+              exit 1
+            fi
+            echo "DB chưa ready, thử lại sau 5 giây..."
+            sleep 5
+            RETRY_COUNT=$((RETRY_COUNT+1))
+          done
+          echo "Database JLPT_LearningDB đã sẵn sàng!"
+          
+          # 6. Build và khởi động các service còn lại (backend, frontend)
+          echo "Đang build và khởi động Backend, Frontend..."
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build backend frontend
           
           # 6. Dọn dẹp các images lơ lửng (dangling) để tiết kiệm dung lượng
           echo "Đang dọn dẹp Docker images cũ..."

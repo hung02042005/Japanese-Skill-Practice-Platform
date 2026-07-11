@@ -14,10 +14,10 @@ services:
       - sqlserver_data:/var/opt/mssql
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"IF NOT EXISTS(SELECT * FROM sys.databases WHERE name='JLPT_LearningDB') CREATE DATABASE JLPT_LearningDB\" && /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\""]
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\" || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
 
   redis:
     image: redis:alpine
@@ -43,17 +43,6 @@ services:
     ports:
       # Chỉ bind 127.0.0.1: mọi traffic public phải đi qua Nginx (frontend), không expose Spring Boot trực tiếp
       - "127.0.0.1:8080:8080"
-    # BUG-06 REVERT (2026-07-11): đã thử "db: condition: service_healthy" nhưng
-    # CD run thật fail với "dependency failed to start: container jlpt-db is
-    # unhealthy" — healthcheck của db (định nghĩa sẵn, xem service `db` bên dưới)
-    # tồn tại từ trước nhưng KHÔNG có ai từng verify nó pass thật trên VPS (trước
-    # đây không service nào phụ thuộc vào nó). Hạ về service_started để deploy
-    # chạy được ngay; vẫn tốt hơn tình trạng gốc (trước đây backend không chờ gì
-    # cả). TODO: SSH vào VPS chạy
-    #   docker inspect jlpt-db --format='{{json .State.Health}}'
-    # để tìm lý do healthcheck fail thật (sai path sqlcmd/mssql-tools18, sai mật
-    # khẩu SA so với container đang chạy, hay timeout quá ngắn), sửa healthcheck,
-    # xác nhận 1 lần deploy chạy được với service_healthy rồi mới bật lại.
     depends_on:
       redis:
         condition: service_started
