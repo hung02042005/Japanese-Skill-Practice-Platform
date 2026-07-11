@@ -1,0 +1,103 @@
+# Môi trường STAGING (P1.4 — xem docs/05-Deployment/Deploy_Improvement_Plan.md).
+#
+# CHẠY ĐỘC LẬP với docker-compose.yml (không phải override/merge lên file gốc):
+#   docker compose -f docker-compose.staging.yml up -d --build
+#
+# Lý do KHÔNG dùng override như docker-compose.prod.yml: Compose merge các file
+# theo CÙNG TÊN SERVICE — nếu file này định nghĩa lại service "db"/"backend" với
+# container_name khác, Compose sẽ MERGE thành 1 service duy nhất (union port,
+# ghi đè container_name), không tạo ra 2 container riêng biệt như mong muốn. Vì
+# vậy file này định nghĩa service KHÁC TÊN hoàn toàn (db-staging, backend-staging,
+# ...) và image KHÁC REPOSITORY hoàn toàn (jlpt-backend-staging, không phải
+# jlpt-backend:staging) — để không bao giờ bị vòng lặp dọn dẹp image theo SHA
+# trong cd.yml (chỉ lọc theo đúng tên repo jlpt-backend/jlpt-frontend) đụng vào.
+#
+# Mục đích: mọi thay đổi schema DB / biến môi trường mới được test ở đây trước
+# khi chạm production — cả 4 sự cố ngày 11/07/2026 lẽ ra bắt được ở bước này.
+# Quy trình: push nhánh "develop" → cd-staging.yml tự deploy vào đây → test tay
+# → merge "develop" vào "branch_for_hung" → cd.yml mới thực sự lên production.
+#
+# Chấp nhận đánh đổi: chạy CHUNG VPS với production (không phải máy vật lý
+# riêng) để chi phí bằng 0 khi mới bắt đầu — rủi ro "staging ăn tài nguyên của
+# production" tồn tại thật, chấp nhận có chủ đích cho tới khi ngân sách cho
+# phép tách VPS riêng (xem "Tại sao thiết kế vậy" trong Deploy_Diagram.md).
+
+version: '3.8'
+
+services:
+  db-staging:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: jlpt-db-staging
+    environment:
+      ACCEPT_EULA: "Y"
+      # Dùng chung giá trị MSSQL_SA_PASSWORD với production (cùng .env) — đây là
+      # 1 container/volume hoàn toàn tách biệt, không có dữ liệu chung với "db"
+      # production, nên dùng chung mật khẩu admin không phát sinh rủi ro rò rỉ
+      # dữ liệu, chỉ đơn giản để không phải quản lý thêm 1 secret.
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in .env}"
+      MSSQL_PID: "Developer"
+    ports:
+      # Cổng ngoài khác hẳn production (14330) — tránh đụng cổng khi chạy chung VPS.
+      - "14331:1433"
+    volumes:
+      - sqlserver_data_staging:/var/opt/mssql
+    restart: unless-stopped
+
+  redis-staging:
+    image: redis:alpine
+    container_name: jlpt-redis-staging
+    ports:
+      - "127.0.0.1:6380:6379"
+    restart: unless-stopped
+
+  backend-staging:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    image: jlpt-backend-staging:latest
+    container_name: jlpt-backend-staging
+    environment:
+      - DATABASE_URL=jdbc:sqlserver://db-staging:1433;databaseName=JLPT_LearningDB_staging;encrypt=true;trustServerCertificate=true
+      - DATABASE_USERNAME=sa
+      - DATABASE_PASSWORD=${MSSQL_SA_PASSWORD}
+      - SPRING_DATA_REDIS_HOST=redis-staging
+      # Chưa có subdomain staging.sakuji.online (chưa cấu hình DNS/Cloudflare) —
+      # dùng thẳng IP:port VPS cho tới khi cần test cả luồng OAuth2/email thật.
+      - APP_FRONTEND_URL=${STAGING_FRONTEND_URL:-http://135.149.56.179:8082}
+      - APP_CORS_ALLOWED_ORIGINS=${STAGING_FRONTEND_URL:-http://135.149.56.179:8082}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - JWT_SECRET=${JWT_SECRET:-changeme_secret_key_needs_to_be_long_enough_for_hs256}
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USERNAME=${SMTP_USERNAME:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - UPLOAD_DIR=/app/uploads
+    volumes:
+      - jlpt-uploads-staging:/app/uploads
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:8080"
+    depends_on:
+      redis-staging:
+        condition: service_started
+      db-staging:
+        condition: service_started
+
+  frontend-staging:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    image: jlpt-frontend-staging:latest
+    container_name: jlpt-frontend-staging
+    ports:
+      - "8082:80"
+    depends_on:
+      - backend-staging
+    restart: unless-stopped
+
+volumes:
+  jlpt-uploads-staging:
+    name: jlpt-uploads-staging
+  sqlserver_data_staging:
+    name: sqlserver_data_staging
