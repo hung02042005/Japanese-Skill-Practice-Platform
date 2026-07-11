@@ -256,9 +256,13 @@ UI-only guard, backend đã enforce qua `@PreAuthorize`/`hasRole` trong `Securit
 
 **Scope thật lớn hơn 1 dòng** (xem mục 5): cần thêm `spring-boot-starter-data-redis` vào `pom.xml`, cấu hình connection tới service `redis` đã có sẵn trong `docker-compose.yml`, và xử lý fallback (không để Redis down làm crash toàn bộ endpoint `checkAccountType`). Nếu không có thời gian, có thể để nguyên in-memory nhưng ghi rõ giới hạn (rate limit reset khi restart/scale ngang nhiều instance) vào code comment thay vì âm thầm chấp nhận.
 
-#### BUG-13: `VPS_PASSWORD` trong CD workflow
+#### BUG-13: `VPS_PASSWORD` trong CD workflow — **ĐÃ REVERT sau khi verify thực tế bằng cách deploy thật**
 
-Không xác minh được từ code liệu secret `VPS_PASSWORD` có thực sự được set trong GitHub repo secrets hay không (ngoài khả năng truy cập của tôi). Nếu chưa set, dòng này vô hại (action sẽ tự dùng `key`). Khuyến nghị: xoá dòng `password:` khỏi `cd.yml` để loại trừ khả năng ai đó vô tình thêm secret yếu sau này, và xác nhận với người quản lý VPS rằng auth chỉ dùng SSH key.
+Ban đầu không xác minh được từ code liệu secret `VPS_PASSWORD` có thực sự được set hay không, nên đã xoá dòng `password:` theo khuyến nghị (chỉ dùng SSH key). Sau khi push commit `687ef159` và để CD chạy thật: **run fail ngay lập tức** với log `Error: can't connect without a private SSH key or password` — bằng chứng trực tiếp rằng secret `VPS_SSH_KEY` **chưa từng được cấu hình** trong repo, và deploy trước giờ chỉ hoạt động được nhờ `VPS_PASSWORD`.
+
+→ Đã khôi phục lại dòng `password: ${{ secrets.VPS_PASSWORD }}` trong `cd.yml` (song song với `key:`) để deploy chạy lại được ngay. **Việc cần làm tiếp** (không thể tự làm từ đây, cần quyền truy cập repo settings): thiết lập `VPS_SSH_KEY` cho đúng (tạo keypair, add public key vào `~/.ssh/authorized_keys` trên VPS, add private key vào GitHub repo secret), xác nhận 1 lần deploy chạy được chỉ với `key:`, rồi mới xoá `password:` lần nữa.
+
+**Bài học**: khi một khuyến nghị bảo mật phụ thuộc vào giả định về hạ tầng/secret không kiểm chứng được từ code (ở đây là "chắc VPS_SSH_KEY đã có sẵn"), phải coi đó là rủi ro thật và verify bằng cách chạy thử trước khi coi là xong — audit tĩnh không thấy được lớp lỗi này.
 
 #### BUG-14: BCrypt cost=12 — **KHÔNG cần fix** (xem mục 4, đi ngược ADR-003 nếu hạ xuống)
 
