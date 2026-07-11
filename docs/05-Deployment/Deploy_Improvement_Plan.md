@@ -160,9 +160,9 @@
 
 | Mục | Trạng thái | Ghi chú |
 |---|---|---|
-| P0.1 — Post-deploy smoke test | ⚪ Chưa làm | |
-| P0.2 — Backup DB tự động | ⚪ Chưa làm | |
-| P0.3 — Đồng bộ tài liệu CI/CD | ⚪ Chưa làm | |
+| P0.1 — Post-deploy smoke test | 🟢 Xong, verify qua deploy thật | `/actuator/health` từng trả `DOWN` giả do `MailHealthIndicator` — đã tắt riêng (`management.health.mail.enabled: false`) trước khi bật smoke test, tránh false-positive fail mọi lần deploy |
+| P0.2 — Backup DB tự động | 🟡 Gần xong | Script + systemd timer (3h sáng hàng ngày) đã chạy thật, **đã test restore thành công** (27 bảng, 14 dòng `student_users` khớp dữ liệu sống). Còn thiếu: đẩy bản backup ra **ngoài VPS** — cần credential cloud storage của chủ dự án, đang chờ xác nhận dịch vụ muốn dùng |
+| P0.3 — Đồng bộ tài liệu CI/CD | 🟢 Xong | `CI_CD.md` viết lại khớp `cd.yml`/`ci.yml` thật + thêm mục "Lịch sử sự cố"; `README.md` xoá mật khẩu ví dụ cứng, **sửa thêm 1 lỗi phát hiện được**: lệnh SSH tunnel hướng dẫn sai cổng phía VPS (`1433` → phải là `14330`) |
 | P1.4 — Staging environment | ⚪ Chưa làm | |
 | P1.5 — Tag image theo SHA + rollback workflow | ⚪ Chưa làm | |
 | P1.6 — SECRETS.md + quy trình thông báo | ⚪ Chưa làm | |

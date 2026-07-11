@@ -152,8 +152,9 @@ Mỗi khi bạn sửa code ở máy cá nhân, push lên GitHub và muốn cập
 1. Mở phần mềm **PowerShell** (màu xanh/đen) trên máy tính Windows của bạn (mở một cửa sổ mới tinh).
 2. Copy chính xác dòng lệnh sau dán vào và nhấn Enter:
    ```powershell
-   ssh -L 14330:127.0.0.1:1433 jlptadmin@135.149.56.179
+   ssh -L 14330:127.0.0.1:14330 jlptadmin@135.149.56.179
    ```
+   > **Sửa 11/07/2026 (P0.3):** cổng đích ở phía VPS phải là `14330`, KHÔNG phải `1433` — `docker-compose.yml` chỉ map `"14330:1433"` (host:container), nghĩa là chính VPS chỉ có cổng `14330` thực sự đang lắng nghe (`ss -tlnp` xác nhận); cổng `1433` chỉ tồn tại nội bộ trong mạng Docker, không có gì lắng nghe ở `127.0.0.1:1433` trên VPS. Dùng nhầm `1433` ở đây sẽ khiến tunnel "thông" (không báo lỗi) nhưng không kết nối được tới database — đúng loại lỗi từng gây nhầm lẫn thật khi cấu hình DataGrip/DBeaver.
 3. Nếu nó hỏi `Are you sure you want to continue connecting (yes/no)?`, hãy gõ chữ `yes` và nhấn Enter.
 4. Nhập mật khẩu VPS của bạn vào.
 5. Khi bạn thấy dòng chữ `jlptadmin@jlpt-vps:~$` hiện ra, tức là đường hầm đã THÔNG!
@@ -167,7 +168,7 @@ Mỗi khi bạn sửa code ở máy cá nhân, push lên GitHub và muốn cập
    * **Port:** Gõ thêm số `0` vào cuối để thành **`14330`** (Đây chính là cái hầm nãy bạn vừa đào).
    * **Database/Schema:** Xóa chữ `master` đi, gõ vào `JLPT_LearningDB`
    * **Username:** gõ `sa`
-   * **Password:** gõ mật khẩu Database nội bộ (Ví dụ: `JlptProd@2026!Secure`)
+   * **Password:** gõ đúng giá trị `MSSQL_SA_PASSWORD` hiện tại trong file `.env` trên VPS (`/opt/Japanese-Skill-Practice-Platform/.env`) — **không có mật khẩu cố định**, và tuyệt đối không copy mật khẩu cũ đã lưu trong DBeaver/DataGrip của bạn nếu mật khẩu trên VPS vừa được đổi (xem lưu ý ở mục 6 tài liệu `CI_CD.md` về rủi ro `.env` lệch với dữ liệu đã khởi tạo)
 4. Tích chọn ô **Save password**.
 5. Nhìn xuống dưới cùng của bảng, tích chọn vào ô **Trust Server Certificate**.
 6. **LƯU Ý:** Không được bấm sang tab SSH. Để nguyên tab Main.
