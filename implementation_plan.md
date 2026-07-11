@@ -149,13 +149,13 @@ export async function resendVerification(email) {
 
 ### 🟡 P1 — Bất hợp lý nghiệp vụ / Deploy risk thật
 
-#### BUG-06: `docker-compose.yml` — backend không đợi DB ready
+#### BUG-06: `docker-compose.yml` — backend không đợi DB ready — **fix ban đầu đã REVERT sau khi verify thực tế**
 
 **Vị trí:** [docker-compose.yml:46-48](file:///c:/Users/Tien%20Dat/OneDrive/Documents/GitHub/Japanese-Skill-Practice-Platform/docker-compose.yml#L46-L48)
 
 **Đã verify:** `db` **đã có `healthcheck`** đầy đủ (dòng 16-20) nhưng không ai tham chiếu tới nó. `backend.depends_on` chỉ có `redis: condition: service_started`. Trên VPS lần đầu deploy (volume rỗng, MSSQL cần thời gian init lớn hơn container thường), Flyway sẽ cố connect trước khi DB sẵn sàng → crash loop.
 
-**Fix:** Thêm vào `depends_on` của `backend`:
+**Fix ban đầu:**
 ```yaml
 depends_on:
   redis:
@@ -163,6 +163,18 @@ depends_on:
   db:
     condition: service_healthy
 ```
+
+**Kết quả deploy thật (commit `b2b2ea25`, CD run `29143152615`): FAIL.** Log:
+```
+Container jlpt-db Waiting
+Container jlpt-db Error dependency db failed to start
+dependency failed to start: container jlpt-db is unhealthy
+```
+Nghĩa là healthcheck của `db` **tồn tại sẵn từ trước** (không phải do fix này thêm vào) nhưng **chưa từng thực sự được kiểm chứng pass trên VPS thật** — vì trước đây không service nào phụ thuộc vào nó nên không ai để ý nó fail. Có thể do sai path `sqlcmd`/`mssql-tools18` so với image thật đang chạy, mật khẩu SA trong `$$MSSQL_SA_PASSWORD` không khớp container đang chạy, hoặc 10 x 10s (100s) không đủ thời gian.
+
+**→ Đã revert về `service_started`** (vẫn tốt hơn trạng thái gốc — trước đây backend không chờ `db` chút nào) để deploy chạy được ngay. Việc cần làm tiếp (cần quyền SSH VPS, không tự làm được từ đây): `docker inspect jlpt-db --format='{{json .State.Health}}'` để xem lý do healthcheck fail thật, sửa đúng gốc, xác nhận 1 lần deploy chạy được với `service_healthy` rồi mới bật lại.
+
+**Bài học (cùng dạng với BUG-13):** một fix nhìn hợp lý trên giấy (dùng healthcheck đã có sẵn) vẫn có thể phá deploy nếu chưa từng verify healthcheck đó THẬT SỰ pass trên môi trường production — audit tĩnh không thấy được lớp lỗi vận hành này, chỉ lộ ra khi chạy deploy thật.
 
 ---
 
