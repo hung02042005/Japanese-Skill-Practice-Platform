@@ -5,6 +5,7 @@ import {
   updateNotificationRule,
 } from '../../../api/adminNotificationService';
 import { IcPlus, IcEdit } from '../ManageUsersIcons';
+import { isBlank } from '../../../utils/validation';
 
 const CHANNEL_LABELS = { in_app: 'Trong ứng dụng', email: 'Email', both: 'Cả hai' };
 const CHANNEL_OPTIONS = [
@@ -39,12 +40,29 @@ function buildPayload(rule, overrides = {}) {
 
 function RuleForm({ mode, initial, onSubmit, onCancel, isSaving }) {
   const [form, setForm] = useState(initial);
+  const [errors, setErrors] = useState({});
   const isEdit = mode === 'edit';
 
-  function set(key, val) { setForm((f) => ({ ...f, [key]: val })); }
+  function set(key, val) {
+    setForm((f) => ({ ...f, [key]: val }));
+    if (errors[key]) setErrors((e) => ({ ...e, [key]: '' }));
+  }
+
+  function validate() {
+    const next = {};
+    if (!isEdit && !RULE_KEY_RE.test(form.ruleKey)) {
+      next.ruleKey = 'Rule key không hợp lệ (chữ thường/số/gạch dưới, bắt đầu bằng chữ, 3–50 ký tự).';
+    }
+    if (isBlank(form.description)) {
+      next.description = 'Mô tả là bắt buộc.';
+    }
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
 
   function handleSubmit(e) {
     e.preventDefault();
+    if (!validate()) return;
     onSubmit(form);
   }
 
@@ -58,13 +76,16 @@ function RuleForm({ mode, initial, onSubmit, onCancel, isSaving }) {
         <label className="ast-field-label" htmlFor="nr-key">Rule key</label>
         <input
           id="nr-key"
-          className="ast-input"
+          className={`ast-input${errors.ruleKey ? ' ast-input--err' : ''}`}
           value={form.ruleKey}
           onChange={(e) => set('ruleKey', e.target.value)}
           placeholder="vd: streak_reminder"
           disabled={isEdit}
+          aria-invalid={errors.ruleKey ? 'true' : undefined}
         />
-        {!isEdit && <p className="ast-field-hint">Chữ thường, số, gạch dưới; bắt đầu bằng chữ cái (3–50 ký tự)</p>}
+        {errors.ruleKey
+          ? <p className="ast-field-error">{errors.ruleKey}</p>
+          : (!isEdit && <p className="ast-field-hint">Chữ thường, số, gạch dưới; bắt đầu bằng chữ cái (3–50 ký tự)</p>)}
       </div>
 
       <div className="ast-field">
@@ -83,12 +104,14 @@ function RuleForm({ mode, initial, onSubmit, onCancel, isSaving }) {
         <label className="ast-field-label" htmlFor="nr-desc">Mô tả</label>
         <input
           id="nr-desc"
-          className="ast-input"
+          className={`ast-input${errors.description ? ' ast-input--err' : ''}`}
           value={form.description}
           onChange={(e) => set('description', e.target.value)}
           placeholder="Mô tả ngắn về quy tắc (≤ 255 ký tự)"
           maxLength={255}
+          aria-invalid={errors.description ? 'true' : undefined}
         />
+        {errors.description && <p className="ast-field-error">{errors.description}</p>}
       </div>
 
       <div className="ast-field ast-field--full">
@@ -190,14 +213,7 @@ export function NotificationTab({ addToast }) {
   }
 
   async function handleSubmit(form) {
-    if (editing.mode === 'create' && !RULE_KEY_RE.test(form.ruleKey)) {
-      addToast('error', 'Rule key không hợp lệ (chữ thường/số/gạch dưới, 3–50 ký tự).');
-      return;
-    }
-    if (!form.description.trim()) {
-      addToast('error', 'Mô tả không được để trống.');
-      return;
-    }
+    // Validate L1 đã chạy trong RuleForm (inline per-field); ở đây chỉ xử lý gọi API.
     setSaving(true);
     try {
       const payload = { ...form, description: form.description.trim() };

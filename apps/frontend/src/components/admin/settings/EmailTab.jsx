@@ -1,5 +1,36 @@
 import { useState, useEffect } from 'react';
 import { getSettings, updateSettings, testSmtp } from '../../../api/adminService';
+import { emailError, requiredError, portError } from '../../../utils/validation';
+
+/* ─── Validators L1 (client-side; BE vẫn validate lại) ────────────────────── */
+
+function smtpFieldError(key, value) {
+  switch (key) {
+    case 'host':
+      return requiredError(value, 'SMTP Host');
+    case 'port':
+      return portError(value);
+    case 'username':
+      return emailError(value);
+    case 'from_name':
+      return requiredError(value, 'Tên hiển thị');
+    default:
+      return ''; // password (optional), secure (select)
+  }
+}
+
+function emailTypeFieldError(key, value) {
+  switch (key) {
+    case 'from_email':
+      return emailError(value);
+    case 'from_name':
+      return requiredError(value, 'Tên hiển thị');
+    case 'subject':
+      return requiredError(value, 'Tiêu đề email');
+    default:
+      return '';
+  }
+}
 
 /* ─── SMTP Server ─────────────────────────────────────────────────────────── */
 
@@ -89,6 +120,7 @@ function FieldSkeleton() {
 
 function SmtpCard({ addToast }) {
   const [form,      setForm]    = useState({});
+  const [errors,    setErrors]  = useState({});
   const [showPass,  setShowPass] = useState(false);
   const [isLoading, setLoading]  = useState(true);
   const [isSaving,  setSaving]   = useState(false);
@@ -106,10 +138,29 @@ function SmtpCard({ addToast }) {
       .finally(() => setLoading(false));
   }, []);
 
-  function set(key, val) { setForm((f) => ({ ...f, [key]: val })); }
+  function set(key, val) {
+    setForm((f) => ({ ...f, [key]: val }));
+    if (errors[key]) setErrors((e) => ({ ...e, [key]: '' }));
+  }
+
+  function handleBlur(key) {
+    setErrors((e) => ({ ...e, [key]: smtpFieldError(key, form[key] ?? '') }));
+  }
+
+  /** Trả true nếu hợp lệ; đồng thời set errors để hiện inline. */
+  function validate() {
+    const next = {};
+    SMTP_FIELDS.forEach((f) => {
+      const msg = smtpFieldError(f.key, form[f.key] ?? '');
+      if (msg) next[f.key] = msg;
+    });
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
 
   async function handleSave(e) {
     e.preventDefault();
+    if (!validate()) { addToast('error', 'Vui lòng sửa các trường được đánh dấu.'); return; }
     setSaving(true);
     try {
       // Gửi mọi field; BE tự bỏ qua mật khẩu để trống (giữ giá trị cũ).
@@ -127,6 +178,7 @@ function SmtpCard({ addToast }) {
 
   async function handleTest(e) {
     if (e) e.preventDefault();
+    if (!validate()) { addToast('error', 'Vui lòng sửa các trường được đánh dấu.'); return; }
     setTesting(true);
     try {
       // Gửi cấu hình hiện tại để test, KHÔNG lưu vào DB
@@ -211,15 +263,18 @@ function SmtpCard({ addToast }) {
                 <>
                   <input
                     id={`smtp-${f.key}`}
-                    className="ast-input"
+                    className={`ast-input${errors[f.key] ? ' ast-input--err' : ''}`}
                     type={f.type}
                     placeholder={f.placeholder}
                     value={form[f.key] ?? ''}
                     onChange={(e) => set(f.key, e.target.value)}
+                    onBlur={() => handleBlur(f.key)}
+                    aria-invalid={errors[f.key] ? 'true' : undefined}
                   />
                   {f.hint && <p className="ast-field-hint">{f.hint}</p>}
                 </>
               )}
+              {errors[f.key] && <p className="ast-field-error">{errors[f.key]}</p>}
             </div>
           ))}
 
@@ -252,6 +307,7 @@ function SmtpCard({ addToast }) {
 
 function EmailTypeCard({ group, title, description, icon, addToast }) {
   const [form,      setForm]    = useState({});
+  const [errors,    setErrors]  = useState({});
   const [isLoading, setLoading]  = useState(true);
   const [isSaving,  setSaving]   = useState(false);
 
@@ -266,10 +322,28 @@ function EmailTypeCard({ group, title, description, icon, addToast }) {
       .finally(() => setLoading(false));
   }, [group]);
 
-  function set(key, val) { setForm((f) => ({ ...f, [key]: val })); }
+  function set(key, val) {
+    setForm((f) => ({ ...f, [key]: val }));
+    if (errors[key]) setErrors((e) => ({ ...e, [key]: '' }));
+  }
+
+  function handleBlur(key) {
+    setErrors((e) => ({ ...e, [key]: emailTypeFieldError(key, form[key] ?? '') }));
+  }
+
+  function validate() {
+    const next = {};
+    EMAIL_TYPE_FIELDS.forEach((f) => {
+      const msg = emailTypeFieldError(f.key, form[f.key] ?? '');
+      if (msg) next[f.key] = msg;
+    });
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
 
   async function handleSave(e) {
     e.preventDefault();
+    if (!validate()) { addToast('error', 'Vui lòng sửa các trường được đánh dấu.'); return; }
     setSaving(true);
     try {
       await updateSettings(group, EMAIL_TYPE_FIELDS.map((f) => ({
@@ -307,12 +381,15 @@ function EmailTypeCard({ group, title, description, icon, addToast }) {
               <label className="ast-field-label" htmlFor={`${group}-${f.key}`}>{f.label}</label>
               <input
                 id={`${group}-${f.key}`}
-                className="ast-input"
+                className={`ast-input${errors[f.key] ? ' ast-input--err' : ''}`}
                 type={f.type}
                 placeholder={f.placeholder}
                 value={form[f.key] ?? ''}
                 onChange={(e) => set(f.key, e.target.value)}
+                onBlur={() => handleBlur(f.key)}
+                aria-invalid={errors[f.key] ? 'true' : undefined}
               />
+              {errors[f.key] && <p className="ast-field-error">{errors[f.key]}</p>}
             </div>
           ))}
 

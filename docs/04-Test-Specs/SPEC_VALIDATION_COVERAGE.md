@@ -305,3 +305,19 @@ Rà lại toàn bộ DTO của **22 controller** staff/manager/admin (đọc cod
 `AssessmentContentHandlerTest` (3: rỗng/lệch-điểm/hợp-lệ), `StaffQuizServiceSubmitReviewTest` (1: rỗng), `StaffExamServiceSubmitReviewTest` (1: rỗng), `SupportTicketAssignTest` (1: target suspended), `AdminUserServiceChangeRoleTest` (1: staff suspended).
 
 - Verify: `mvn -o spotless:apply test` → **68/68 pass, BUILD SUCCESS** (61 cũ + 7 mới).
+
+---
+
+## 6f. Đợt 3 — L1 FE cho admin settings (2026-07-12)
+
+Vá 2 form admin còn `noValidate` không field-error (F2 còn sót), theo pattern inline `.ast-input--err` + `.ast-field-error` (đã có sẵn trong `AdminSettings.css`) và tái dùng `utils/validation.js`.
+
+| File | Trước | Sau |
+|------|-------|-----|
+| `EmailTab.jsx` (`SmtpCard` + 3× `EmailTypeCard`) | **0 validation** — gửi thẳng form; port rác / email sai vẫn lưu | `errors` state + validate on-blur/on-submit; chặn CẢ `handleSave` lẫn `handleTest` (Kiểm tra kết nối). Rule: host/from_name/subject **required**; port **số 1–65535** (helper `portError` mới); username/from_email **email**; password optional |
+| `NotificationTab.jsx` (`RuleForm`) | Có check nhưng báo qua **toast** | Chuyển sang inline per-field (`ruleKey` regex chỉ khi create, `description` required); gỡ 2 check toast trùng ở parent |
+
+- Không thêm validation semantic per-key ở BE cho settings (kiến trúc key/value generic — cố ý); L1 + `@Size`(Đợt 1) là đủ, BE vẫn là chốt hình thức.
+- Verify FE: `npm run lint` (0 warning) + `npm run build` (375 modules OK). **KHÔNG** chạy `npm run format` (tailwind plugin làm hỏng className).
+
+> **Trạng thái tổng: Đợt 1 (L2) · Đợt 2 (audit L3 + L3-S1) · L3-R1/R2 · Đợt 3 (L1 FE) — HOÀN TẤT.** Các F1/F2 form auth đã xử lý ở §6c; giờ 2 form admin settings cũng đã có L1 inline.
