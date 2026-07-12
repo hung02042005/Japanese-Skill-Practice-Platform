@@ -297,3 +297,17 @@ backup-db.timer (systemd, 03:00 hàng ngày)
 **Tại sao chỉ cần 1 file Markdown, không cần Vault/Key Vault ngay:** Ở quy mô 1 đội nhỏ, nguyên nhân sự cố không phải "thiếu công cụ mã hoá secret" — mà là **thiếu giao tiếp** (đổi xong không ai biết). Quy tắc "báo trước khi đổi + ghi lại sau khi đổi" giải quyết đúng gốc rễ đó với chi phí gần như bằng 0, phù hợp giai đoạn hiện tại của dự án hơn là đầu tư 1 hệ thống quản lý secret phức tạp ngay từ đầu (việc đó xứng đáng làm khi đội đông hơn — xem P1.7 bên dưới, cùng logic "đơn giản trước, phức tạp khi thực sự cần").
 
 **Liên hệ với P1.7 (SSH riêng từng người, chưa làm):** File này cũng lộ ra 1 khoảng trống thật: bảng "ai có quyền đổi" hiện chỉ có thể ghi chung chung "jlptadmin (VPS)" vì **mọi người đang SSH bằng chung 1 tài khoản** — không thể ghi tên riêng người nào đã đổi. Đây là lý do trực tiếp P1.7 cần làm tiếp: tách SSH riêng từng người mới khiến cột "ai có quyền đổi" trong `SECRETS.md` trở thành audit trail thật, thay vì chỉ là danh sách vai trò.
+
+---
+
+### 10. 🆕 Uptime Monitoring (P2.8)
+
+**Vai trò:** Người canh gác 24/7 mà trước đây không tồn tại. Cả Sự cố 3 (crash-loop `SMTP_PORT` rỗng) và Sự cố 4 (mật khẩu `sa` lệch dữ liệu) ngày 11/07/2026 đều bị **người dùng** phát hiện và báo lại trước — không có gì tự động gọi vào `sakuji.online` để biết web còn sống hay không.
+
+**Chức năng:**
+1. `apps/frontend/nginx.conf` thêm `location = /health` → `proxy_pass http://backend:8080/actuator/health` — chỉ mở đúng 1 path công khai (không mở cả namespace `/actuator/*`), response chỉ gồm `{"status":"UP"|"DOWN"}` vì `show-details: never` đã cấu hình sẵn từ P0.1.
+2. `.github/workflows/uptime-check.yml` (`schedule: cron '*/10 * * * *'` + `workflow_dispatch`) gọi `curl` vào `https://sakuji.online` và `https://sakuji.online/health` mỗi 10 phút — **qua đúng domain thật, sau Cloudflare**, không phải `127.0.0.1` trên VPS như smoke test P0.1. Nếu 1 trong 2 không đúng, job fail (hiện đỏ trên tab Actions, GitHub gửi email thông báo mặc định).
+
+**Tại sao dùng GitHub Actions thay vì đăng ký UptimeRobot/Healthchecks.io ngay:** Đây là lựa chọn thực dụng — tận dụng hạ tầng CI/CD đã có sẵn, không cần thêm tài khoản/thông tin đăng nhập bên ngoài mà AI không tự cấp được. **Đánh đổi có chủ đích:** không có SMS/đa kênh cảnh báo, và GitHub không cam kết chạy cron đúng giờ tuyệt đối (có thể trễ vài phút lúc tải cao) — coi đây là lớp cảnh báo miễn phí đầu tiên, nên đăng ký thêm UptimeRobot (free tier, ~10 phút, cần email người vận hành) khi cần độ tin cậy cao hơn.
+
+**Khác biệt với smoke test P0.1 (mục 4.5):** P0.1 chạy **trong** pipeline CD, gọi `127.0.0.1` **trên chính VPS** — xác nhận "vừa deploy xong, app có sống không". P2.8 chạy **độc lập**, **liên tục theo thời gian**, gọi qua domain thật **từ bên ngoài** — xác nhận "ngay bây giờ, người dùng thật có vào được web không", bắt được cả những lỗi không liên quan gì tới deploy (Cloudflare cấu hình sai, VPS hết ổ đĩa lúc 3h sáng, container tự chết sau nhiều giờ chạy...).
