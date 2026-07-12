@@ -11,8 +11,15 @@
    Lưu ý    : Seed data cho môi trường DEV
    ============================================================================ */
 
-USE JLPT_LearningDB;
-GO
+/* Không dùng "USE JLPT_LearningDB;" ở đây: JDBC connection string của Flyway
+   (spring.datasource.url, tham số databaseName=...) đã trỏ đúng database rồi —
+   hard-code tên database cụ thể trong migration khiến nó CHỈ chạy được trên
+   1 database tên đúng "JLPT_LearningDB", vỡ ngay trên bất kỳ môi trường nào
+   dùng tên khác (staging: JLPT_LearningDB_staging, CI: H2 in-memory, hoặc sau
+   này restore sang tên khác). Phát hiện khi test P1.4 (staging) lần đầu — xem
+   docs/05-Deployment/Deploy_Improvement_Plan.md, P1.4. Không ảnh hưởng
+   production: spring.flyway.validate-on-migrate=false nên sửa nội dung 1
+   migration đã áp dụng rồi không làm checksum mismatch fail. */
 
 /* ============================================================
    0. CẤU HÌNH HỆ THỐNG (gộp từ V1 cũ + V25)
