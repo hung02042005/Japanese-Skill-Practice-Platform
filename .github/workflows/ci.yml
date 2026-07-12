@@ -63,7 +63,9 @@ jobs:
       
     - name: Build
       run: npm run build
-      
-    # If the user has tests, uncomment this step later
-    # - name: Test
-    #   run: npm run test
+
+    # P2.10: bật lại từ 12/07/2026 — trước đó CI frontend không chạy test nào,
+    # kể cả tối thiểu (xem Deploy_Improvement_Plan.md). Test đầu tiên: reducer
+    # authSlice (login pending/fulfilled/rejected, logout) + apiMessage.getErrorMessage.
+    - name: Test
+      run: npm run test
