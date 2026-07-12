@@ -4,36 +4,47 @@
 
 ```mermaid
 flowchart TD
-    Dev["👤 Developer<br/>git push origin branch_for_hung"]
+    Dev["👤 Developer"]
 
-    subgraph CI["ci.yml — CI (Build & Test)"]
+    Dev -->|"git push origin develop<br/>(code mới, CHƯA chạm production)"| CI_S["ci.yml — CI"]
+    Dev -->|"git push origin branch_for_hung<br/>(🆕 P1.4 — chỉ sau khi đã test ở staging)"| CI_P["ci.yml — CI"]
+
+    Gate_S{{"🆕 P1.4 — workflow_run(develop)<br/>conclusion == success"}}
+    Gate_P{{"workflow_run(branch_for_hung)<br/>conclusion == success"}}
+    CI_S -.-> Gate_S
+    CI_P -.-> Gate_P
+
+    CD_S["🆕 cd-staging.yml<br/>(P1.4)"]
+    CD_P["cd.yml — CD (Deploy to Production)"]
+    Gate_S --> CD_S
+    Gate_P --> CD_P
+
+    subgraph VPS["Azure VPS 135.149.56.179 — Docker Compose (2 stack độc lập, chung máy)"]
         direction LR
-        BeCI["backend-ci<br/>JDK 21 → mvn clean verify"]
-        FeCI["frontend-ci<br/>Node 20 → npm ci → lint → build"]
+        subgraph PROD["Production stack"]
+            direction TB
+            FE["jlpt-frontend<br/>:80 / :443"]
+            BE["jlpt-backend<br/>127.0.0.1:8080"]
+            DB[("jlpt-db<br/>volume sqlserver_data<br/>:14330 → 1433")]
+            Redis[("jlpt-redis<br/>127.0.0.1:6379")]
+        end
+        subgraph STG["🆕 Staging stack (P1.4)"]
+            direction TB
+            FE_S["jlpt-frontend-staging<br/>:8082"]
+            BE_S["jlpt-backend-staging<br/>127.0.0.1:8081"]
+            DB_S[("jlpt-db-staging<br/>volume sqlserver_data_staging<br/>:14331 → 1433")]
+            Redis_S[("jlpt-redis-staging<br/>127.0.0.1:6380")]
+        end
     end
 
-    Gate{{"workflow_run<br/>chỉ tiếp tục nếu conclusion == success"}}
+    CD_S -->|"build + smoke test<br/>(giống hệt nguyên tắc P0.1)"| STG
+    CD_P -->|"build + smoke test (P0.1)"| PROD
+    CD_P -->|"🆕 P1.5 — chỉ SAU KHI smoke test pass"| Tags["Image tag theo commit SHA<br/>jlpt-backend:SHA / jlpt-frontend:SHA<br/>(giữ 5 bản gần nhất)"]
+    Rollback["🆕 P1.5 — rollback.yml<br/>(workflow_dispatch, người chọn SHA)"]
+    Tags -.->|"đọc deploy-history.log<br/>để biết SHA nào từng chạy tốt"| Rollback
+    Rollback -.->|"docker tag SHA→latest<br/>KHÔNG build lại → vài chục giây"| PROD
 
-    subgraph CD["cd.yml — CD (Deploy to Production)"]
-        direction TB
-        SSH["SSH vào VPS<br/>(VPS_PASSWORD — VPS_SSH_KEY khai báo nhưng chưa cấu hình thật)"]
-        Pull["git reset --hard origin/branch_for_hung"]
-        DbUp["Khởi động db + redis<br/>chờ DB nhận kết nối (tối đa 150s)"]
-        BeUp["Build + khởi động backend + frontend"]
-        Smoke["🆕 P0.1 — Smoke test<br/>curl /actuator/health + trang chủ, retry tới khi UP thật"]
-        Purge["Purge cache Cloudflare"]
-        SSH --> Pull --> DbUp --> BeUp --> Smoke --> Purge
-    end
-
-    subgraph VPS["Azure VPS 135.149.56.179 — Docker Compose"]
-        direction LR
-        FE["jlpt-frontend<br/>Nginx<br/>:80 / :443"]
-        BE["jlpt-backend<br/>Spring Boot 3 / Java 21<br/>127.0.0.1:8080"]
-        DB[("jlpt-db<br/>SQL Server 2022<br/>volume sqlserver_data<br/>:14330 → 1433")]
-        Redis[("jlpt-redis<br/>Cache/session<br/>127.0.0.1:6379")]
-    end
-
-    Backup["🆕 P0.2 — backup-db.timer (systemd, 3h sáng)<br/>→ backup-db.sh → /opt/db-backup/*.bak<br/>giữ 14 bản, đã test restore thành công<br/>⚠️ chưa đẩy ra NGOÀI VPS"]
+    Backup["P0.2 — backup-db.timer (systemd, 3h sáng)<br/>→ backup-db.sh → /opt/db-backup/*.bak<br/>giữ 14 bản, đã test restore thành công<br/>⚠️ chưa đẩy ra NGOÀI VPS"]
 
     CF["☁️ Cloudflare<br/>DNS · SSL/HTTPS · chống DDoS · cache"]
 
@@ -41,13 +52,8 @@ flowchart TD
     Google["Google OAuth2<br/>(đăng nhập)"]
     SMTP["Gmail SMTP<br/>(email xác minh / reset mật khẩu)"]
 
-    Dev --> CI
-    BeCI -.-> Gate
-    FeCI -.-> Gate
-    Gate --> CD
-    CD --> VPS
-    VPS -.-> Backup
-    VPS --> CF
+    PROD -.-> Backup
+    PROD --> CF
     CF --> Users
     Users -.-> Google
     Users -.-> SMTP
@@ -55,10 +61,12 @@ flowchart TD
     classDef new fill:#3a2f14,stroke:#e8a33d,color:#f3d9a0,stroke-width:1.5px;
     classDef risk fill:#3a1f1c,stroke:#e2604f,color:#f4b8ae,stroke-width:1.5px;
     classDef gate fill:#132b2d,stroke:#4fb3bf,color:#a9e2e8,stroke-width:1.5px;
-    class Smoke new;
+    class CD_S,Tags,Rollback,STG,FE_S,BE_S,DB_S,Redis_S new;
     class Backup risk;
-    class Gate gate;
+    class Gate_S,Gate_P gate;
 ```
+
+> **Đọc sơ đồ:** 2 nhánh Git giờ có 2 số phận khác nhau — `develop` chỉ tới được **staging** (đường nét liền phía trên bên trái), `branch_for_hung` mới thực sự chạm **production** (bên phải). `rollback.yml` (đường nét đứt) là đường **thủ công**, không tự động, chỉ chạy khi ai đó chủ động bấm "Run workflow" trên GitHub và chọn 1 SHA.
 
 ---
 
@@ -74,9 +82,9 @@ flowchart TD
 - `git push origin branch_for_hung` gửi commit mới lên GitHub.
 - GitHub phát ra một **webhook event** (`push`) — đây là cơ chế cốt lõi khiến CI/CD "tự động": GitHub Actions lắng nghe event này và tự khởi chạy workflow tương ứng, không cần ai bấm nút.
 
-**Tại sao thiết kế vậy (và vì sao chưa chuẩn 100%):**
-- Chuẩn công nghiệp thường tách biệt rõ 3 nhánh: `develop` (tích hợp code, chưa lên prod) → `staging`/`release` (test trước khi lên thật) → `main`/`production` (chỉ merge vào khi đã duyệt). Ở đây, `branch_for_hung` gánh **cả 2 vai** (vừa là nơi làm việc hàng ngày, vừa là nhánh deploy production) — nghĩa là **mọi push hợp lệ (qua được CI) đều lập tức lên production thật**, không có bước "duyệt" hay môi trường trung gian để bắt lỗi trước.
-- Đây chính là lý do `Deploy_Improvement_Plan.md` xếp **P1.4 — môi trường staging** là việc nên làm sớm: tách một nhánh (`develop`) + một bộ container riêng để test trước, thay vì mọi thay đổi đều "đặt cược" thẳng vào production.
+**Tại sao thiết kế vậy (và vì sao trước đây chưa chuẩn 100%):**
+- Chuẩn công nghiệp thường tách biệt rõ 3 nhánh: `develop` (tích hợp code, chưa lên prod) → `staging`/`release` (test trước khi lên thật) → `main`/`production` (chỉ merge vào khi đã duyệt). Trước 12/07/2026, `branch_for_hung` gánh **cả 2 vai** (vừa là nơi làm việc hàng ngày, vừa là nhánh deploy production) — nghĩa là mọi push hợp lệ (qua được CI) đều lập tức lên production thật, không có bước "duyệt" hay môi trường trung gian để bắt lỗi trước.
+- **🆕 P1.4 đã triển khai thật:** nhánh `develop` giờ tồn tại và có pipeline riêng (`cd-staging.yml`) deploy vào **1 bộ container hoàn toàn tách biệt** trên cùng VPS (xem mục 8). Quy trình chuẩn từ giờ: `develop` (push → tự deploy staging → test tay) → merge vào `branch_for_hung` (push → tự deploy production thật). Chỉ code đã "sống thử" ở staging mới nên merge lên `branch_for_hung`.
 
 ---
 
@@ -177,6 +185,33 @@ curl -X POST "https://api.cloudflare.com/.../purge_cache" -H "Authorization: Bea
 ```
 **Vai trò:** Bước này chạy **trên máy chủ của GitHub Actions** (không qua SSH vào VPS) — gọi thẳng vào Cloudflare API. Cloudflare cache lại các file tĩnh (JS/CSS/hình ảnh) ở các "điểm biên" (edge) gần người dùng để tăng tốc độ tải trang — nhưng nếu không xoá cache sau mỗi lần deploy, người dùng có thể vẫn nhận được **phiên bản JS/CSS cũ** dù backend/frontend trên VPS đã cập nhật, gây ra tình trạng frontend và backend "lệch phiên bản" nhìn như lỗi khó hiểu.
 
+#### 4.7. 🆕 P1.5 — Gắn tag image theo commit SHA (chạy trước bước 4.6, ngay sau smoke test)
+
+```bash
+DEPLOY_SHA="${{ github.event.workflow_run.head_sha }}"
+docker tag jlpt-backend:latest jlpt-backend:$DEPLOY_SHA
+docker tag jlpt-frontend:latest jlpt-frontend:$DEPLOY_SHA
+echo "$DEPLOY_SHA $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> deploy-history.log
+# giữ 5 bản SHA gần nhất mỗi image, xoá bản cũ hơn
+```
+
+**Vai trò:** Biến mỗi lần deploy thành công thành **1 điểm khôi phục** (restore point) có thể quay lại được trong vài giây, thay vì phải revert commit + đợi build lại từ đầu.
+
+**Tại sao đặt SAU smoke test (mục 4.5) chứ không phải ngay sau build (mục 4.4):** Nếu gắn tag SHA ngay sau build, một image bị lỗi (crash-loop) cũng sẽ có tag SHA — biến nó thành 1 "ứng viên rollback" giả, có thể khiến người rollback vô tình chọn lại đúng bản lỗi. Gắn tag **sau khi** smoke test xác nhận UP nghĩa là: **mọi SHA còn tồn tại trên VPS đều đã được chứng minh chạy được thật**, không chỉ "build được".
+
+**Tại sao image cần khai `image: jlpt-backend:latest` tường minh trong `docker-compose.yml`:** Không khai báo, Docker Compose tự đặt tên image theo tên thư mục project (vd `japanese-skill-practice-platform-backend`) — tên không cố định, khó viết lệnh `docker tag`/`docker rmi` đáng tin cậy trong script.
+
+**`rollback.yml` (`workflow_dispatch`, kích hoạt thủ công từ tab Actions trên GitHub):**
+```bash
+docker tag "jlpt-backend:$TARGET_SHA" jlpt-backend:latest
+docker tag "jlpt-frontend:$TARGET_SHA" jlpt-frontend:latest
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --no-build backend frontend
+# ...rồi chạy lại ĐÚNG smoke test như mục 4.5
+```
+**Vai trò:** Đường thoát khẩn cấp khi 1 bản mới deploy có bug production mới lộ ra (mà smoke test không bắt được vì nó chỉ kiểm tra "app có sống không", không kiểm tra "logic nghiệp vụ có đúng không"). Vì image cũ vẫn còn nguyên trên VPS (bước 4.7), rollback chỉ là đổi tag + khởi động lại — **không build lại** — nên nhanh hơn hẳn so với revert Git rồi chờ cả pipeline CI → CD chạy lại từ đầu.
+
+**Giới hạn quan trọng (đã ghi rõ trong chính `rollback.yml`):** Đây là rollback **ảnh Docker** (code đã build), KHÔNG rollback **database schema** hay **file cấu hình** (`docker-compose*.yml`, `.env`). Nếu bản lỗi có kèm Flyway migration mới hoặc đổi biến môi trường bắt buộc, chỉ rollback image là không đủ — phải xử lý tay phần dữ liệu/cấu hình riêng.
+
 ---
 
 ### 5. Hạ tầng — Azure VPS & Docker Compose
@@ -230,3 +265,35 @@ backup-db.timer (systemd, 03:00 hàng ngày)
 
 - **Google OAuth2** (đăng nhập): Khi người dùng bấm "Đăng nhập với Google", trình duyệt được chuyển hướng sang máy chủ của Google để xác thực, Google trả về 1 token, backend xác minh token đó với Google rồi mới tạo phiên đăng nhập. Nếu cấu hình `redirect URI` giữa Google Console và backend không khớp domain thật (`sakuji.online`), luồng này sẽ lỗi ngay cả khi mọi thứ khác trên VPS đều hoạt động bình thường.
 - **Gmail SMTP** (gửi email xác minh/đặt lại mật khẩu): Cấu hình **không chỉ nằm trong `.env`** — hệ thống có `AdminSettingsService` đọc cấu hình SMTP (host, port, username, mật khẩu ứng dụng Gmail...) từ bảng `system_settings` trong chính database, cho phép đổi qua trang quản trị mà không cần deploy lại code. Đây là một lớp gián tiếp cần nhớ khi debug: **biến môi trường `SMTP_*` trong `.env` chỉ là giá trị khởi tạo ban đầu**, giá trị THỰC SỰ đang dùng có thể đã bị ghi đè qua admin panel.
+
+---
+
+### 8. 🆕 Staging — môi trường kiểm thử trước production (P1.4)
+
+**Vai trò:** Bãi thử — nơi 1 thay đổi (schema DB mới, biến môi trường mới, dependency mới) được deploy và chạy thật **trước khi** có cơ hội chạm vào dữ liệu/người dùng thật. Cả 4 sự cố ngày 11/07/2026 (SSH key, DB healthcheck, SMTP_PORT rỗng, SA password/data) đều là loại lỗi **chỉ lộ ra khi chạy thật trên hạ tầng thật** — CI (mục 2) dùng H2 giả lập nên không bắt được, staging thì có.
+
+**Chức năng — `cd-staging.yml`, kích hoạt bởi `workflow_run` trên nhánh `develop` (cùng cơ chế gate với `cd.yml`, xem mục 3):**
+
+1. **Checkout tách biệt hoàn toàn:** thay vì tái sử dụng thư mục production, staging clone code vào 1 thư mục **anh em** (`PROJECT_PATH-staging`) — để lệnh `git reset --hard` của staging không bao giờ có khả năng chạm vào working directory của production, dù chỉ do gõ nhầm.
+2. **Dùng chung secret với production** (copy `.env` từ thư mục production mỗi lần deploy) — đơn giản hoá quản lý secret (không cần duy trì 2 bộ), chấp nhận đánh đổi là staging và production dùng chung `MSSQL_SA_PASSWORD`/`JWT_SECRET`/... (chấp nhận được vì đây không phải ranh giới bảo mật giữa 2 tổ chức khác nhau, chỉ là 2 môi trường của cùng 1 đội).
+3. **Container/port/volume/tên image tách biệt hoàn toàn** khỏi production (`db-staging` :14331, `redis-staging` :6380, `backend-staging` :8081, `frontend-staging` :8082; volume `sqlserver_data_staging`; database `JLPT_LearningDB_staging`; image `jlpt-backend-staging`/`jlpt-frontend-staging`) — để 2 stack chạy **song song trên cùng 1 VPS** mà không đụng nhau, và để vòng lặp dọn image theo SHA của P1.5 (mục 4.7, chỉ lọc theo đúng tên `jlpt-backend`/`jlpt-frontend`) không bao giờ vô tình xoá mất image staging.
+4. **Cùng nguyên tắc smoke test P0.1** trước khi báo "deploy staging thành công" — staging cũng cần biết "container Up" có thực sự nghĩa là "app sống" hay không, y hệt production.
+
+**Tại sao KHÔNG dùng cơ chế override (`-f docker-compose.yml -f docker-compose.staging.yml`) như `docker-compose.prod.yml`:** Docker Compose merge các file theo **cùng tên service** — nếu `docker-compose.staging.yml` định nghĩa lại service tên `db`/`backend` (trùng tên với file gốc) chỉ để đổi `container_name`, Compose sẽ **hợp nhất thành 1 service duy nhất** (cộng dồn `ports`, ghi đè `container_name`), không tạo ra 2 container độc lập như mong muốn. Vì vậy `docker-compose.staging.yml` là **1 file độc lập, tự đủ**, định nghĩa service với **tên khác hẳn** (`db-staging`, `backend-staging`...), chạy bằng `docker compose -f docker-compose.staging.yml up -d` — không kết hợp với file gốc.
+
+**Bài học thực tế đứng sau tính năng này (phát hiện ngay lần đầu dùng, 11-12/07/2026):**
+1. **`/opt` chỉ ghi được bởi root** — lần đầu `git clone` vào `PROJECT_PATH-staging` fail với `Permission denied` vì thư mục `/opt` gốc có quyền `755 root:root`, còn user `jlptadmin` (chạy CD qua SSH) không có quyền tạo thư mục con mới trực tiếp dưới `/opt`. Khắc phục 1 lần bằng `sudo mkdir` + `chown jlptadmin:jlptadmin` cho riêng thư mục staging — các lần deploy sau tái sử dụng thư mục đã có sẵn quyền, không cần sudo nữa.
+2. **Migration `V2__mock_data.sql` hard-code tên database** (`USE JLPT_LearningDB;`) — chạy tốt trên production suốt từ trước tới giờ (vì database production tình cờ đúng tên đó), nhưng **crash-loop ngay lập tức** trên staging vì database ở đó tên là `JLPT_LearningDB_staging`. Đây **chính xác** là loại lỗi ẩn mà môi trường staging sinh ra để bắt — sửa bằng cách bỏ dòng `USE ...` (JDBC connection string đã trỏ đúng database, không cần `USE` nữa). Xem `Deploy_Improvement_Plan.md`, mục P1.4.
+3. **`nginx.conf` của frontend hard-code hostname `backend`** (`proxy_pass http://backend:8080/...`, "nướng" cứng vào image lúc build, không đổi được lúc chạy) — vì Compose phân giải upstream theo **tên service**, đặt service backend của staging là `backend-staging` (để "gọn tên") khiến `frontend-staging` crash-loop với lỗi `host not found in upstream "backend"`. Sửa bằng cách đổi tên **service key** (không phải `container_name`) về đúng `backend` trong `docker-compose.staging.yml` — an toàn vì file này chạy như 1 Compose project độc lập, không bao giờ gộp (`-f`) với file gốc nên trùng tên service giữa 2 file không hề va chạm.
+
+---
+
+### 9. 🆕 Quản trị Secrets & quy trình thông báo (P1.6)
+
+**Vai trò:** Trả lời câu hỏi mà Sự cố 4 (11/07/2026) cho thấy hệ thống trước đó **không ai trả lời được**: "biến môi trường này dùng để làm gì, ai có quyền đổi, và lần đổi gần nhất là khi nào/vì sao?" — thiếu câu trả lời này là nguyên nhân gốc khiến `MSSQL_SA_PASSWORD` bị đổi âm thầm, không ai biết, dẫn tới sự cố nghiêm trọng nhất trong toàn bộ đợt sự cố.
+
+**Chức năng:** [`docs/05-Deployment/SECRETS.md`](./SECRETS.md) là 1 **danh mục** (không chứa giá trị thật) liệt kê đủ 7 GitHub Secrets (dùng trong `cd.yml`/`rollback.yml`) và toàn bộ biến trong root `.env` VPS (dùng bởi `docker-compose.prod.yml`), mỗi dòng có cột "ai được đổi" và "lần đổi gần nhất + lý do".
+
+**Tại sao chỉ cần 1 file Markdown, không cần Vault/Key Vault ngay:** Ở quy mô 1 đội nhỏ, nguyên nhân sự cố không phải "thiếu công cụ mã hoá secret" — mà là **thiếu giao tiếp** (đổi xong không ai biết). Quy tắc "báo trước khi đổi + ghi lại sau khi đổi" giải quyết đúng gốc rễ đó với chi phí gần như bằng 0, phù hợp giai đoạn hiện tại của dự án hơn là đầu tư 1 hệ thống quản lý secret phức tạp ngay từ đầu (việc đó xứng đáng làm khi đội đông hơn — xem P1.7 bên dưới, cùng logic "đơn giản trước, phức tạp khi thực sự cần").
+
+**Liên hệ với P1.7 (SSH riêng từng người, chưa làm):** File này cũng lộ ra 1 khoảng trống thật: bảng "ai có quyền đổi" hiện chỉ có thể ghi chung chung "jlptadmin (VPS)" vì **mọi người đang SSH bằng chung 1 tài khoản** — không thể ghi tên riêng người nào đã đổi. Đây là lý do trực tiếp P1.7 cần làm tiếp: tách SSH riêng từng người mới khiến cột "ai có quyền đổi" trong `SECRETS.md` trở thành audit trail thật, thay vì chỉ là danh sách vai trò.
