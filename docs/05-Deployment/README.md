@@ -189,4 +189,20 @@ Mỗi khi bạn sửa code ở máy cá nhân, push lên GitHub và muốn cập
 6. Mỗi khi có người dùng mới đăng ký, bạn chỉ việc chuyển sang tab Data này và bấm **F5**, dữ liệu mới nhất sẽ nhảy ra tức thời (Real-time).
 
 ---
+
+## 6. Xem môi trường Staging qua trình duyệt (P1.4) — SSH Tunnel
+
+Từ 12/07/2026, hệ thống có thêm 1 bộ container **staging** (`jlpt-frontend-staging` cổng `8082`, `jlpt-backend-staging` cổng `8081`) chạy song song với production trên cùng VPS — xem [`Deploy_Diagram.md`](./Deploy_Diagram.md) mục 8. Cổng `8082`/`8081` **cố tình KHÔNG mở public** ra Internet (đã thử mở `ufw` ngày 12/07/2026 nhưng Azure Network Security Group ở tầng cloud vẫn chặn — và quan trọng hơn: `V2__mock_data.sql` seed sẵn tài khoản admin demo với mật khẩu **công khai trong chính source code** trên GitHub, `admin@sakuji.com` / `Admin@123456`, nên staging public = ai cũng đăng nhập được admin). Muốn xem staging qua trình duyệt, dùng SSH Tunnel giống hệt cách xem Database ở mục 5 — chỉ khác cổng:
+
+1. Mở PowerShell, chạy:
+   ```powershell
+   ssh -L 8082:127.0.0.1:8082 jlptadmin@135.149.56.179
+   ```
+2. Nhập mật khẩu VPS, thấy dấu nhắc `jlptadmin@jlpt-vps:~$` là đường hầm đã thông. **Đừng đóng cửa sổ này** — thu nhỏ xuống taskbar, để nó chạy ngầm.
+3. Mở trình duyệt, truy cập: `http://127.0.0.1:8082`
+4. Xong việc thì đóng cửa sổ PowerShell đó lại để đóng đường hầm.
+
+Nếu cần gọi thẳng API backend staging (không qua frontend), đào thêm 1 đường hầm khác ở cổng `8081` (`ssh -L 8081:127.0.0.1:8081 jlptadmin@135.149.56.179`) rồi gọi `http://127.0.0.1:8081/actuator/health`.
+
+---
 *Tài liệu này được biên soạn bằng tâm huyết, đúc kết từ quá trình debug thực tế 1-1. Hãy chia sẻ cho các thành viên trong nhóm để cùng nhau quản trị hệ thống tốt nhất!*
