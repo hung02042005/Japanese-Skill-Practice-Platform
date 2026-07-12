@@ -13,6 +13,7 @@ export function ConfirmModal({ modal, onConfirm, onClose, isSubmitting }) {
     'reset-pass':  { Icon: KeyIcon,         title: 'Gửi email đặt lại mật khẩu?', variant: 'primary', confirmLabel: 'Gửi ngay',      sakuVariant: 'idle'     },
     delete:        { Icon: TrashIcon,       title: 'Xóa tài khoản?',              variant: 'danger',  confirmLabel: 'Xóa tài khoản', sakuVariant: 'thinking' },
     restore:       { Icon: CheckCircleIcon, title: 'Khôi phục tài khoản?',        variant: 'success', confirmLabel: 'Khôi phục',     sakuVariant: 'happy'    },
+    'resend-activation': { Icon: KeyIcon,   title: 'Gửi lại email kích hoạt?',    variant: 'primary', confirmLabel: 'Gửi ngay',      sakuVariant: 'idle'     },
   }[modal.action] ?? {};
   const CfgIcon = cfg.Icon;
 
@@ -27,6 +28,7 @@ export function ConfirmModal({ modal, onConfirm, onClose, isSubmitting }) {
           {modal.action === 'reset-pass' && <>Email đặt lại mật khẩu sẽ được gửi đến <strong>&quot;{modal.userName}&quot;</strong>. Liên kết có hiệu lực 15 phút.</>}
           {modal.action === 'delete'     && <>Xóa tài khoản <strong>&quot;{modal.userName}&quot;</strong>? Dữ liệu học tập vẫn được giữ lại.</>}
           {modal.action === 'restore'    && <>Khôi phục tài khoản <strong>&quot;{modal.userName}&quot;</strong>? Người dùng sẽ hoạt động bình thường trở lại.</>}
+          {modal.action === 'resend-activation' && <>Email kích hoạt sẽ được gửi lại cho <strong>&quot;{modal.userName}&quot;</strong>. Liên kết cũ sẽ bị vô hiệu hoá.</>}
         </p>
         <div className="mu-modal-row">
           <button type="button" className="mu-btn mu-btn--ghost" onClick={onClose}>Huỷ</button>

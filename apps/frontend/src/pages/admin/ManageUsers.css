@@ -352,6 +352,8 @@
 
 .mu-act-ic--suspend  { background: #FFF3E0; color: #E65100; }
 .mu-act-ic--suspend:hover  { background: #FFE0B2; }
+.mu-act-ic--resend   { background: #E3F2FD; color: #1976D2; }
+.mu-act-ic--resend:hover   { background: #BBDEFB; }
 .mu-act-ic--activate { background: #E8F5E9; color: #2E7D32; }
 .mu-act-ic--activate:hover { background: #C8E6C9; }
 .mu-act-ic--reset    { background: var(--color-bg); color: var(--color-text-sub); border: 1.5px solid var(--color-border); }

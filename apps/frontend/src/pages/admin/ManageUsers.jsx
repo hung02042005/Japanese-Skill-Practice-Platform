@@ -10,7 +10,7 @@ import { FlameIcon }                 from '../../components/student/StudentIcons
 import { ToastContainer, useToast }  from '../../components/common/Toast';
 import {
   IcAdminChip, IcAddStaff, IcSearchGlass,
-  IcBan, IcCheck, IcKey, IcSwap, IcTrash, IcRestore,
+  IcBan, IcCheck, IcKey, IcSwap, IcTrash, IcRestore, IcMail,
   TAB_ICONS, STAT_ICONS,
 } from '../../components/admin/ManageUsersIcons';
 import { ConfirmModal, SuspendModal, CreateStaffModal, ChangeStaffRoleModal } from '../../components/admin/UserModals';
@@ -20,6 +20,7 @@ import {
   resetPassword, softDeleteUser, changeStaffRole,
   listStaffResetRequests, issueTempPassword, restoreUser,
 } from '../../api/adminService';
+import { resendVerification } from '../../api/authService';
 import './ManageUsers.css';
 
 /* ── Constants ── */
@@ -57,7 +58,7 @@ function ManageUsers() {
   const [isSubmitting, setSubmitting]     = useState(false);
   const { toasts, addToast, removeToast } = useToast();
 
-  const [confirmModal, setConfirmModal]   = useState({ open: false, action: '', userId: null, userType: null, userName: '' });
+  const [confirmModal, setConfirmModal]   = useState({ open: false, action: '', userId: null, userType: null, userName: '', email: '' });
   const [suspendModal, setSuspendModal]   = useState({ open: false, userId: null, userType: null, userName: '' });
   const [staffRoleModal, setStaffRoleMod] = useState({ open: false, userId: null, userName: '', currentStaffRole: 'staff' });
   const [createStaffOpen, setCreateStaff] = useState(false);
@@ -149,7 +150,7 @@ function ManageUsers() {
 
   /* ── Action openers ── */
   const openSuspend    = (u) => setSuspendModal({ open: true, userId: u.userId, userType: u.userType, userName: u.fullName });
-  const openConfirm    = (action, u) => setConfirmModal({ open: true, action, userId: u.userId, userType: u.userType, userName: u.fullName });
+  const openConfirm    = (action, u) => setConfirmModal({ open: true, action, userId: u.userId, userType: u.userType, userName: u.fullName, email: u.email });
   const openChangeRole = (u) => setStaffRoleMod({ open: true, userId: u.userId, userName: u.fullName, currentStaffRole: u.staffRole ?? 'staff' });
 
   /* ── Action handlers ── */
@@ -166,14 +167,15 @@ function ManageUsers() {
   }
 
   async function handleConfirm() {
-    const { action, userType, userId } = confirmModal;
+    const { action, userType, userId, email } = confirmModal;
     setSubmitting(true);
     try {
       if (action === 'activate')   await activateUser(userType, userId);
       if (action === 'reset-pass') await resetPassword(userType, userId);
       if (action === 'delete')     await softDeleteUser(userType, userId);
       if (action === 'restore')    await restoreUser(userType, userId);
-      const msgs = { activate: 'Đã kích hoạt lại tài khoản!', 'reset-pass': 'Email đặt lại mật khẩu đã được gửi!', delete: 'Đã xóa tài khoản thành công!', restore: 'Đã khôi phục tài khoản thành công!' };
+      if (action === 'resend-activation') await resendVerification(email);
+      const msgs = { activate: 'Đã kích hoạt lại tài khoản!', 'reset-pass': 'Email đặt lại mật khẩu đã được gửi!', delete: 'Đã xóa tài khoản thành công!', restore: 'Đã khôi phục tài khoản thành công!', 'resend-activation': 'Đã gửi lại email kích hoạt!' };
       addToast('success', msgs[action]);
       setConfirmModal((m) => ({ ...m, open: false }));
       reload();
@@ -428,6 +430,9 @@ function ManageUsers() {
                           <div className="mu-acts">
                             {(u.status === 'active' || u.status === 'pending') && (
                               <button type="button" className="mu-act-ic mu-act-ic--suspend" onClick={() => openSuspend(u)} title="Đình chỉ tài khoản" aria-label="Đình chỉ tài khoản"><IcBan /></button>
+                            )}
+                            {u.status === 'pending' && u.userType === 'student' && (
+                              <button type="button" className="mu-act-ic mu-act-ic--resend" onClick={() => openConfirm('resend-activation', u)} title="Gửi lại email kích hoạt" aria-label="Gửi lại email kích hoạt"><IcMail /></button>
                             )}
                             {u.status === 'suspended' && (
                               <button type="button" className="mu-act-ic mu-act-ic--activate" onClick={() => openConfirm('activate', u)} title="Kích hoạt lại" aria-label="Kích hoạt lại tài khoản"><IcCheck /></button>
