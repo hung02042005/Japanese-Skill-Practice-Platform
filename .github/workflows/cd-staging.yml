@@ -79,9 +79,11 @@ jobs:
           done
           echo "Database JLPT_LearningDB_staging đã sẵn sàng!"
 
-          # 5. Build và khởi động backend-staging + frontend-staging
+          # 5. Build và khởi động backend (service key "backend" — xem comment
+          # trong docker-compose.staging.yml lý do không đổi thành "backend-staging")
+          # + frontend-staging
           echo "Đang build và khởi động Backend, Frontend (staging)..."
-          docker compose -f docker-compose.staging.yml up -d --build backend-staging frontend-staging
+          docker compose -f docker-compose.staging.yml up -d --build backend frontend-staging
 
           # 6. Smoke test — cùng nguyên tắc P0.1: container Up không có nghĩa app sống.
           echo "Đang xác minh backend staging thực sự sống..."

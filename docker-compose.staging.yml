@@ -50,7 +50,14 @@ services:
       - "127.0.0.1:6380:6379"
     restart: unless-stopped
 
-  backend-staging:
+  # Tên service PHẢI là "backend" (không phải "backend-staging"): nginx.conf của
+  # frontend được build cứng `proxy_pass http://backend:8080/...` (baked vào
+  # image lúc build, không đổi được lúc chạy) — Compose phân giải DNS nội bộ
+  # theo TÊN SERVICE, nên chỉ cần đổi container_name là không đủ. Không lo va
+  # chạm với service "backend" của docker-compose.yml gốc: 2 file này chạy như
+  # 2 project Compose HOÀN TOÀN riêng biệt (không dùng chung -f), nên trùng tên
+  # service giữa 2 file không hề merge/đụng nhau — chỉ đụng nếu dùng chung -f.
+  backend:
     build:
       context: ./apps/backend
       dockerfile: Dockerfile
@@ -93,7 +100,7 @@ services:
     ports:
       - "8082:80"
     depends_on:
-      - backend-staging
+      - backend
     restart: unless-stopped
 
 volumes:
