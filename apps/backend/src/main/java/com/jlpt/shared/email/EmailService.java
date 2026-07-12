@@ -227,18 +227,21 @@ public class EmailService {
                               Bạn đã được Admin mời tham gia hệ thống với vai trò <strong>Staff</strong>.
                               Vui lòng nhấn nút bên dưới để thiết lập mật khẩu và kích hoạt tài khoản.
                             </p>
-                            <div style="text-align:center; margin:32px 0;">
-                              <a href="%s"
-                                 style="background:linear-gradient(135deg,#0f766e,#0891b2); color:#ffffff;
-                                        padding:14px 36px; border-radius:8px; text-decoration:none;
-                                        font-size:16px; font-weight:600; display:inline-block;">
-                                🔑 Thiết lập mật khẩu
-                              </a>
-                            </div>
-                            <p style="color:#6b7280; font-size:13px; margin-bottom:24px; word-break: break-all;">
-                              Hoặc copy link này vào trình duyệt: <br/>
-                              <a href="%s" style="color:#0ea5e9;">%s</a>
-                            </p>
+                            <table width="100%%" border="0" cellspacing="0" cellpadding="0" style="margin:32px 0;">
+                              <tr>
+                                <td align="center">
+                                  <table border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                      <td align="center" style="border-radius: 8px;" bgcolor="#0f766e">
+                                        <a href="%s" target="_blank" style="font-size: 16px; font-family: 'Segoe UI', Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 8px; padding: 14px 36px; border: 1px solid #0f766e; display: inline-block; font-weight: 600;">
+                                          🔑 Thiết lập mật khẩu
+                                        </a>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
                             <p style="color:#9ca3af; font-size:13px; line-height:1.6;">
                               Link có hiệu lực trong <strong>24 giờ</strong>. Nếu bạn không mong đợi lời mời này, hãy bỏ qua email này.
                             </p>
@@ -254,7 +257,7 @@ public class EmailService {
                 </body>
                 </html>
                 """
-                .formatted(setupLink, setupLink, setupLink);
+                .formatted(setupLink);
     }
 
     private String buildVerificationEmailBody(String verifyLink) {
@@ -280,18 +283,21 @@ public class EmailService {
                               Cảm ơn bạn đã đăng ký tài khoản JLPT Platform! Vui lòng nhấn nút bên dưới
                               để xác minh địa chỉ email và kích hoạt tài khoản.
                             </p>
-                            <div style="text-align:center; margin:32px 0;">
-                              <a href="%s"
-                                 style="background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#ffffff;
-                                        padding:14px 36px; border-radius:8px; text-decoration:none;
-                                        font-size:16px; font-weight:600; display:inline-block;">
-                                ✅ Xác minh Email
-                              </a>
-                            </div>
-                            <p style="color:#6b7280; font-size:13px; margin-bottom:24px; word-break: break-all;">
-                              Hoặc copy link này vào trình duyệt: <br/>
-                              <a href="%s" style="color:#4f46e5;">%s</a>
-                            </p>
+                            <table width="100%%" border="0" cellspacing="0" cellpadding="0" style="margin:32px 0;">
+                              <tr>
+                                <td align="center">
+                                  <table border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                      <td align="center" style="border-radius: 8px;" bgcolor="#4f46e5">
+                                        <a href="%s" target="_blank" style="font-size: 16px; font-family: 'Segoe UI', Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 8px; padding: 14px 36px; border: 1px solid #4f46e5; display: inline-block; font-weight: 600;">
+                                          ✅ Xác minh Email
+                                        </a>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
                             <p style="color:#9ca3af; font-size:13px; line-height:1.6;">
                               Link có hiệu lực trong <strong>24 giờ</strong>. Nếu bạn không tạo tài khoản này, hãy bỏ qua email này.
                             </p>
@@ -307,7 +313,7 @@ public class EmailService {
                 </body>
                 </html>
                 """
-                .formatted(verifyLink, verifyLink, verifyLink);
+                .formatted(verifyLink);
     }
 
     private String buildPasswordResetEmailBody(String resetLink) {
@@ -333,18 +339,21 @@ public class EmailService {
                               Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.
                               Nhấn nút bên dưới để tạo mật khẩu mới.
                             </p>
-                            <div style="text-align:center; margin:32px 0;">
-                              <a href="%s"
-                                 style="background:linear-gradient(135deg,#dc2626,#9f1239); color:#ffffff;
-                                        padding:14px 36px; border-radius:8px; text-decoration:none;
-                                        font-size:16px; font-weight:600; display:inline-block;">
-                                🔑 Đặt lại mật khẩu
-                              </a>
-                            </div>
-                            <p style="color:#6b7280; font-size:13px; margin-bottom:24px; word-break: break-all;">
-                              Hoặc copy link này vào trình duyệt: <br/>
-                              <a href="%s" style="color:#dc2626;">%s</a>
-                            </p>
+                            <table width="100%%" border="0" cellspacing="0" cellpadding="0" style="margin:32px 0;">
+                              <tr>
+                                <td align="center">
+                                  <table border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                      <td align="center" style="border-radius: 8px;" bgcolor="#dc2626">
+                                        <a href="%s" target="_blank" style="font-size: 16px; font-family: 'Segoe UI', Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 8px; padding: 14px 36px; border: 1px solid #dc2626; display: inline-block; font-weight: 600;">
+                                          🔑 Đặt lại mật khẩu
+                                        </a>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
                             <p style="color:#9ca3af; font-size:13px; line-height:1.6;">
                               Link có hiệu lực trong <strong>1 giờ</strong>. Nếu bạn không yêu cầu đặt lại mật khẩu, hãy bỏ qua email này.
                             </p>
@@ -360,6 +369,6 @@ public class EmailService {
                 </body>
                 </html>
                 """
-                .formatted(resetLink, resetLink, resetLink);
+                .formatted(resetLink);
     }
 }
