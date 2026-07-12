@@ -578,6 +578,9 @@ public class AdminUserService {
         StaffUser staff = staffUserRepository
                 .findById(staffId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhân viên"));
+        if (staff.getStatus() == StaffUser.StaffStatus.SUSPENDED) {
+            throw new BusinessRuleException("Không thể đổi vai trò của nhân viên đang bị đình chỉ");
+        }
 
         StaffUser.StaffRole newRole =
                 StaffUser.StaffRole.valueOf(request.getStaffRole().toUpperCase());

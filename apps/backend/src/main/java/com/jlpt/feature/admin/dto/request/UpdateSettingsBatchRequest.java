@@ -4,6 +4,8 @@ package com.jlpt.feature.admin.dto.request;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 import lombok.Data;
 
@@ -21,6 +23,7 @@ public class UpdateSettingsBatchRequest {
         @NotBlank(message = "settingKey không được rỗng")
         private String settingKey;
 
+        @NotNull(message = "settingValue không được null") @Size(max = 20000, message = "settingValue không vượt quá 20000 ký tự")
         private String settingValue;
     }
 }

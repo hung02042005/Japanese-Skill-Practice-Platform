@@ -240,3 +240,68 @@ grep -rl "noValidate" apps/frontend/src --include=*.jsx
 Rà lại thực tế (đọc code, không tin grep mù): trong 5 "gap BE" nghi ban đầu chỉ có **3 lỗ thật (G1, G3, G4) — ĐÃ VÁ 2026-07-02** (compile Maven xanh); 2 là **báo động giả** (G2 optional, G5 là Entity). Còn **G6/G7 cần rà thủ công** (chưa làm) và **L1 FE không nhất quán** (nhiều form auth `noValidate` không chặn submit — F1/F2, ưu tiên UX).
 
 **Bài học**: checklist tự động (§6) chỉ để **khoanh vùng nghi ngờ**, phải đọc code xác nhận trước khi sửa — nếu không sẽ thêm validation vào Entity hoặc phá field optional (đúng loại "code rác" cần tránh).
+
+---
+
+## 6c. Trạng thái sau khi vá (2026-07-11) — L1 FE auth + error code
+
+Xử lý F1/F2 (L1 FE không nhất quán) và vấn đề "thông báo chung chung" ở đăng nhập:
+
+- **BE — trả `errorCode` cho client**: `ApiResponse` thêm field `code` (NON_NULL) + factory `errorWithCode`; `GlobalExceptionHandler.handleBusinessException` forward `ex.getErrorCode()` ra body. Client giờ switch trên code ổn định (`INVALID_CREDENTIALS`, `EMAIL_NOT_VERIFIED`, `TOKEN_EXPIRED`, `EMAIL_EXISTS`…) thay vì dò chuỗi tiếng Việt. **Giữ nguyên** message gộp chống dò tài khoản ở login (BR-35-09) — chỉ thêm code (vẫn `INVALID_CREDENTIALS` chung).
+- **BE — vá gap `@Pattern` còn "thin"**: `OnboardingRequest.jlptGoal`, `UpdateProfileRequest.{targetJlptLevel,phone}` thêm `@Pattern` (đồng bộ `UpdateStudentRequest`) → nay trả **400** thay vì lọt xuống service. Việt hoá 2 message lẫn Anh-Việt (`ForgotPasswordRequest`, `ResetPasswordRequest`).
+- **FE — L1 validate client-side cho toàn bộ form auth**: thêm `apps/frontend/src/utils/validation.js` (dùng chung); Login/Register/Forgot/Reset + 3 form staff (`Staff{ForgotPassword,SetupPassword,ChangeTempPassword}`) nay validate per-field (email/mật khẩu/khớp), báo lỗi **inline dưới từng ô** (`.field-error` + `.has-error`), không còn round-trip cho lỗi hình thức. Banner phân biệt loại lỗi bằng `errorCode` (Redux `authSlice` lưu thêm `errorCode`).
+- Verify: `npm run lint` + `npm run build` (FE) xanh; `mvn -o test` **61/61 pass** (gồm `AuthControllerIntegrationTest`/`AuthServiceTest`).
+
+---
+
+## 6d. Trạng thái sau khi vá (2026-07-11) — rà L2 chi tiết cho role Staff / Manager / Admin (Đợt 1)
+
+Rà lại toàn bộ DTO của **22 controller** staff/manager/admin (đọc code, không grep mù). **Controller-level `@Valid` = 100%** (mọi `@RequestBody` đều kèm `@Valid`). Phần lớn DTO đã chi tiết. **3 lỗ lệch-chuẩn thật đã vá:**
+
+| # | Vị trí | Vấn đề | Hành động |
+|---|--------|--------|-----------|
+| S1 ✅ | `staff/dto/request/ChangeTempPasswordRequest.newPassword` | Chỉ `@Size(min=8)` — **yếu hơn** `StaffSetupPasswordRequest` (cùng là mật khẩu staff mà 2 chính sách khác nhau) | Đổi sang `@Pattern` hoa+số giống setup; Việt hoá luôn message `confirmPassword` |
+| S2 ✅ | `admin/dto/request/UpdateSettingRequest` + `UpdateSettingsBatchRequest.Item` (`settingValue`) | Không `@Size(max)` → chuỗi không giới hạn (cột `NVARCHAR(MAX)`); batch cho `settingValue` null còn single `@NotNull` → **lệch nhau** | Thêm `@Size(max=20000)` cả 2; thêm `@NotNull` cho batch (đồng bộ single) |
+| S3 ✅ | `staffcontent/learning/dto/UpdateKanjiRequest` + `UpdateVocabularyRequest` (`jlptLevel`) | Regex `N[1-5]` + message **tiếng Anh** lệch chuẩn toàn hệ thống | Đổi về `^(N5\|N4\|N3\|N2\|N1)$` + message tiếng Việt (`UpdateGrammarRequest` vốn đã đúng) |
+
+**Đã xác minh KHÔNG phải lỗ (cố ý):** `UpdateStaffInfoRequest` (chỉ field `fullName`, partial), `Update{Kanji,Vocabulary,Grammar}` partial-update (null=giữ), `RestoreContentRequest` (id qua path), `AssignTicketRequest` (1 id), `ChangeStatusRequest.reason` (optional, check ở Service).
+
+> **Lưu ý cập nhật cấu trúc**: staff-CRUD (create/update/change-role) nay nằm ở **`AdminController`** (`/api/admin/**`), KHÔNG còn ở `StaffMemberController` (giờ chỉ là assignee-picker GET). Các bảng §3.3 cũ đã lỗi thời.
+
+- Verify: `mvn -o spotless:apply test` → **61/61 pass, BUILD SUCCESS**.
+- **CHƯA làm (Đợt 2/3)**: audit L3 nghiệp vụ cho service staff/manager/admin (lock-on-attempt, FK+soft-delete, manager authz, admin self-protect); L1 FE cho `admin/settings/EmailTab.jsx` + `NotificationTab.jsx` (còn `noValidate` không field-error).
+
+---
+
+## 6e. Audit L3 nghiệp vụ — Staff / Manager / Admin (Đợt 2, 2026-07-12)
+
+Đọc code các service: `AdminUserService`, `StaffQuizService`, `StaffExamService`, `ContentReviewService`, `PublishedContentService`, `StaffStudentService`, `SupportTicketService`. **Nền tảng L3 vững** — xem "Đã xác minh tốt" bên dưới.
+
+### Đã xác minh TỐT (không cần sửa)
+
+| Service | Điểm mạnh L3 |
+|---------|-------------|
+| `AdminUserService` | `checkSelfModification` (BR-37-01) ở update/suspend/activate/softDelete/restore; admin không tự sửa/xóa mình; softDelete/restore admin bị chặn; dup-email cross-3-bảng; **revoke token khi suspend/delete/reset** |
+| `ContentReviewService` | `requireManager` (role STAFF_MANAGER + ACTIVE); `guardSelfReview` (4 mắt FR-33-17/18); `ensureUpdated` (guarded update chống đồng thời); feedback bắt buộc khi reject/request-changes |
+| `PublishedContentService` | `requireManager`; `validateReason` server-side (min 10 ký tự); `findBlockingReferences` chặn ẩn nội dung đang dùng; guard chuyển trạng thái + concurrent; soft-delete only |
+| `StaffQuiz/ExamService` | `guardOwnership` (owner hoặc manager); `guardEditableStatus` (chỉ draft/rejected → published không sửa được = lock hiệu quả); `guardNoPublish` (staff không tự publish); score cross-field, level, câu hỏi phải published + không trùng |
+| `SupportTicketService` | ownership (student) / assignee-or-manager (staff reply) / admin-or-manager (assign); `manualGrade` chặn type≠SPEAKING & status≠AI_GRADED, điểm trong [0,100] qua DTO |
+
+### Lỗ đã VÁ (Đợt 2)
+
+| # | Vị trí | Vấn đề | Hành động |
+|---|--------|--------|-----------|
+| L3-S1 ✅ | `StaffStudentService.suspend` | StaffManager đình chỉ học viên nhưng **KHÔNG thu hồi token** đang hoạt động → học viên bị khoá vẫn dùng phiên cũ tới khi hết hạn (trong khi `AdminUserService.suspendUser` có revoke). Cũng thiếu guard đã-đình-chỉ. | Thêm `authTokenRepository.revokeAllActiveByStudentId(...)` + guard `DuplicateResourceException` khi đã SUSPENDED/DELETED (parity với AdminUserService) |
+
+### Lỗ đã VÁ tiếp (2026-07-12, sau khi chốt phương án)
+
+| # | Vị trí | Phương án đã chọn | Hành động |
+|---|--------|-------------------|-----------|
+| L3-R1 ✅ | `Staff{Quiz,Exam}Service.submitForReview` + `AssessmentContentHandler.approve` | **PA-3 (kết hợp, tách theo độ cứng)** | **Không-rỗng**: hard-block ở CẢ submit (bỏ comment check rỗng → `emptyQuiz`/`emptyExam`) VÀ approve. **Khớp điểm**: giữ **mềm** ở submit (chỉ cảnh báo `scoreMatched`), **hard-block ở approve** — thêm gate trong `AssessmentContentHandler.approve` (đếm assignment + `sumScoreByParent` mới trong `QuestionAssignmentRepository`, so `totalScore`) → `ASSESSMENT_EMPTY` / `ASSESSMENT_SCORE_MISMATCH` (422). Nay bài rỗng/lệch điểm KHÔNG thể lên `published` dù manager có bấm duyệt |
+| L3-R2 ✅ | `SupportTicketService.assignTicket` + `AdminUserService.changeStaffRole` | Gộp luôn | `assignTicket`: chặn giao cho staff `status != ACTIVE` (`STAFF_NOT_ACTIVE` 422). `changeStaffRole`: chặn đổi vai trò staff `SUSPENDED` (`BusinessRuleException`). *Ghi chú*: staff `DELETED` vốn đã bị lọc bởi `@SQLRestriction` trên entity → không load được |
+
+### Test bổ sung (7 test mới)
+
+`AssessmentContentHandlerTest` (3: rỗng/lệch-điểm/hợp-lệ), `StaffQuizServiceSubmitReviewTest` (1: rỗng), `StaffExamServiceSubmitReviewTest` (1: rỗng), `SupportTicketAssignTest` (1: target suspended), `AdminUserServiceChangeRoleTest` (1: staff suspended).
+
+- Verify: `mvn -o spotless:apply test` → **68/68 pass, BUILD SUCCESS** (61 cũ + 7 mới).

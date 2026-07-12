@@ -241,6 +241,10 @@ public class SupportTicketService {
         var targetStaff = staffUserRepository
                 .findById(assignToStaffId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhân viên được giao"));
+        if (targetStaff.getStatus() != StaffUser.StaffStatus.ACTIVE) {
+            throw new BusinessException(
+                    422, "STAFF_NOT_ACTIVE", "Không thể giao ticket cho nhân viên đang không hoạt động");
+        }
         ticket.setAssignedTo(targetStaff);
         // Staff Manager duyet + giao -> OPEN chuyen ASSIGNED (da duyet, cho staff xu ly)
         if (ticket.getStatus() == Ticket.TicketStatus.OPEN) {

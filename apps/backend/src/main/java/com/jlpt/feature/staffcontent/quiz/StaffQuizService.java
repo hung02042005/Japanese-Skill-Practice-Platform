@@ -243,15 +243,14 @@ public class StaffQuizService {
         QuizAssessmentEntity quiz = requireQuiz(assessmentId);
         guardOwnership(quiz, staff);
 
-        // long count = assignmentRepository.countByParentTypeAndParentId(PARENT_ASSESSMENT, assessmentId);
-        // if (count == 0) {
-        //     throw QuizBusinessException.emptyQuiz(); // FR-26-28
-        // }
+        // PA-3: chặn cứng bài rỗng ngay khi gửi duyệt (FR-26-28).
+        long count = assignmentRepository.countByParentTypeAndParentId(PARENT_ASSESSMENT, assessmentId);
+        if (count == 0) {
+            throw QuizBusinessException.emptyQuiz();
+        }
 
-        // BigDecimal sum = assignmentRepository.sumScoreByParent(PARENT_ASSESSMENT, assessmentId);
-        // if (!scoreMatches(sum, quiz.getTotalScore())) {
-        //     throw QuizBusinessException.scoreMismatch(); // FR-26-26
-        // }
+        // Khớp tổng điểm (FR-26-26) CỐ Ý mềm ở đây: staff còn sửa dần, `scoreMatched` là cảnh báo;
+        // chốt cứng đặt ở bước manager approve (AssessmentContentHandler.approve) — defense-in-depth.
 
         if (!isEditable(quiz.getStatus())) {
             throw QuizBusinessException.invalidStatusTransition(quiz.getStatus()); // FR-26-27

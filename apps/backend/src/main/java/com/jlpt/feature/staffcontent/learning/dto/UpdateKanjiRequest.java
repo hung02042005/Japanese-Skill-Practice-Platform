@@ -21,7 +21,7 @@ public class UpdateKanjiRequest {
 
     private Integer strokeCount;
 
-    @Pattern(regexp = "N[1-5]", message = "JLPT level must be N1–N5")
+    @Pattern(regexp = "^(N5|N4|N3|N2|N1)$", message = "Cấp độ JLPT phải là N5 đến N1")
     private String jlptLevel;
 
     private String strokeOrderUrl;

@@ -263,15 +263,14 @@ public class StaffExamService {
         ExamAssessmentEntity exam = requireExam(assessmentId);
         guardOwnership(exam, staff);
 
-        // long count = assignmentRepository.countByParentTypeAndParentId(PARENT_ASSESSMENT, assessmentId);
-        // if (count == 0) {
-        //     throw ExamBusinessException.emptyExam(); // FR-28-31
-        // }
+        // PA-3: chặn cứng bài rỗng ngay khi gửi duyệt (FR-28-31).
+        long count = assignmentRepository.countByParentTypeAndParentId(PARENT_ASSESSMENT, assessmentId);
+        if (count == 0) {
+            throw ExamBusinessException.emptyExam();
+        }
 
-        // BigDecimal sum = assignmentRepository.sumScoreByParent(PARENT_ASSESSMENT, assessmentId);
-        // if (!scoreMatches(sum, exam.getTotalScore())) {
-        //     throw ExamBusinessException.scoreMismatch(); // FR-28-30
-        // }
+        // Khớp tổng điểm (FR-28-30) CỐ Ý mềm ở đây: staff còn sửa dần, `scoreMatched` là cảnh báo;
+        // chốt cứng đặt ở bước manager approve (AssessmentContentHandler.approve) — defense-in-depth.
 
         if (!isEditable(exam.getStatus())) {
             throw ExamBusinessException.invalidStatusTransition(exam.getStatus()); // FR-28-32

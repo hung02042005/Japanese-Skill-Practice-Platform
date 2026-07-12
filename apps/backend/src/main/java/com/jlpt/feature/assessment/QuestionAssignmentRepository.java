@@ -1,6 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.assessment;
 
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +22,12 @@ public interface QuestionAssignmentRepository extends JpaRepository<QuestionAssi
             @Param("parentType") QuestionAssignment.ParentType parentType, @Param("parentId") Long parentId);
 
     long countByParentTypeAndParentId(QuestionAssignment.ParentType parentType, Long parentId);
+
+    @Query(
+            """
+            SELECT COALESCE(SUM(qa.score), 0) FROM QuestionAssignment qa
+            WHERE qa.parentType = :parentType AND qa.parentId = :parentId
+            """)
+    BigDecimal sumScoreByParent(
+            @Param("parentType") QuestionAssignment.ParentType parentType, @Param("parentId") Long parentId);
 }

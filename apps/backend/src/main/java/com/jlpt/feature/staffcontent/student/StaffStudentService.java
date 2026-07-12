@@ -4,6 +4,7 @@ package com.jlpt.feature.staffcontent.student;
 import com.jlpt.feature.assessment.AssessmentRepository;
 import com.jlpt.feature.assessment.TestAttempt;
 import com.jlpt.feature.assessment.TestAttemptRepository;
+import com.jlpt.feature.auth.AuthTokenRepository;
 import com.jlpt.feature.staff.StaffManagerGuard;
 import com.jlpt.feature.staffcontent.student.dto.StaffStudentListResponse;
 import com.jlpt.feature.staffcontent.student.dto.StaffStudentProgressResponse;
@@ -13,9 +14,11 @@ import com.jlpt.feature.student.StudentContentProgress.ProgressStatus;
 import com.jlpt.feature.student.StudentContentProgressRepository;
 import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.StudentUserRepository;
+import com.jlpt.shared.exception.DuplicateResourceException;
 import com.jlpt.shared.exception.ResourceNotFoundException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +41,7 @@ public class StaffStudentService {
     private final TestAttemptRepository testAttemptRepository;
     private final AssessmentRepository assessmentRepository;
     private final StaffManagerGuard staffManagerGuard;
+    private final AuthTokenRepository authTokenRepository;
 
     private static final String FORBIDDEN_MSG = "Chỉ Staff Manager mới có quyền khoá/mở khoá học viên";
 
@@ -122,9 +126,15 @@ public class StaffStudentService {
         StudentUser s = studentUserRepository
                 .findById(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("StudentUser", studentId));
+        if (s.getStatus() == StudentUser.StudentStatus.SUSPENDED
+                || s.getStatus() == StudentUser.StudentStatus.DELETED) {
+            throw new DuplicateResourceException("Tài khoản đã ở trạng thái này rồi");
+        }
         s.setStatus(StudentUser.StudentStatus.SUSPENDED);
         s.setSuspendReason(reason);
         studentUserRepository.save(s);
+        // Đình chỉ phải chấm dứt phiên đang hoạt động (parity với AdminUserService.suspendUser).
+        authTokenRepository.revokeAllActiveByStudentId(studentId, LocalDateTime.now());
         return toSummary(s);
     }
 

@@ -19,7 +19,7 @@ public class UpdateVocabularyRequest {
 
     private String wordType;
 
-    @Pattern(regexp = "N[1-5]", message = "JLPT level must be N1–N5")
+    @Pattern(regexp = "^(N5|N4|N3|N2|N1)$", message = "Cấp độ JLPT phải là N5 đến N1")
     private String jlptLevel;
 
     /** Chủ đề mới (topic_id thuộc catalog, đúng cấp độ). Null = giữ nguyên. */
