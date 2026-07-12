@@ -4,18 +4,20 @@ import { getSettings, updateSettings, testSmtp } from '../../../api/adminService
 /* ─── SMTP Server ─────────────────────────────────────────────────────────── */
 
 const SMTP_FIELDS = [
-  { key: 'host',      label: 'SMTP Host',     type: 'text',     placeholder: 'smtp.gmail.com',    fullWidth: true  },
-  { key: 'port',      label: 'SMTP Port',     type: 'number',   placeholder: '587',               fullWidth: false },
-  { key: 'secure',    label: 'Bảo mật',       type: 'select',   options: ['STARTTLS','SSL/TLS','Không'], fullWidth: false },
-  { key: 'username',  label: 'Tên đăng nhập', type: 'email',    placeholder: 'no-reply@jlpt.com', fullWidth: true  },
-  { key: 'password',  label: 'Mật khẩu',      type: 'password', placeholder: '••••••••',          fullWidth: true  },
-  { key: 'from_name', label: 'Tên hiển thị',  type: 'text',     placeholder: 'SakuJi Platform',   fullWidth: true  },
+  { key: 'host',       label: 'SMTP Host',     type: 'text',     placeholder: 'smtp.gmail.com',    fullWidth: true  },
+  { key: 'port',       label: 'SMTP Port',     type: 'number',   placeholder: '587',               fullWidth: false },
+  { key: 'secure',     label: 'Bảo mật',       type: 'select',   options: ['STARTTLS','SSL/TLS','Không'], fullWidth: false },
+  { key: 'username',   label: 'Tên đăng nhập', type: 'email',    placeholder: 'jlptelearningplatform@gmail.com', fullWidth: true  },
+  { key: 'password',   label: 'Mật khẩu',      type: 'password', placeholder: '••••••••',          fullWidth: true  },
+  { key: 'from_email', label: 'Email người gửi', type: 'email',  placeholder: '(để trống = dùng Tên đăng nhập ở trên)', fullWidth: true,
+    hint: 'Với Gmail, địa chỉ này bắt buộc phải trùng với Tên đăng nhập ở trên — nếu khác, Gmail sẽ từ chối gửi dù kết nối vẫn thành công.' },
+  { key: 'from_name',  label: 'Tên hiển thị',  type: 'text',     placeholder: 'SakuJi Platform',   fullWidth: true  },
 ];
 
 /* ─── 3 loại email ────────────────────────────────────────────────────────── */
 
 const EMAIL_TYPE_FIELDS = [
-  { key: 'from_email', label: 'Email người gửi', type: 'email', placeholder: 'noreply@jlpt.com', fullWidth: true  },
+  { key: 'from_email', label: 'Email người gửi', type: 'email', placeholder: 'jlptelearningplatform@gmail.com', fullWidth: true  },
   { key: 'from_name',  label: 'Tên hiển thị',    type: 'text',  placeholder: 'JLPT Platform',   fullWidth: false },
   { key: 'subject',    label: 'Tiêu đề email',   type: 'text',  placeholder: 'Nhập tiêu đề...', fullWidth: false },
 ];
@@ -198,14 +200,17 @@ function SmtpCard({ addToast }) {
                 </div>
 
               ) : (
-                <input
-                  id={`smtp-${f.key}`}
-                  className="ast-input"
-                  type={f.type}
-                  placeholder={f.placeholder}
-                  value={form[f.key] ?? ''}
-                  onChange={(e) => set(f.key, e.target.value)}
-                />
+                <>
+                  <input
+                    id={`smtp-${f.key}`}
+                    className="ast-input"
+                    type={f.type}
+                    placeholder={f.placeholder}
+                    value={form[f.key] ?? ''}
+                    onChange={(e) => set(f.key, e.target.value)}
+                  />
+                  {f.hint && <p className="ast-field-hint">{f.hint}</p>}
+                </>
               )}
             </div>
           ))}

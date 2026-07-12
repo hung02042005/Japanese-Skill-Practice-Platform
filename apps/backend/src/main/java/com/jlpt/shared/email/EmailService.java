@@ -3,6 +3,7 @@ package com.jlpt.shared.email;
 
 import com.jlpt.feature.admin.SystemSettingRepository;
 import jakarta.mail.internet.MimeMessage;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -136,9 +137,17 @@ public class EmailService {
     }
 
     private void sendHtmlEmail(String to, String subject, String htmlBody) {
-        String finalFromEmail = settingRepository
-                .findBySettingGroupAndSettingKey("smtp", "from_email")
-                .map(s -> s.getSettingValue())
+        // Gmail (và nhiều SMTP relay khác) chỉ chấp nhận gửi khi header "From" trùng với
+        // tài khoản đã xác thực (smtp.username) — dùng nó làm fallback thay vì property tĩnh
+        // spring.mail.username, vốn không được cấu hình trong hệ thống này (SMTP set qua DB).
+        String finalFromEmail = blankToEmpty(settingRepository
+                        .findBySettingGroupAndSettingKey("smtp", "from_email")
+                        .map(s -> s.getSettingValue())
+                        .orElse(null))
+                .or(() -> blankToEmpty(settingRepository
+                        .findBySettingGroupAndSettingKey("smtp", "username")
+                        .map(s -> s.getSettingValue())
+                        .orElse(null)))
                 .orElse(fromEmail);
         String finalFromName = settingRepository
                 .findBySettingGroupAndSettingKey("smtp", "from_name")
@@ -189,6 +198,10 @@ public class EmailService {
                 }
             }
         }
+    }
+
+    private Optional<String> blankToEmpty(String value) {
+        return (value == null || value.isBlank()) ? Optional.empty() : Optional.of(value);
     }
 
     private String buildStaffInvitationEmailBody(String setupLink) {
