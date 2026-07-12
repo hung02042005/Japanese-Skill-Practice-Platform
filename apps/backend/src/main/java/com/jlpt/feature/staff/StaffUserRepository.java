@@ -16,6 +16,9 @@ public interface StaffUserRepository extends JpaRepository<StaffUser, Long> {
 
     boolean existsByEmail(String email);
 
+    @Query(value = "SELECT * FROM staff_users WHERE staff_id = :id", nativeQuery = true)
+    Optional<StaffUser> findByIdIncludingDeleted(@Param("id") Long id);
+
     /**
      * Admin-only: paginated filter that bypasses @SQLRestriction to include deleted users.
      * Wildcard pattern (%term%) must be passed from the caller for :q.

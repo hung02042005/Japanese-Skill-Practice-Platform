@@ -482,7 +482,7 @@ public class AdminUserService {
         return switch (normalizeType(type)) {
             case "student" -> {
                 StudentUser s = studentUserRepository
-                        .findById(userId)
+                        .findByIdIncludingDeleted(userId)
                         .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
                 if (s.getStatus() == StudentUser.StudentStatus.DELETED) {
                     throw new DuplicateResourceException("Tài khoản đã ở trạng thái này rồi");
@@ -500,7 +500,7 @@ public class AdminUserService {
             }
             case "staff" -> {
                 StaffUser st = staffUserRepository
-                        .findById(userId)
+                        .findByIdIncludingDeleted(userId)
                         .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
                 if (st.getStatus() == StaffUser.StaffStatus.DELETED) {
                     throw new DuplicateResourceException("Tài khoản đã ở trạng thái này rồi");
@@ -533,7 +533,7 @@ public class AdminUserService {
         return switch (normalizeType(type)) {
             case "student" -> {
                 StudentUser s = studentUserRepository
-                        .findById(userId)
+                        .findByIdIncludingDeleted(userId)
                         .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
                 if (s.getStatus() != StudentUser.StudentStatus.DELETED) {
                     throw new BusinessRuleException("Tài khoản không ở trạng thái đã xóa");
@@ -550,7 +550,7 @@ public class AdminUserService {
             }
             case "staff" -> {
                 StaffUser st = staffUserRepository
-                        .findById(userId)
+                        .findByIdIncludingDeleted(userId)
                         .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
                 if (st.getStatus() != StaffUser.StaffStatus.DELETED) {
                     throw new BusinessRuleException("Tài khoản không ở trạng thái đã xóa");

@@ -16,6 +16,9 @@ public interface StudentUserRepository extends JpaRepository<StudentUser, Long> 
 
     boolean existsByEmail(String email);
 
+    @Query(value = "SELECT * FROM student_users WHERE student_id = :id", nativeQuery = true)
+    Optional<StudentUser> findByIdIncludingDeleted(@Param("id") Long id);
+
     /**
      * Admin-only: paginated filter that bypasses @SQLRestriction to include deleted users.
      * Wildcard pattern (%term%) must be passed from the caller for :q.
