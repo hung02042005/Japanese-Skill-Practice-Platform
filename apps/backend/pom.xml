@@ -224,12 +224,18 @@
                         <configuration>
                             <rules>
                                 <rule>
+                                    <!-- P2.9: nâng dần theo từng bước nhỏ, không nhảy vọt (xem
+                                         Deploy_Improvement_Plan.md). Coverage thực đo được lúc nâng
+                                         (12/07/2026, mvn clean verify cục bộ) là ~17.9% LINE — đặt
+                                         ngưỡng 0.15 để thực sự nâng chuẩn so với 0.10 cũ, nhưng vẫn
+                                         chừa khoảng đệm ~3 điểm % dưới mức thực tế, tránh CI đỏ ngay
+                                         vì 1 thay đổi nhỏ vô tình kéo coverage xuống sát ngưỡng. -->
                                     <element>BUNDLE</element>
                                     <limits>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.10</minimum>
+                                            <minimum>0.15</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
