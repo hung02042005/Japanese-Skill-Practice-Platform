@@ -1,3 +1,4 @@
+/* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.admin.dto.request;
 
 import lombok.Data;

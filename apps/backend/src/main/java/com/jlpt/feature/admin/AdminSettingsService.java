@@ -34,7 +34,13 @@ public class AdminSettingsService {
         return settingRepository.findBySettingGroup(group).stream()
                 .map(s -> SettingResponse.builder()
                         .settingKey(s.getSettingKey())
-                        .settingValue(isPassword(s.getSettingKey()) ? (s.getSettingValue() == null || s.getSettingValue().isBlank() ? "" : "********") : s.getSettingValue())
+                        .settingValue(
+                                isPassword(s.getSettingKey())
+                                        ? (s.getSettingValue() == null
+                                                        || s.getSettingValue().isBlank()
+                                                ? ""
+                                                : "********")
+                                        : s.getSettingValue())
                         .valueType(s.getValueType() != null ? s.getValueType().getValue() : "string")
                         .build())
                 .toList();
@@ -100,14 +106,39 @@ public class AdminSettingsService {
             JavaMailSenderImpl testSender = new JavaMailSenderImpl();
 
             // Nếu request không có cấu hình (ví dụ gọi từ code cũ), lấy từ DB
-            String host = request != null && request.getHost() != null ? request.getHost() : settingRepository.findBySettingGroupAndSettingKey("smtp", "host").map(SystemSetting::getSettingValue).orElse("");
-            String portStr = request != null && request.getPort() != null ? request.getPort() : settingRepository.findBySettingGroupAndSettingKey("smtp", "port").map(SystemSetting::getSettingValue).orElse("");
-            String username = request != null && request.getUsername() != null ? request.getUsername() : settingRepository.findBySettingGroupAndSettingKey("smtp", "username").map(SystemSetting::getSettingValue).orElse("");
-            String password = request != null && request.getPassword() != null ? request.getPassword() : settingRepository.findBySettingGroupAndSettingKey("smtp", "password").map(SystemSetting::getSettingValue).orElse("");
-            String secure = request != null && request.getSecure() != null ? request.getSecure() : settingRepository.findBySettingGroupAndSettingKey("smtp", "secure").map(SystemSetting::getSettingValue).orElse("");
+            String host = request != null && request.getHost() != null
+                    ? request.getHost()
+                    : settingRepository
+                            .findBySettingGroupAndSettingKey("smtp", "host")
+                            .map(SystemSetting::getSettingValue)
+                            .orElse("");
+            String portStr = request != null && request.getPort() != null
+                    ? request.getPort()
+                    : settingRepository
+                            .findBySettingGroupAndSettingKey("smtp", "port")
+                            .map(SystemSetting::getSettingValue)
+                            .orElse("");
+            String username = request != null && request.getUsername() != null
+                    ? request.getUsername()
+                    : settingRepository
+                            .findBySettingGroupAndSettingKey("smtp", "username")
+                            .map(SystemSetting::getSettingValue)
+                            .orElse("");
+            String password = request != null && request.getPassword() != null
+                    ? request.getPassword()
+                    : settingRepository
+                            .findBySettingGroupAndSettingKey("smtp", "password")
+                            .map(SystemSetting::getSettingValue)
+                            .orElse("");
+            String secure = request != null && request.getSecure() != null
+                    ? request.getSecure()
+                    : settingRepository
+                            .findBySettingGroupAndSettingKey("smtp", "secure")
+                            .map(SystemSetting::getSettingValue)
+                            .orElse("");
 
             testSender.setHost(host);
-            
+
             if (portStr != null && !portStr.trim().isEmpty()) {
                 try {
                     testSender.setPort(Integer.parseInt(portStr.trim()));
@@ -115,7 +146,7 @@ public class AdminSettingsService {
                     throw new BusinessException(400, "INVALID_PORT", "Cổng SMTP không hợp lệ: " + portStr);
                 }
             }
-            
+
             testSender.setUsername(username);
             if (password != null) {
                 testSender.setPassword(password.replace(" ", ""));
@@ -167,18 +198,16 @@ public class AdminSettingsService {
                     .findBySettingGroupAndSettingKey("smtp", "host")
                     .ifPresent(s -> mailSender.setHost(s.getSettingValue()));
 
-            settingRepository
-                    .findBySettingGroupAndSettingKey("smtp", "port")
-                    .ifPresent(s -> {
-                        String portStr = s.getSettingValue();
-                        if (portStr != null && !portStr.trim().isEmpty()) {
-                            try {
-                                mailSender.setPort(Integer.parseInt(portStr.trim()));
-                            } catch (NumberFormatException ex) {
-                                log.warn("[AdminSettingsService] Invalid port value in DB: {}", portStr);
-                            }
-                        }
-                    });
+            settingRepository.findBySettingGroupAndSettingKey("smtp", "port").ifPresent(s -> {
+                String portStr = s.getSettingValue();
+                if (portStr != null && !portStr.trim().isEmpty()) {
+                    try {
+                        mailSender.setPort(Integer.parseInt(portStr.trim()));
+                    } catch (NumberFormatException ex) {
+                        log.warn("[AdminSettingsService] Invalid port value in DB: {}", portStr);
+                    }
+                }
+            });
 
             settingRepository
                     .findBySettingGroupAndSettingKey("smtp", "username")
