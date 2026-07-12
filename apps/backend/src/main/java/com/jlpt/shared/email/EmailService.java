@@ -235,6 +235,10 @@ public class EmailService {
                                 🔑 Thiết lập mật khẩu
                               </a>
                             </div>
+                            <p style="color:#6b7280; font-size:13px; margin-bottom:24px; word-break: break-all;">
+                              Hoặc copy link này vào trình duyệt: <br/>
+                              <a href="%s" style="color:#0ea5e9;">%s</a>
+                            </p>
                             <p style="color:#9ca3af; font-size:13px; line-height:1.6;">
                               Link có hiệu lực trong <strong>24 giờ</strong>. Nếu bạn không mong đợi lời mời này, hãy bỏ qua email này.
                             </p>
@@ -250,7 +254,7 @@ public class EmailService {
                 </body>
                 </html>
                 """
-                .formatted(setupLink);
+                .formatted(setupLink, setupLink, setupLink);
     }
 
     private String buildVerificationEmailBody(String verifyLink) {
@@ -284,6 +288,10 @@ public class EmailService {
                                 ✅ Xác minh Email
                               </a>
                             </div>
+                            <p style="color:#6b7280; font-size:13px; margin-bottom:24px; word-break: break-all;">
+                              Hoặc copy link này vào trình duyệt: <br/>
+                              <a href="%s" style="color:#4f46e5;">%s</a>
+                            </p>
                             <p style="color:#9ca3af; font-size:13px; line-height:1.6;">
                               Link có hiệu lực trong <strong>24 giờ</strong>. Nếu bạn không tạo tài khoản này, hãy bỏ qua email này.
                             </p>
@@ -299,7 +307,7 @@ public class EmailService {
                 </body>
                 </html>
                 """
-                .formatted(verifyLink);
+                .formatted(verifyLink, verifyLink, verifyLink);
     }
 
     private String buildPasswordResetEmailBody(String resetLink) {
@@ -333,6 +341,10 @@ public class EmailService {
                                 🔑 Đặt lại mật khẩu
                               </a>
                             </div>
+                            <p style="color:#6b7280; font-size:13px; margin-bottom:24px; word-break: break-all;">
+                              Hoặc copy link này vào trình duyệt: <br/>
+                              <a href="%s" style="color:#dc2626;">%s</a>
+                            </p>
                             <p style="color:#9ca3af; font-size:13px; line-height:1.6;">
                               Link có hiệu lực trong <strong>1 giờ</strong>. Nếu bạn không yêu cầu đặt lại mật khẩu, hãy bỏ qua email này.
                             </p>
@@ -348,6 +360,6 @@ public class EmailService {
                 </body>
                 </html>
                 """
-                .formatted(resetLink);
+                .formatted(resetLink, resetLink, resetLink);
     }
 }
