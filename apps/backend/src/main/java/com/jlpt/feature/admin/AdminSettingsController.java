@@ -3,6 +3,7 @@ package com.jlpt.feature.admin;
 
 import com.jlpt.feature.admin.dto.request.UpdateSettingRequest;
 import com.jlpt.feature.admin.dto.request.UpdateSettingsBatchRequest;
+import com.jlpt.feature.admin.dto.request.SmtpTestRequest;
 import com.jlpt.feature.admin.dto.response.SettingResponse;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
@@ -51,8 +52,8 @@ public class AdminSettingsController {
 
     /** POST /api/admin/settings/smtp/test — kiểm tra kết nối SMTP. */
     @PostMapping("/smtp/test")
-    public ResponseEntity<ApiResponse<Void>> testSmtp() {
-        settingsService.testSmtpConnection();
+    public ResponseEntity<ApiResponse<Void>> testSmtp(@RequestBody(required = false) SmtpTestRequest request) {
+        settingsService.testSmtpConnection(request);
         return ResponseEntity.ok(ApiResponse.success("Kết nối SMTP thành công", null));
     }
 }

@@ -7,11 +7,11 @@ const SMTP_FIELDS = [
   { key: 'host',       label: 'SMTP Host',     type: 'text',     placeholder: 'smtp.gmail.com',    fullWidth: true  },
   { key: 'port',       label: 'SMTP Port',     type: 'number',   placeholder: '587',               fullWidth: false },
   { key: 'secure',     label: 'Bảo mật',       type: 'select',   options: ['STARTTLS','SSL/TLS','Không'], fullWidth: false },
-  { key: 'username',   label: 'Tên đăng nhập', type: 'email',    placeholder: 'jlptelearningplatform@gmail.com', fullWidth: true  },
-  { key: 'password',   label: 'Mật khẩu',      type: 'password', placeholder: '••••••••',          fullWidth: true  },
+  { key: 'username',   label: 'Tên đăng nhập', type: 'email',    placeholder: 'Nhập email (vd: abc@gmail.com)...', fullWidth: true  },
+  { key: 'password',   label: 'Mật khẩu',      type: 'password', placeholder: 'Nhập mật khẩu ứng dụng...', fullWidth: true  },
   { key: 'from_email', label: 'Email người gửi', type: 'email',  placeholder: '(để trống = dùng Tên đăng nhập ở trên)', fullWidth: true,
     hint: 'Với Gmail, địa chỉ này bắt buộc phải trùng với Tên đăng nhập ở trên — nếu khác, Gmail sẽ từ chối gửi dù kết nối vẫn thành công.' },
-  { key: 'from_name',  label: 'Tên hiển thị',  type: 'text',     placeholder: 'SakuJi Platform',   fullWidth: true  },
+  { key: 'from_name',  label: 'Tên hiển thị',  type: 'text',     placeholder: 'JLPT Platform',   fullWidth: true  },
 ];
 
 /* ─── 3 loại email ────────────────────────────────────────────────────────── */
@@ -129,13 +129,16 @@ function SmtpCard({ addToast }) {
     if (e) e.preventDefault();
     setTesting(true);
     try {
-      // Auto-save before testing
-      await updateSettings('smtp', SMTP_FIELDS.map((f) => ({
-        settingKey: f.key,
-        settingValue: form[f.key] ?? '',
-      })));
-      await testSmtp();
-      addToast('success', 'Đã lưu và kết nối SMTP thành công ✓');
+      // Gửi cấu hình hiện tại để test, KHÔNG lưu vào DB
+      const payload = {
+        host: form.host,
+        port: form.port,
+        secure: form.secure,
+        username: form.username,
+        password: form.password
+      };
+      await testSmtp(payload);
+      addToast('success', 'Kết nối SMTP thành công ✓ (Hãy bấm Lưu cấu hình nếu muốn áp dụng)');
     } catch (err) {
       addToast('error', `Lỗi kết nối SMTP: ${err?.response?.data?.message ?? 'Vui lòng kiểm tra lại cấu hình (hoặc Mật khẩu ứng dụng)'}`);
     } finally {
@@ -193,7 +196,12 @@ function SmtpCard({ addToast }) {
                   >
                     {showPass ? <EyeOffIcon /> : <EyeOpenIcon />}
                   </button>
-                  <p className="ast-field-hint">Để trống để giữ nguyên mật khẩu hiện tại</p>
+                  <p className="ast-field-hint">
+                    {form[f.key] === '********' 
+                      ? <span style={{ color: 'green' }}>✓ Đã thiết lập mật khẩu (để trống nếu không muốn đổi)</span>
+                      : <span style={{ color: 'red' }}>⚠️ Chưa thiết lập mật khẩu!</span>
+                    }
+                  </p>
                   <p className="ast-field-hint" style={{ color: '#d97706', marginTop: '4px' }}>
                     * Nếu dùng Gmail, bạn bắt buộc phải dùng <strong>Mật khẩu ứng dụng (App Password)</strong> thay vì mật khẩu đăng nhập thông thường.
                   </p>

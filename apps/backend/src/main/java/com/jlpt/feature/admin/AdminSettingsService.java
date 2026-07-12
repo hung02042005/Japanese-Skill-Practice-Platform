@@ -1,6 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.admin;
 
+import com.jlpt.feature.admin.dto.request.SmtpTestRequest;
 import com.jlpt.feature.admin.dto.request.UpdateSettingsBatchRequest;
 import com.jlpt.feature.admin.dto.response.SettingResponse;
 import com.jlpt.shared.exception.BusinessException;
@@ -33,7 +34,7 @@ public class AdminSettingsService {
         return settingRepository.findBySettingGroup(group).stream()
                 .map(s -> SettingResponse.builder()
                         .settingKey(s.getSettingKey())
-                        .settingValue(isPassword(s.getSettingKey()) ? "" : s.getSettingValue())
+                        .settingValue(isPassword(s.getSettingKey()) ? (s.getSettingValue() == null || s.getSettingValue().isBlank() ? "" : "********") : s.getSettingValue())
                         .valueType(s.getValueType() != null ? s.getValueType().getValue() : "string")
                         .build())
                 .toList();
@@ -87,16 +88,69 @@ public class AdminSettingsService {
 
         return SettingResponse.builder()
                 .settingKey(key)
-                .settingValue(isPassword(key) ? "" : value)
+                .settingValue(isPassword(key) ? (value == null || value.isBlank() ? "" : "********") : value)
                 .valueType(
                         setting.getValueType() != null ? setting.getValueType().getValue() : "string")
                 .build();
     }
 
     /** POST /api/admin/settings/smtp/test — kiểm tra kết nối SMTP hiện tại. */
-    public void testSmtpConnection() {
+    public void testSmtpConnection(SmtpTestRequest request) {
         try {
-            mailSender.testConnection();
+            JavaMailSenderImpl testSender = new JavaMailSenderImpl();
+
+            // Nếu request không có cấu hình (ví dụ gọi từ code cũ), lấy từ DB
+            String host = request != null && request.getHost() != null ? request.getHost() : settingRepository.findBySettingGroupAndSettingKey("smtp", "host").map(SystemSetting::getSettingValue).orElse("");
+            String portStr = request != null && request.getPort() != null ? request.getPort() : settingRepository.findBySettingGroupAndSettingKey("smtp", "port").map(SystemSetting::getSettingValue).orElse("");
+            String username = request != null && request.getUsername() != null ? request.getUsername() : settingRepository.findBySettingGroupAndSettingKey("smtp", "username").map(SystemSetting::getSettingValue).orElse("");
+            String password = request != null && request.getPassword() != null ? request.getPassword() : settingRepository.findBySettingGroupAndSettingKey("smtp", "password").map(SystemSetting::getSettingValue).orElse("");
+            String secure = request != null && request.getSecure() != null ? request.getSecure() : settingRepository.findBySettingGroupAndSettingKey("smtp", "secure").map(SystemSetting::getSettingValue).orElse("");
+
+            testSender.setHost(host);
+            
+            if (portStr != null && !portStr.trim().isEmpty()) {
+                try {
+                    testSender.setPort(Integer.parseInt(portStr.trim()));
+                } catch (NumberFormatException ex) {
+                    throw new BusinessException(400, "INVALID_PORT", "Cổng SMTP không hợp lệ: " + portStr);
+                }
+            }
+            
+            testSender.setUsername(username);
+            if (password != null) {
+                testSender.setPassword(password.replace(" ", ""));
+            }
+
+            secure = secure == null ? "" : secure.toUpperCase();
+            if (secure.contains("STARTTLS") || secure.contains("TLS")) {
+                testSender.getJavaMailProperties().put("mail.smtp.starttls.enable", "true");
+                testSender.getJavaMailProperties().put("mail.smtp.starttls.required", "true");
+            } else {
+                testSender.getJavaMailProperties().put("mail.smtp.starttls.enable", "false");
+                testSender.getJavaMailProperties().put("mail.smtp.starttls.required", "false");
+            }
+            if (secure.equals("SSL")) {
+                testSender.getJavaMailProperties().put("mail.smtp.ssl.enable", "true");
+            } else {
+                testSender.getJavaMailProperties().put("mail.smtp.ssl.enable", "false");
+            }
+
+            if (testSender.getUsername() != null && !testSender.getUsername().isEmpty()) {
+                testSender.getJavaMailProperties().put("mail.smtp.auth", "true");
+            } else {
+                testSender.getJavaMailProperties().put("mail.smtp.auth", "false");
+            }
+
+            testSender.getJavaMailProperties().put("mail.smtp.connectiontimeout", "5000");
+            testSender.getJavaMailProperties().put("mail.smtp.timeout", "5000");
+            testSender.getJavaMailProperties().put("mail.smtp.writetimeout", "5000");
+
+            jakarta.mail.Session newSession = jakarta.mail.Session.getInstance(testSender.getJavaMailProperties());
+            testSender.setSession(newSession);
+
+            testSender.testConnection();
+        } catch (BusinessException be) {
+            throw be;
         } catch (Exception e) {
             log.error("[AdminSettingsService] SMTP Test failed: ", e);
             throw new BusinessException(
@@ -113,12 +167,18 @@ public class AdminSettingsService {
                     .findBySettingGroupAndSettingKey("smtp", "host")
                     .ifPresent(s -> mailSender.setHost(s.getSettingValue()));
 
-            settingRepository.findBySettingGroupAndSettingKey("smtp", "port").ifPresent(s -> {
-                try {
-                    mailSender.setPort(Integer.parseInt(s.getSettingValue()));
-                } catch (NumberFormatException ignored) {
-                }
-            });
+            settingRepository
+                    .findBySettingGroupAndSettingKey("smtp", "port")
+                    .ifPresent(s -> {
+                        String portStr = s.getSettingValue();
+                        if (portStr != null && !portStr.trim().isEmpty()) {
+                            try {
+                                mailSender.setPort(Integer.parseInt(portStr.trim()));
+                            } catch (NumberFormatException ex) {
+                                log.warn("[AdminSettingsService] Invalid port value in DB: {}", portStr);
+                            }
+                        }
+                    });
 
             settingRepository
                     .findBySettingGroupAndSettingKey("smtp", "username")
@@ -134,7 +194,8 @@ public class AdminSettingsService {
                     });
 
             settingRepository.findBySettingGroupAndSettingKey("smtp", "secure").ifPresent(s -> {
-                String secure = s.getSettingValue().toUpperCase();
+                String val = s.getSettingValue();
+                String secure = val == null ? "" : val.toUpperCase();
                 if (secure.contains("STARTTLS") || secure.contains("TLS")) {
                     mailSender.getJavaMailProperties().put("mail.smtp.starttls.enable", "true");
                     mailSender.getJavaMailProperties().put("mail.smtp.starttls.required", "true");

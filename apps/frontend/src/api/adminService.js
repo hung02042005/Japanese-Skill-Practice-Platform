@@ -96,8 +96,7 @@ export async function updateSettings(group, settings) {
   return res.data.data;
 }
 
-export async function testSmtp() {
-  const res = await api.post('/admin/settings/smtp/test');
+export async function testSmtp(payload) {
+  const res = await api.post('/admin/settings/smtp/test', payload);
   return res.data;
 }
-
