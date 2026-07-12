@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class IssueTempPasswordRequest {
 
-    @NotNull(message = "Request id is required") private Long requestId;
+    @NotNull(message = "Mã yêu cầu là bắt buộc") private Long requestId;
 }

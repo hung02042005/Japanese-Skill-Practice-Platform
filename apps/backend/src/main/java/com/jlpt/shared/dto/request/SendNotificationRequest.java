@@ -10,20 +10,20 @@ import lombok.Data;
 @Data
 public class SendNotificationRequest {
 
-    @NotBlank(message = "Tieu de khong duoc de trong")
-    @Size(max = 255, message = "Tieu de khong vuot qua 255 ky tu")
+    @NotBlank(message = "Tiêu đề không được để trống")
+    @Size(max = 255, message = "Tiêu đề không vượt quá 255 ký tự")
     private String title;
 
-    @NotBlank(message = "Noi dung khong duoc de trong")
+    @NotBlank(message = "Nội dung không được để trống")
     private String content;
 
-    @Pattern(regexp = "^(news|warning|promotion|system|achievement|reminder)$", message = "Loai thong bao khong hop le")
+    @Pattern(regexp = "^(news|warning|promotion|system|achievement|reminder)$", message = "Loại thông báo không hợp lệ")
     private String notificationType = "system";
 
-    @Pattern(regexp = "^(in_app|email|both)$", message = "Kenh gui khong hop le")
+    @Pattern(regexp = "^(in_app|email|both)$", message = "Kênh gửi không hợp lệ")
     private String channel = "in_app";
 
-    @Pattern(regexp = "^(N1|N2|N3|N4|N5|ALL)$", message = "JLPT target khong hop le")
+    @Pattern(regexp = "^(N1|N2|N3|N4|N5|ALL)$", message = "Cấp độ JLPT mục tiêu không hợp lệ")
     private String targetJlptLevel = "ALL";
 
     private LocalDateTime scheduledAt;

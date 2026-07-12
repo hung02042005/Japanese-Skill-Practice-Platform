@@ -7,19 +7,19 @@ import lombok.Data;
 
 @Data
 public class QuestionRequest {
-    @NotBlank(message = "Question text is required")
+    @NotBlank(message = "Nội dung câu hỏi là bắt buộc")
     private String questionText;
 
     /** "multiple_choice" | "fill_blank" | "true_false" */
-    @NotBlank(message = "Question type is required")
+    @NotBlank(message = "Loại câu hỏi là bắt buộc")
     private String questionType;
 
     /** "vocabulary" | "grammar" | "kanji" | "reading" | "listening" | "mixed" */
-    @NotBlank(message = "Skill is required")
+    @NotBlank(message = "Kỹ năng là bắt buộc")
     private String skill;
 
     /** "N5" | "N4" | "N3" | "N2" | "N1" */
-    @NotBlank(message = "JLPT level is required")
+    @NotBlank(message = "Cấp độ JLPT là bắt buộc")
     private String jlptLevel;
 
     private String optionA;
@@ -37,7 +37,7 @@ public class QuestionRequest {
     private String audioUrl;
     private String imageUrl;
 
-    @NotNull(message = "Score is required") private java.math.BigDecimal score;
+    @NotNull(message = "Điểm là bắt buộc") private java.math.BigDecimal score;
 
     private String section;
     private Integer displayOrder;

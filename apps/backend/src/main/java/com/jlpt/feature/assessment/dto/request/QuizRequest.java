@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class QuizRequest {
-    @NotBlank(message = "Title is required")
+    @NotBlank(message = "Tiêu đề là bắt buộc")
     private String title;
 
     private Long lessonId;
@@ -16,7 +16,7 @@ public class QuizRequest {
 
     private String jlptLevel;
 
-    @NotNull(message = "Duration is required") private Integer durationMin;
+    @NotNull(message = "Thời lượng là bắt buộc") private Integer durationMin;
 
-    @NotNull(message = "Pass score is required") private Integer passScore;
+    @NotNull(message = "Điểm đạt là bắt buộc") private Integer passScore;
 }

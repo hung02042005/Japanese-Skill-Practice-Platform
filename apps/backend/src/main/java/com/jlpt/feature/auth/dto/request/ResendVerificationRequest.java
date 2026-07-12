@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class ResendVerificationRequest {
-    @NotBlank(message = "Email is required")
+    @NotBlank(message = "Email là bắt buộc")
     @Email(message = "Email không hợp lệ")
     private String email;
 }
