@@ -95,6 +95,8 @@ services:
     build:
       context: ./apps/frontend
       dockerfile: Dockerfile
+      args:
+        VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
     image: jlpt-frontend-staging:latest
     container_name: jlpt-frontend-staging
     ports:

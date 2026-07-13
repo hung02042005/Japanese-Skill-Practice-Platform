@@ -6,6 +6,11 @@ RUN npm ci
 COPY . .
 # Set the base URL for API calls so that Nginx handles them via reverse proxy
 ENV VITE_API_BASE_URL=/api
+# Google OAuth Client ID must be baked in at build time (Vite inlines
+# import.meta.env.VITE_* into the JS bundle) — without this build-arg the
+# Google sign-in button silently fails to render in production.
+ARG VITE_GOOGLE_CLIENT_ID
+ENV VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
 RUN npm run build
 
 # Stage 2: Serve the application using Nginx

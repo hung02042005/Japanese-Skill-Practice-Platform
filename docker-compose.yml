@@ -57,6 +57,11 @@ services:
     build:
       context: ./apps/frontend
       dockerfile: Dockerfile
+      args:
+        # Cùng giá trị GOOGLE_CLIENT_ID dùng cho backend (dòng "GOOGLE_CLIENT_ID"
+        # ở docker-compose.prod.yml) — Client ID là định danh công khai, không
+        # phải secret, nên dùng chung 1 biến .env cho cả build FE và env BE.
+        VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
     image: jlpt-frontend:latest
     container_name: jlpt-frontend
     ports:
