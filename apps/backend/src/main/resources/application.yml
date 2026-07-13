@@ -5,13 +5,13 @@ spring:
   datasource:
     url: ${DATABASE_URL:jdbc:sqlserver://127.0.0.1:1433;databaseName=JLPT_LearningDB;encrypt=true;trustServerCertificate=true}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    username: ${DATABASE_USERNAME:sa}
-    password: ${DATABASE_PASSWORD:123}
+    username: sa
+    password: 123
 
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: false
     properties:
       hibernate:

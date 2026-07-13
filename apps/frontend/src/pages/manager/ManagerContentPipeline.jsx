@@ -19,6 +19,8 @@ const TYPE_META = {
   grammar:    { label: 'Ngữ pháp', bg: '#F3E5F5', text: '#6A1B9A' },
   kanji:      { label: 'Kanji',   bg: '#FCE4EC', text: '#C62828' },
   exam:       { label: 'Đề thi',  bg: '#FFF3E0', text: '#E65100' },
+  quiz:       { label: 'Quiz',    bg: '#E8EAF6', text: '#283593' },
+  assessment: { label: 'Bài kiểm', bg: '#E8EAF6', text: '#283593' },
 };
 
 function TypeChip({ type }) {
@@ -41,6 +43,7 @@ export default function ManagerContentPipeline() {
   const [levelFilter, setLevel]   = useState('');
   const [currentPage, setPage]    = useState(1);
   const [actionMsg,   setActionMsg] = useState('');
+  const [pendingId,   setPendingId] = useState(null);
 
   const fetchData = useCallback(() => {
     return dispatch(fetchPublishedContentsThunk({
@@ -61,30 +64,39 @@ export default function ManagerContentPipeline() {
   };
 
   async function handleUnpublish(item) {
-    if (!window.confirm(`Hủy xuất bản: ${item.titleOrText ?? item.title}?`)) return;
+    const title = item.titleOrText ?? item.title;
+    if (!window.confirm(`Hủy xuất bản: ${title}?`)) return;
+    const reason = window.prompt('Nhập lý do hủy xuất bản (tùy chọn):', '') ?? '';
+    setPendingId(item.contentId);
     try {
       await dispatch(changePublishedStatusThunk({
         contentId: item.contentId,
-        payload: { newStatus: 'archived' },
+        payload: { contentType: item.contentType, status: 'archived', reason: reason.trim() || undefined },
       })).unwrap();
-      setActionMsg(`Đã hủy xuất bản: ${item.titleOrText ?? item.title}`);
+      setActionMsg(`Đã hủy xuất bản: ${title}`);
       fetchData();
     } catch (err) {
-      setActionMsg(err || 'Lỗi khi hủy xuất bản');
+      setActionMsg(typeof err === 'string' ? err : 'Có lỗi xảy ra khi hủy xuất bản, vui lòng thử lại.');
+    } finally {
+      setPendingId(null);
     }
   }
 
   async function handleRestore(item) {
-    if (!window.confirm(`Khôi phục: ${item.titleOrText ?? item.title}?`)) return;
+    const title = item.titleOrText ?? item.title;
+    if (!window.confirm(`Khôi phục: ${title}?`)) return;
+    setPendingId(item.contentId);
     try {
       await dispatch(restorePublishedContentThunk({
         contentId: item.contentId,
-        payload: { targetStatus: 'published' },
+        payload: { contentType: item.contentType },
       })).unwrap();
-      setActionMsg(`Đã khôi phục: ${item.titleOrText ?? item.title}`);
+      setActionMsg(`Đã khôi phục: ${title}`);
       fetchData();
     } catch (err) {
-      setActionMsg(err || 'Lỗi khi khôi phục');
+      setActionMsg(typeof err === 'string' ? err : 'Có lỗi xảy ra khi khôi phục, vui lòng thử lại.');
+    } finally {
+      setPendingId(null);
     }
   }
 
@@ -119,7 +131,11 @@ export default function ManagerContentPipeline() {
         <div className="mcp-filter-bar">
           <select className="mcp-select" value={typeFilter} onChange={handleFilter(setType)} aria-label="Lọc theo loại">
             <option value="">Tất cả loại</option>
-            {Object.entries(TYPE_META).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+            {Object.entries(TYPE_META)
+              // Backend ContentType chỉ có 'assessment' (gộp quiz + đề thi) — không có 'exam'/'quiz'
+              // riêng, gửi type=exam hoặc type=quiz sẽ bị 400 VALIDATION_FAILED ở ManagedContentResolver.
+              .filter(([k]) => k !== 'exam' && k !== 'quiz')
+              .map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
           </select>
           <select className="mcp-select" value={levelFilter} onChange={handleFilter(setLevel)} aria-label="Lọc theo cấp độ">
             <option value="">Tất cả cấp độ</option>
@@ -180,6 +196,7 @@ export default function ManagerContentPipeline() {
                           <button
                             className="mcp-btn-archive"
                             onClick={() => handleUnpublish(item)}
+                            disabled={pendingId === item.contentId}
                             title="Hủy xuất bản / Lưu trữ"
                           >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -191,6 +208,7 @@ export default function ManagerContentPipeline() {
                             <button
                               className="mcp-btn-restore"
                               onClick={() => handleRestore(item)}
+                              disabled={pendingId === item.contentId}
                               title="Khôi phục"
                             >
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
