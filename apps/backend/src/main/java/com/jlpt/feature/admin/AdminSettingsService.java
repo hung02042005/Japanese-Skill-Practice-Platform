@@ -61,7 +61,9 @@ public class AdminSettingsService {
         for (UpdateSettingsBatchRequest.Item item : items) {
             // Để trống ô mật khẩu = giữ nguyên giá trị hiện tại (không ghi đè bằng rỗng).
             if (isPassword(item.getSettingKey())
-                    && (item.getSettingValue() == null || item.getSettingValue().isBlank() || "********".equals(item.getSettingValue()))) {
+                    && (item.getSettingValue() == null
+                            || item.getSettingValue().isBlank()
+                            || "********".equals(item.getSettingValue()))) {
                 continue;
             }
             result.add(upsert(group, item.getSettingKey(), item.getSettingValue()));
@@ -90,7 +92,7 @@ public class AdminSettingsService {
         } else {
             setting.setSettingValue(value);
         }
-        
+
         settingRepository.save(setting);
 
         if ("smtp".equals(group)) {
@@ -129,12 +131,13 @@ public class AdminSettingsService {
                             .findBySettingGroupAndSettingKey("smtp", "username")
                             .map(SystemSetting::getSettingValue)
                             .orElse("");
-            String password = request != null && request.getPassword() != null && !"********".equals(request.getPassword())
-                    ? request.getPassword()
-                    : settingRepository
-                            .findBySettingGroupAndSettingKey("smtp", "password")
-                            .map(SystemSetting::getSettingValue)
-                            .orElse("");
+            String password =
+                    request != null && request.getPassword() != null && !"********".equals(request.getPassword())
+                            ? request.getPassword()
+                            : settingRepository
+                                    .findBySettingGroupAndSettingKey("smtp", "password")
+                                    .map(SystemSetting::getSettingValue)
+                                    .orElse("");
             String secure = request != null && request.getSecure() != null
                     ? request.getSecure()
                     : settingRepository
