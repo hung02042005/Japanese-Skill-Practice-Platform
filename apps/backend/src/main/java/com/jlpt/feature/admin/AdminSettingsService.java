@@ -61,7 +61,7 @@ public class AdminSettingsService {
         for (UpdateSettingsBatchRequest.Item item : items) {
             // Để trống ô mật khẩu = giữ nguyên giá trị hiện tại (không ghi đè bằng rỗng).
             if (isPassword(item.getSettingKey())
-                    && (item.getSettingValue() == null || item.getSettingValue().isBlank())) {
+                    && (item.getSettingValue() == null || item.getSettingValue().isBlank() || "********".equals(item.getSettingValue()))) {
                 continue;
             }
             result.add(upsert(group, item.getSettingKey(), item.getSettingValue()));
@@ -85,7 +85,12 @@ public class AdminSettingsService {
             throw new BusinessException(403, "SETTING_LOCKED", "Cài đặt này không được phép chỉnh sửa");
         }
 
-        setting.setSettingValue(value);
+        if (isPassword(key) && "********".equals(value)) {
+            // Bỏ qua, giữ nguyên mật khẩu cũ trong DB thay vì lưu chuỗi "********"
+        } else {
+            setting.setSettingValue(value);
+        }
+        
         settingRepository.save(setting);
 
         if ("smtp".equals(group)) {
@@ -124,7 +129,7 @@ public class AdminSettingsService {
                             .findBySettingGroupAndSettingKey("smtp", "username")
                             .map(SystemSetting::getSettingValue)
                             .orElse("");
-            String password = request != null && request.getPassword() != null
+            String password = request != null && request.getPassword() != null && !"********".equals(request.getPassword())
                     ? request.getPassword()
                     : settingRepository
                             .findBySettingGroupAndSettingKey("smtp", "password")
