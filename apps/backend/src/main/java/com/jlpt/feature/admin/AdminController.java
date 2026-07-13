@@ -83,11 +83,7 @@ public class AdminController {
             Authentication auth, @Valid @RequestBody CreateStaffRequest request) {
         CreateStaffResponse response = adminUserService.createStaff(auth.getName(), request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<CreateStaffResponse>builder()
-                        .status(201)
-                        .message("Tạo tài khoản Staff thành công. Email mời đã được gửi.")
-                        .data(response)
-                        .build());
+                .body(ApiResponse.created("Tạo tài khoản Staff thành công. Email mời đã được gửi.", response));
     }
 
     // ── UC-37-04: Edit user ─────────────────────────────────────────────────

@@ -55,7 +55,7 @@ Mỗi endpoint `POST/PUT/PATCH` phải tick đủ:
 |----------|-----|:----:|:---------:|:--------:|:-----------:|--------|
 | register | `RegisterRequest` | ⚠️ | ✅ | ✅ NotBlank/Email/Pattern/Size | ✅ khớp pwd (AuthService:272) | **L1 gap**: `Register.jsx` dùng `noValidate`, không chặn submit khi lệch pwd (chỉ hiện icon) |
 | login | `LoginRequest` | ✅ | ✅ | ✅ | ✅ lock/rate-limit | OK |
-| verify-email | `VerifyEmailRequest` | — | ✅ | ✅ token NotBlank | ✅ | OK |
+| verify-email | `VerifyEmailRequest` | — | ✅ | ✅ email NotBlank+Email, otpCode NotBlank | ✅ | OK — đổi từ `token` sang `{email, otpCode}` (mã OTP 6 số) |
 | resend-verification | `ResendVerificationRequest` | ✅ | ✅ | ✅ Email | ✅ | OK |
 | forgot-password | `ForgotPasswordRequest` | ✅ | ✅ | ✅ Email | ✅ | OK |
 | reset-password | `ResetPasswordRequest` | ✅ | ✅ | ✅ Pattern pwd | ✅ khớp pwd (AuthService:543) | OK |

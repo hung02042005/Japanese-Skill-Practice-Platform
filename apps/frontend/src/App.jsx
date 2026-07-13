@@ -1,3 +1,4 @@
+import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './pages/login/Login';
 import ForgotPassword from './pages/forgot-password/ForgotPassword';
@@ -14,6 +15,7 @@ import VerifyEmail from './pages/verify-email/VerifyEmail';
 import Onboarding from './pages/onboarding/Onboarding';
 import Profile from './pages/profile/Profile';
 import ChangePassword from './pages/settings/ChangePassword';
+import ChangeEmail from './pages/settings/ChangeEmail';
 import LessonDetail from './pages/lessons/LessonDetail';
 import MockTestList from './pages/mock-test/MockTestList';
 import MockTestAttempt from './pages/mock-test/MockTestAttempt';
@@ -27,26 +29,10 @@ import Notebook from './pages/notebook/Notebook';
 import Reading from './pages/reading/Reading';
 import NotFound from './pages/error/NotFound';
 import Forbidden from './pages/error/Forbidden';
-import ManageUsers     from './pages/admin/ManageUsers';
-import AdminDashboard  from './pages/admin/AdminDashboard';
-import AdminSettings   from './pages/admin/AdminSettings';
-import AdminReports    from './pages/admin/AdminReports';
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute   from './components/common/AdminRoute';
 import StaffRoute        from './components/common/StaffRoute';
 import ManagerRoute      from './components/common/ManagerRoute';
-import ManagerDashboard      from './pages/manager/ManagerDashboard';
-import ManagerReviewQueue    from './pages/manager/ManagerReviewQueue';
-import ManagerContentPipeline  from './pages/manager/ManagerContentPipeline';
-import ManagerNotifications    from './pages/manager/ManagerNotifications';
-import ManagerTickets          from './pages/manager/ManagerTickets';
-import StaffDashboard    from './pages/staff/StaffDashboard';
-import StaffContent      from './pages/staff/StaffContent';
-import StaffQuestions    from './pages/staff/StaffQuestions';
-import StaffAssessments  from './pages/staff/StaffAssessments';
-import StaffTickets      from './pages/staff/StaffTickets';
-import StaffGrading      from './pages/staff/StaffGrading';
-import StaffStudents    from './pages/staff/StaffStudents';
 import KanaList         from './pages/kana/KanaList';
 import VocabularyRoute       from './pages/vocabulary/VocabularyRoute';
 import VocabFlashcardSession from './pages/vocabulary/VocabFlashcardSession';
@@ -58,10 +44,36 @@ import SupportTicketDetail  from './pages/support/SupportTicketDetail';
 import Notifications        from './pages/notifications/Notifications';
 import { ToastProvider } from './context/ToastContext';
 
+// Admin/Staff/Manager routes lazy-loaded — nhóm học viên (traffic chính) không cần
+// tải sẵn code các khu vực quản trị này trong bundle ban đầu.
+const ManageUsers     = lazy(() => import('./pages/admin/ManageUsers'));
+const AdminDashboard  = lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminSettings   = lazy(() => import('./pages/admin/AdminSettings'));
+const AdminReports    = lazy(() => import('./pages/admin/AdminReports'));
+
+const ManagerDashboard        = lazy(() => import('./pages/manager/ManagerDashboard'));
+const ManagerReviewQueue      = lazy(() => import('./pages/manager/ManagerReviewQueue'));
+const ManagerContentPipeline  = lazy(() => import('./pages/manager/ManagerContentPipeline'));
+const ManagerNotifications    = lazy(() => import('./pages/manager/ManagerNotifications'));
+const ManagerTickets          = lazy(() => import('./pages/manager/ManagerTickets'));
+
+const StaffDashboard    = lazy(() => import('./pages/staff/StaffDashboard'));
+const StaffContent      = lazy(() => import('./pages/staff/StaffContent'));
+const StaffQuestions    = lazy(() => import('./pages/staff/StaffQuestions'));
+const StaffAssessments  = lazy(() => import('./pages/staff/StaffAssessments'));
+const StaffTickets      = lazy(() => import('./pages/staff/StaffTickets'));
+const StaffGrading      = lazy(() => import('./pages/staff/StaffGrading'));
+const StaffStudents     = lazy(() => import('./pages/staff/StaffStudents'));
+
+function PageLoading() {
+  return <div className="app-route-loading" role="status" aria-label="Đang tải trang..." />;
+}
+
 function App() {
   return (
     <ToastProvider>
       <BrowserRouter>
+        <Suspense fallback={<PageLoading />}>
         <Routes>
         {/* Public */}
         <Route path="/" element={<Home />} />
@@ -82,6 +94,7 @@ function App() {
         <Route path="/onboarding"   element={<PrivateRoute><Onboarding /></PrivateRoute>} />
         <Route path="/profile"      element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/settings/change-password" element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
+        <Route path="/settings/change-email" element={<PrivateRoute><ChangeEmail /></PrivateRoute>} />
         <Route path="/lessons/:id"  element={<PrivateRoute><LessonDetail /></PrivateRoute>} />
         <Route path="/mock-test"                    element={<PrivateRoute><MockTestList /></PrivateRoute>} />
         <Route path="/mock-test/:id/attempt"        element={<PrivateRoute><MockTestAttempt /></PrivateRoute>} />
@@ -130,6 +143,7 @@ function App() {
         {/* Catch-all */}
         <Route path="*" element={<NotFound />} />
         </Routes>
+        </Suspense>
       </BrowserRouter>
     </ToastProvider>
   );

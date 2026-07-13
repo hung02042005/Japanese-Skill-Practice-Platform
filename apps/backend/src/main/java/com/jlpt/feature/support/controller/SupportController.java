@@ -39,11 +39,7 @@ public class SupportController {
         TicketResponse result =
                 supportTicketService.createTicket(principal.getStudentUser().getId(), req);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<TicketResponse>builder()
-                        .status(201)
-                        .message("Ticket hỗ trợ đã được tạo thành công")
-                        .data(result)
-                        .build());
+                .body(ApiResponse.created("Ticket hỗ trợ đã được tạo thành công", result));
     }
 
     // ── UC-29: My tickets ────────────────────────────────────────────────────

@@ -35,7 +35,14 @@ public class SecurityConfig {
     private List<String> allowedOrigins;
 
     private static final String[] PUBLIC_URLS = {
-        "/api/auth/**", "/api/staff/auth/**", "/api/files/**", "/h2-console/**", "/actuator/health"
+        "/api/auth/**",
+        "/api/staff/auth/**",
+        "/api/files/**",
+        "/h2-console/**",
+        "/actuator/health",
+        "/v3/api-docs/**",
+        "/swagger-ui/**",
+        "/swagger-ui.html"
     };
 
     @Bean

@@ -307,51 +307,51 @@
 
     {
       "name": "4. Email Verification",
-      "description": "⚠️ EV-01 và EV-04 cần set 'verifyEmailToken' thủ công từ email xác thực trước khi chạy.",
+      "description": "⚠️ EV-01 cần set 'verifyEmailOtp' thủ công với mã 6 số nhận từ email xác thực trước khi chạy. Xác minh nay dùng {email, otpCode} thay vì token trong link.",
       "item": [
         {
-          "name": "EV-01 Verify email hợp lệ → 200  [cần set verifyEmailToken]",
+          "name": "EV-01 Verify email bằng OTP hợp lệ → 200  [cần set verifyEmailOtp]",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/api/auth/verify-email",
-            "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{verifyEmailToken}}\"\n}" }
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{newEmail}}\",\n  \"otpCode\": \"{{verifyEmailOtp}}\"\n}" }
           },
           "event": [
             { "listen": "prerequest", "script": { "exec": [
-              "const tok = pm.environment.get('verifyEmailToken');",
-              "if (!tok) console.warn('⚠️  verifyEmailToken chưa set — copy từ email xác thực vào environment');"
+              "const otp = pm.environment.get('verifyEmailOtp');",
+              "if (!otp) console.warn('⚠️  verifyEmailOtp chưa set — copy mã 6 số từ email xác thực vào environment');"
             ]}},
             { "listen": "test", "script": { "exec": [
-              "const tok = pm.environment.get('verifyEmailToken');",
-              "if (!tok) { pm.test('SKIP — verifyEmailToken chưa set', () => true); return; }",
+              "const otp = pm.environment.get('verifyEmailOtp');",
+              "if (!otp) { pm.test('SKIP — verifyEmailOtp chưa set', () => true); return; }",
               "pm.test('Status 200', () => pm.response.to.have.status(200));",
               "pm.test('status field = 200', () => pm.expect(pm.response.json().status).to.eql(200));"
             ]}}
           ]
         },
         {
-          "name": "EV-02 Verify email token giả → 400/401",
+          "name": "EV-02 Verify email OTP sai → 400",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/api/auth/verify-email",
-            "body": { "mode": "raw", "raw": "{\n  \"token\": \"fake-token-abc123xyz\"\n}" }
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{newEmail}}\",\n  \"otpCode\": \"000000\"\n}" }
           },
           "event": [{ "listen": "test", "script": { "exec": [
-            "pm.test('Token giả → 4xx', () => pm.expect(pm.response.code).to.be.oneOf([400, 401]));"
+            "pm.test('OTP sai → 400 INVALID_OTP', () => pm.response.to.have.status(400));"
           ]}}]
         },
         {
-          "name": "EV-03 Verify token rỗng → 400",
+          "name": "EV-03 Verify otpCode rỗng → 400",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/api/auth/verify-email",
-            "body": { "mode": "raw", "raw": "{\n  \"token\": \"\"\n}" }
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{newEmail}}\",\n  \"otpCode\": \"\"\n}" }
           },
           "event": [{ "listen": "test", "script": { "exec": [
-            "pm.test('Token rỗng → 400', () => pm.response.to.have.status(400));"
+            "pm.test('otpCode rỗng → 400', () => pm.response.to.have.status(400));"
           ]}}]
         },
         {

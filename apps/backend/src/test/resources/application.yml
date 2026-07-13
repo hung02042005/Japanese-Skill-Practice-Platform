@@ -23,8 +23,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: datzozz1212@gmail.com
-    password: rptl gzay orro tscv
+    username: test-placeholder@example.com
+    password: fake fake fake fake
     properties:
       mail:
         smtp:

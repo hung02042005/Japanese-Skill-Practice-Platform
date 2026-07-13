@@ -14,7 +14,6 @@ import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.StudentUserRepository;
-import com.jlpt.shared.email.EmailService;
 import com.jlpt.shared.exception.BusinessException;
 import com.jlpt.shared.security.JwtProvider;
 import java.time.LocalDateTime;
@@ -32,7 +31,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceTest {
+class AuthenticationServiceTest {
 
     @Mock
     private AuthenticationManager authenticationManager;
@@ -50,9 +49,6 @@ class AuthServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private EmailService emailService;
-
-    @Mock
     private AdminUserRepository adminUserRepository;
 
     @Mock
@@ -64,8 +60,11 @@ class AuthServiceTest {
     @Mock
     private MaintenanceModeService maintenanceModeService;
 
+    @Mock
+    private StudentResponseMapper studentResponseMapper;
+
     @InjectMocks
-    private AuthService authService;
+    private AuthenticationService authenticationService;
 
     private StudentUser mockUser;
     private LoginRequest loginRequest;
@@ -94,7 +93,7 @@ class AuthServiceTest {
         when(jwtProvider.generateRefreshToken(mockAuth)).thenReturn("refresh-token");
         when(authTokenRepository.save(any(AuthToken.class))).thenReturn(new AuthToken());
 
-        LoginApiResponse response = authService.login(loginRequest, "127.0.0.1");
+        LoginApiResponse response = authenticationService.login(loginRequest, "127.0.0.1");
 
         assertNotNull(response);
         assertEquals("access-token", response.getAccessToken());
@@ -109,7 +108,7 @@ class AuthServiceTest {
         when(studentUserRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
 
         BusinessException ex =
-                assertThrows(BusinessException.class, () -> authService.login(loginRequest, "127.0.0.1"));
+                assertThrows(BusinessException.class, () -> authenticationService.login(loginRequest, "127.0.0.1"));
         assertEquals(401, ex.getStatus());
         assertEquals("INVALID_CREDENTIALS", ex.getErrorCode());
     }
@@ -120,7 +119,7 @@ class AuthServiceTest {
         when(studentUserRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
 
         BusinessException ex =
-                assertThrows(BusinessException.class, () -> authService.login(loginRequest, "127.0.0.1"));
+                assertThrows(BusinessException.class, () -> authenticationService.login(loginRequest, "127.0.0.1"));
         assertEquals(429, ex.getStatus());
         assertEquals("TOO_MANY_REQUESTS", ex.getErrorCode());
     }
@@ -131,7 +130,7 @@ class AuthServiceTest {
         when(studentUserRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
 
         BusinessException ex =
-                assertThrows(BusinessException.class, () -> authService.login(loginRequest, "127.0.0.1"));
+                assertThrows(BusinessException.class, () -> authenticationService.login(loginRequest, "127.0.0.1"));
         assertEquals(403, ex.getStatus());
         assertEquals("ACCOUNT_SUSPENDED", ex.getErrorCode());
     }
@@ -143,7 +142,7 @@ class AuthServiceTest {
                 .thenThrow(new BadCredentialsException("Bad credentials"));
 
         BusinessException ex =
-                assertThrows(BusinessException.class, () -> authService.login(loginRequest, "127.0.0.1"));
+                assertThrows(BusinessException.class, () -> authenticationService.login(loginRequest, "127.0.0.1"));
         assertEquals(401, ex.getStatus());
         assertEquals("INVALID_CREDENTIALS", ex.getErrorCode());
         assertEquals(1, mockUser.getLoginAttempts());
@@ -158,7 +157,7 @@ class AuthServiceTest {
                 .thenThrow(new BadCredentialsException("Bad credentials"));
 
         BusinessException ex =
-                assertThrows(BusinessException.class, () -> authService.login(loginRequest, "127.0.0.1"));
+                assertThrows(BusinessException.class, () -> authenticationService.login(loginRequest, "127.0.0.1"));
         assertEquals(401, ex.getStatus());
         assertEquals("INVALID_CREDENTIALS", ex.getErrorCode());
         assertEquals(5, mockUser.getLoginAttempts());
@@ -184,7 +183,7 @@ class AuthServiceTest {
         when(jwtProvider.generateLimitedSessionToken(2L, "staff@example.com")).thenReturn("limited-token");
         when(authTokenRepository.save(any(AuthToken.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        LoginApiResponse response = authService.login(loginRequest, "127.0.0.1");
+        LoginApiResponse response = authenticationService.login(loginRequest, "127.0.0.1");
 
         assertEquals("limited-token", response.getAccessToken());
         assertTrue(response.getRequirePasswordChange());

@@ -54,11 +54,11 @@ Không có xác thực → không thể cá nhân hóa lộ trình học, lưu t
 
 | ID | EARS Requirement |
 |:---|:---|
-| FR-AUTH-10 | WHEN a Guest submits registration with full_name, email, password, and confirmed password, THE SYSTEM SHALL validate all fields, create a new `student_users` record with `status = 'pending'`, and send an email verification link. |
+| FR-AUTH-10 | WHEN a Guest submits registration with full_name, email, password, and confirmed password, THE SYSTEM SHALL validate all fields, create a new `student_users` record with `status = 'pending'`, and send an email containing a 6-digit OTP code. |
 | FR-AUTH-11 | IF the submitted email already exists in `student_users`, THEN THE SYSTEM SHALL return HTTP 409 with message "Email đã được sử dụng" and suggest navigating to the Login page. |
 | FR-AUTH-12 | THE SYSTEM SHALL enforce password strength: minimum 8 characters, at least 1 uppercase letter, 1 number. |
-| FR-AUTH-13 | WHEN a Guest clicks the email verification link with a valid token (`token_type = 'email_verification'`), THE SYSTEM SHALL update `student_users.status` to `'active'` and invalidate the token. |
-| FR-AUTH-14 | IF an email verification token has expired (> 24 hours), THEN THE SYSTEM SHALL return HTTP 400 and offer to resend the verification email. |
+| FR-AUTH-13 | WHEN a Guest submits the correct 6-digit OTP code together with their email (`token_type = 'email_verification'`) within its 10-minute validity, THE SYSTEM SHALL update `student_users.status` to `'active'` and delete the OTP token. |
+| FR-AUTH-14 | IF an email verification OTP has expired (> 10 minutes) OR has been guessed incorrectly more than 5 times, THEN THE SYSTEM SHALL reject the request (`OTP_EXPIRED` / `TOO_MANY_ATTEMPTS`) and require the Guest to request a new code via resend-verification. |
 
 ### 3.3 UC-03 — Khôi phục mật khẩu (Reset Password)
 
@@ -321,6 +321,9 @@ erDiagram
 }
 ```
 
+> Đăng ký thành công sẽ tự động gửi 1 email chứa mã OTP 6 số (hết hạn sau 10 phút) đến `email`.
+> Frontend chuyển hướng ngay sang `/verify-email?email={email}` để khách nhập mã.
+
 ---
 
 ### `POST /api/auth/verify-email`
@@ -330,7 +333,7 @@ erDiagram
 **Request:**
 
 ```json
-{ "token": "string — token từ email" }
+{ "email": "string", "otpCode": "string — mã 6 số nhận được qua email" }
 ```
 
 **Response (200):**
@@ -342,6 +345,8 @@ erDiagram
   "data": null
 }
 ```
+
+**Lỗi có thể gặp:** `400 INVALID_OTP` (mã sai), `400 OTP_EXPIRED` (hết hạn/không còn token), `429 TOO_MANY_ATTEMPTS` (nhập sai quá 5 lần).
 
 ---
 
@@ -529,7 +534,10 @@ erDiagram
 | HTTP Code | Error Code | Message | Trigger |
 |:---:|:---|:---|:---|
 | 400 | `VALIDATION_FAILED` | "Dữ liệu đầu vào không hợp lệ: {field}" | Field thiếu hoặc sai định dạng |
-| 400 | `INVALID_TOKEN` | "Link không hợp lệ hoặc đã hết hạn" | Token reset/verify hết hạn/đã dùng |
+| 400 | `INVALID_TOKEN` | "Link không hợp lệ hoặc đã hết hạn" | Token reset-password hết hạn/đã dùng |
+| 400 | `INVALID_OTP` | "Mã xác minh không đúng" | Mã OTP xác minh email không khớp |
+| 400 | `OTP_EXPIRED` | "Mã xác minh đã hết hạn, vui lòng yêu cầu gửi lại" | Mã OTP xác minh email hết hạn (>10 phút) hoặc không còn tồn tại |
+| 429 | `TOO_MANY_ATTEMPTS` | "Nhập sai quá nhiều lần. Vui lòng yêu cầu gửi lại mã mới" | Nhập sai mã OTP xác minh email quá 5 lần |
 | 400 | `PASSWORD_MISMATCH` | "Mật khẩu xác nhận không khớp" | confirmPassword ≠ newPassword |
 | 400 | `SAME_PASSWORD` | "Mật khẩu mới không được giống mật khẩu cũ" | newPassword = currentPassword |
 | 400 | `WRONG_PASSWORD` | "Mật khẩu hiện tại không đúng" | currentPassword sai trong đổi mật khẩu |
@@ -552,7 +560,7 @@ erDiagram
 | AC-AUTH-02 | Đăng nhập sai 5 lần | Tài khoản active | 5 lần sai liên tiếp | Tài khoản tạm khóa 15 phút, HTTP 429 |
 | AC-AUTH-03 | OAuth Google thành công | Chưa có tài khoản | Đăng nhập qua Google | Tài khoản mới tạo, có JWT |
 | AC-AUTH-04 | Đăng ký email trùng | Email đã tồn tại trong DB | Submit form đăng ký | HTTP 409 + gợi ý đăng nhập |
-| AC-AUTH-05 | Xác minh email hợp lệ | Token còn hạn | Click link xác minh | status → active, có thể đăng nhập |
+| AC-AUTH-05 | Xác minh email hợp lệ | Mã OTP còn hạn (10 phút) | Nhập đúng mã OTP trên trang /verify-email | status → active, có thể đăng nhập |
 | AC-AUTH-06 | Reset password thành công | Token còn hạn | Submit mật khẩu mới | Password cập nhật, token vô hiệu |
 | AC-AUTH-07 | Cập nhật profile | Student đã login | PUT /api/students/me | Thông tin được cập nhật trong DB |
 | AC-AUTH-08 | Đổi mật khẩu thành công | Student đã login | Submit đúng mật khẩu cũ + mới | Password cập nhật, các session khác bị revoke |

@@ -44,12 +44,7 @@ public class StaffExamController {
     public ResponseEntity<ApiResponse<ExamDetailResponse>> createExam(
             @Valid @RequestBody CreateExamRequest request, Authentication authentication) {
         ExamDetailResponse data = staffExamService.createExam(request, authentication.getName());
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<ExamDetailResponse>builder()
-                        .status(201)
-                        .message("Tạo đề thi thử thành công")
-                        .data(data)
-                        .build());
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Tạo đề thi thử thành công", data));
     }
 
     @GetMapping

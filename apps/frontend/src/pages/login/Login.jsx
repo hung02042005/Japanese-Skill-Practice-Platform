@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -18,6 +18,12 @@ function Login() {
 
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
+
+  // Tránh hiện lại lỗi còn sót từ trang auth khác (register/forgot-password...)
+  // khi điều hướng client-side sang đây — state.auth.error dùng chung cho nhiều thunk.
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
   const [showPwd, setShowPwd]   = useState(false);
 
   const isLoading = status === 'loading';
@@ -56,7 +62,7 @@ function Login() {
 
   const isMaintenance = error && error.includes('bảo trì');
   const isLocked   = error && !isMaintenance && (error.includes('khóa') || error.includes('locked'));
-  const needVerify = error && (error.includes('xác minh') || error.includes('verified'));
+  const needVerify = error && !isMaintenance && !isLocked && (error.includes('xác minh') || error.toLowerCase().includes('verified'));
 
   return (
     <div className="login-page">
@@ -78,7 +84,12 @@ function Login() {
           {needVerify && (
             <AuthBanner type="info">
               {error}{' '}
-              <Link to="/register" className="auth-banner-link">Gửi lại email xác minh</Link>
+              <Link
+                to={`/verify-email?email=${encodeURIComponent(email)}`}
+                className="auth-banner-link"
+              >
+                Nhập mã xác minh
+              </Link>
             </AuthBanner>
           )}
           {error && !isMaintenance && !isLocked && !needVerify && (

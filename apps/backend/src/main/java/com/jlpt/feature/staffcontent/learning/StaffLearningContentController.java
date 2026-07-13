@@ -51,12 +51,7 @@ public class StaffLearningContentController {
     public ResponseEntity<ApiResponse<LessonDetailResponse>> createLesson(
             @Valid @RequestBody CreateLessonRequest request, Authentication authentication) {
         LessonDetailResponse data = learningContentService.createLesson(request, authentication.getName());
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<LessonDetailResponse>builder()
-                        .status(201)
-                        .message("Tạo học liệu thành công")
-                        .data(data)
-                        .build());
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Tạo học liệu thành công", data));
     }
 
     @PutMapping("/lessons/{lessonId}")
@@ -102,12 +97,7 @@ public class StaffLearningContentController {
     public ResponseEntity<ApiResponse<VocabularyDetailResponse>> createVocabulary(
             @Valid @RequestBody CreateVocabularyRequest request, Authentication authentication) {
         VocabularyDetailResponse data = learningContentService.createVocabulary(request, authentication.getName());
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<VocabularyDetailResponse>builder()
-                        .status(201)
-                        .message("Tạo từ vựng thành công")
-                        .data(data)
-                        .build());
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Tạo từ vựng thành công", data));
     }
 
     @PutMapping("/vocabulary/{vocabularyId}")
@@ -154,12 +144,7 @@ public class StaffLearningContentController {
     public ResponseEntity<ApiResponse<KanjiDetailResponse>> createKanji(
             @Valid @RequestBody CreateKanjiRequest request, Authentication authentication) {
         KanjiDetailResponse data = learningContentService.createKanji(request, authentication.getName());
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<KanjiDetailResponse>builder()
-                        .status(201)
-                        .message("Tạo Kanji thành công")
-                        .data(data)
-                        .build());
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Tạo Kanji thành công", data));
     }
 
     @PutMapping("/kanji/{kanjiId}")

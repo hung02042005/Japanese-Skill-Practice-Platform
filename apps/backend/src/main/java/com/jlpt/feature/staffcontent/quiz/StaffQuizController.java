@@ -44,11 +44,7 @@ public class StaffQuizController {
             @Valid @RequestBody CreateQuizRequest request, Authentication authentication) {
         QuizDetailResponse data = staffQuizService.createQuiz(request, authentication.getName());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<QuizDetailResponse>builder()
-                        .status(201)
-                        .message("Tạo bài trắc nghiệm thành công")
-                        .data(data)
-                        .build());
+                .body(ApiResponse.created("Tạo bài trắc nghiệm thành công", data));
     }
 
     @GetMapping

@@ -164,7 +164,7 @@ export function StarIcon({ size = 24 }) {
 | 5 | `forgot-password/StaffForgotPassword.jsx` | Yêu cầu reset (staff) | ✅ | ✅ |
 | 6 | `forgot-password/StaffSetupPassword.jsx` | Thiết lập mật khẩu | ✅ | ✅ |
 | 7 | `forgot-password/StaffChangeTempPassword.jsx` | Đổi mật khẩu tạm | ✅ | ✅ |
-| 8 | `verify-email/VerifyEmail.jsx` | Xác minh email | ✅ | ✅ token sai/hết hạn |
+| 8 | `verify-email/VerifyEmail.jsx` | Xác minh email (mã OTP) | ✅ | ✅ OTP sai/hết hạn/quá số lần thử |
 | 9 | `onboarding/Onboarding.jsx` | Lưu onboarding | ✅ | ✅ |
 | 10 | `mock-test/MockTestAttempt.jsx` | Nộp bài thi | ✅ "Đã nộp bài" | ✅ hết giờ/lỗi mạng |
 | 11 | `quiz/QuizPage.jsx` | Nộp quiz | ✅ | ✅ |

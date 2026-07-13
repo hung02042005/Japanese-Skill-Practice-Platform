@@ -39,12 +39,7 @@ public class StaffGrammarController {
     public ResponseEntity<ApiResponse<GrammarDetailResponse>> createGrammar(
             @Valid @RequestBody CreateGrammarRequest request, Authentication authentication) {
         GrammarDetailResponse data = staffGrammarService.createGrammar(request, authentication.getName());
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<GrammarDetailResponse>builder()
-                        .status(201)
-                        .message("Tạo ngữ pháp thành công")
-                        .data(data)
-                        .build());
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Tạo ngữ pháp thành công", data));
     }
 
     @GetMapping

@@ -19,8 +19,8 @@
 ## Phase 3: Business Logic (Services)
 
 - [ ] 3.1 `EmailService`: Logic tạo mẫu và gửi email (Verify Email, Password Reset) dạng Async.
-- [ ] 3.2 `AuthService.register()`: Hash mật khẩu (bcrypt cost=10+), tạo user (`pending`), sinh `email_verification` token, gọi gửi mail.
-- [ ] 3.3 `AuthService.verifyEmail()` và `resendVerification()`: Validate token, chuyển status về `active`, thu hồi token.
+- [ ] 3.2 `AuthService.register()`: Hash mật khẩu (bcrypt cost=10+), tạo user (`pending`), sinh mã OTP 6 số (`email_verification` token, hết hạn 10 phút), gọi gửi mail.
+- [ ] 3.3 `AuthService.verifyEmail()` và `resendVerification()`: Validate mã OTP nhập vào so với token gần nhất, chuyển status về `active`, xoá token sau khi dùng (resend: xoá token cũ trước khi sinh mã mới, cooldown 60 giây).
 - [ ] 3.4 `AuthService.login()`: Kiểm tra đình chỉ/khóa, đối chiếu bcrypt, quản lý login fail count (khóa 15m sau 5 lần sai), sinh cặp JWT/Refresh.
 - [ ] 3.5 `AuthService.forgotPassword()` và `resetPassword()`: Sinh token đặt lại (15m), kiểm tra tính hợp lệ và đổi mật khẩu, vô hiệu hóa các token khác.
 - [ ] 3.6 `AuthService.refreshToken()`: Validate refresh token, sinh cặp token mới (rotate refresh token).

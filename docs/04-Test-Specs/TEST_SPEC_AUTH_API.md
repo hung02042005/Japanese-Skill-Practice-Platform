@@ -169,17 +169,21 @@
 
 ## 5. POST /api/auth/verify-email
 
-**Request body**: `{ "token": "..." }`
+**Request body**: `{ "email": "...", "otpCode": "123456" }`
 **Auth required**: Không
+
+> Xác minh email không còn dùng link/token trong URL — user tự nhập email + mã OTP 6 số (nhận qua email) trên trang `/verify-email`. Mã hết hạn sau **10 phút**, tối đa **5 lần** nhập sai trước khi bị khoá và phải gửi lại mã mới.
 
 | ID | Tên test case | Input | Expected HTTP | Expected errorCode / ghi chú |
 |----|---------------|-------|---------------|-------------------------------|
-| VFY-01 | Token hợp lệ, chưa hết hạn | Token EMAIL_VERIFICATION còn hạn | 200 | Student status → ACTIVE, `emailVerifiedAt` được set |
-| VFY-02 | Token không tồn tại | `"token": "invalid-uuid"` | 400/404 | `INVALID_TOKEN` |
-| VFY-03 | Token đã hết hạn (> 24h) | Token `expiresAt` trong quá khứ | 400 | `TOKEN_EXPIRED` |
-| VFY-04 | Token sai type (PASSWORD_RESET dùng cho verify-email) | PASSWORD_RESET token | 400 | `INVALID_TOKEN` |
-| VFY-05 | Token đã dùng rồi (dùng lần 2) | Token đã revoke | 400 | `INVALID_TOKEN` |
-| VFY-06 | Thiếu token field | `{}` | 400 | `VALIDATION_ERROR` |
+| VFY-01 | OTP đúng, chưa hết hạn | Mã OTP EMAIL_VERIFICATION còn hạn | 200 | Student status → ACTIVE, `emailVerifiedAt` được set, token bị xoá |
+| VFY-02 | Email không tồn tại | `{"email": "nobody@test.com", "otpCode": "123456"}` | 400 | `INVALID_OTP` |
+| VFY-03 | OTP đã hết hạn (> 10 phút) | Token `expiresAt` trong quá khứ | 400 | `OTP_EXPIRED` |
+| VFY-04 | Không còn token nào (đã xác minh/dùng hết attempts) | Không có AuthToken EMAIL_VERIFICATION | 400 | `OTP_EXPIRED` |
+| VFY-05 | OTP sai (nhập nhầm) | `otpCode` không khớp `token_value` | 400 | `INVALID_OTP` |
+| VFY-06 | Nhập sai OTP quá 5 lần liên tiếp | 6 request với `otpCode` sai | 429 | `TOO_MANY_ATTEMPTS`, token bị xoá sau lần thứ 6 |
+| VFY-07 | Xác minh lại tài khoản đã ACTIVE (idempotent) | Student `status = 'active'` | 200 | Không đổi trạng thái, xoá token thừa nếu còn |
+| VFY-08 | Thiếu email hoặc otpCode | `{}` | 400 | `VALIDATION_ERROR` |
 
 ---
 
@@ -188,12 +192,14 @@
 **Request body**: `{ "email": "..." }`
 **Auth required**: Không
 
+> Sinh mã OTP 6 số mới (hết hạn 10 phút), xoá mã cũ. Giới hạn **1 lần / 60 giây / tài khoản**.
+
 | ID | Tên test case | Input | Expected HTTP | Ghi chú |
 |----|---------------|-------|---------------|---------|
-| RSV-01 | Email PENDING hợp lệ | `pending@test.com` | 200 | Token mới được tạo, email được gửi |
-| RSV-02 | Email đã ACTIVE | `student@test.com` | 400 | `ALREADY_VERIFIED` |
-| RSV-03 | Email không tồn tại | `nobody@test.com` | 200 | Response generic (không tiết lộ email không tồn tại) |
-| RSV-04 | Email của SUSPENDED student | `suspended@test.com` | 403 | `ACCOUNT_SUSPENDED` |
+| RSV-01 | Email PENDING hợp lệ | `pending@test.com` | 200 | Mã OTP mới được tạo, email được gửi |
+| RSV-02 | Gọi lại trong vòng 60 giây | 2 request liên tiếp cùng email PENDING | 429 | `TOO_MANY_REQUESTS` |
+| RSV-03 | Email đã ACTIVE | `student@test.com` | 200 | Bỏ qua âm thầm (không tạo token mới, không tiết lộ trạng thái) |
+| RSV-04 | Email không tồn tại | `nobody@test.com` | 200 | Response generic (không tiết lộ email không tồn tại) |
 | RSV-05 | Email không đúng format | `"email": "bad"` | 400 | `VALIDATION_ERROR` |
 
 ---
@@ -208,7 +214,8 @@
 | FPW-01 | Email student tồn tại | `student@test.com` | 200 | Token PASSWORD_RESET tạo (1h), email gửi |
 | FPW-02 | Email không tồn tại | `nobody@test.com` | 200 | Response giống FPW-01 (security: không tiết lộ) |
 | FPW-03 | Email không đúng format | `"email": "bad"` | 400 | `VALIDATION_ERROR` |
-| FPW-04 | Gọi 2 lần với cùng email | 2 request liên tiếp | 200 | Token mới ghi đè / token cũ bị revoke |
+| FPW-04 | Gọi lại trong vòng 60 giây với cùng email tồn tại | 2 request liên tiếp | 429 | `TOO_MANY_REQUESTS` |
+| FPW-05 | Gọi lại sau 60 giây | 2 request cách nhau > 60s | 200 | Token cũ bị xoá, token mới được tạo |
 
 ---
 

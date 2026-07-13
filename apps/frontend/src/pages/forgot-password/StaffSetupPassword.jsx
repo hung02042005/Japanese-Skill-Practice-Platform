@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setupStaffPasswordThunk, clearError } from '../../store/slices/authSlice';
@@ -22,6 +22,11 @@ function StaffSetupPassword() {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isDone, setIsDone] = useState(false);
+
+  // Tránh hiện lại lỗi còn sót từ trang auth khác khi điều hướng client-side sang đây.
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   const isLoading = status === 'loading';
   const confirmOk = confirmPassword.length > 0 && newPassword === confirmPassword;

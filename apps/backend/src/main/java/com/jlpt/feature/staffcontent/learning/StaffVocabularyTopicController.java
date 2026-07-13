@@ -39,11 +39,6 @@ public class StaffVocabularyTopicController {
     public ResponseEntity<ApiResponse<VocabTopicResponse>> create(
             @Valid @RequestBody CreateVocabTopicRequest request, Authentication authentication) {
         VocabTopicResponse data = topicService.create(request, authentication.getName());
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<VocabTopicResponse>builder()
-                        .status(201)
-                        .message("Tạo chủ đề thành công")
-                        .data(data)
-                        .build());
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Tạo chủ đề thành công", data));
     }
 }

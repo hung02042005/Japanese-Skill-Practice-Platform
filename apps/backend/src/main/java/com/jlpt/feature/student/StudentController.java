@@ -1,8 +1,11 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student;
 
-import com.jlpt.feature.auth.AuthService;
+import com.jlpt.feature.auth.PasswordResetService;
+import com.jlpt.feature.auth.StudentProfileService;
 import com.jlpt.feature.auth.dto.request.ChangePasswordRequest;
+import com.jlpt.feature.auth.dto.request.ConfirmEmailChangeRequest;
+import com.jlpt.feature.auth.dto.request.RequestEmailChangeRequest;
 import com.jlpt.feature.student.dto.request.OnboardingRequest;
 import com.jlpt.feature.student.dto.request.UpdateProfileRequest;
 import com.jlpt.feature.student.dto.response.CourseListResponse;
@@ -27,7 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 @PreAuthorize("hasRole('STUDENT')")
 public class StudentController {
 
-    private final AuthService authService;
+    private final StudentProfileService studentProfileService;
+    private final PasswordResetService passwordResetService;
     private final VocabHomeService vocabHomeService;
     private final CourseService courseService;
     private final StudentDashboardService studentDashboardService;
@@ -60,8 +64,8 @@ public class StudentController {
     @PostMapping("/onboarding")
     public ResponseEntity<ApiResponse<StudentResponse>> submitOnboarding(
             @AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody OnboardingRequest request) {
-        StudentResponse response =
-                authService.submitOnboarding(userDetails.getStudentUser().getId(), request);
+        StudentResponse response = studentProfileService.submitOnboarding(
+                userDetails.getStudentUser().getId(), request);
         return ResponseEntity.ok(ApiResponse.success("Đã lưu mục tiêu học tập", response));
     }
 
@@ -70,7 +74,7 @@ public class StudentController {
             @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam("avatar") MultipartFile avatar) {
         Long studentId = userDetails.getStudentUser().getId();
         String avatarUrl = avatarStorageService.store(avatar, studentId);
-        StudentResponse response = authService.updateAvatar(studentId, avatarUrl);
+        StudentResponse response = studentProfileService.updateAvatar(studentId, avatarUrl);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật ảnh đại diện thành công", response));
     }
 
@@ -94,7 +98,7 @@ public class StudentController {
     public ResponseEntity<ApiResponse<StudentResponse>> getProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         StudentResponse response =
-                authService.getProfile(userDetails.getStudentUser().getId());
+                studentProfileService.getProfile(userDetails.getStudentUser().getId());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -102,14 +106,31 @@ public class StudentController {
     public ResponseEntity<ApiResponse<StudentResponse>> updateProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody UpdateProfileRequest request) {
         StudentResponse response =
-                authService.updateProfile(userDetails.getStudentUser().getId(), request);
+                studentProfileService.updateProfile(userDetails.getStudentUser().getId(), request);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật hồ sơ thành công", response));
     }
 
     @PutMapping("/me/password")
     public ResponseEntity<ApiResponse<Void>> changePassword(
             @AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody ChangePasswordRequest request) {
-        authService.changePassword(userDetails.getStudentUser().getId(), request);
+        passwordResetService.changePassword(userDetails.getStudentUser().getId(), request);
         return ResponseEntity.ok(ApiResponse.success("Đổi mật khẩu thành công.", null));
+    }
+
+    @PostMapping("/me/email/otp")
+    public ResponseEntity<ApiResponse<Void>> requestEmailChange(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody RequestEmailChangeRequest request) {
+        studentProfileService.requestEmailChange(userDetails.getStudentUser().getId(), request);
+        return ResponseEntity.ok(ApiResponse.success("Đã gửi mã OTP đến email mới.", null));
+    }
+
+    @PutMapping("/me/email")
+    public ResponseEntity<ApiResponse<StudentResponse>> confirmEmailChange(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody ConfirmEmailChangeRequest request) {
+        StudentResponse response = studentProfileService.confirmEmailChange(
+                userDetails.getStudentUser().getId(), request);
+        return ResponseEntity.ok(ApiResponse.success("Đổi email thành công.", response));
     }
 }

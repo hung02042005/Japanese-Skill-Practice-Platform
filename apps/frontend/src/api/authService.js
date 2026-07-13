@@ -127,8 +127,8 @@ export async function logout() {
   }
 }
 
-export async function verifyEmail(token) {
-  const response = await api.post('/auth/verify-email', { token });
+export async function verifyEmail(email, otpCode) {
+  const response = await api.post('/auth/verify-email', { email, otpCode });
   return response.data;
 }
 

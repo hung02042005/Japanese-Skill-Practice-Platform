@@ -3,9 +3,9 @@ import * as authService from '../../api/authService';
 
 export const verifyEmailThunk = createAsyncThunk(
   'auth/verifyEmail',
-  async (token, { rejectWithValue }) => {
+  async ({ email, otpCode }, { rejectWithValue }) => {
     try {
-      const res = await authService.verifyEmail(token);
+      const res = await authService.verifyEmail(email, otpCode);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message ?? 'Xác minh email thất bại');

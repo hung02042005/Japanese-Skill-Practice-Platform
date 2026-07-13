@@ -43,6 +43,16 @@ spring:
 server:
   port: 8080
 
+# OpenAPI/Swagger — bật mặc định cho dev/staging, có thể tắt ở prod qua env var
+# SPRINGDOC_ENABLED=false nếu không muốn công khai tài liệu API.
+springdoc:
+  api-docs:
+    enabled: ${SPRINGDOC_ENABLED:true}
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: ${SPRINGDOC_ENABLED:true}
+    path: /swagger-ui.html
+
 management:
   endpoints:
     web:

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -19,7 +19,12 @@ function Register() {
   const [form, setForm]               = useState({ fullName: '', email: '', password: '', confirmPassword: '' });
   const [showPwd, setShowPwd]         = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [isDone, setIsDone]           = useState(false);
+
+  // Tránh hiện lại lỗi còn sót từ trang auth khác (login/forgot-password...)
+  // khi điều hướng client-side sang đây — state.auth.error dùng chung cho nhiều thunk.
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   const isLoading = status === 'loading';
   const confirmOk = form.confirmPassword.length > 0 && form.password === form.confirmPassword;
@@ -35,7 +40,8 @@ function Register() {
       await dispatch(
         registerThunk({ fullName: form.fullName, email: form.email, password: form.password, confirmPassword: form.confirmPassword }),
       ).unwrap();
-      setIsDone(true);
+      // Đăng ký đã tự gửi mã OTP xác minh — chuyển sang trang nhập mã.
+      navigate(`/verify-email?email=${encodeURIComponent(form.email)}`);
     } catch {
       /* lỗi API đã được set vào Redux state */
     }
@@ -48,30 +54,6 @@ function Register() {
     } catch {
       /* lỗi đã set vào Redux state */
     }
-  }
-
-  if (isDone) {
-    return (
-      <div className="reg-page">
-        <AuthTopBar />
-        <main className="reg-main">
-          <div className="auth-card reg-success-card">
-            <SakuChan variant="happy" />
-            <h1 className="auth-title">Kiểm tra hộp thư của bạn!</h1>
-            <p className="reg-success-desc">
-              Chúng tôi đã gửi email xác minh đến<br/>
-              <strong className="reg-success-email">{form.email}</strong>
-            </p>
-            <p className="reg-success-hint">
-              Nhấp vào liên kết trong email để kích hoạt tài khoản.
-            </p>
-            <Link to="/login" className="btn-submit reg-success-btn">
-              ← Quay lại đăng nhập
-            </Link>
-          </div>
-        </main>
-      </div>
-    );
   }
 
   return (

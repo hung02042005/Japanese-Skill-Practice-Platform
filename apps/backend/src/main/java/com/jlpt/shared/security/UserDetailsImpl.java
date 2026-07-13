@@ -50,10 +50,10 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     // PENDING được coi là enabled một cách CÓ CHỦ ĐÍCH: nếu trả về false ở đây, Spring Security
-    // ném DisabledException ngay trong AuthenticationManager.authenticate(), khiến AuthService không
-    // thể tự bắt và trả message "vui lòng xác minh email" — nó bị nuốt bởi exception handling chung
+    // ném DisabledException ngay trong AuthenticationManager.authenticate(), khiến AuthenticationService
+    // không thể tự bắt và trả message "vui lòng xác minh email" — nó bị nuốt bởi exception handling chung
     // của Spring. Việc chặn đăng nhập khi PENDING được xử lý tường minh ở
-    // AuthService.handleStudentLogin() TRƯỚC KHI gọi authenticationManager.authenticate().
+    // AuthenticationService.handleStudentLogin() TRƯỚC KHI gọi authenticationManager.authenticate().
     // Bất kỳ luồng authenticate nào khác dùng UserDetailsService (vd thêm SSO/refresh sau này)
     // PHẢI tự check StudentStatus.PENDING trước khi authenticate, vì isEnabled() sẽ không chặn giúp.
     @Override
