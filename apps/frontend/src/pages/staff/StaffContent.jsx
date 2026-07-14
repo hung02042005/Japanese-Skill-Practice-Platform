@@ -21,6 +21,7 @@ import {
   submitAssessmentForReview,
   getContentReviewFeedback,
 } from "../../api/staffService";
+import { getErrorMessage } from "../../utils/apiMessage";
 import StaffTopNav from "../../components/layout/StaffTopNav";
 import { EmptyState } from "../../components/common/EmptyState";
 import { Pagination } from "../../components/common/Pagination";
@@ -244,7 +245,7 @@ export default function StaffContent() {
       addToast({ type: "success", message: `Đã gửi duyệt thành công!` });
       fetchData();
     } catch (err) {
-      addToast({ type: "error", message: err?.message || err || "Lỗi khi gửi duyệt" });
+      addToast({ type: "error", message: getErrorMessage(err, "Lỗi khi gửi duyệt") });
     }
   };
 
@@ -378,7 +379,7 @@ export default function StaffContent() {
       handleModalClose();
       fetchData();
     } catch (err) {
-      addToast({ type: "error", message: err?.message || err || "Lỗi khi lưu" });
+      addToast({ type: "error", message: getErrorMessage(err, "Lỗi khi lưu") });
     }
   };
 

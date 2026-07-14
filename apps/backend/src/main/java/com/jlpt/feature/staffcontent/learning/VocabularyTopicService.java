@@ -31,14 +31,66 @@ public class VocabularyTopicService {
 
     private final VocabularyTopicRepository topicRepository;
     private final StaffUserRepository staffUserRepository;
+    private final com.jlpt.feature.learning.VocabularyRepository vocabularyRepository;
 
     @Transactional(readOnly = true)
     public List<VocabTopicResponse> listByLevel(String levelStr) {
         JlptLevel level = parseLevel(levelStr);
-        return topicRepository.findByJlptLevelOrderByDisplayOrderAscIdAsc(level).stream()
+        return topicRepository.findByJlptLevelAndStatusNotOrderByDisplayOrderAscIdAsc(level, Kanji.ContentStatus.DELETED).stream()
                 .map(VocabTopicResponse::from)
                 .toList();
     }
+
+    @Transactional
+    public void deleteTopic(Long topicId, String managerEmail) {
+        StaffUser manager = requireManager(managerEmail);
+        VocabularyTopic topic = topicRepository.findById(topicId)
+                .orElseThrow(() -> new com.jlpt.shared.exception.ResourceNotFoundException("Không tìm thấy chủ đề"));
+        if (topic.getStatus() == Kanji.ContentStatus.DELETED) {
+            throw new com.jlpt.shared.exception.BusinessException(400, "ALREADY_DELETED", "Chủ đề đã bị xóa trước đó");
+        }
+        long activeVocabs = vocabularyRepository.countByTopicRefIdAndStatusNot(topicId, Kanji.ContentStatus.DELETED);
+        if (activeVocabs > 0) {
+            throw new com.jlpt.shared.exception.BusinessException(400, "RESOURCE_IN_USE", "Không thể xóa chủ đề đang chứa từ vựng");
+        }
+        topic.setStatus(Kanji.ContentStatus.DELETED);
+        topicRepository.save(topic);
+        log.info("[INFO] Manager {} DELETED vocabulary topic {}", manager.getId(), topicId);
+    }
+
+    @Transactional
+    public VocabTopicResponse restoreTopic(Long topicId, String managerEmail) {
+        StaffUser manager = requireManager(managerEmail);
+        VocabularyTopic topic = topicRepository.findById(topicId)
+                .orElseThrow(() -> new com.jlpt.shared.exception.ResourceNotFoundException("Không tìm thấy chủ đề"));
+        if (topic.getStatus() != Kanji.ContentStatus.DELETED) {
+            throw new com.jlpt.shared.exception.BusinessException(400, "NOT_DELETED", "Chủ đề không ở trạng thái bị xóa");
+        }
+        topic.setStatus(Kanji.ContentStatus.PUBLISHED);
+        VocabularyTopic saved = topicRepository.save(topic);
+        log.info("[INFO] Manager {} RESTORED vocabulary topic {}", manager.getId(), topicId);
+        return VocabTopicResponse.from(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public List<VocabTopicResponse> listDeletedTopics(String managerEmail) {
+        requireManager(managerEmail);
+        return topicRepository.findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED).stream()
+                .map(VocabTopicResponse::from)
+                .toList();
+    }
+
+    private StaffUser requireManager(String email) {
+        StaffUser staff = staffUserRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new ForbiddenException("Tài khoản không có thẩm quyền quản lý nội dung xuất bản"));
+        if (staff.getStaffRole() != StaffUser.StaffRole.STAFF_MANAGER
+                || staff.getStatus() != StaffUser.StaffStatus.ACTIVE) {
+            throw new ForbiddenException("Tài khoản không có thẩm quyền quản lý nội dung xuất bản");
+        }
+        return staff;
+    }
+
 
     @Transactional
     public VocabTopicResponse create(CreateVocabTopicRequest request, String staffEmail) {

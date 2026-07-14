@@ -233,8 +233,17 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
       return;
     }
     // A — Chặn tạo Kanji không có dữ liệu nét (học viên sẽ không tô được).
-    if (contentType === 'kanji' && kanjiCheck.status !== 'valid') {
-      return;
+    if (contentType === 'kanji') {
+      if (status === 'pending_review') {
+        if (kanjiCheck.status === 'checking') {
+          alert('Hệ thống đang tải và kiểm tra dữ liệu nét chữ Hán. Vui lòng đợi trong giây lát.');
+          return;
+        }
+        if (kanjiCheck.status !== 'valid') {
+          alert('Không thể gửi duyệt: Ký tự Kanji này không có dữ liệu nét viết hỗ trợ (học viên sẽ không viết được). Vui lòng chọn chữ khác hoặc chỉ "Lưu nháp".');
+          return;
+        }
+      }
     }
     onSave(getSubmitPayload(status));
   };
