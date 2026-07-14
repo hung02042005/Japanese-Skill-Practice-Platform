@@ -28,7 +28,6 @@ public class WebConfig implements WebMvcConfigurer {
         if (!location.endsWith("/")) {
             location += "/";
         }
-        registry.addResourceHandler("/api/files/**")
-                .addResourceLocations(location);
+        registry.addResourceHandler("/api/files/**").addResourceLocations(location);
     }
 }
