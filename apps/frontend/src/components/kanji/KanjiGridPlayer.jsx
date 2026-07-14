@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import HanziWriter from 'hanzi-writer';
 import KanjiStrokeLayer from './KanjiStrokeLayer';
+import { jpCharDataLoader } from '../../utils/kanjiLookup';
 
 /* ── Practice grid overlay ───────────────────────────────────────────── */
 function PracticeGrid() {
@@ -65,6 +66,7 @@ export default function KanjiGridPlayer({ character, strokeCount, onStrokeChange
       radicalColor:  '#E89AAA',     // bộ thủ — sakura pink
       strokeAnimationSpeed: 1,
       delayBetweenStrokes: 0,
+      charDataLoader: jpCharDataLoader,
       onLoadCharDataSuccess: () => setStatus('ready'),
       onLoadCharDataError:   () => setStatus('error'),
     });

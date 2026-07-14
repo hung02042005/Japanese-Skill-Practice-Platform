@@ -82,3 +82,25 @@ export function lookupKanjiByReading(input) {
 export function getKanjiInfo(ch) {
   return charInfo[ch] || null;
 }
+
+/**
+ * Custom charDataLoader for HanziWriter.
+ * Fetches Japanese Kanji stroke data from unpkg CDN (non-blocked in Vietnam).
+ * Falls back to Chinese Hanzi data if the Kanji is not present in the Japanese dataset.
+ */
+export function jpCharDataLoader(char, onLoad, onError) {
+  fetch(`https://unpkg.com/hanzi-writer-data-jp@0/${encodeURIComponent(char)}.json`)
+    .then((res) => {
+      if (!res.ok) {
+        // Fallback to standard Chinese dataset
+        return fetch(`https://unpkg.com/hanzi-writer-data@2/${encodeURIComponent(char)}.json`);
+      }
+      return res;
+    })
+    .then((res) => {
+      if (!res.ok) throw new Error(`Failed to load stroke data for character: ${char}`);
+      return res.json();
+    })
+    .then(onLoad)
+    .catch(onError);
+}
