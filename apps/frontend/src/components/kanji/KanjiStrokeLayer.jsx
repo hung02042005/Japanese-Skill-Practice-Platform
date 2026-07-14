@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { fetchKanjiStrokeData } from '../../utils/kanjiStrokeLoader';
 
 /**
  * KanjiStrokeLayer — SVG overlay với 3 trạng thái nét viết
@@ -43,11 +44,7 @@ export default function KanjiStrokeLayer({
     let cancelled = false;
     setCharData(null);
 
-    fetch(`https://unpkg.com/hanzi-writer-data@2.0.1/${character}.json`)
-      .then(res => {
-        if (!res.ok) throw new Error('Not found');
-        return res.json();
-      })
+    fetchKanjiStrokeData(character)
       .then(data => {
         if (!cancelled) {
           setCharData(data);

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { getStaffVocabularyTopics, createStaffVocabularyTopic } from '../../api/staffService';
 import { lookupKanjiByReading, getKanjiInfo } from '../../utils/kanjiLookup';
 import { PlusIcon, SpinnerIcon, CheckIcon, XIcon } from '../common/AppIcons';
+import { fetchKanjiStrokeData } from '../../utils/kanjiStrokeLoader';
 
 const TYPE_LABELS = {
   course: 'Khóa học',
@@ -137,11 +138,7 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
     let cancelled = false;
     setKanjiCheck({ status: 'checking', strokeCount: null });
     const timer = setTimeout(() => {
-      fetch(`https://unpkg.com/hanzi-writer-data@2.0.1/${ch}.json`)
-        .then(res => {
-          if (!res.ok) throw new Error('Not found');
-          return res.json();
-        })
+      fetchKanjiStrokeData(ch)
         .then((data) => {
           if (cancelled) return;
           const n = data?.strokes?.length || null;

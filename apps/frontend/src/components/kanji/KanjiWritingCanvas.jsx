@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { fetchKanjiStrokeData } from '../../utils/kanjiStrokeLoader';
 import HanziWriter from 'hanzi-writer';
 import KanjiStrokeLayer from './KanjiStrokeLayer';
 import { ConfettiIcon } from '../common/AppIcons';
@@ -233,8 +234,7 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
       highlightOnComplete: true,
       showHintAfterMisses: 2,
       charDataLoader: (char, onLoad, onError) => {
-        fetch(`https://unpkg.com/hanzi-writer-data@2.0.1/${char}.json`)
-          .then(res => res.json())
+        fetchKanjiStrokeData(char)
           .then(onLoad)
           .catch(onError);
       },

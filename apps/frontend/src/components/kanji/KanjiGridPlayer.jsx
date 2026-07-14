@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import HanziWriter from 'hanzi-writer';
 import KanjiStrokeLayer from './KanjiStrokeLayer';
+import { fetchKanjiStrokeData } from '../../utils/kanjiStrokeLoader';
 
 /* ── Practice grid overlay ───────────────────────────────────────────── */
 function PracticeGrid() {
@@ -66,8 +67,7 @@ export default function KanjiGridPlayer({ character, strokeCount, onStrokeChange
       strokeAnimationSpeed: 1,
       delayBetweenStrokes: 0,
       charDataLoader: (char, onLoad, onError) => {
-        fetch(`https://unpkg.com/hanzi-writer-data@2.0.1/${char}.json`)
-          .then(res => res.json())
+        fetchKanjiStrokeData(char)
           .then(onLoad)
           .catch(onError);
       },
