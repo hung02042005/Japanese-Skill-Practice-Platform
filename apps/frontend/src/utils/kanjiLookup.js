@@ -95,8 +95,9 @@ export function jpCharDataLoader(char, onLoad, onError) {
       return res.json();
     });
 
-  const jpUrl = `https://cdn.jsdelivr.net/npm/hanzi-writer-data-jp@0/${encodeURIComponent(char)}.json`;
-  const cnUrl = `https://cdn.jsdelivr.net/npm/hanzi-writer-data@2/${encodeURIComponent(char)}.json`;
+  const cleanChar = (char || '').trim();
+  const jpUrl = `https://cdn.jsdelivr.net/npm/hanzi-writer-data-jp@0/${encodeURIComponent(cleanChar)}.json`;
+  const cnUrl = `https://cdn.jsdelivr.net/npm/hanzi-writer-data@2/${encodeURIComponent(cleanChar)}.json`;
 
   tryFetch(jpUrl)
     .catch(() => tryFetch(cnUrl))
