@@ -187,8 +187,10 @@ export default function KanjiStrokeLayer({
               <DirectionHint median={medians[curIdx]} idx={curIdx} />
             )}
 
-            {/* Brush tip animator — chạy dọc theo stroke path */}
-            <BrushTip pathData={strokes[curIdx]} />
+            {/* Brush tip animator — chạy dọc theo đường xương nét (median) thay vì outline */}
+            {medians?.[curIdx]?.length >= 2 && (
+              <BrushTip pathData={'M ' + medians[curIdx].map(p => `${p[0]},${p[1]}`).join(' L ')} />
+            )}
           </g>
         )}
 
