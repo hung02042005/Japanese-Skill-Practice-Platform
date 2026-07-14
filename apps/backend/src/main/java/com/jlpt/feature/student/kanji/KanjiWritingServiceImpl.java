@@ -11,6 +11,7 @@ import com.jlpt.shared.exception.ResourceNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -218,6 +219,7 @@ public class KanjiWritingServiceImpl implements KanjiWritingService {
             KanjiWritingAttemptRequest.StrokeResult s = strokes.get(i);
             if (i > 0) sb.append(",");
             sb.append(String.format(
+                    Locale.US,
                     "{\"idx\":%d,\"dtw\":%.2f,\"quality\":\"%s\",\"dir\":\"%s\"}",
                     s.getStrokeIndex(),
                     s.getDtwScore(),
