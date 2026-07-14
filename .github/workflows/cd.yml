@@ -94,6 +94,11 @@ jobs:
           echo "Đang build và khởi động Backend, Frontend..."
           docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build backend frontend
 
+          # Đồng bộ các file audio tĩnh vào backend container volume
+          echo "Đang đồng bộ file audio tĩnh vào backend container..."
+          docker cp apps/backend/uploads/audio jlpt-backend:/app/uploads/
+
+
           # 7. POST-DEPLOY SMOKE TEST (P0.1 — xem Deploy_Improvement_Plan.md)
           # `docker compose up -d` chỉ đợi container được TẠO, không đợi ứng dụng
           # bên trong THỰC SỰ chạy được — đây chính là lý do sự cố backend

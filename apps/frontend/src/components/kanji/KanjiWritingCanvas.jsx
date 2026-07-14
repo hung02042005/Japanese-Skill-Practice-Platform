@@ -4,6 +4,7 @@ import HanziWriter from 'hanzi-writer';
 import KanjiStrokeLayer from './KanjiStrokeLayer';
 import { ConfettiIcon } from '../common/AppIcons';
 import { evaluateKanjiStroke, saveKanjiWritingAttempt } from '../../api/studentService';
+import { jpCharDataLoader } from '../../utils/kanjiLookup';
 
 /* ── Lưới giấy thư pháp (半紙 / hanshi) ──────────────────────────── */
 function WritingGrid() {
@@ -232,12 +233,7 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
       highlightColor:     '#22C55E',
       drawingWidth:       8,
       highlightOnComplete: true,
-      showHintAfterMisses: 2,
-      charDataLoader: (char, onLoad, onError) => {
-        fetchKanjiStrokeData(char)
-          .then(onLoad)
-          .catch(onError);
-      },
+      charDataLoader:     jpCharDataLoader,
       onLoadCharDataSuccess: () => {
         setStatus('ready');
         startQuiz(writer);

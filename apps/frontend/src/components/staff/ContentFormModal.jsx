@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getStaffVocabularyTopics, createStaffVocabularyTopic } from '../../api/staffService';
-import { lookupKanjiByReading, getKanjiInfo } from '../../utils/kanjiLookup';
+import { lookupKanjiByReading, getKanjiInfo, jpCharDataLoader } from '../../utils/kanjiLookup';
 import { PlusIcon, SpinnerIcon, CheckIcon, XIcon } from '../common/AppIcons';
 import { fetchKanjiStrokeData } from '../../utils/kanjiStrokeLoader';
 
@@ -138,7 +138,7 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
     let cancelled = false;
     setKanjiCheck({ status: 'checking', strokeCount: null });
     const timer = setTimeout(() => {
-      fetchKanjiStrokeData(ch)
+      HanziWriter.loadCharacterData(ch, { charDataLoader: jpCharDataLoader })
         .then((data) => {
           if (cancelled) return;
           const n = data?.strokes?.length || null;
