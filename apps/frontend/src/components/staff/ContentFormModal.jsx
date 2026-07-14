@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import HanziWriter from 'hanzi-writer';
 import { getStaffVocabularyTopics, createStaffVocabularyTopic } from '../../api/staffService';
 import { lookupKanjiByReading, getKanjiInfo, jpCharDataLoader } from '../../utils/kanjiLookup';
 import { PlusIcon, SpinnerIcon, CheckIcon, XIcon } from '../common/AppIcons';
+import { fetchKanjiStrokeData } from '../../utils/kanjiStrokeLoader';
 
 const TYPE_LABELS = {
   course: 'Khóa học',
@@ -143,7 +143,6 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
           if (cancelled) return;
           const n = data?.strokes?.length || null;
           setKanjiCheck({ status: 'valid', strokeCount: n });
-          // C: lấy số nét đúng từ dữ liệu nét, không để staff gõ tay lệch.
           if (n) setForm((prev) => (prev.strokeCount === n ? prev : { ...prev, strokeCount: n }));
         })
         .catch(() => {
