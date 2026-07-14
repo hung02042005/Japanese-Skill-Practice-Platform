@@ -41,4 +41,3 @@ public interface ManagedAssessmentRepository extends JpaRepository<Assessment, L
 
     List<Assessment> findByStatusOrderByUpdatedAtDesc(ContentStatus status);
 }
-

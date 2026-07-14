@@ -31,4 +31,3 @@ public interface ManagedLessonRepository extends JpaRepository<Lesson, Long> {
 
     List<Lesson> findByStatusOrderByUpdatedAtDesc(LessonStatus status);
 }
-

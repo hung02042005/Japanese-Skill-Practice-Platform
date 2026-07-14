@@ -90,4 +90,3 @@ public interface VocabularyRepository extends JpaRepository<Vocabulary, Long> {
 
     long countByTopicRefIdAndStatusNot(Long topicId, Kanji.ContentStatus status);
 }
-

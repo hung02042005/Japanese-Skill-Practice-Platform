@@ -1,9 +1,7 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.publishedcontent;
 
-import com.jlpt.feature.assessment.Assessment;
 import com.jlpt.feature.assessment.Question;
-import com.jlpt.feature.learning.GrammarPoint;
 import com.jlpt.feature.learning.Kanji;
 import com.jlpt.feature.learning.Lesson;
 import com.jlpt.feature.learning.VocabularyTopic;
@@ -56,7 +54,8 @@ public class ManagerDeletedContentService {
 
         // 1. Bài học (Lesson)
         if (all || "lesson".equalsIgnoreCase(type)) {
-            lessonRepository.findByStatusOrderByUpdatedAtDesc(Lesson.LessonStatus.DELETED)
+            lessonRepository
+                    .findByStatusOrderByUpdatedAtDesc(Lesson.LessonStatus.DELETED)
                     .forEach(item -> list.add(new DeletedContentResponse(
                             item.getId(),
                             "lesson",
@@ -67,7 +66,8 @@ public class ManagerDeletedContentService {
 
         // 2. Câu hỏi (Question)
         if (all || "question".equalsIgnoreCase(type)) {
-            questionRepository.findByStatusOrderByUpdatedAtDesc(Question.ContentStatus.DELETED)
+            questionRepository
+                    .findByStatusOrderByUpdatedAtDesc(Question.ContentStatus.DELETED)
                     .forEach(item -> list.add(new DeletedContentResponse(
                             item.getId(),
                             "question",
@@ -78,7 +78,8 @@ public class ManagerDeletedContentService {
 
         // 3. Từ vựng / Chủ đề (VocabularyTopic)
         if (all || "vocabulary".equalsIgnoreCase(type)) {
-            topicRepository.findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED)
+            topicRepository
+                    .findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED)
                     .forEach(item -> list.add(new DeletedContentResponse(
                             item.getId(),
                             "vocabulary",
@@ -89,7 +90,8 @@ public class ManagerDeletedContentService {
 
         // 4. Ngữ pháp (GrammarPoint)
         if (all || "grammar".equalsIgnoreCase(type)) {
-            grammarRepository.findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED)
+            grammarRepository
+                    .findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED)
                     .forEach(item -> list.add(new DeletedContentResponse(
                             item.getId(),
                             "grammar",
@@ -100,7 +102,8 @@ public class ManagerDeletedContentService {
 
         // 5. Kanji
         if (all || "kanji".equalsIgnoreCase(type)) {
-            kanjiRepository.findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED)
+            kanjiRepository
+                    .findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED)
                     .forEach(item -> list.add(new DeletedContentResponse(
                             item.getId(),
                             "kanji",
@@ -111,7 +114,8 @@ public class ManagerDeletedContentService {
 
         // 6. Bài kiểm tra (Assessment)
         if (all || "assessment".equalsIgnoreCase(type)) {
-            assessmentRepository.findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED)
+            assessmentRepository
+                    .findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED)
                     .forEach(item -> list.add(new DeletedContentResponse(
                             item.getId(),
                             "assessment",
@@ -135,10 +139,12 @@ public class ManagerDeletedContentService {
                 rows = lessonRepository.transition(id, Lesson.LessonStatus.DELETED, Lesson.LessonStatus.PUBLISHED, now);
                 break;
             case "question":
-                rows = questionRepository.transition(id, Question.ContentStatus.DELETED, Question.ContentStatus.PUBLISHED, now);
+                rows = questionRepository.transition(
+                        id, Question.ContentStatus.DELETED, Question.ContentStatus.PUBLISHED, now);
                 break;
             case "vocabulary":
-                VocabularyTopic topic = topicRepository.findById(id)
+                VocabularyTopic topic = topicRepository
+                        .findById(id)
                         .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy chủ đề"));
                 if (topic.getStatus() == Kanji.ContentStatus.DELETED) {
                     topic.setStatus(Kanji.ContentStatus.PUBLISHED);
@@ -147,20 +153,23 @@ public class ManagerDeletedContentService {
                 }
                 break;
             case "grammar":
-                rows = grammarRepository.transition(id, Kanji.ContentStatus.DELETED, Kanji.ContentStatus.PUBLISHED, now);
+                rows = grammarRepository.transition(
+                        id, Kanji.ContentStatus.DELETED, Kanji.ContentStatus.PUBLISHED, now);
                 break;
             case "kanji":
                 rows = kanjiRepository.transition(id, Kanji.ContentStatus.DELETED, Kanji.ContentStatus.PUBLISHED, now);
                 break;
             case "assessment":
-                rows = assessmentRepository.transition(id, Kanji.ContentStatus.DELETED, Kanji.ContentStatus.PUBLISHED, now);
+                rows = assessmentRepository.transition(
+                        id, Kanji.ContentStatus.DELETED, Kanji.ContentStatus.PUBLISHED, now);
                 break;
             default:
                 throw new BusinessException(400, "INVALID_TYPE", "Loại nội dung không hợp lệ: " + type);
         }
 
         if (rows == 0) {
-            throw new BusinessException(400, "RESTORE_FAILED", "Khôi phục nội dung thất bại hoặc nội dung không ở trạng thái bị xóa");
+            throw new BusinessException(
+                    400, "RESTORE_FAILED", "Khôi phục nội dung thất bại hoặc nội dung không ở trạng thái bị xóa");
         }
         log.info("[INFO] Manager {} RESTORED deleted content type={} id={}", manager.getId(), type, id);
     }
