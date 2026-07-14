@@ -61,10 +61,10 @@ export default function KanaDetailModal({ kana, isSaving, onComplete, onClose })
           </div>
         )}
 
-        {kana.strokeGifUrl && (
+        {kana.strokeOrderUrl && (
           <img
             className="kna-stroke-gif"
-            src={kana.strokeGifUrl}
+            src={kana.strokeOrderUrl}
             alt={`Thứ tự nét của ${kana.character}`}
           />
         )}
