@@ -31,4 +31,3 @@ public interface ManagedKanjiRepository extends JpaRepository<Kanji, Long> {
 
     List<Kanji> findByStatusOrderByUpdatedAtDesc(ContentStatus status);
 }
-

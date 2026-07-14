@@ -32,4 +32,3 @@ public interface ManagedQuestionRepository extends JpaRepository<Question, Long>
 
     List<Question> findByStatusOrderByUpdatedAtDesc(ContentStatus status);
 }
-

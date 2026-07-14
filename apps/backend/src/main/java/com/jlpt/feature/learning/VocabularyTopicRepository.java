@@ -32,7 +32,6 @@ public interface VocabularyTopicRepository extends JpaRepository<VocabularyTopic
 
     boolean existsByJlptLevelAndSlug(StudentUser.JlptLevel jlptLevel, String slug);
 
-
     boolean existsByJlptLevelAndTitleVi(StudentUser.JlptLevel jlptLevel, String titleVi);
 
     // Thứ tự hiển thị kế tiếp khi staff tạo chủ đề mới (append cuối danh sách của cấp độ).

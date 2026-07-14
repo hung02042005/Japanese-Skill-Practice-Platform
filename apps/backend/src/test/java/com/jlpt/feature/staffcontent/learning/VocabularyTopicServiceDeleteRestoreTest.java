@@ -12,8 +12,6 @@ import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.shared.exception.BusinessException;
 import com.jlpt.shared.exception.ForbiddenException;
-import com.jlpt.shared.exception.ResourceNotFoundException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,7 +74,8 @@ class VocabularyTopicServiceDeleteRestoreTest {
     void deleteTopic_success() {
         when(staffUserRepository.findByEmail("manager@sakuji.com")).thenReturn(Optional.of(activeManager));
         when(topicRepository.findById(10L)).thenReturn(Optional.of(activeTopic));
-        when(vocabularyRepository.countByTopicRefIdAndStatusNot(10L, Kanji.ContentStatus.DELETED)).thenReturn(0L);
+        when(vocabularyRepository.countByTopicRefIdAndStatusNot(10L, Kanji.ContentStatus.DELETED))
+                .thenReturn(0L);
 
         topicService.deleteTopic(10L, "manager@sakuji.com");
 
@@ -99,7 +98,8 @@ class VocabularyTopicServiceDeleteRestoreTest {
     void deleteTopic_failsIfVocabulariesInUse() {
         when(staffUserRepository.findByEmail("manager@sakuji.com")).thenReturn(Optional.of(activeManager));
         when(topicRepository.findById(10L)).thenReturn(Optional.of(activeTopic));
-        when(vocabularyRepository.countByTopicRefIdAndStatusNot(10L, Kanji.ContentStatus.DELETED)).thenReturn(5L);
+        when(vocabularyRepository.countByTopicRefIdAndStatusNot(10L, Kanji.ContentStatus.DELETED))
+                .thenReturn(5L);
 
         BusinessException exception = assertThrows(BusinessException.class, () -> {
             topicService.deleteTopic(10L, "manager@sakuji.com");

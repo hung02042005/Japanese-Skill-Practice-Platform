@@ -32,8 +32,7 @@ public class ManagerDeletedContentController {
     /** GET /api/manager/deleted-contents?type={type} — Liệt kê các mục bị soft-deleted theo loại hoặc tất cả. */
     @GetMapping
     public ResponseEntity<ApiResponse<List<DeletedContentResponse>>> listDeleted(
-            @RequestParam(value = "type", required = false) String type,
-            Authentication authentication) {
+            @RequestParam(value = "type", required = false) String type, Authentication authentication) {
         List<DeletedContentResponse> data = deletedContentService.listDeleted(authentication.getName(), type);
         return ResponseEntity.ok(ApiResponse.success("Lấy danh sách nội dung bị xóa thành công", data));
     }
@@ -41,9 +40,7 @@ public class ManagerDeletedContentController {
     /** POST /api/manager/deleted-contents/{type}/{id}/restore — Khôi phục mục bị soft-deleted về published. */
     @PostMapping("/{type}/{id}/restore")
     public ResponseEntity<ApiResponse<Void>> restore(
-            @PathVariable("type") String type,
-            @PathVariable("id") Long id,
-            Authentication authentication) {
+            @PathVariable("type") String type, @PathVariable("id") Long id, Authentication authentication) {
         deletedContentService.restore(authentication.getName(), type, id);
         return ResponseEntity.ok(ApiResponse.success("Khôi phục nội dung thành công", null));
     }

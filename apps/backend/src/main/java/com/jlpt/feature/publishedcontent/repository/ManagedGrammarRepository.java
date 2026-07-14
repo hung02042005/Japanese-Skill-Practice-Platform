@@ -31,4 +31,3 @@ public interface ManagedGrammarRepository extends JpaRepository<GrammarPoint, Lo
 
     List<GrammarPoint> findByStatusOrderByUpdatedAtDesc(ContentStatus status);
 }
-

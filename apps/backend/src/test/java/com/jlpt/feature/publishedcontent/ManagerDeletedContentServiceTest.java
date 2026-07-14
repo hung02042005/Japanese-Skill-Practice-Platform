@@ -22,7 +22,6 @@ import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.shared.exception.BusinessException;
 import com.jlpt.shared.exception.ForbiddenException;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,16 +36,22 @@ class ManagerDeletedContentServiceTest {
 
     @Mock
     private ManagedLessonRepository lessonRepository;
+
     @Mock
     private ManagedQuestionRepository questionRepository;
+
     @Mock
     private VocabularyTopicRepository topicRepository;
+
     @Mock
     private ManagedGrammarRepository grammarRepository;
+
     @Mock
     private ManagedKanjiRepository kanjiRepository;
+
     @Mock
     private ManagedAssessmentRepository assessmentRepository;
+
     @Mock
     private StaffUserRepository staffUserRepository;
 
@@ -76,24 +81,62 @@ class ManagerDeletedContentServiceTest {
     @Test
     void listDeleted_all_success() {
         when(staffUserRepository.findByEmail("manager@sakuji.com")).thenReturn(Optional.of(activeManager));
-        
-        Lesson lesson = Lesson.builder().id(100L).title("Bài 1").status(Lesson.LessonStatus.DELETED).updatedAt(LocalDateTime.now()).build();
-        when(lessonRepository.findByStatusOrderByUpdatedAtDesc(Lesson.LessonStatus.DELETED)).thenReturn(List.of(lesson));
 
-        Question question = Question.builder().id(101L).questionText("Câu hỏi 1").status(Question.ContentStatus.DELETED).updatedAt(LocalDateTime.now()).build();
-        when(questionRepository.findByStatusOrderByUpdatedAtDesc(Question.ContentStatus.DELETED)).thenReturn(List.of(question));
+        Lesson lesson = Lesson.builder()
+                .id(100L)
+                .title("Bài 1")
+                .status(Lesson.LessonStatus.DELETED)
+                .updatedAt(LocalDateTime.now())
+                .build();
+        when(lessonRepository.findByStatusOrderByUpdatedAtDesc(Lesson.LessonStatus.DELETED))
+                .thenReturn(List.of(lesson));
 
-        VocabularyTopic topic = VocabularyTopic.builder().id(102L).titleVi("Chủ đề 1").titleJa("トピック1").status(Kanji.ContentStatus.DELETED).updatedAt(LocalDateTime.now()).build();
-        when(topicRepository.findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED)).thenReturn(List.of(topic));
+        Question question = Question.builder()
+                .id(101L)
+                .questionText("Câu hỏi 1")
+                .status(Question.ContentStatus.DELETED)
+                .updatedAt(LocalDateTime.now())
+                .build();
+        when(questionRepository.findByStatusOrderByUpdatedAtDesc(Question.ContentStatus.DELETED))
+                .thenReturn(List.of(question));
 
-        GrammarPoint grammar = GrammarPoint.builder().id(103L).title("Ngữ pháp 1").status(Kanji.ContentStatus.DELETED).updatedAt(LocalDateTime.now()).build();
-        when(grammarRepository.findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED)).thenReturn(List.of(grammar));
+        VocabularyTopic topic = VocabularyTopic.builder()
+                .id(102L)
+                .titleVi("Chủ đề 1")
+                .titleJa("トピック1")
+                .status(Kanji.ContentStatus.DELETED)
+                .updatedAt(LocalDateTime.now())
+                .build();
+        when(topicRepository.findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED))
+                .thenReturn(List.of(topic));
 
-        Kanji kanji = Kanji.builder().id(104L).characterValue("日").meaning("Ngày").status(Kanji.ContentStatus.DELETED).updatedAt(LocalDateTime.now()).build();
-        when(kanjiRepository.findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED)).thenReturn(List.of(kanji));
+        GrammarPoint grammar = GrammarPoint.builder()
+                .id(103L)
+                .title("Ngữ pháp 1")
+                .status(Kanji.ContentStatus.DELETED)
+                .updatedAt(LocalDateTime.now())
+                .build();
+        when(grammarRepository.findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED))
+                .thenReturn(List.of(grammar));
 
-        Assessment assessment = Assessment.builder().id(105L).title("Đề thi 1").status(Kanji.ContentStatus.DELETED).updatedAt(LocalDateTime.now()).build();
-        when(assessmentRepository.findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED)).thenReturn(List.of(assessment));
+        Kanji kanji = Kanji.builder()
+                .id(104L)
+                .characterValue("日")
+                .meaning("Ngày")
+                .status(Kanji.ContentStatus.DELETED)
+                .updatedAt(LocalDateTime.now())
+                .build();
+        when(kanjiRepository.findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED))
+                .thenReturn(List.of(kanji));
+
+        Assessment assessment = Assessment.builder()
+                .id(105L)
+                .title("Đề thi 1")
+                .status(Kanji.ContentStatus.DELETED)
+                .updatedAt(LocalDateTime.now())
+                .build();
+        when(assessmentRepository.findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus.DELETED))
+                .thenReturn(List.of(assessment));
 
         List<DeletedContentResponse> result = deletedContentService.listDeleted("manager@sakuji.com", "all");
 
@@ -121,18 +164,23 @@ class ManagerDeletedContentServiceTest {
     @Test
     void restore_lesson_success() {
         when(staffUserRepository.findByEmail("manager@sakuji.com")).thenReturn(Optional.of(activeManager));
-        when(lessonRepository.transition(eq(100L), eq(Lesson.LessonStatus.DELETED), eq(Lesson.LessonStatus.PUBLISHED), any()))
+        when(lessonRepository.transition(
+                        eq(100L), eq(Lesson.LessonStatus.DELETED), eq(Lesson.LessonStatus.PUBLISHED), any()))
                 .thenReturn(1);
 
         deletedContentService.restore("manager@sakuji.com", "lesson", 100L);
 
-        verify(lessonRepository).transition(eq(100L), eq(Lesson.LessonStatus.DELETED), eq(Lesson.LessonStatus.PUBLISHED), any());
+        verify(lessonRepository)
+                .transition(eq(100L), eq(Lesson.LessonStatus.DELETED), eq(Lesson.LessonStatus.PUBLISHED), any());
     }
 
     @Test
     void restore_vocabulary_success() {
         when(staffUserRepository.findByEmail("manager@sakuji.com")).thenReturn(Optional.of(activeManager));
-        VocabularyTopic topic = VocabularyTopic.builder().id(102L).status(Kanji.ContentStatus.DELETED).build();
+        VocabularyTopic topic = VocabularyTopic.builder()
+                .id(102L)
+                .status(Kanji.ContentStatus.DELETED)
+                .build();
         when(topicRepository.findById(102L)).thenReturn(Optional.of(topic));
         when(topicRepository.save(any(VocabularyTopic.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -145,7 +193,8 @@ class ManagerDeletedContentServiceTest {
     @Test
     void restore_failsIfTransitionRowsIsZero() {
         when(staffUserRepository.findByEmail("manager@sakuji.com")).thenReturn(Optional.of(activeManager));
-        when(lessonRepository.transition(eq(100L), eq(Lesson.LessonStatus.DELETED), eq(Lesson.LessonStatus.PUBLISHED), any()))
+        when(lessonRepository.transition(
+                        eq(100L), eq(Lesson.LessonStatus.DELETED), eq(Lesson.LessonStatus.PUBLISHED), any()))
                 .thenReturn(0);
 
         assertThrows(BusinessException.class, () -> {
