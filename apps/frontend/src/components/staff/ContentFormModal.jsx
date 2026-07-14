@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import HanziWriter from 'hanzi-writer';
 import { getStaffVocabularyTopics, createStaffVocabularyTopic } from '../../api/staffService';
 import { lookupKanjiByReading, getKanjiInfo } from '../../utils/kanjiLookup';
 import { PlusIcon, SpinnerIcon, CheckIcon, XIcon } from '../common/AppIcons';

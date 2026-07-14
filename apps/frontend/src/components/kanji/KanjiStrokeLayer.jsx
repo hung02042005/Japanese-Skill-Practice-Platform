@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import HanziWriter from 'hanzi-writer';
 
 /**
  * KanjiStrokeLayer — SVG overlay với 3 trạng thái nét viết
