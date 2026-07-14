@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { getStaffVocabularyTopics, createStaffVocabularyTopic } from '../../api/staffService';
 import { lookupKanjiByReading, getKanjiInfo, jpCharDataLoader } from '../../utils/kanjiLookup';
 import { PlusIcon, SpinnerIcon, CheckIcon, XIcon } from '../common/AppIcons';
-import { fetchKanjiStrokeData } from '../../utils/kanjiStrokeLoader';
+import HanziWriter from 'hanzi-writer';
 
 const TYPE_LABELS = {
   course: 'Khóa học',

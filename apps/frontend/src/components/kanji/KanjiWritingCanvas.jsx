@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { fetchKanjiStrokeData } from '../../utils/kanjiStrokeLoader';
 import HanziWriter from 'hanzi-writer';
 import KanjiStrokeLayer from './KanjiStrokeLayer';
 import { ConfettiIcon } from '../common/AppIcons';
