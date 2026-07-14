@@ -44,7 +44,11 @@ export default function KanjiStrokeLayer({
     let cancelled = false;
     setCharData(null);
 
-    HanziWriter.loadCharacterData(character)
+    fetch(`https://unpkg.com/hanzi-writer-data@2.0.1/${character}.json`)
+      .then(res => {
+        if (!res.ok) throw new Error('Not found');
+        return res.json();
+      })
       .then(data => {
         if (!cancelled) {
           setCharData(data);

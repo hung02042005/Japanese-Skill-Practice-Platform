@@ -65,6 +65,12 @@ export default function KanjiGridPlayer({ character, strokeCount, onStrokeChange
       radicalColor:  '#E89AAA',     // bộ thủ — sakura pink
       strokeAnimationSpeed: 1,
       delayBetweenStrokes: 0,
+      charDataLoader: (char, onLoad, onError) => {
+        fetch(`https://unpkg.com/hanzi-writer-data@2.0.1/${char}.json`)
+          .then(res => res.json())
+          .then(onLoad)
+          .catch(onError);
+      },
       onLoadCharDataSuccess: () => setStatus('ready'),
       onLoadCharDataError:   () => setStatus('error'),
     });

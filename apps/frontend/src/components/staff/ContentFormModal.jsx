@@ -138,12 +138,15 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
     let cancelled = false;
     setKanjiCheck({ status: 'checking', strokeCount: null });
     const timer = setTimeout(() => {
-      HanziWriter.loadCharacterData(ch)
+      fetch(`https://unpkg.com/hanzi-writer-data@2.0.1/${ch}.json`)
+        .then(res => {
+          if (!res.ok) throw new Error('Not found');
+          return res.json();
+        })
         .then((data) => {
           if (cancelled) return;
           const n = data?.strokes?.length || null;
           setKanjiCheck({ status: 'valid', strokeCount: n });
-          // C: lấy số nét đúng từ dữ liệu nét, không để staff gõ tay lệch.
           if (n) setForm((prev) => (prev.strokeCount === n ? prev : { ...prev, strokeCount: n }));
         })
         .catch(() => {

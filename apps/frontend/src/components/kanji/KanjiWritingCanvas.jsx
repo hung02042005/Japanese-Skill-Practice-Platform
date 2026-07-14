@@ -231,6 +231,13 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
       highlightColor:     '#22C55E',
       drawingWidth:       8,
       highlightOnComplete: true,
+      showHintAfterMisses: 2,
+      charDataLoader: (char, onLoad, onError) => {
+        fetch(`https://unpkg.com/hanzi-writer-data@2.0.1/${char}.json`)
+          .then(res => res.json())
+          .then(onLoad)
+          .catch(onError);
+      },
       onLoadCharDataSuccess: () => {
         setStatus('ready');
         startQuiz(writer);
