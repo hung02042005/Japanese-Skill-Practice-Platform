@@ -28,4 +28,7 @@ public interface ManagedKanjiRepository extends JpaRepository<Kanji, Long> {
             @Param("from") ContentStatus from,
             @Param("to") ContentStatus to,
             @Param("now") LocalDateTime now);
+
+    List<Kanji> findByStatusOrderByUpdatedAtDesc(ContentStatus status);
 }
+

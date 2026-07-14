@@ -87,4 +87,7 @@ public interface VocabularyRepository extends JpaRepository<Vocabulary, Long> {
             @Param("status") Kanji.ContentStatus status,
             @Param("jlptLevel") StudentUser.JlptLevel jlptLevel,
             Pageable pageable);
+
+    long countByTopicRefIdAndStatusNot(Long topicId, Kanji.ContentStatus status);
 }
+

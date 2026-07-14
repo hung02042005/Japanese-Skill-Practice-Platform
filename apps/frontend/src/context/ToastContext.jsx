@@ -53,11 +53,17 @@ export function ToastProvider({ children }) {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  const addToast = useCallback((type, message) => {
-    if (!message) return;
+  const addToast = useCallback((typeOrObj, message) => {
+    let type = typeOrObj;
+    let msg = message;
+    if (typeOrObj && typeof typeOrObj === 'object') {
+      type = typeOrObj.type;
+      msg = typeOrObj.message;
+    }
+    if (!msg) return;
     const id = Date.now() + Math.random();
     setToasts((prev) => {
-      const next = [...prev, { id, type, message }];
+      const next = [...prev, { id, type, message: msg }];
       return next.length > MAX_TOASTS ? next.slice(next.length - MAX_TOASTS) : next;
     });
     setTimeout(() => {

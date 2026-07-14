@@ -25,7 +25,13 @@ public interface VocabularyTopicRepository extends JpaRepository<VocabularyTopic
     // Toàn bộ chủ đề của một cấp độ (mọi trạng thái) — màn quản lý topic của Staff.
     List<VocabularyTopic> findByJlptLevelOrderByDisplayOrderAscIdAsc(StudentUser.JlptLevel jlptLevel);
 
+    List<VocabularyTopic> findByJlptLevelAndStatusNotOrderByDisplayOrderAscIdAsc(
+            StudentUser.JlptLevel jlptLevel, Kanji.ContentStatus status);
+
+    List<VocabularyTopic> findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus status);
+
     boolean existsByJlptLevelAndSlug(StudentUser.JlptLevel jlptLevel, String slug);
+
 
     boolean existsByJlptLevelAndTitleVi(StudentUser.JlptLevel jlptLevel, String titleVi);
 

@@ -69,3 +69,17 @@ export async function getAssignableStaff() {
   const res = await api.get('/staff/members');
   return res.data.data; // [{ staffId, fullName, email, staffRole, assignedOpenCount }]
 }
+
+// --- Manager Deleted Contents (Trash bin) ------------------------------------
+
+export async function getDeletedContents(type) {
+  const params = type && type !== 'all' ? { type } : {};
+  const res = await api.get('/manager/deleted-contents', { params });
+  return res.data.data;
+}
+
+export async function restoreDeletedContent(type, id) {
+  const res = await api.post(`/manager/deleted-contents/${type}/${id}/restore`);
+  return res.data.data;
+}
+

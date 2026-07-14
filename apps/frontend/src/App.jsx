@@ -54,6 +54,7 @@ const AdminReports    = lazy(() => import('./pages/admin/AdminReports'));
 const ManagerDashboard        = lazy(() => import('./pages/manager/ManagerDashboard'));
 const ManagerReviewQueue      = lazy(() => import('./pages/manager/ManagerReviewQueue'));
 const ManagerContentPipeline  = lazy(() => import('./pages/manager/ManagerContentPipeline'));
+const ManagerDeletedTopics    = lazy(() => import('./pages/manager/ManagerDeletedTopics'));
 const ManagerNotifications    = lazy(() => import('./pages/manager/ManagerNotifications'));
 const ManagerTickets          = lazy(() => import('./pages/manager/ManagerTickets'));
 
@@ -131,6 +132,7 @@ function App() {
         <Route path="/manager"                    element={<ManagerRoute><ManagerDashboard /></ManagerRoute>} />
         <Route path="/manager/review-queue"       element={<ManagerRoute><ManagerReviewQueue /></ManagerRoute>} />
         <Route path="/manager/content-pipeline"   element={<ManagerRoute><ManagerContentPipeline /></ManagerRoute>} />
+        <Route path="/manager/deleted-topics"     element={<ManagerRoute><ManagerDeletedTopics /></ManagerRoute>} />
         <Route path="/manager/notifications"      element={<ManagerRoute><ManagerNotifications /></ManagerRoute>} />
         <Route path="/manager/tickets"            element={<ManagerRoute><ManagerTickets /></ManagerRoute>} />
 
