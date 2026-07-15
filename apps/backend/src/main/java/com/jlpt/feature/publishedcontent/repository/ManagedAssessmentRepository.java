@@ -38,4 +38,6 @@ public interface ManagedAssessmentRepository extends JpaRepository<Assessment, L
             + "FROM Assessment a WHERE a.lesson.id = :lessonId AND a.status = :published")
     List<ReferenceItemResponse> findPublishedAssessmentsByLesson(
             @Param("lessonId") Long lessonId, @Param("published") ContentStatus published);
+
+    List<Assessment> findByStatusOrderByUpdatedAtDesc(ContentStatus status);
 }

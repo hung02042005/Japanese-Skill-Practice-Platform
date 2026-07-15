@@ -29,4 +29,6 @@ public interface ManagedQuestionRepository extends JpaRepository<Question, Long>
             @Param("from") ContentStatus from,
             @Param("to") ContentStatus to,
             @Param("now") LocalDateTime now);
+
+    List<Question> findByStatusOrderByUpdatedAtDesc(ContentStatus status);
 }
