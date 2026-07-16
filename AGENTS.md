@@ -9,7 +9,7 @@
 **Domain:** E-Learning / Ngôn ngữ học / Luyện thi JLPT
 **Giai đoạn:** Development
 
-> **Tech Stack**: Java 21 + Spring Boot 3.x (Backend) | React 18 (Frontend) | SQL Server
+> **Tech Stack**: Java 21 + Spring Boot 3.x (Backend) | React 18 (Frontend) | MySQL 8
 > Xem chi tiết: `CONSTITUTION.md § ĐIỀU 1`
 
 **Mục tiêu chính**: Xây dựng hệ thống học tiếng Nhật hỗ trợ lộ trình từ N5 đến N1 với các tính năng chuyên sâu: Kanji, Kana, Ngữ pháp, Từ vựng, và luyện tập AI (OCR & Speech Recognition); đảm bảo lộ trình học, tính điểm, phân quyền, và trải nghiệm người dùng được thực thi chính xác và có audit trail đầy đủ.

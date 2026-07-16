@@ -26,22 +26,35 @@ version: '3.8'
 
 services:
   db-staging:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mysql:8.4
     container_name: jlpt-db-staging
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+00:00
     environment:
-      ACCEPT_EULA: "Y"
-      # Dùng chung giá trị MSSQL_SA_PASSWORD với production (cùng .env) — đây là
-      # 1 container/volume hoàn toàn tách biệt, không có dữ liệu chung với "db"
-      # production, nên dùng chung mật khẩu admin không phát sinh rủi ro rò rỉ
-      # dữ liệu, chỉ đơn giản để không phải quản lý thêm 1 secret.
-      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in .env}"
-      MSSQL_PID: "Developer"
+      TZ: "UTC"
+      # Dùng chung giá trị MYSQL_ROOT_PASSWORD/MYSQL_PASSWORD với production
+      # (cùng .env) — đây là 1 container/volume hoàn toàn tách biệt, không có
+      # dữ liệu chung với "db" production, nên dùng chung mật khẩu admin không
+      # phát sinh rủi ro rò rỉ dữ liệu, chỉ đơn giản để không phải quản lý thêm
+      # 1 secret.
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}"
+      MYSQL_DATABASE: "JLPT_LearningDB_staging"
+      MYSQL_USER: "${MYSQL_USER:-jlpt}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}"
     ports:
-      # Cổng ngoài khác hẳn production (14330) — tránh đụng cổng khi chạy chung VPS.
-      - "14331:1433"
+      # Cổng ngoài khác hẳn production (13306) — tránh đụng cổng khi chạy chung VPS.
+      - "13307:3306"
     volumes:
-      - sqlserver_data_staging:/var/opt/mssql
+      - mysql_data_staging:/var/lib/mysql
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   redis-staging:
     image: redis:alpine
@@ -64,9 +77,9 @@ services:
     image: jlpt-backend-staging:latest
     container_name: jlpt-backend-staging
     environment:
-      - DATABASE_URL=jdbc:sqlserver://db-staging:1433;databaseName=JLPT_LearningDB_staging;encrypt=true;trustServerCertificate=true
-      - DATABASE_USERNAME=sa
-      - DATABASE_PASSWORD=${MSSQL_SA_PASSWORD}
+      - DATABASE_URL=jdbc:mysql://db-staging:3306/JLPT_LearningDB_staging?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+      - DATABASE_USERNAME=${MYSQL_USER:-jlpt}
+      - DATABASE_PASSWORD=${MYSQL_PASSWORD}
       - SPRING_DATA_REDIS_HOST=redis-staging
       # Chưa có subdomain staging.sakuji.online (chưa cấu hình DNS/Cloudflare) —
       # dùng thẳng IP:port VPS cho tới khi cần test cả luồng OAuth2/email thật.
@@ -89,7 +102,7 @@ services:
       redis-staging:
         condition: service_started
       db-staging:
-        condition: service_started
+        condition: service_healthy
 
   frontend-staging:
     build:
@@ -108,5 +121,5 @@ services:
 volumes:
   jlpt-uploads-staging:
     name: jlpt-uploads-staging
-  sqlserver_data_staging:
-    name: sqlserver_data_staging
+  mysql_data_staging:
+    name: mysql_data_staging

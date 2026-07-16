@@ -3,15 +3,23 @@ spring:
     name: jlpt-backend
 
   datasource:
-    url: ${DATABASE_URL:jdbc:sqlserver://127.0.0.1:1433;databaseName=JLPT_LearningDB;encrypt=true;trustServerCertificate=true}
-    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    username: ${DATABASE_USERNAME:sa}
+    # serverTimezone=UTC: container MySQL chạy --default-time-zone=+00:00, khai
+    # báo ở đây để driver không tự suy diễn timezone của JVM. Giữ đúng ngữ nghĩa
+    # UTC mà SYSUTCDATETIME() của bản SQL Server cũ đảm bảo.
+    url: ${DATABASE_URL:jdbc:mysql://127.0.0.1:3306/JLPT_LearningDB?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DATABASE_USERNAME:jlpt}
     password: ${DATABASE_PASSWORD:123}
 
 
   jpa:
     hibernate:
-      ddl-auto: update
+      # validate (không phải update): Flyway là nguồn sự thật duy nhất cho schema
+      # (ADR-004/ADR-006). Trên MySQL, ddl-auto=update sẽ tự tạo bảng/cột thiếu
+      # với charset mặc định của server — nếu server không phải utf8mb4 thì kanji
+      # bị ghi thành '?' mà không có lỗi nào. validate chặn hẳn khả năng đó và
+      # phát hiện sớm sai lệch giữa entity và migration.
+      ddl-auto: validate
     show-sql: false
     properties:
       hibernate:

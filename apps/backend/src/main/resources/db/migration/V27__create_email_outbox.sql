@@ -3,19 +3,17 @@
 -- restart) thay vì chỉ log ERROR rồi mất hẳn.
 
 CREATE TABLE email_outbox (
-    outbox_id        BIGINT IDENTITY(1,1) PRIMARY KEY,
-    to_email         NVARCHAR(255)   NOT NULL,
-    subject          NVARCHAR(500)   NOT NULL,
-    body_html        NVARCHAR(MAX)   NOT NULL,
-    status           NVARCHAR(20)    NOT NULL DEFAULT 'pending'
+    outbox_id        BIGINT AUTO_INCREMENT PRIMARY KEY,
+    to_email         VARCHAR(255)    NOT NULL,
+    subject          VARCHAR(500)    NOT NULL,
+    body_html        LONGTEXT        NOT NULL,
+    status           VARCHAR(20)     NOT NULL DEFAULT 'pending'
         CHECK (status IN ('pending','sent','failed')),
     attempt_count    INT             NOT NULL DEFAULT 0,
-    last_error       NVARCHAR(1000)  NULL,
-    created_at       DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME(),
-    sent_at          DATETIME2       NULL,
-    last_attempt_at  DATETIME2       NULL
-);
-GO
+    last_error       VARCHAR(1000)   NULL,
+    created_at       DATETIME(6)     NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    sent_at          DATETIME(6)     NULL,
+    last_attempt_at  DATETIME(6)     NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE INDEX IX_email_outbox_status ON email_outbox(status, last_attempt_at);
-GO

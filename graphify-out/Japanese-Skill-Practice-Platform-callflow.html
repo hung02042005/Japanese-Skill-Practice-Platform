@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Japanese-Skill-Practice-Platform — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 168 nodes, 159 edges, 18 communities. Commit: 2e201bc</p>
+<p class="subtitle">Generated from graphify knowledge graph: 114 nodes, 107 edges, 16 communities. Commit: 150f4ee</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -68,17 +68,14 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#cli-skills">CLI &amp; Skill Installers</a>
     <a href="#ingest-cache-update">Ingestion &amp; Updates</a>
     <a href="#serve-api">Serving API</a>
-    <a href="#p3-style-theo-d-i-l-u-d-i-kh-ng-kh-n-c-p">⚪ P3 — Style / theo dõi lâu dài, không khẩn cấp</a>
-    <a href="#s-a-i-so-v-i-b-n-g-c-c-tr-c">Sửa Đổi So Với Bản Gốc (đọc trước)</a>
-    <a href="#b-o-c-o-audit-k-ho-ch-t-i-u-jlpt-e-learning-plat">🔍 Báo Cáo Audit &amp; Kế Hoạch Tối Ưu — JLPT E-Learning Platform (v2 — đã kiểm chứng)</a>
     <a href="#2-architecture-principles">2. ARCHITECTURE PRINCIPLES</a>
-    <a href="#7-jlpt-domain-rules">7. JLPT DOMAIN RULES</a>
     <a href="#8-golden-patterns">8. GOLDEN PATTERNS</a>
     <a href="#10-definition-of-done">10. DEFINITION OF DONE</a>
+    <a href="#backend">Backend</a>
+    <a href="#s-a-i-so-v-i-b-n-g-c-c-tr-c">Sửa Đổi So Với Bản Gốc (đọc trước)</a>
     <a href="#authservice">authService</a>
     <a href="#sql-server-primary-db">SQL Server (Primary DB)</a>
     <a href="#docker-compose-prod-yml">docker-compose.prod.yml</a>
-    <a href="#other">Other</a>
 </div>
 
 <!-- ====== Architecture Overview ====== -->
@@ -90,41 +87,33 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 flowchart LR
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>12 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>63 nodes</small>")
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>49 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
     INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>1 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
-    SERVE_API_35EC8E86("Serving API<br/><small>21 nodes</small>")
+    SERVE_API_35EC8E86("Serving API<br/><small>19 nodes</small>")
     class SERVE_API_35EC8E86 module;
-    P3_STYLE_THEO_D_I_L_U_D_I_KH_NG_KH_N_C_P_7847170E("⚪ P3 — Style / theo dõi lâu dài, không khẩn cấp<br/><small>19 nodes</small>")
-    class P3_STYLE_THEO_D_I_L_U_D_I_KH_NG_KH_N_C_P_7847170E module;
-    S_A_I_SO_V_I_B_N_G_C_C_TR_C_9F3C951A("Sửa Đổi So Với Bản Gốc (đọc trước)<br/><small>11 nodes</small>")
-    class S_A_I_SO_V_I_B_N_G_C_C_TR_C_9F3C951A module;
-    B_O_C_O_AUDIT_K_HO_CH_T_I_U_JLPT_E_LEARNING_PLAT_4C7C14D6("🔍 Báo Cáo Audit &amp; Kế Hoạch Tối Ưu — JLPT E-Learning Platform (v2 — đã kiểm chứng)<br/><small>9 nodes</small>")
-    class B_O_C_O_AUDIT_K_HO_CH_T_I_U_JLPT_E_LEARNING_PLAT_4C7C14D6 module;
     SECTION_2_ARCHITECTURE_PRINCIPLES_020425D5("2. ARCHITECTURE PRINCIPLES<br/><small>8 nodes</small>")
     class SECTION_2_ARCHITECTURE_PRINCIPLES_020425D5 module;
-    SECTION_7_JLPT_DOMAIN_RULES_A143A6CE("7. JLPT DOMAIN RULES<br/><small>6 nodes</small>")
-    class SECTION_7_JLPT_DOMAIN_RULES_A143A6CE module;
     SECTION_8_GOLDEN_PATTERNS_A05D20ED("8. GOLDEN PATTERNS<br/><small>6 nodes</small>")
     class SECTION_8_GOLDEN_PATTERNS_A05D20ED module;
     SECTION_10_DEFINITION_OF_DONE_F43222BD("10. DEFINITION OF DONE<br/><small>5 nodes</small>")
     class SECTION_10_DEFINITION_OF_DONE_F43222BD module;
+    BACKEND_754A08DD("Backend<br/><small>4 nodes</small>")
+    class BACKEND_754A08DD module;
+    S_A_I_SO_V_I_B_N_G_C_C_TR_C_9F3C951A("Sửa Đổi So Với Bản Gốc (đọc trước)<br/><small>4 nodes</small>")
+    class S_A_I_SO_V_I_B_N_G_C_C_TR_C_9F3C951A module;
     AUTHSERVICE_3755D579("authService<br/><small>2 nodes</small>")
     class AUTHSERVICE_3755D579 module;
     SQL_SERVER_PRIMARY_DB_0263062A("SQL Server (Primary DB)<br/><small>2 nodes</small>")
     class SQL_SERVER_PRIMARY_DB_0263062A module;
     DOCKER_COMPOSE_PROD_YML_E03B0568("docker-compose.prod.yml<br/><small>2 nodes</small>")
     class DOCKER_COMPOSE_PROD_YML_E03B0568 module;
-    OTHER_D0941E68("Other<br/><small>1 nodes</small>")
-    class OTHER_D0941E68 module;
     SERVE_API_35EC8E86 -->|contains| SECTION_10_DEFINITION_OF_DONE_F43222BD
     SERVE_API_35EC8E86 -->|contains| SECTION_2_ARCHITECTURE_PRINCIPLES_020425D5
-    SERVE_API_35EC8E86 -->|contains| SECTION_7_JLPT_DOMAIN_RULES_A143A6CE
+    SERVE_API_35EC8E86 -->|contains| BACKEND_754A08DD
     SERVE_API_35EC8E86 -->|contains| SECTION_8_GOLDEN_PATTERNS_A05D20ED
-    B_O_C_O_AUDIT_K_HO_CH_T_I_U_JLPT_E_LEARNING_PLAT_4C7C14D6 -->|contains| P3_STYLE_THEO_D_I_L_U_D_I_KH_NG_KH_N_C_P_7847170E
-    B_O_C_O_AUDIT_K_HO_CH_T_I_U_JLPT_E_LEARNING_PLAT_4C7C14D6 -->|contains| CLI_SKILLS_9964CBB8
-    B_O_C_O_AUDIT_K_HO_CH_T_I_U_JLPT_E_LEARNING_PLAT_4C7C14D6 -->|contains| S_A_I_SO_V_I_B_N_G_C_C_TR_C_9F3C951A
+    SERVE_API_35EC8E86 -->|contains| S_A_I_SO_V_I_B_N_G_C_C_TR_C_9F3C951A
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -141,24 +130,24 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Graph Build</td><td>12</td><td><code>0</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>63</td><td><code>2, 8, 10, 13</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>1</td><td><code>5</code></td></tr><tr><td>Serving API</td><td>21</td><td><code>3</code></td></tr><tr><td>⚪ P3 — Style / theo dõi lâu dài, không khẩn cấp</td><td>19</td><td><code>4</code></td></tr><tr><td>Sửa Đổi So Với Bản Gốc (đọc trước)</td><td>11</td><td><code>9</code></td></tr><tr><td>🔍 Báo Cáo Audit &amp; Kế Hoạch Tối Ưu — JLPT E-Learning Platform (v2 — đã kiểm chứng)</td><td>9</td><td><code>11</code></td></tr><tr><td>2. ARCHITECTURE PRINCIPLES</td><td>8</td><td><code>12</code></td></tr><tr><td>7. JLPT DOMAIN RULES</td><td>6</td><td><code>14</code></td></tr><tr><td>8. GOLDEN PATTERNS</td><td>6</td><td><code>15</code></td></tr><tr><td>10. DEFINITION OF DONE</td><td>5</td><td><code>16</code></td></tr><tr><td>authService</td><td>2</td><td><code>1</code></td></tr><tr><td>SQL Server (Primary DB)</td><td>2</td><td><code>6</code></td></tr><tr><td>docker-compose.prod.yml</td><td>2</td><td><code>7</code></td></tr><tr><td>Other</td><td>1</td><td><code>17</code></td></tr>
+      <tr><td>Graph Build</td><td>12</td><td><code>0</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>49</td><td><code>2, 10, 13, 4, 11</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>1</td><td><code>5</code></td></tr><tr><td>Serving API</td><td>19</td><td><code>3</code></td></tr><tr><td>2. ARCHITECTURE PRINCIPLES</td><td>8</td><td><code>12</code></td></tr><tr><td>8. GOLDEN PATTERNS</td><td>6</td><td><code>15</code></td></tr><tr><td>10. DEFINITION OF DONE</td><td>5</td><td><code>16</code></td></tr><tr><td>Backend</td><td>4</td><td><code>8</code></td></tr><tr><td>Sửa Đổi So Với Bản Gốc (đọc trước)</td><td>4</td><td><code>9</code></td></tr><tr><td>authService</td><td>2</td><td><code>1</code></td></tr><tr><td>SQL Server (Primary DB)</td><td>2</td><td><code>6</code></td></tr><tr><td>docker-compose.prod.yml</td><td>2</td><td><code>7</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Graph Build -&gt; CLI &amp; Skill Installers -&gt; Ingestion &amp; Updates -&gt; Serving API -&gt; 8. GOLDEN PATTERNS -&gt; ⚪ P3 — Style / theo dõi lâu dài, không khẩn cấp -&gt; Sửa Đổi So Với Bản Gốc (đọc trước)</div>
+    <div class="arrow-chain">Graph Build -&gt; CLI &amp; Skill Installers -&gt; Ingestion &amp; Updates -&gt; Serving API -&gt; Sửa Đổi So Với Bản Gốc (đọc trước) -&gt; 2. ARCHITECTURE PRINCIPLES -&gt; 8. GOLDEN PATTERNS</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>168 nodes · 159 edges · 18 communities (14 shown, 4 thin omitted)</li>
+      <li>114 nodes · 107 edges · 16 communities (13 shown, 3 thin omitted)</li>
       <li>Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 1 edges (avg confidence: 0.7)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `CLAUDE.md — JLPT E-Learning System v2.0` - 14 edges</li>
       <li>2. `Phiên bản: 2.0.0 | Cập nhật: 2026-05-27 | Tác giả: [Team]` - 12 edges</li>
-      <li>3. `Sửa Đổi So Với Bản Gốc (đọc trước)` - 11 edges</li>
+      <li>3. `ADR (Architecture Decision Records)` - 10 edges</li>
     </ul>
   </div>
 </div>
@@ -333,34 +322,30 @@ flowchart LR
 
 <!-- ====== 3. CLI & Skill Installers ====== -->
 <h2 id="cli-skills">3. CLI &amp; Skill Installers</h2>
-<p>CLI &amp; Skill Installers groups implementation around claudemd, implementation, planmd, modify, mostly in CLAUDE.md, implementation_plan.md. This section covers 63 nodes and 61 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>CLI &amp; Skill Installers groups implementation around claudemd, adr, anti, patterns, mostly in CLAUDE.md. This section covers 49 nodes and 48 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: CLI &amp; Skill Installers (63 nodes, 61 edges)
-    subgraph cli_skills_CLAUDE_md_27387765["CLAUDE.md"]
-        claude_claude_md_jlpt_e_learning_system_v2_0_3a29424b("CLAUDE.md — JLPT E-Learning System v2.0<br/><small>CLAUDE.md</small>")
-        claude_adr_architecture_decision_records_213813ea("ADR (Architecture Decision Records)<br/><small>CLAUDE.md</small>")
-        claude_anti_patterns_7fc8f681("ANTI-PATTERNS<br/><small>CLAUDE.md</small>")
-        claude_lessons_learned_2d495c5c("LESSONS LEARNED<br/><small>CLAUDE.md</small>")
-        claude_core_modules_3e0a29f8("CORE MODULES<br/><small>CLAUDE.md</small>")
-        claude_tl_dr_60_gi_y_f49f41dc("TL;DR (60 giây)<br/><small>CLAUDE.md</small>")
-        claude_file_structure_17d02c26("FILE STRUCTURE<br/><small>CLAUDE.md</small>")
-        claude_flows_459465f9("FLOWS<br/><small>CLAUDE.md</small>")
-        claude_ki_n_tr_c_h_th_ng_55cc6b52("KIẾN TRÚC HỆ THỐNG<br/><small>CLAUDE.md</small>")
-        claude_development_workflow_e5611d68("DEVELOPMENT WORKFLOW<br/><small>CLAUDE.md</small>")
-        claude_domain_model_7602a13a("DOMAIN MODEL<br/><small>CLAUDE.md</small>")
-        claude_adr_status_table_672ed43b("ADR STATUS TABLE<br/><small>CLAUDE.md</small>")
-        claude_adr_001_spring_boot_3_x_java_21_f8a87d26("ADR-001: Spring Boot 3.x + Java 21<br/><small>CLAUDE.md</small>")
-        claude_adr_002_monolithic_architecture_e425af9a("ADR-002: Monolithic Architecture<br/><small>CLAUDE.md</small>")
-    end
-    subgraph cli_skills_implementation_plan_md_96396d66["implementation_plan.md"]
-        implementation_plan_backend_bc9f4264("Backend<br/><small>implementation_plan.md</small>")
-        implementation_plan_proposed_changes_c_p_nh_t_d1c56f75("Proposed Changes (đã cập nhật)<br/><small>implementation_plan.md</small>")
-        implementation_plan_frontend_972c437c("Frontend<br/><small>implementation_plan.md</small>")
-        implementation_plan_devops_config_53544a86("DevOps / Config<br/><small>implementation_plan.md</small>")
-    end
+    %% Section: CLI &amp; Skill Installers (49 nodes, 48 edges)
+    claude_claude_md_jlpt_e_learning_system_v2_0_3a29424b("CLAUDE.md — JLPT E-Learning System v2.0<br/><small>CLAUDE.md</small>")
+    claude_adr_architecture_decision_records_213813ea("ADR (Architecture Decision Records)<br/><small>CLAUDE.md</small>")
+    claude_anti_patterns_7fc8f681("ANTI-PATTERNS<br/><small>CLAUDE.md</small>")
+    claude_lessons_learned_2d495c5c("LESSONS LEARNED<br/><small>CLAUDE.md</small>")
+    claude_core_modules_3e0a29f8("CORE MODULES<br/><small>CLAUDE.md</small>")
+    claude_tl_dr_60_gi_y_f49f41dc("TL;DR (60 giây)<br/><small>CLAUDE.md</small>")
+    claude_file_structure_17d02c26("FILE STRUCTURE<br/><small>CLAUDE.md</small>")
+    claude_flows_459465f9("FLOWS<br/><small>CLAUDE.md</small>")
+    claude_ki_n_tr_c_h_th_ng_55cc6b52("KIẾN TRÚC HỆ THỐNG<br/><small>CLAUDE.md</small>")
+    claude_development_workflow_e5611d68("DEVELOPMENT WORKFLOW<br/><small>CLAUDE.md</small>")
+    claude_domain_model_7602a13a("DOMAIN MODEL<br/><small>CLAUDE.md</small>")
+    claude_adr_status_table_672ed43b("ADR STATUS TABLE<br/><small>CLAUDE.md</small>")
+    claude_adr_001_spring_boot_3_x_java_21_f8a87d26("ADR-001: Spring Boot 3.x + Java 21<br/><small>CLAUDE.md</small>")
+    claude_adr_002_monolithic_architecture_e425af9a("ADR-002: Monolithic Architecture<br/><small>CLAUDE.md</small>")
+    claude_adr_003_jwt_bcrypt_cost_12_6f9ce67c("ADR-003: JWT + bcrypt (cost 12)<br/><small>CLAUDE.md</small>")
+    claude_adr_004_soft_delete_to_n_h_th_ng_84f0d386("ADR-004: Soft Delete toàn hệ thống<br/><small>CLAUDE.md</small>")
+    claude_adr_005_dto_pattern_b_t_bu_c_c4565e2e("ADR-005: DTO Pattern bắt buộc<br/><small>CLAUDE.md</small>")
+    claude_adr_006_file_media_t_i_uploads_ho_c_s3_4ff6b829("ADR-006: File Media tại /uploads hoặc S3<br/><small>CLAUDE.md</small>")
     claude_claude_md_jlpt_e_learning_system_v2_0_3a29424b -->|contains| claude_adr_architecture_decision_records_213813ea
     claude_claude_md_jlpt_e_learning_system_v2_0_3a29424b -->|contains| claude_adr_status_table_672ed43b
     claude_claude_md_jlpt_e_learning_system_v2_0_3a29424b -->|contains| claude_anti_patterns_7fc8f681
@@ -374,10 +359,11 @@ flowchart LR
     claude_claude_md_jlpt_e_learning_system_v2_0_3a29424b -->|contains| claude_tl_dr_60_gi_y_f49f41dc
     claude_adr_architecture_decision_records_213813ea -->|contains| claude_adr_001_spring_boot_3_x_java_21_f8a87d26
     claude_adr_architecture_decision_records_213813ea -->|contains| claude_adr_002_monolithic_architecture_e425af9a
-    implementation_plan_proposed_changes_c_p_nh_t_d1c56f75 -->|contains| implementation_plan_backend_bc9f4264
-    implementation_plan_proposed_changes_c_p_nh_t_d1c56f75 -->|contains| implementation_plan_devops_config_53544a86
-    implementation_plan_proposed_changes_c_p_nh_t_d1c56f75 -->|contains| implementation_plan_frontend_972c437c
-    %% Omitted for readability: 45 nodes, 0 edges
+    claude_adr_architecture_decision_records_213813ea -->|contains| claude_adr_003_jwt_bcrypt_cost_12_6f9ce67c
+    claude_adr_architecture_decision_records_213813ea -->|contains| claude_adr_004_soft_delete_to_n_h_th_ng_84f0d386
+    claude_adr_architecture_decision_records_213813ea -->|contains| claude_adr_005_dto_pattern_b_t_bu_c_c4565e2e
+    claude_adr_architecture_decision_records_213813ea -->|contains| claude_adr_006_file_media_t_i_uploads_ho_c_s3_4ff6b829
+    %% Omitted for readability: 31 nodes, 0 edges
     class claude_claude_md_jlpt_e_learning_system_v2_0_3a29424b concept;
     class claude_adr_architecture_decision_records_213813ea concept;
     class claude_anti_patterns_7fc8f681 concept;
@@ -392,10 +378,10 @@ flowchart LR
     class claude_adr_status_table_672ed43b concept;
     class claude_adr_001_spring_boot_3_x_java_21_f8a87d26 concept;
     class claude_adr_002_monolithic_architecture_e425af9a concept;
-    class implementation_plan_backend_bc9f4264 concept;
-    class implementation_plan_proposed_changes_c_p_nh_t_d1c56f75 concept;
-    class implementation_plan_frontend_972c437c concept;
-    class implementation_plan_devops_config_53544a86 concept;
+    class claude_adr_003_jwt_bcrypt_cost_12_6f9ce67c concept;
+    class claude_adr_004_soft_delete_to_n_h_th_ng_84f0d386 concept;
+    class claude_adr_005_dto_pattern_b_t_bu_c_c4565e2e concept;
+    class claude_adr_006_file_media_t_i_uploads_ho_c_s3_4ff6b829 concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -443,38 +429,6 @@ flowchart LR
 </tr>
 <tr>
   <td>4</td>
-  <td><code>TL;DR (60 giây)</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing TL;DR (60 giây).</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>Tech Stack (Xem `CONSTITUTION.md § ĐIỀU 1`)</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Tech Stack (Xem `CONSTITUTION.md § ĐIỀU 1`).</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>Domain</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Domain.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>Key Rules</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Key Rules.</td>
-</tr>
-<tr>
-  <td>8</td>
   <td><code>KIẾN TRÚC HỆ THỐNG</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -482,7 +436,7 @@ flowchart LR
   <td>Documentation node describing KIẾN TRÚC HỆ THỐNG.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>5</td>
   <td><code>Sơ đồ tổng quan</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -490,7 +444,7 @@ flowchart LR
   <td>Documentation node describing Sơ đồ tổng quan.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>6</td>
   <td><code>Layer Architecture (Backend)</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -498,7 +452,7 @@ flowchart LR
   <td>Documentation node describing Layer Architecture (Backend).</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>7</td>
   <td><code>CORE MODULES</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -506,7 +460,7 @@ flowchart LR
   <td>Documentation node describing CORE MODULES.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>8</td>
   <td><code>Auth &amp; User Module</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -514,7 +468,7 @@ flowchart LR
   <td>Documentation node describing Auth &amp; User Module.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>9</td>
   <td><code>Learning &amp; Content Module</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -522,7 +476,7 @@ flowchart LR
   <td>Documentation node describing Learning &amp; Content Module.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>10</td>
   <td><code>Testing &amp; AI Module</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -530,7 +484,7 @@ flowchart LR
   <td>Documentation node describing Testing &amp; AI Module.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>11</td>
   <td><code>FLOWS</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -538,7 +492,7 @@ flowchart LR
   <td>Documentation node describing FLOWS.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>12</td>
   <td><code>Quiz Submission Flow</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -546,7 +500,7 @@ flowchart LR
   <td>Documentation node describing Quiz Submission Flow.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>13</td>
   <td><code>OCR Flow (Async)</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -554,55 +508,7 @@ flowchart LR
   <td>Documentation node describing OCR Flow (Async).</td>
 </tr>
 <tr>
-  <td>18</td>
-  <td><code>LESSONS LEARNED</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing LESSONS LEARNED.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>LESSON-001: Tách UI Staff và Admin</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing LESSON-001: Tách UI Staff và Admin.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>LESSON-002: Không lưu BLOB trong DB</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing LESSON-002: Không lưu BLOB trong DB.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>LESSON-003: Authorization = Role + Subscription</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing LESSON-003: Authorization = Role + Subscription.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>LESSON-005: Quiz câu hỏi phải Lock</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing LESSON-005: Quiz câu hỏi phải Lock.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>LESSON-006: AI không được Silent Fail</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing LESSON-006: AI không được Silent Fail.</td>
-</tr>
-<tr>
-  <td>24</td>
+  <td>14</td>
   <td><code>FILE STRUCTURE</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -610,7 +516,7 @@ flowchart LR
   <td>Documentation node describing FILE STRUCTURE.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>15</td>
   <td><code>Backend (Spring Boot)</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -618,7 +524,7 @@ flowchart LR
   <td>Documentation node describing Backend (Spring Boot).</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>16</td>
   <td><code>Frontend (React)</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -626,7 +532,7 @@ flowchart LR
   <td>Documentation node describing Frontend (React).</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>17</td>
   <td><code>DEVELOPMENT WORKFLOW</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -634,7 +540,7 @@ flowchart LR
   <td>Documentation node describing DEVELOPMENT WORKFLOW.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>18</td>
   <td><code>Phase Commands</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -642,7 +548,7 @@ flowchart LR
   <td>Documentation node describing Phase Commands.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>19</td>
   <td><code>DOMAIN MODEL</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -650,12 +556,92 @@ flowchart LR
   <td>Documentation node describing DOMAIN MODEL.</td>
 </tr>
 <tr>
-  <td>30</td>
+  <td>20</td>
   <td><code>Core Entities</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>Documentation node describing Core Entities.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>NAMING QUICK REFERENCE</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing NAMING QUICK REFERENCE.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>ADR STATUS TABLE</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing ADR STATUS TABLE.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>ADR (Architecture Decision Records)</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing ADR (Architecture Decision Records).</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>ADR-001: Spring Boot 3.x + Java 21</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing ADR-001: Spring Boot 3.x + Java 21.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>ADR-002: Monolithic Architecture</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing ADR-002: Monolithic Architecture.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>ADR-003: JWT + bcrypt (cost 12)</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing ADR-003: JWT + bcrypt (cost 12).</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>ADR-004: Soft Delete toàn hệ thống</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing ADR-004: Soft Delete toàn hệ thống.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>ADR-005: DTO Pattern bắt buộc</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing ADR-005: DTO Pattern bắt buộc.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>ADR-006: File Media tại /uploads hoặc S3</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing ADR-006: File Media tại /uploads hoặc S3.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>ADR-007: OCR chỉ so sánh Similarity %</code><br><small style="color:var(--muted)">CLAUDE.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing ADR-007: OCR chỉ so sánh Similarity %.</td>
 </tr>
 </table>
 
@@ -664,13 +650,12 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>CLAUDE.md</code></td><td>48 nodes</td></tr>
-<tr><td><code>implementation_plan.md</code></td><td>15 nodes</td></tr>
+      <tr><td><code>CLAUDE.md</code></td><td>49 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x61. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x48. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -733,66 +718,66 @@ flowchart LR
 
 <!-- ====== 5. Serving API ====== -->
 <h2 id="serve-api">5. Serving API</h2>
-<p>Serving API groups implementation around agentsmd, response, nhật, tác, mostly in AGENTS.md. This section covers 21 nodes and 20 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Serving API groups implementation around agentsmd, luật, response, học, mostly in AGENTS.md. This section covers 19 nodes and 18 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Serving API (21 nodes, 20 edges)
+    %% Section: Serving API (19 nodes, 18 edges)
     agents_phi_n_b_n_2_0_0_c_p_nh_t_2026_05_27_t_c_g_537488fb("Phiên bản: 2.0.0 Cập nhật: 2026-05-27...<br/><small>AGENTS.md</small>")
-    agents_3_naming_conventions_f4c866c8("3. NAMING CONVENTIONS<br/><small>AGENTS.md</small>")
+    agents_7_jlpt_domain_rules_76421765("7. JLPT DOMAIN RULES<br/><small>AGENTS.md</small>")
     agents_6_api_response_format_b850f207("6. API RESPONSE FORMAT<br/><small>AGENTS.md</small>")
-    agents_9_x_l_l_i_an_to_n_thao_t_c_f9cb2ed4("9. XỬ LÝ LỖI &amp; AN TOÀN THAO TÁC<br/><small>AGENTS.md</small>")
     agents_e7052aeb("AGENTS.md")
     agents_4_ph_m_vi_ho_t_ng_1ab5a51f("4. PHẠM VI HOẠT ĐỘNG<br/><small>AGENTS.md</small>")
+    agents_agents_md_d_n_h_th_ng_h_c_ti_ng_nh_t_jlpt_f4837ba1("AGENTS.md — Dự án: Hệ Thống Học Tiếng N...<br/><small>AGENTS.md</small>")
     agents_1_project_overview_13bfe3d0("1. PROJECT OVERVIEW<br/><small>AGENTS.md</small>")
     agents_11_project_context_references_5afad168("11. PROJECT CONTEXT REFERENCES<br/><small>AGENTS.md</small>")
-    agents_3_1_java_backend_465c358b("3.1. Java Backend<br/><small>AGENTS.md</small>")
-    agents_3_2_react_frontend_fcaf6a3a("3.2. React Frontend<br/><small>AGENTS.md</small>")
-    agents_3_3_api_routes_a01bbd0b("3.3. API Routes<br/><small>AGENTS.md</small>")
     agents_5_forbidden_patterns_4c8a3b1c("5. FORBIDDEN PATTERNS<br/><small>AGENTS.md</small>")
     agents_6_1_success_response_6142a7ec("6.1. Success Response<br/><small>AGENTS.md</small>")
     agents_6_2_error_response_871f3067("6.2. Error Response<br/><small>AGENTS.md</small>")
     agents_6_3_standard_http_status_codes_2c493683("6.3. Standard HTTP Status Codes<br/><small>AGENTS.md</small>")
-    agents_9_1_when_to_ask_d76ef970("9.1. When to Ask<br/><small>AGENTS.md</small>")
-    agents_9_2_high_risk_operations_e5417496("9.2. High-Risk Operations<br/><small>AGENTS.md</small>")
-    agents_9_3_refactor_safeguards_34111ba4("9.3. Refactor Safeguards<br/><small>AGENTS.md</small>")
+    agents_7_1_lu_t_i_m_s_b_i_thi_6428bb90("7.1. Luật Điểm số &amp; Bài thi<br/><small>AGENTS.md</small>")
+    agents_7_2_lu_t_l_tr_nh_h_c_e05ecbe5("7.2. Luật Lộ trình học<br/><small>AGENTS.md</small>")
+    agents_7_3_lu_t_subscription_ph_n_quy_n_97887242("7.3. Luật Subscription &amp; Phân quyền<br/><small>AGENTS.md</small>")
+    agents_7_4_lu_t_soft_delete_33b9b2bd("7.4. Luật Soft Delete<br/><small>AGENTS.md</small>")
+    agents_7_5_lu_t_ai_features_ocr_speech_1449e6c0("7.5. Luật AI Features (OCR &amp; Speech)<br/><small>AGENTS.md</small>")
+    agents_c_ph_p_f3a809af("✅ Được phép<br/><small>AGENTS.md</small>")
+    agents_e7052aeb -->|contains| agents_agents_md_d_n_h_th_ng_h_c_ti_ng_nh_t_jlpt_f4837ba1
     agents_e7052aeb -->|contains| agents_phi_n_b_n_2_0_0_c_p_nh_t_2026_05_27_t_c_g_537488fb
     agents_phi_n_b_n_2_0_0_c_p_nh_t_2026_05_27_t_c_g_537488fb -->|contains| agents_11_project_context_references_5afad168
     agents_phi_n_b_n_2_0_0_c_p_nh_t_2026_05_27_t_c_g_537488fb -->|contains| agents_1_project_overview_13bfe3d0
-    agents_phi_n_b_n_2_0_0_c_p_nh_t_2026_05_27_t_c_g_537488fb -->|contains| agents_3_naming_conventions_f4c866c8
     agents_phi_n_b_n_2_0_0_c_p_nh_t_2026_05_27_t_c_g_537488fb -->|contains| agents_4_ph_m_vi_ho_t_ng_1ab5a51f
     agents_phi_n_b_n_2_0_0_c_p_nh_t_2026_05_27_t_c_g_537488fb -->|contains| agents_5_forbidden_patterns_4c8a3b1c
     agents_phi_n_b_n_2_0_0_c_p_nh_t_2026_05_27_t_c_g_537488fb -->|contains| agents_6_api_response_format_b850f207
-    agents_phi_n_b_n_2_0_0_c_p_nh_t_2026_05_27_t_c_g_537488fb -->|contains| agents_9_x_l_l_i_an_to_n_thao_t_c_f9cb2ed4
-    agents_3_naming_conventions_f4c866c8 -->|contains| agents_3_1_java_backend_465c358b
-    agents_3_naming_conventions_f4c866c8 -->|contains| agents_3_2_react_frontend_fcaf6a3a
-    agents_3_naming_conventions_f4c866c8 -->|contains| agents_3_3_api_routes_a01bbd0b
+    agents_phi_n_b_n_2_0_0_c_p_nh_t_2026_05_27_t_c_g_537488fb -->|contains| agents_7_jlpt_domain_rules_76421765
+    agents_4_ph_m_vi_ho_t_ng_1ab5a51f -->|contains| agents_c_ph_p_f3a809af
     agents_6_api_response_format_b850f207 -->|contains| agents_6_1_success_response_6142a7ec
     agents_6_api_response_format_b850f207 -->|contains| agents_6_2_error_response_871f3067
     agents_6_api_response_format_b850f207 -->|contains| agents_6_3_standard_http_status_codes_2c493683
-    agents_9_x_l_l_i_an_to_n_thao_t_c_f9cb2ed4 -->|contains| agents_9_1_when_to_ask_d76ef970
-    agents_9_x_l_l_i_an_to_n_thao_t_c_f9cb2ed4 -->|contains| agents_9_2_high_risk_operations_e5417496
-    agents_9_x_l_l_i_an_to_n_thao_t_c_f9cb2ed4 -->|contains| agents_9_3_refactor_safeguards_34111ba4
-    %% Omitted for readability: 3 nodes, 0 edges
+    agents_7_jlpt_domain_rules_76421765 -->|contains| agents_7_1_lu_t_i_m_s_b_i_thi_6428bb90
+    agents_7_jlpt_domain_rules_76421765 -->|contains| agents_7_2_lu_t_l_tr_nh_h_c_e05ecbe5
+    agents_7_jlpt_domain_rules_76421765 -->|contains| agents_7_3_lu_t_subscription_ph_n_quy_n_97887242
+    agents_7_jlpt_domain_rules_76421765 -->|contains| agents_7_4_lu_t_soft_delete_33b9b2bd
+    agents_7_jlpt_domain_rules_76421765 -->|contains| agents_7_5_lu_t_ai_features_ocr_speech_1449e6c0
+    %% Omitted for readability: 1 nodes, 0 edges
     class agents_phi_n_b_n_2_0_0_c_p_nh_t_2026_05_27_t_c_g_537488fb concept;
-    class agents_3_naming_conventions_f4c866c8 concept;
+    class agents_7_jlpt_domain_rules_76421765 concept;
     class agents_6_api_response_format_b850f207 concept;
-    class agents_9_x_l_l_i_an_to_n_thao_t_c_f9cb2ed4 concept;
     class agents_e7052aeb concept;
     class agents_4_ph_m_vi_ho_t_ng_1ab5a51f concept;
+    class agents_agents_md_d_n_h_th_ng_h_c_ti_ng_nh_t_jlpt_f4837ba1 concept;
     class agents_1_project_overview_13bfe3d0 concept;
     class agents_11_project_context_references_5afad168 concept;
-    class agents_3_1_java_backend_465c358b concept;
-    class agents_3_2_react_frontend_fcaf6a3a concept;
-    class agents_3_3_api_routes_a01bbd0b concept;
     class agents_5_forbidden_patterns_4c8a3b1c concept;
     class agents_6_1_success_response_6142a7ec concept;
     class agents_6_2_error_response_871f3067 concept;
     class agents_6_3_standard_http_status_codes_2c493683 concept;
-    class agents_9_1_when_to_ask_d76ef970 concept;
-    class agents_9_2_high_risk_operations_e5417496 concept;
-    class agents_9_3_refactor_safeguards_34111ba4 concept;
+    class agents_7_1_lu_t_i_m_s_b_i_thi_6428bb90 concept;
+    class agents_7_2_lu_t_l_tr_nh_h_c_e05ecbe5 concept;
+    class agents_7_3_lu_t_subscription_ph_n_quy_n_97887242 concept;
+    class agents_7_4_lu_t_soft_delete_33b9b2bd concept;
+    class agents_7_5_lu_t_ai_features_ocr_speech_1449e6c0 concept;
+    class agents_c_ph_p_f3a809af concept;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -848,38 +833,6 @@ flowchart LR
 </tr>
 <tr>
   <td>5</td>
-  <td><code>3. NAMING CONVENTIONS</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 3. NAMING CONVENTIONS.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>3.1. Java Backend</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 3.1. Java Backend.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>3.2. React Frontend</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 3.2. React Frontend.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>3.3. API Routes</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 3.3. API Routes.</td>
-</tr>
-<tr>
-  <td>9</td>
   <td><code>4. PHẠM VI HOẠT ĐỘNG</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -887,7 +840,7 @@ flowchart LR
   <td>Documentation node describing 4. PHẠM VI HOẠT ĐỘNG.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>6</td>
   <td><code>✅ Được phép</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -895,7 +848,7 @@ flowchart LR
   <td>Documentation node describing ✅ Được phép.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>7</td>
   <td><code>❌ Cấm tuyệt đối</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -903,7 +856,7 @@ flowchart LR
   <td>Documentation node describing ❌ Cấm tuyệt đối.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>8</td>
   <td><code>5. FORBIDDEN PATTERNS</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -911,7 +864,7 @@ flowchart LR
   <td>Documentation node describing 5. FORBIDDEN PATTERNS.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>9</td>
   <td><code>6. API RESPONSE FORMAT</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -919,7 +872,7 @@ flowchart LR
   <td>Documentation node describing 6. API RESPONSE FORMAT.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>10</td>
   <td><code>6.1. Success Response</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -927,7 +880,7 @@ flowchart LR
   <td>Documentation node describing 6.1. Success Response.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>11</td>
   <td><code>6.2. Error Response</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -935,7 +888,7 @@ flowchart LR
   <td>Documentation node describing 6.2. Error Response.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>12</td>
   <td><code>6.3. Standard HTTP Status Codes</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -943,39 +896,55 @@ flowchart LR
   <td>Documentation node describing 6.3. Standard HTTP Status Codes.</td>
 </tr>
 <tr>
-  <td>17</td>
-  <td><code>9. XỬ LÝ LỖI &amp; AN TOÀN THAO TÁC</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td>13</td>
+  <td><code>7. JLPT DOMAIN RULES</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing 9. XỬ LÝ LỖI &amp; AN TOÀN THAO TÁC.</td>
+  <td>Documentation node describing 7. JLPT DOMAIN RULES.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>7.1. Luật Điểm số &amp; Bài thi</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 7.1. Luật Điểm số &amp; Bài thi.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>7.2. Luật Lộ trình học</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 7.2. Luật Lộ trình học.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>7.3. Luật Subscription &amp; Phân quyền</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 7.3. Luật Subscription &amp; Phân quyền.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>7.4. Luật Soft Delete</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 7.4. Luật Soft Delete.</td>
 </tr>
 <tr>
   <td>18</td>
-  <td><code>9.1. When to Ask</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td><code>7.5. Luật AI Features (OCR &amp; Speech)</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing 9.1. When to Ask.</td>
+  <td>Documentation node describing 7.5. Luật AI Features (OCR &amp; Speech).</td>
 </tr>
 <tr>
   <td>19</td>
-  <td><code>9.2. High-Risk Operations</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 9.2. High-Risk Operations.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>9.3. Refactor Safeguards</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 9.3. Refactor Safeguards.</td>
-</tr>
-<tr>
-  <td>21</td>
   <td><code>11. PROJECT CONTEXT REFERENCES</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -989,259 +958,7 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>AGENTS.md</code></td><td>21 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x20. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 6. ⚪ P3 — Style / theo dõi lâu dài, không khẩn cấp ====== -->
-<h2 id="p3-style-theo-d-i-l-u-d-i-kh-ng-kh-n-c-p">6. ⚪ P3 — Style / theo dõi lâu dài, không khẩn cấp</h2>
-<p>⚪ P3 — Style / theo dõi lâu dài, không khẩn cấp groups implementation around implementation, planmd, bug, không, mostly in implementation_plan.md. This section covers 19 nodes and 18 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: ⚪ P3 — Style / theo dõi lâu dài, không khẩn cấp (19 nodes, 18 edges)
-    implementation_plan_p3_style_theo_d_i_l_u_d_i_kh_3f482112("⚪ P3 — Style / theo dõi lâu dài, không...<br/><small>implementation_plan.md</small>")
-    implementation_plan_ph_n_t_ch_l_i_theo_m_c_c_p_n_a221dfc4("Phân Tích Lỗi Theo Mức Độ (đã cập nhật...<br/><small>implementation_plan.md</small>")
-    implementation_plan_p2_code_quality_defense_in_d_c0953924("🟢 P2 — Code Quality / Defense-in-depth...<br/><small>implementation_plan.md</small>")
-    implementation_plan_p1_b_t_h_p_l_nghi_p_v_deploy_ea679743("🟡 P1 — Bất hợp lý nghiệp vụ / Deploy ri...<br/><small>implementation_plan.md</small>")
-    implementation_plan_p0_nh_h_ng_security_feature_ec3083a9("🔴 P0 — Ảnh hưởng Security / Feature hoà...<br/><small>implementation_plan.md</small>")
-    implementation_plan_bug_02_resendverification_th_65079908("BUG-02: resendVerification thiếu tron...<br/><small>implementation_plan.md</small>")
-    implementation_plan_bug_01_sai_import_transactio_961fe761("BUG-01: Sai import @Transactional (đã...<br/><small>implementation_plan.md</small>")
-    implementation_plan_bug_03_userdetailsimpl_isena_97e0854f("BUG-03: UserDetailsImpl.isEnabled() c...<br/><small>implementation_plan.md</small>")
-    implementation_plan_bug_04_studentuser_builder_d_559411e8("BUG-04: StudentUser Builder Default l...<br/><small>implementation_plan.md</small>")
-    implementation_plan_bug_05_staffroute_jsx_manage_d53a03ab("BUG-05: StaffRoute.jsx/ManagerRoute....<br/><small>implementation_plan.md</small>")
-    implementation_plan_bug_06_docker_compose_yml_ba_addb893f("BUG-06: docker-compose.yml — backend...<br/><small>implementation_plan.md</small>")
-    implementation_plan_bug_07_cd_kh_ng_gate_theo_k_20967ca5("BUG-07: CD không gate theo kết quả CI (...<br/><small>implementation_plan.md</small>")
-    implementation_plan_bug_08_rate_limit_checkaccou_fcbd6789("BUG-08: Rate limit checkAccountType d...<br/><small>implementation_plan.md</small>")
-    implementation_plan_bug_09_smtp_env_thi_u_docker_0348f8c4("BUG-09: SMTP env thiếu ở docker-compos...<br/><small>implementation_plan.md</small>")
-    implementation_plan_bug_10_bug_16_authslice_js_f_1981ffe2("BUG-10 &amp; BUG-16: authSlice.js — fetc...<br/><small>implementation_plan.md</small>")
-    implementation_plan_bug_11_thi_u_transactional_r_97fb174d("BUG-11: Thiếu @Transactional(readOnly...<br/><small>implementation_plan.md</small>")
-    implementation_plan_bug_12_env_example_l_i_th_i_953600f7("BUG-12: .env.example lỗi thời + JWT e...<br/><small>implementation_plan.md</small>")
-    implementation_plan_bug_13_vps_password_trong_cd_638e2d9f("BUG-13: VPS_PASSWORD trong CD workflo...<br/><small>implementation_plan.md</small>")
-    implementation_plan_ph_n_t_ch_l_i_theo_m_c_c_p_n_a221dfc4 -->|contains| implementation_plan_p0_nh_h_ng_security_feature_ec3083a9
-    implementation_plan_ph_n_t_ch_l_i_theo_m_c_c_p_n_a221dfc4 -->|contains| implementation_plan_p1_b_t_h_p_l_nghi_p_v_deploy_ea679743
-    implementation_plan_ph_n_t_ch_l_i_theo_m_c_c_p_n_a221dfc4 -->|contains| implementation_plan_p2_code_quality_defense_in_d_c0953924
-    implementation_plan_ph_n_t_ch_l_i_theo_m_c_c_p_n_a221dfc4 -->|contains| implementation_plan_p3_style_theo_d_i_l_u_d_i_kh_3f482112
-    implementation_plan_p0_nh_h_ng_security_feature_ec3083a9 -->|contains| implementation_plan_bug_02_resendverification_th_65079908
-    implementation_plan_p0_nh_h_ng_security_feature_ec3083a9 -->|contains| implementation_plan_bug_03_userdetailsimpl_isena_97e0854f
-    implementation_plan_p1_b_t_h_p_l_nghi_p_v_deploy_ea679743 -->|contains| implementation_plan_bug_06_docker_compose_yml_ba_addb893f
-    implementation_plan_p1_b_t_h_p_l_nghi_p_v_deploy_ea679743 -->|contains| implementation_plan_bug_07_cd_kh_ng_gate_theo_k_20967ca5
-    implementation_plan_p1_b_t_h_p_l_nghi_p_v_deploy_ea679743 -->|contains| implementation_plan_bug_09_smtp_env_thi_u_docker_0348f8c4
-    implementation_plan_p2_code_quality_defense_in_d_c0953924 -->|contains| implementation_plan_bug_04_studentuser_builder_d_559411e8
-    implementation_plan_p2_code_quality_defense_in_d_c0953924 -->|contains| implementation_plan_bug_10_bug_16_authslice_js_f_1981ffe2
-    implementation_plan_p2_code_quality_defense_in_d_c0953924 -->|contains| implementation_plan_bug_11_thi_u_transactional_r_97fb174d
-    implementation_plan_p2_code_quality_defense_in_d_c0953924 -->|contains| implementation_plan_bug_12_env_example_l_i_th_i_953600f7
-    implementation_plan_p3_style_theo_d_i_l_u_d_i_kh_3f482112 -->|contains| implementation_plan_bug_01_sai_import_transactio_961fe761
-    implementation_plan_p3_style_theo_d_i_l_u_d_i_kh_3f482112 -->|contains| implementation_plan_bug_05_staffroute_jsx_manage_d53a03ab
-    implementation_plan_p3_style_theo_d_i_l_u_d_i_kh_3f482112 -->|contains| implementation_plan_bug_08_rate_limit_checkaccou_fcbd6789
-    implementation_plan_p3_style_theo_d_i_l_u_d_i_kh_3f482112 -->|contains| implementation_plan_bug_13_vps_password_trong_cd_638e2d9f
-    %% Omitted for readability: 1 nodes, 0 edges
-    class implementation_plan_p3_style_theo_d_i_l_u_d_i_kh_3f482112 concept;
-    class implementation_plan_ph_n_t_ch_l_i_theo_m_c_c_p_n_a221dfc4 concept;
-    class implementation_plan_p2_code_quality_defense_in_d_c0953924 concept;
-    class implementation_plan_p1_b_t_h_p_l_nghi_p_v_deploy_ea679743 concept;
-    class implementation_plan_p0_nh_h_ng_security_feature_ec3083a9 concept;
-    class implementation_plan_bug_02_resendverification_th_65079908 concept;
-    class implementation_plan_bug_01_sai_import_transactio_961fe761 concept;
-    class implementation_plan_bug_03_userdetailsimpl_isena_97e0854f concept;
-    class implementation_plan_bug_04_studentuser_builder_d_559411e8 concept;
-    class implementation_plan_bug_05_staffroute_jsx_manage_d53a03ab concept;
-    class implementation_plan_bug_06_docker_compose_yml_ba_addb893f concept;
-    class implementation_plan_bug_07_cd_kh_ng_gate_theo_k_20967ca5 concept;
-    class implementation_plan_bug_08_rate_limit_checkaccou_fcbd6789 concept;
-    class implementation_plan_bug_09_smtp_env_thi_u_docker_0348f8c4 concept;
-    class implementation_plan_bug_10_bug_16_authslice_js_f_1981ffe2 concept;
-    class implementation_plan_bug_11_thi_u_transactional_r_97fb174d concept;
-    class implementation_plan_bug_12_env_example_l_i_th_i_953600f7 concept;
-    class implementation_plan_bug_13_vps_password_trong_cd_638e2d9f concept;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>Phân Tích Lỗi Theo Mức Độ (đã cập nhật priority theo phần trên)</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Phân Tích Lỗi Theo Mức Độ (đã cập nhật priority theo phần trên).</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>🔴 P0 — Ảnh hưởng Security / Feature hoàn toàn broken</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 🔴 P0 — Ảnh hưởng Security / Feature hoàn toàn broken.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>BUG-02: `resendVerification` thiếu trong `authService.js` phía frontend</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-02: `resendVerification` thiếu trong `authService.js` phía frontend.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>BUG-03: `UserDetailsImpl.isEnabled()` cho phép PENDING login</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-03: `UserDetailsImpl.isEnabled()` cho phép PENDING login.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>🟡 P1 — Bất hợp lý nghiệp vụ / Deploy risk thật</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 🟡 P1 — Bất hợp lý nghiệp vụ / Deploy risk thật.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>BUG-06: `docker-compose.yml` — backend không đợi DB ready — **fix ban đầu đã REVERT sau khi verify thực tế**</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-06: `docker-compose.yml` — backend không đợi DB ready — **fix ban đầu đã REVERT sau khi verify thực tế**.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>BUG-09: SMTP env thiếu ở `docker-compose.prod.yml` (xem mục 7 ở trên để hiểu rõ 2 loại `.env`) — **fix ban đầu gây ra một sự cố production mới, đã sửa**</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-09: SMTP env thiếu ở `docker-compose.prod.yml` (xem mục 7 ở trên để hiểu rõ 2 loại `.env`) — **fix ban đầu gây ra một sự cố production mới, đã sửa**.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>BUG-07: CD không gate theo kết quả CI (không phải &quot;thiếu CI&quot; — xem mục 2)</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-07: CD không gate theo kết quả CI (không phải &quot;thiếu CI&quot; — xem mục 2).</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>🟢 P2 — Code Quality / Defense-in-depth (không phải bug đang khai thác được)</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 🟢 P2 — Code Quality / Defense-in-depth (không phải bug đang khai thác được).</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>BUG-04: `StudentUser` Builder Default là ACTIVE</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-04: `StudentUser` Builder Default là ACTIVE.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>BUG-10 &amp; BUG-16: `authSlice.js` — `fetchProfileThunk`/`updateProfileThunk` là dead code (xem mục 3, 10)</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-10 &amp; BUG-16: `authSlice.js` — `fetchProfileThunk`/`updateProfileThunk` là dead code (xem mục 3, 10).</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>BUG-11: Thiếu `@Transactional(readOnly = true)` trong GET methods</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-11: Thiếu `@Transactional(readOnly = true)` trong GET methods.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>BUG-12: `.env.example` lỗi thời + JWT expiration hardcode không đọc env (mở rộng — xem mục 6)</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-12: `.env.example` lỗi thời + JWT expiration hardcode không đọc env (mở rộng — xem mục 6).</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>⚪ P3 — Style / theo dõi lâu dài, không khẩn cấp</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing ⚪ P3 — Style / theo dõi lâu dài, không khẩn cấp.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>BUG-01: Sai import `@Transactional` (đã hạ severity — xem mục 1)</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-01: Sai import `@Transactional` (đã hạ severity — xem mục 1).</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>BUG-05: `StaffRoute.jsx`/`ManagerRoute.jsx` trust client role</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-05: `StaffRoute.jsx`/`ManagerRoute.jsx` trust client role.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>BUG-08: Rate limit `checkAccountType` dùng in-memory Map</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-08: Rate limit `checkAccountType` dùng in-memory Map.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>BUG-13: `VPS_PASSWORD` trong CD workflow — **ĐÃ REVERT sau khi verify thực tế bằng cách deploy thật**</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-13: `VPS_PASSWORD` trong CD workflow — **ĐÃ REVERT sau khi verify thực tế bằng cách deploy thật**.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>BUG-14: BCrypt cost=12 — **KHÔNG cần fix** (xem mục 4, đi ngược ADR-003 nếu hạ xuống)</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing BUG-14: BCrypt cost=12 — **KHÔNG cần fix** (xem mục 4, đi ngược ADR-003 nếu hạ xuống).</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>implementation_plan.md</code></td><td>19 nodes</td></tr>
+      <tr><td><code>AGENTS.md</code></td><td>19 nodes</td></tr>
     </table>
   </div>
   <div class="card">
@@ -1251,318 +968,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 7. Sửa Đổi So Với Bản Gốc (đọc trước) ====== -->
-<h2 id="s-a-i-so-v-i-b-n-g-c-c-tr-c">7. Sửa Đổi So Với Bản Gốc (đọc trước)</h2>
-<p>Sửa Đổi So Với Bản Gốc (đọc trước) groups implementation around implementation, planmd, bug, gốc, mostly in implementation_plan.md. This section covers 11 nodes and 10 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Sửa Đổi So Với Bản Gốc (đọc trước) (11 nodes, 10 edges)
-    implementation_plan_s_a_i_so_v_i_b_n_g_c_c_tr_c_0790e9a1("Sửa Đổi So Với Bản Gốc (đọc trước)<br/><small>implementation_plan.md</small>")
-    implementation_plan_10_ph_t_hi_n_m_i_updateprofi_82b3b8cd("10. Phát hiện mới: updateProfileThunk...<br/><small>implementation_plan.md</small>")
-    implementation_plan_1_bug_01_h_t_p0_critical_xu_3e128fd4("1. BUG-01 hạ từ P0/CRITICAL xuống P3 —...<br/><small>implementation_plan.md</small>")
-    implementation_plan_2_bug_07_sai_ho_n_to_n_ci_ym_de091a17("2. BUG-07 sai hoàn toàn — ci.yml đã t...<br/><small>implementation_plan.md</small>")
-    implementation_plan_3_bug_10_bug_16_authslice_js_2a2d6a43("3. BUG-10 &amp; BUG-16 (authSlice.js) — cod...<br/><small>implementation_plan.md</small>")
-    implementation_plan_4_bug_14_bcrypt_cost_12_khuy_c50b6a43("4. BUG-14 (bcrypt cost 12) — khuyến ngh...<br/><small>implementation_plan.md</small>")
-    implementation_plan_5_bug_08_rate_limit_in_memor_bb6bfd0e("5. BUG-08 (rate limit in-memory) — hạ t...<br/><small>implementation_plan.md</small>")
-    implementation_plan_6_bug_12_m_r_ng_jwt_expirati_5c97d14e("6. BUG-12 mở rộng — JWT expiration bị h...<br/><small>implementation_plan.md</small>")
-    implementation_plan_7_bug_09_smtp_thi_u_prod_ng_e399fc23("7. BUG-09 (SMTP thiếu ở prod) — đúng, n...<br/><small>implementation_plan.md</small>")
-    implementation_plan_8_l_i_nh_s_n_i_b_trong_b_n_g_3db919a2("8. Lỗi đánh số nội bộ trong bản gốc<br/><small>implementation_plan.md</small>")
-    implementation_plan_9_ph_t_hi_n_m_i_endpoint_pay_fd332460("9. Phát hiện mới: endpoint &amp; payload ch...<br/><small>implementation_plan.md</small>")
-    implementation_plan_s_a_i_so_v_i_b_n_g_c_c_tr_c_0790e9a1 -->|contains| implementation_plan_10_ph_t_hi_n_m_i_updateprofi_82b3b8cd
-    implementation_plan_s_a_i_so_v_i_b_n_g_c_c_tr_c_0790e9a1 -->|contains| implementation_plan_1_bug_01_h_t_p0_critical_xu_3e128fd4
-    implementation_plan_s_a_i_so_v_i_b_n_g_c_c_tr_c_0790e9a1 -->|contains| implementation_plan_2_bug_07_sai_ho_n_to_n_ci_ym_de091a17
-    implementation_plan_s_a_i_so_v_i_b_n_g_c_c_tr_c_0790e9a1 -->|contains| implementation_plan_3_bug_10_bug_16_authslice_js_2a2d6a43
-    implementation_plan_s_a_i_so_v_i_b_n_g_c_c_tr_c_0790e9a1 -->|contains| implementation_plan_4_bug_14_bcrypt_cost_12_khuy_c50b6a43
-    implementation_plan_s_a_i_so_v_i_b_n_g_c_c_tr_c_0790e9a1 -->|contains| implementation_plan_5_bug_08_rate_limit_in_memor_bb6bfd0e
-    implementation_plan_s_a_i_so_v_i_b_n_g_c_c_tr_c_0790e9a1 -->|contains| implementation_plan_6_bug_12_m_r_ng_jwt_expirati_5c97d14e
-    implementation_plan_s_a_i_so_v_i_b_n_g_c_c_tr_c_0790e9a1 -->|contains| implementation_plan_7_bug_09_smtp_thi_u_prod_ng_e399fc23
-    implementation_plan_s_a_i_so_v_i_b_n_g_c_c_tr_c_0790e9a1 -->|contains| implementation_plan_8_l_i_nh_s_n_i_b_trong_b_n_g_3db919a2
-    implementation_plan_s_a_i_so_v_i_b_n_g_c_c_tr_c_0790e9a1 -->|contains| implementation_plan_9_ph_t_hi_n_m_i_endpoint_pay_fd332460
-    class implementation_plan_s_a_i_so_v_i_b_n_g_c_c_tr_c_0790e9a1 concept;
-    class implementation_plan_10_ph_t_hi_n_m_i_updateprofi_82b3b8cd concept;
-    class implementation_plan_1_bug_01_h_t_p0_critical_xu_3e128fd4 concept;
-    class implementation_plan_2_bug_07_sai_ho_n_to_n_ci_ym_de091a17 concept;
-    class implementation_plan_3_bug_10_bug_16_authslice_js_2a2d6a43 concept;
-    class implementation_plan_4_bug_14_bcrypt_cost_12_khuy_c50b6a43 concept;
-    class implementation_plan_5_bug_08_rate_limit_in_memor_bb6bfd0e concept;
-    class implementation_plan_6_bug_12_m_r_ng_jwt_expirati_5c97d14e concept;
-    class implementation_plan_7_bug_09_smtp_thi_u_prod_ng_e399fc23 concept;
-    class implementation_plan_8_l_i_nh_s_n_i_b_trong_b_n_g_3db919a2 concept;
-    class implementation_plan_9_ph_t_hi_n_m_i_endpoint_pay_fd332460 concept;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>Sửa Đổi So Với Bản Gốc (đọc trước)</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Sửa Đổi So Với Bản Gốc (đọc trước).</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>1. BUG-01 hạ từ P0/CRITICAL xuống P3 — đã verify bằng `mvn dependency:tree`</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 1. BUG-01 hạ từ P0/CRITICAL xuống P3 — đã verify bằng `mvn dependency:tree`.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>2. BUG-07 sai hoàn toàn — `ci.yml` đã tồn tại</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 2. BUG-07 sai hoàn toàn — `ci.yml` đã tồn tại.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>3. BUG-10 &amp; BUG-16 (authSlice.js) — code chết (dead code), chưa từng bị gọi</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 3. BUG-10 &amp; BUG-16 (authSlice.js) — code chết (dead code), chưa từng bị gọi.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>4. BUG-14 (bcrypt cost 12) — khuyến nghị gốc đi ngược ADR-003 của chính dự án</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 4. BUG-14 (bcrypt cost 12) — khuyến nghị gốc đi ngược ADR-003 của chính dự án.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>5. BUG-08 (rate limit in-memory) — hạ tầng Redis chưa thực sự tồn tại trong backend</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 5. BUG-08 (rate limit in-memory) — hạ tầng Redis chưa thực sự tồn tại trong backend.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>6. BUG-12 mở rộng — JWT expiration bị hardcode, không đọc từ env dù có tên biến</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 6. BUG-12 mở rộng — JWT expiration bị hardcode, không đọc từ env dù có tên biến.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>7. BUG-09 (SMTP thiếu ở prod) — đúng, nhưng cần làm rõ 2 cơ chế `.env` khác nhau</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 7. BUG-09 (SMTP thiếu ở prod) — đúng, nhưng cần làm rõ 2 cơ chế `.env` khác nhau.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>8. Lỗi đánh số nội bộ trong bản gốc</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 8. Lỗi đánh số nội bộ trong bản gốc.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>9. Phát hiện mới: endpoint &amp; payload chính xác cho fix BUG-02</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 9. Phát hiện mới: endpoint &amp; payload chính xác cho fix BUG-02.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>10. Phát hiện mới: `updateProfileThunk`/BUG-10 nếu xoá `authService.updateProfile` sẽ crash code chết</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 10. Phát hiện mới: `updateProfileThunk`/BUG-10 nếu xoá `authService.updateProfile` sẽ crash code chết.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>implementation_plan.md</code></td><td>11 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x10. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 8. 🔍 Báo Cáo Audit & Kế Hoạch Tối Ưu — JLPT E-Learning Platform (v2 — đã kiểm chứng) ====== -->
-<h2 id="b-o-c-o-audit-k-ho-ch-t-i-u-jlpt-e-learning-plat">8. 🔍 Báo Cáo Audit &amp; Kế Hoạch Tối Ưu — JLPT E-Learning Platform (v2 — đã kiểm chứng)</h2>
-<p>🔍 Báo Cáo Audit &amp; Kế Hoạch Tối Ưu — JLPT E-Learning Platform (v2 — đã kiểm chứng) groups implementation around implementation, planmd, khi, verification, mostly in implementation_plan.md. This section covers 9 nodes and 8 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: 🔍 Báo Cáo Audit &amp; Kế Hoạch Tối Ưu — JLPT E-Learning Platform (v2 — đã kiểm chứng) (9 nodes, 8 edges)
-    implementation_plan_b_o_c_o_audit_k_ho_ch_t_i_u_f12527aa("🔍 Báo Cáo Audit &amp; Kế Hoạch Tối Ưu — JLP...<br/><small>implementation_plan.md</small>")
-    implementation_plan_verification_plan_s_a_l_i_c_9732c943("Verification Plan (đã sửa lại các bước...<br/><small>implementation_plan.md</small>")
-    implementation_plan_d0d4ccd1("implementation_plan.md")
-    implementation_plan_s_c_production_sau_khi_deplo_e358ec50("🚑 Sự cố Production sau khi deploy (2026...<br/><small>implementation_plan.md</small>")
-    implementation_plan_t_m_t_t_priority_c_p_nh_t_b801fe73("Tóm tắt Priority (đã cập nhật)<br/><small>implementation_plan.md</small>")
-    implementation_plan_user_review_required_4f67c287("🚨 User Review Required<br/><small>implementation_plan.md</small>")
-    implementation_plan_automated_tests_73e6bd96("Automated Tests<br/><small>implementation_plan.md</small>")
-    implementation_plan_manual_verification_5c8fb563("Manual Verification<br/><small>implementation_plan.md</small>")
-    implementation_plan_vi_c_c_n_quy_t_nh_tr_c_khi_b_d8b0d64a("Việc cần quyết định trước khi bắt tay code<br/><small>implementation_plan.md</small>")
-    implementation_plan_d0d4ccd1 -->|contains| implementation_plan_b_o_c_o_audit_k_ho_ch_t_i_u_f12527aa
-    implementation_plan_b_o_c_o_audit_k_ho_ch_t_i_u_f12527aa -->|contains| implementation_plan_s_c_production_sau_khi_deplo_e358ec50
-    implementation_plan_b_o_c_o_audit_k_ho_ch_t_i_u_f12527aa -->|contains| implementation_plan_t_m_t_t_priority_c_p_nh_t_b801fe73
-    implementation_plan_b_o_c_o_audit_k_ho_ch_t_i_u_f12527aa -->|contains| implementation_plan_user_review_required_4f67c287
-    implementation_plan_b_o_c_o_audit_k_ho_ch_t_i_u_f12527aa -->|contains| implementation_plan_verification_plan_s_a_l_i_c_9732c943
-    implementation_plan_b_o_c_o_audit_k_ho_ch_t_i_u_f12527aa -->|contains| implementation_plan_vi_c_c_n_quy_t_nh_tr_c_khi_b_d8b0d64a
-    implementation_plan_verification_plan_s_a_l_i_c_9732c943 -->|contains| implementation_plan_automated_tests_73e6bd96
-    implementation_plan_verification_plan_s_a_l_i_c_9732c943 -->|contains| implementation_plan_manual_verification_5c8fb563
-    class implementation_plan_b_o_c_o_audit_k_ho_ch_t_i_u_f12527aa concept;
-    class implementation_plan_verification_plan_s_a_l_i_c_9732c943 concept;
-    class implementation_plan_d0d4ccd1 concept;
-    class implementation_plan_s_c_production_sau_khi_deplo_e358ec50 concept;
-    class implementation_plan_t_m_t_t_priority_c_p_nh_t_b801fe73 concept;
-    class implementation_plan_user_review_required_4f67c287 concept;
-    class implementation_plan_automated_tests_73e6bd96 concept;
-    class implementation_plan_manual_verification_5c8fb563 concept;
-    class implementation_plan_vi_c_c_n_quy_t_nh_tr_c_khi_b_d8b0d64a concept;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>implementation_plan.md</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing implementation_plan.md.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>🔍 Báo Cáo Audit &amp; Kế Hoạch Tối Ưu — JLPT E-Learning Platform (v2 — đã kiểm chứng)</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 🔍 Báo Cáo Audit &amp; Kế Hoạch Tối Ưu — JLPT E-Learning Platform (v2 — đã kiểm chứng).</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>🚑 Sự cố Production sau khi deploy (2026-07-11) — đã xử lý xong</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 🚑 Sự cố Production sau khi deploy (2026-07-11) — đã xử lý xong.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>🚨 User Review Required</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 🚨 User Review Required.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>Verification Plan (đã sửa lại các bước sai)</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Verification Plan (đã sửa lại các bước sai).</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>Automated Tests</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Automated Tests.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>Manual Verification</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Manual Verification.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>Tóm tắt Priority (đã cập nhật)</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Tóm tắt Priority (đã cập nhật).</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>Việc cần quyết định trước khi bắt tay code</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Việc cần quyết định trước khi bắt tay code.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>implementation_plan.md</code></td><td>9 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x8. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 9. 2. ARCHITECTURE PRINCIPLES ====== -->
-<h2 id="2-architecture-principles">9. 2. ARCHITECTURE PRINCIPLES</h2>
+<!-- ====== 6. 2. ARCHITECTURE PRINCIPLES ====== -->
+<h2 id="2-architecture-principles">6. 2. ARCHITECTURE PRINCIPLES</h2>
 <p>2. ARCHITECTURE PRINCIPLES groups implementation around agentsmd, frontend, bắt, buộc, mostly in AGENTS.md. This section covers 8 nodes and 7 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1694,119 +1101,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 10. 7. JLPT DOMAIN RULES ====== -->
-<h2 id="7-jlpt-domain-rules">10. 7. JLPT DOMAIN RULES</h2>
-<p>7. JLPT DOMAIN RULES groups implementation around agentsmd, luật, jlpt, domain, mostly in AGENTS.md. This section covers 6 nodes and 5 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: 7. JLPT DOMAIN RULES (6 nodes, 5 edges)
-    agents_7_jlpt_domain_rules_76421765("7. JLPT DOMAIN RULES<br/><small>AGENTS.md</small>")
-    agents_7_1_lu_t_i_m_s_b_i_thi_6428bb90("7.1. Luật Điểm số &amp; Bài thi<br/><small>AGENTS.md</small>")
-    agents_7_2_lu_t_l_tr_nh_h_c_e05ecbe5("7.2. Luật Lộ trình học<br/><small>AGENTS.md</small>")
-    agents_7_3_lu_t_subscription_ph_n_quy_n_97887242("7.3. Luật Subscription &amp; Phân quyền<br/><small>AGENTS.md</small>")
-    agents_7_4_lu_t_soft_delete_33b9b2bd("7.4. Luật Soft Delete<br/><small>AGENTS.md</small>")
-    agents_7_5_lu_t_ai_features_ocr_speech_1449e6c0("7.5. Luật AI Features (OCR &amp; Speech)<br/><small>AGENTS.md</small>")
-    agents_7_jlpt_domain_rules_76421765 -->|contains| agents_7_1_lu_t_i_m_s_b_i_thi_6428bb90
-    agents_7_jlpt_domain_rules_76421765 -->|contains| agents_7_2_lu_t_l_tr_nh_h_c_e05ecbe5
-    agents_7_jlpt_domain_rules_76421765 -->|contains| agents_7_3_lu_t_subscription_ph_n_quy_n_97887242
-    agents_7_jlpt_domain_rules_76421765 -->|contains| agents_7_4_lu_t_soft_delete_33b9b2bd
-    agents_7_jlpt_domain_rules_76421765 -->|contains| agents_7_5_lu_t_ai_features_ocr_speech_1449e6c0
-    class agents_7_jlpt_domain_rules_76421765 concept;
-    class agents_7_1_lu_t_i_m_s_b_i_thi_6428bb90 concept;
-    class agents_7_2_lu_t_l_tr_nh_h_c_e05ecbe5 concept;
-    class agents_7_3_lu_t_subscription_ph_n_quy_n_97887242 concept;
-    class agents_7_4_lu_t_soft_delete_33b9b2bd concept;
-    class agents_7_5_lu_t_ai_features_ocr_speech_1449e6c0 concept;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>7. JLPT DOMAIN RULES</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 7. JLPT DOMAIN RULES.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>7.1. Luật Điểm số &amp; Bài thi</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 7.1. Luật Điểm số &amp; Bài thi.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>7.2. Luật Lộ trình học</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 7.2. Luật Lộ trình học.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>7.3. Luật Subscription &amp; Phân quyền</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 7.3. Luật Subscription &amp; Phân quyền.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>7.4. Luật Soft Delete</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 7.4. Luật Soft Delete.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>7.5. Luật AI Features (OCR &amp; Speech)</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 7.5. Luật AI Features (OCR &amp; Speech).</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>AGENTS.md</code></td><td>6 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x5. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 11. 8. GOLDEN PATTERNS ====== -->
-<h2 id="8-golden-patterns">11. 8. GOLDEN PATTERNS</h2>
+<!-- ====== 7. 8. GOLDEN PATTERNS ====== -->
+<h2 id="8-golden-patterns">7. 8. GOLDEN PATTERNS</h2>
 <p>8. GOLDEN PATTERNS groups implementation around agentsmd, pattern, golden, patterns, mostly in AGENTS.md. This section covers 6 nodes and 5 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -1916,8 +1212,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 12. 10. DEFINITION OF DONE ====== -->
-<h2 id="10-definition-of-done">12. 10. DEFINITION OF DONE</h2>
+<!-- ====== 8. 10. DEFINITION OF DONE ====== -->
+<h2 id="10-definition-of-done">8. 10. DEFINITION OF DONE</h2>
 <p>10. DEFINITION OF DONE groups implementation around agentsmd, definition, done, code, mostly in AGENTS.md. This section covers 5 nodes and 4 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2016,8 +1312,186 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 13. authService ====== -->
-<h2 id="authservice">13. authService</h2>
+<!-- ====== 9. Backend ====== -->
+<h2 id="backend">9. Backend</h2>
+<p>Backend groups implementation around agentsmd, naming, conventions, backend, mostly in AGENTS.md. This section covers 4 nodes and 3 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Backend (4 nodes, 3 edges)
+    agents_3_naming_conventions_f4c866c8("3. NAMING CONVENTIONS<br/><small>AGENTS.md</small>")
+    agents_3_1_java_backend_465c358b("3.1. Java Backend<br/><small>AGENTS.md</small>")
+    agents_3_2_react_frontend_fcaf6a3a("3.2. React Frontend<br/><small>AGENTS.md</small>")
+    agents_3_3_api_routes_a01bbd0b("3.3. API Routes<br/><small>AGENTS.md</small>")
+    agents_3_naming_conventions_f4c866c8 -->|contains| agents_3_1_java_backend_465c358b
+    agents_3_naming_conventions_f4c866c8 -->|contains| agents_3_2_react_frontend_fcaf6a3a
+    agents_3_naming_conventions_f4c866c8 -->|contains| agents_3_3_api_routes_a01bbd0b
+    class agents_3_naming_conventions_f4c866c8 concept;
+    class agents_3_1_java_backend_465c358b concept;
+    class agents_3_2_react_frontend_fcaf6a3a concept;
+    class agents_3_3_api_routes_a01bbd0b concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>3. NAMING CONVENTIONS</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. NAMING CONVENTIONS.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>3.1. Java Backend</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.1. Java Backend.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>3.2. React Frontend</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.2. React Frontend.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>3.3. API Routes</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.3. API Routes.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>AGENTS.md</code></td><td>4 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 10. Sửa Đổi So Với Bản Gốc (đọc trước) ====== -->
+<h2 id="s-a-i-so-v-i-b-n-g-c-c-tr-c">10. Sửa Đổi So Với Bản Gốc (đọc trước)</h2>
+<p>Sửa Đổi So Với Bản Gốc (đọc trước) groups implementation around agentsmd, lỗi, toàn, thao, mostly in AGENTS.md. This section covers 4 nodes and 3 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Sửa Đổi So Với Bản Gốc (đọc trước) (4 nodes, 3 edges)
+    agents_9_x_l_l_i_an_to_n_thao_t_c_f9cb2ed4("9. XỬ LÝ LỖI &amp; AN TOÀN THAO TÁC<br/><small>AGENTS.md</small>")
+    agents_9_1_when_to_ask_d76ef970("9.1. When to Ask<br/><small>AGENTS.md</small>")
+    agents_9_2_high_risk_operations_e5417496("9.2. High-Risk Operations<br/><small>AGENTS.md</small>")
+    agents_9_3_refactor_safeguards_34111ba4("9.3. Refactor Safeguards<br/><small>AGENTS.md</small>")
+    agents_9_x_l_l_i_an_to_n_thao_t_c_f9cb2ed4 -->|contains| agents_9_1_when_to_ask_d76ef970
+    agents_9_x_l_l_i_an_to_n_thao_t_c_f9cb2ed4 -->|contains| agents_9_2_high_risk_operations_e5417496
+    agents_9_x_l_l_i_an_to_n_thao_t_c_f9cb2ed4 -->|contains| agents_9_3_refactor_safeguards_34111ba4
+    class agents_9_x_l_l_i_an_to_n_thao_t_c_f9cb2ed4 concept;
+    class agents_9_1_when_to_ask_d76ef970 concept;
+    class agents_9_2_high_risk_operations_e5417496 concept;
+    class agents_9_3_refactor_safeguards_34111ba4 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>9. XỬ LÝ LỖI &amp; AN TOÀN THAO TÁC</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 9. XỬ LÝ LỖI &amp; AN TOÀN THAO TÁC.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>9.1. When to Ask</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 9.1. When to Ask.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>9.2. High-Risk Operations</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 9.2. High-Risk Operations.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>9.3. Refactor Safeguards</code><br><small style="color:var(--muted)">AGENTS.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 9.3. Refactor Safeguards.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>AGENTS.md</code></td><td>4 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 11. authService ====== -->
+<h2 id="authservice">11. authService</h2>
 <p>authService groups implementation around apps, frontend, authslice, store, mostly in store/slices/authSlice.js, src/api/authService.js. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2084,8 +1558,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 14. SQL Server (Primary DB) ====== -->
-<h2 id="sql-server-primary-db">14. SQL Server (Primary DB)</h2>
+<!-- ====== 12. SQL Server (Primary DB) ====== -->
+<h2 id="sql-server-primary-db">12. SQL Server (Primary DB)</h2>
 <p>SQL Server (Primary DB) groups implementation around docker, composestagingyml, sql, server, mostly in docker-compose.staging.yml, docker-compose.yml. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2151,8 +1625,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 15. docker-compose.prod.yml ====== -->
-<h2 id="docker-compose-prod-yml">15. docker-compose.prod.yml</h2>
+<!-- ====== 13. docker-compose.prod.yml ====== -->
+<h2 id="docker-compose-prod-yml">13. docker-compose.prod.yml</h2>
 <p>docker-compose.prod.yml groups implementation around docker, composeyml, composeprodyml, mostly in docker-compose.yml, docker-compose.prod.yml. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2219,62 +1693,6 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 16. Other ====== -->
-<h2 id="other">16. Other</h2>
-<p>Other groups implementation around implementation, plan, planmd, mostly in implementation_plan.md. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Other (1 nodes, 0 edges)
-    implementation_plan_md_37542bf4("Implementation Plan<br/><small>implementation_plan.md</small>")
-    class implementation_plan_md_37542bf4 concept;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>Implementation Plan</code><br><small style="color:var(--muted)">implementation_plan.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Implementation Plan.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>implementation_plan.md</code></td><td>1 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: No high-confidence call edges detected. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
 <h2 id="hyperedges">Group Relationships (Hyperedges)</h2>
 <div class="grid">
 
@@ -2295,17 +1713,17 @@ flowchart LR
   <div class="card">
     <h4>Graph</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>Nodes</td><td>168</td></tr>
-      <tr><td>Edges</td><td>159</td></tr>
+      <tr><td>Nodes</td><td>114</td></tr>
+      <tr><td>Edges</td><td>107</td></tr>
       <tr><td>Hyperedges</td><td>1</td></tr>
-      <tr><td>Communities</td><td>18</td></tr>
-      <tr><td>Documented Sections</td><td>15</td></tr>
+      <tr><td>Communities</td><td>16</td></tr>
+      <tr><td>Documented Sections</td><td>12</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Edge Confidence</h4>
     <table style="width:100%;font-size:0.85rem;">
-      <tr><td>EXTRACTED</td><td>158</td></tr>
+      <tr><td>EXTRACTED</td><td>106</td></tr>
       <tr><td>INFERRED</td><td>1</td></tr>
       <tr><td>AMBIGUOUS</td><td>0</td></tr>
     </table>
@@ -2314,7 +1732,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Japanese-Skill-Practice-Platform — Architecture Documentation</p>
-  <p>Generated: 2026-07-14 06:52 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-07-16 17:33 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

@@ -1,0 +1,37 @@
+{
+  "package.json": {
+    "mtime": 1783914711.636825,
+    "ast_hash": "30640efc2e10a0e4049632c77f47dac1",
+    "semantic_hash": "30640efc2e10a0e4049632c77f47dac1"
+  },
+  "AGENTS.md": {
+    "mtime": 1782199306.1674545,
+    "ast_hash": "7a8db64e9b5538cfcbcca000a4124478",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1782456736.9173958,
+    "ast_hash": "2d84df5545d39241a2d55401bde9c218",
+    "semantic_hash": ""
+  },
+  "docker-compose.prod.yml": {
+    "mtime": 1783755130.8941205,
+    "ast_hash": "eee885ad58128466b6b88a8e1b64b5df",
+    "semantic_hash": ""
+  },
+  "docker-compose.staging.yml": {
+    "mtime": 1783915402.4697218,
+    "ast_hash": "7381c1a9c3db0e9dd0f0e4aca98d8f94",
+    "semantic_hash": ""
+  },
+  "docker-compose.yml": {
+    "mtime": 1783915396.6718242,
+    "ast_hash": "3bfd8f78a53a68fbe461a6b171ba5c63",
+    "semantic_hash": ""
+  },
+  "implementation_plan.md": {
+    "mtime": 1784011193.432538,
+    "ast_hash": "1dc2c7701f7ca3d0b4f0ed1e1f0c6ef5",
+    "semantic_hash": ""
+  }
+}

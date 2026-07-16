@@ -4,8 +4,7 @@
 -- thất bại âm thầm dù test kết nối vẫn pass.
 
 UPDATE system_settings
-SET setting_value = N'jlptelearningplatform@gmail.com'
+SET setting_value = 'jlptelearningplatform@gmail.com'
 WHERE setting_group IN ('smtp', 'email_register', 'email_otp', 'email_reset')
   AND setting_key = 'from_email'
-  AND setting_value = N'noreply@jlpt.com';
-GO
+  AND setting_value = 'noreply@jlpt.com';

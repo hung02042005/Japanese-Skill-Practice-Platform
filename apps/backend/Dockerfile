@@ -14,4 +14,5 @@ COPY --from=build /app/target/jlpt-backend-*.jar app.jar
 EXPOSE 8080
 RUN mkdir -p /app/uploads && addgroup -S spring && adduser -S spring -G spring && chown -R spring:spring /app
 USER spring
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENV JAVA_OPTS="-Xmx256m -Xms128m"
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

@@ -2,22 +2,36 @@ version: '3.8'
 
 services:
   db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    # 8.4 (LTS) — bắt buộc >= 8.0.16 vì schema dùng CHECK constraint rất nhiều;
+    # MySQL cũ hơn parse CHECK rồi bỏ qua im lặng, không thực thi.
+    image: mysql:8.4
     container_name: jlpt-db
+    # utf8mb4: bắt buộc cho kanji/kana + emoji — không dựa vào default của image.
+    # default-time-zone=+00:00: giữ CURRENT_TIMESTAMP = UTC, đúng ngữ nghĩa
+    # SYSUTCDATETIME() của bản SQL Server cũ (xem MYSQL_MIGRATION_PLAN.md QĐ-2).
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+00:00
     environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in .env}"
-      MSSQL_PID: "Developer"
+      TZ: "UTC"
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}"
+      # MYSQL_DATABASE tự tạo database lúc container init -> không cần bước
+      # "chờ rồi CREATE DATABASE" thủ công như bản SQL Server (xem cd.yml).
+      MYSQL_DATABASE: "JLPT_LearningDB"
+      MYSQL_USER: "${MYSQL_USER:-jlpt}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}"
     ports:
-      - "14330:1433"
+      - "13306:3306"
     volumes:
-      - sqlserver_data:/var/opt/mssql
+      - mysql_data:/var/lib/mysql
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\" || exit 1"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
 
   redis:
     image: redis:alpine
@@ -40,6 +54,14 @@ services:
       - path: ./apps/backend/.env
         required: false
     environment:
+      # DATABASE_* khai báo ở đây (environment thắng env_file) để "docker compose
+      # up" luôn dùng đúng service "db" bên trên — chính là DB mà depends_on đang
+      # chờ healthy. Trước đây khối này không có, nên nếu apps/backend/.env có
+      # DATABASE_URL thì giá trị đó lặng lẽ thắng và backend local đi thẳng tới
+      # DB ngoài, còn container "db" chạy không ai dùng.
+      - DATABASE_URL=jdbc:mysql://db:3306/JLPT_LearningDB?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+      - DATABASE_USERNAME=${MYSQL_USER:-jlpt}
+      - DATABASE_PASSWORD=${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
       - UPLOAD_DIR=/app/uploads
     volumes:
       - jlpt-uploads:/app/uploads
@@ -50,8 +72,11 @@ services:
     depends_on:
       redis:
         condition: service_started
+      # service_healthy (không phải service_started): lần đầu chạy, MySQL cần
+      # ~20-30s để init database trước khi nhận connection. Nếu backend khởi
+      # động sớm hơn, Flyway sẽ fail ngay lúc connect.
       db:
-        condition: service_started
+        condition: service_healthy
 
   frontend:
     build:
@@ -73,5 +98,5 @@ services:
 volumes:
   jlpt-uploads:
     name: jlpt-uploads
-  sqlserver_data:
-    name: sqlserver_data
+  mysql_data:
+    name: mysql_data

@@ -1,19 +1,15 @@
 -- V4: Thêm trạng thái 'assigned' cho ticket (Staff Manager duyệt + gán cho Staff)
 -- Luồng: open -> (Staff Manager gán) assigned -> (Staff hỗ trợ) in_progress -> resolved/closed
 
--- CHECK constraint cũ trên cột status là inline (tên do SQL Server tự sinh) -> tìm & drop trước
-DECLARE @cn SYSNAME;
-SELECT @cn = cc.name
-FROM sys.check_constraints cc
-JOIN sys.columns c
-    ON c.object_id = cc.parent_object_id AND c.column_id = cc.parent_column_id
-WHERE cc.parent_object_id = OBJECT_ID('dbo.tickets') AND c.name = 'status';
+-- Bản SQL Server phải dò tên CHECK constraint tự sinh qua sys.check_constraints
+-- rồi DROP bằng dynamic SQL (EXEC). MySQL không có sys.check_constraints, và
+-- dynamic SQL thì cần stored procedure. Không cần cả hai: V1 đã đặt tên tường
+-- minh CK_tickets_status cho constraint này, nên drop thẳng theo tên.
+-- Yêu cầu MySQL >= 8.0.16 (có DROP CHECK, và CHECK được thực thi thật).
 
-IF @cn IS NOT NULL
-    EXEC('ALTER TABLE dbo.tickets DROP CONSTRAINT ' + @cn);
-GO
+ALTER TABLE tickets
+    DROP CHECK CK_tickets_status;
 
-ALTER TABLE dbo.tickets
+ALTER TABLE tickets
     ADD CONSTRAINT CK_tickets_status
         CHECK (status IN ('open','assigned','in_progress','resolved','closed'));
-GO

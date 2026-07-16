@@ -24,8 +24,8 @@ Internet
                               │
                     ┌─────────┼──────────┐
                     ▼         ▼          ▼
-              SQL Server   /uploads   Gmail SMTP
-              Port 1433   (File store)  Port 587
+              MySQL 8      /uploads   Gmail SMTP
+              Port 3306   (File store)  Port 587
 ```
 
 ### 1.2 Công Nghệ & Phiên Bản
@@ -36,8 +36,8 @@ Internet
 | Build tool FE | Vite | 5.4.0 | Output: `dist/` |
 | Backend | Spring Boot | 3.3.3 | Java 21, Maven |
 | Runtime | JRE | 21 (Temurin) | Eclipse Temurin |
-| Database | SQL Server | 2022 Express | Port 1433 |
-| Migration | Flyway | Core + SQL Server | Auto-run khi boot |
+| Database | MySQL 8 | LTS | Port 3306 |
+| Migration | Flyway | Core + MySQL | Auto-run khi boot |
 | Reverse Proxy | Nginx | 1.24+ | SSL termination |
 | SSL | Let's Encrypt | Certbot | Auto-renew 90 ngày |
 | Auth | JWT + Google OAuth | JJWT 0.12.6 | Stateless |
@@ -52,8 +52,8 @@ Internet
 
 | Thông số | Tối thiểu | Khuyến nghị | Lý do |
 |---------|-----------|-------------|-------|
-| CPU | 2 vCPU | 4 vCPU | Spring Boot JVM + SQL Server |
-| RAM | 4 GB | 8 GB | JVM heap 1GB + SQL Server 2GB |
+| CPU | 2 vCPU | 4 vCPU | Spring Boot JVM + MySQL 8 |
+| RAM | 4 GB | 8 GB | JVM heap 1GB + MySQL 8 2GB |
 | Disk | 20 GB SSD | 50 GB SSD | DB + uploads + logs |
 | OS | Ubuntu 22.04 LTS | Ubuntu 22.04 LTS | LTS support đến 2027 |
 | Bandwidth | 100 Mbps | 1 Gbps | Audio/image transfer |
@@ -63,7 +63,7 @@ Internet
 | Service | RAM Heap | CPU |
 |---------|----------|-----|
 | JVM (Spring Boot) | `-Xms512m -Xmx1g` | ~1 vCPU |
-| SQL Server Express | ~1.5 GB | ~1 vCPU |
+| MySQL 8 | ~1.5 GB | ~1 vCPU |
 | Nginx | ~50 MB | Minimal |
 | OS overhead | ~512 MB | ~0.5 vCPU |
 
@@ -75,7 +75,7 @@ Internet
 | 80 | HTTP | ✅ | Redirect sang 443 |
 | 443 | HTTPS | ✅ | Nginx + SSL |
 | 8080 | Backend | ❌ | Chỉ localhost (Nginx proxy) |
-| 1433 | SQL Server | ❌ | Chỉ localhost |
+| 3306 | MySQL 8 | ❌ | Chỉ localhost |
 | 587 | SMTP | ❌ | Outbound only |
 
 ---
@@ -88,7 +88,7 @@ Internet
 |---------|---------|
 | Backend URL | `http://localhost:8080` |
 | Frontend URL | `http://localhost:3000` |
-| Database | SQL Server Local `JLPT_LearningDB` |
+| Database | MySQL 8 Local `JLPT_LearningDB` |
 | JWT Expiry | Access: 15 phút / Refresh: 7 ngày |
 | Log Level | `DEBUG` |
 | Flyway | Auto-migrate ON |
@@ -100,7 +100,7 @@ Internet
 |---------|---------|
 | Backend URL | `https://api.yourdomain.com` (internal: `localhost:8080`) |
 | Frontend URL | `https://yourdomain.com` |
-| Database | SQL Server Production (user riêng, không dùng `sa`) |
+| Database | MySQL 8 Production (user riêng, không dùng `root`) |
 | JWT Expiry | Access: 15 phút / Refresh: 7 ngày |
 | Log Level | `WARN` |
 | Flyway | Auto-migrate ON |
@@ -114,8 +114,8 @@ Internet
 ### 4.1 Backend (`apps/backend/.env`)
 
 ```env
-# Database — SQL Server
-DATABASE_URL=jdbc:sqlserver://localhost:1433;databaseName=JLPT_LearningDB;encrypt=true;trustServerCertificate=true
+# Database — MySQL 8
+DATABASE_URL=jdbc:mysql://localhost:13306/JLPT_LearningDB?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
 DATABASE_USERNAME=jlpt_user
 DATABASE_PASSWORD=<strong-password>
 
@@ -173,15 +173,15 @@ VITE_GOOGLE_CLIENT_ID=<xxx>.apps.googleusercontent.com
 
 ## 6. Đặc Tả Database
 
-### 6.1 SQL Server
+### 6.1 MySQL 8
 
 | Thông số | Dev | Production |
 |---------|-----|-----------|
-| Phiên bản | 2019+ | 2022 Express |
+| Phiên bản | 8.0+ | 8.4 LTS |
 | Database name | `JLPT_LearningDB` | `JLPT_LearningDB` |
-| User | `sa` | `jlpt_user` (riêng, không phải sa) |
-| Port | 1433 | 1433 (không mở public) |
-| Encrypt | `trustServerCertificate=true` | `encrypt=true` + cert hợp lệ |
+| User | `root` | `jlpt_user` (riêng, không phải root) |
+| Port | 13306 | 13306 (không mở public) |
+| SSL | `useSSL=false` | `useSSL=true` + cert hợp lệ |
 
 ### 6.2 Migration (Flyway)
 
@@ -195,8 +195,8 @@ VITE_GOOGLE_CLIENT_ID=<xxx>.apps.googleusercontent.com
 
 | Loại | Tần suất | Lưu giữ | Công cụ |
 |------|----------|---------|---------|
-| Full backup | Hàng ngày (02:00) | 30 ngày | SQL Server Backup + cron |
-| Transaction log | 6 giờ/lần | 7 ngày | SQL Server |
+| Full backup | Hàng ngày (02:00) | 30 ngày | MySQL Dump + cron |
+| Transaction log | 6 giờ/lần | 7 ngày | MySQL |
 | Offsite | Hàng tuần | 3 tháng | rsync → S3/GCS |
 
 ---
@@ -261,7 +261,7 @@ VITE_GOOGLE_CLIENT_ID=<xxx>.apps.googleusercontent.com
 
 | Ràng buộc | Giá trị | Ghi chú |
 |-----------|---------|---------|
-| SQL Server Express RAM | 1.4 GB | Nâng cấp lên Standard nếu vượt |
+| MySQL 8 RAM | 1.4 GB | Nâng cấp cấu hình nếu vượt |
 | Upload file size | 10 MB | Cấu hình trong Spring Boot + Nginx |
 | JWT không revoke được | — | Đây là thiết kế (stateless) |
 | Flyway không rollback tự động | — | Cần viết migration ngược nếu cần |

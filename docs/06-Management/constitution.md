@@ -12,7 +12,7 @@
 |-------|-----------|---------|
 | Backend | Java 21 + Spring Boot 3.x | Maven |
 | Frontend | React 18 + Tailwind CSS | npm |
-| Database | SQL Server | KHÔNG dùng NoSQL |
+| Database | MySQL 8.0.16+ | KHÔNG dùng NoSQL. utf8mb4 bắt buộc (kanji/kana). Tối thiểu 8.0.16 vì schema dùng CHECK constraint |
 | ORM | Spring Data JPA + Hibernate | |
 | Migration | Flyway / Liquibase | Mọi thay đổi schema BẮT BUỘC có migration |
 | Auth | JWT + bcrypt (cost >= 12) | |
