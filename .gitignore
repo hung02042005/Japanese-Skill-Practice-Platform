@@ -19,3 +19,8 @@ certbot-www/
 
 # Logs
 *.log
+backend_logs.txt
+*_logs.txt
+
+# Generated output (graphify knowledge graph)
+graphify-out/
