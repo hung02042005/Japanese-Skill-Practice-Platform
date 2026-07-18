@@ -20,7 +20,6 @@ function Register() {
   const [form, setForm]               = useState({ fullName: '', email: '', password: '', confirmPassword: '' });
   const [showPwd, setShowPwd]         = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [isDone, setIsDone]           = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
 
   // Tránh hiện lại lỗi còn sót từ trang auth khác (login/forgot-password...)
