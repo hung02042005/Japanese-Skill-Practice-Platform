@@ -576,33 +576,41 @@ Tái dùng `EyeIcon` và `PasswordStrengthBar` từ `components/auth/`.
 
 ---
 
-### 9.4 `/verify-email` — Xác nhận email
+### 9.4 `/verify-email` — Xác nhận email bằng mã OTP
 
-**Prefix:** `vem-` | **activeTab:** `''` | **Không cần auth**
+**Prefix:** `ve-` | **activeTab:** `''` | **Không cần auth**
 
 **Layout:** Trang trung tâm, single card 480px.
 
 **Logic:**
 
 ```js
-const [token] = useSearchParams();   // ?token=xxx
-const [state, setState] = useState('verifying'); // 'verifying'|'success'|'error'|'expired'
+const [searchParams] = useSearchParams();
+const [email, setEmail] = useState(searchParams.get('email') ?? ''); // prefill, vẫn sửa được
+const [otpCode, setOtpCode] = useState('');
+const [state, setState] = useState('idle'); // 'idle' | 'verifying' | 'success' | 'error'
 
-useEffect(() => {
-  verifyEmailToken(token).then(() => setState('success'))
-    .catch((err) => {
-      if (err.code === 'TOKEN_EXPIRED') setState('expired');
-      else setState('error');
-    });
-}, [token]);
+// Không tự động verify khi vào trang — chỉ chạy khi user bấm "Xác minh"
+async function handleVerify(e) {
+  e.preventDefault();
+  setState('verifying');
+  try {
+    await dispatch(verifyEmailThunk({ email, otpCode })).unwrap();
+    setState('success');
+  } catch (err) {
+    setState('error'); // hiển thị message lỗi backend trả về (INVALID_OTP | OTP_EXPIRED | TOO_MANY_ATTEMPTS)
+  }
+}
 ```
 
-**4 states:**
+Trang không còn đọc `?token=` từ URL và không tự động xác minh khi mount. Chỉ đọc `?email=` để prefill ô email (điền sẵn, người dùng vẫn sửa được), người dùng tự nhập mã OTP 6 số nhận qua email rồi bấm "Xác minh".
 
-- `verifying`: spinner + "Đang xác nhận tài khoản..."
-- `success`: mascot `'celebrate'` + "Tài khoản đã xác nhận!" + CTA "Đăng nhập"
-- `expired`: mascot `'thinking'` + "Link đã hết hạn" + button "Gửi lại email"
-- `error`: mascot `'wrong'` + "Link không hợp lệ" + link /register
+**Các trạng thái chính:**
+
+- `idle`/nhập liệu (mặc định): form email + mã OTP 6 số, nút "Xác minh", nút "Gửi lại mã xác minh" (cooldown 60 giây sau mỗi lần gửi)
+- `verifying`: nút submit hiện spinner + "Đang xác minh..."
+- `success`: mascot vui + "Xác minh thành công!" + CTA "ĐĂNG NHẬP NGAY"
+- `error`: banner lỗi ngay trong form (không rời khỏi trang) — message tương ứng `INVALID_OTP` (mã sai), `OTP_EXPIRED` (mã hết hạn hoặc đã dùng), `TOO_MANY_ATTEMPTS` (nhập sai quá 5 lần, HTTP 429 — bắt buộc gửi lại mã mới); form vẫn mở để thử lại hoặc gửi lại mã
 
 ---
 

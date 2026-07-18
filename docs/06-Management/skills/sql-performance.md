@@ -1,6 +1,7 @@
-﻿# SQL Performance Guide — JLPT E-Learning (SQL Server)
+# SQL Performance Guide — JLPT E-Learning (MySQL 8)
 
-> **Mục đích**: Hướng dẫn tối ưu hiệu năng truy vấn SQL Server cho toàn bộ hệ thống JLPT.
+> **Mục đích**: Hướng dẫn tối ưu hiệu năng truy vấn MySQL cho toàn bộ hệ thống JLPT.
+> **Lưu ý**: Tài liệu này được viết ban đầu cho SQL Server và đang được chuyển đổi. Một số khái niệm (như Query Store) có thể áp dụng tương đương qua Performance Schema của MySQL.
 > Áp dụng cho mọi query trong JPA, JPQL, `@Query` native, và Flyway migration.
 > Liên quan: [`constraints/global.md`](../../01-SRS-Requirements/constraints/global.md) (GLOB-PERF, GLOB-DB) | [`database/init.sql`](../../../database/init.sql).
 

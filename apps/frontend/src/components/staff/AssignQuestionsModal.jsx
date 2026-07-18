@@ -47,7 +47,7 @@ export default function AssignQuestionsModal({ isOpen, mode, assessment, onClose
     try {
       const [detail, qPage] = await Promise.all([
         isExam ? getStaffExam(assessment.assessmentId) : getStaffQuiz(assessment.assessmentId),
-        getStaffQuestions({ status: 'published', jlptLevel: assessment.jlptLevel, size: 200 }),
+        getStaffQuestions({ status: 'published', jlptLevel: assessment.jlptLevel, size: 100 }),
       ]);
       setAvailable(qPage?.content ?? qPage?.items ?? []);
 

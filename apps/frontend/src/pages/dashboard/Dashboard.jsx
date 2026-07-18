@@ -30,10 +30,11 @@ function SkeletonBlock({ className }) {
 function Dashboard() {
   const dispatch  = useAppDispatch();
   const navigate  = useNavigate();
-  const { streak, weekDays, lessons, wordCount, daysThisMonth, status, selectedLevel } =
+  const { streak, weekDays, lessons, wordCount, daysThisMonth, status, error, selectedLevel } =
     useAppSelector((state) => state.student);
 
   const isLoading      = status === 'loading';
+  const isFailed        = status === 'failed';
   const filteredLessons = Array.isArray(lessons)
     ? lessons.filter((l) => l.jlptLevel === selectedLevel)
     : [];
@@ -47,6 +48,24 @@ function Dashboard() {
     <div className="dashboard-page">
       <TopNav activeTab="dashboard" />
 
+      {isFailed ? (
+        <div className="dashboard-body">
+          <EmptyState
+            title="Không tải được Dashboard"
+            subtitle={error || 'Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại.'}
+            mascotVariant="wrong"
+            mascotSize={120}
+          >
+            <button
+              type="button"
+              className="db-empty-cta"
+              onClick={() => dispatch(fetchDashboardThunk())}
+            >
+              Thử lại
+            </button>
+          </EmptyState>
+        </div>
+      ) : (
       <div className="dashboard-body">
         {/* ── LEFT ── */}
         <aside className="dashboard-left" aria-label="Thống kê streak">
@@ -130,6 +149,7 @@ function Dashboard() {
           </div>
         </aside>
       </div>
+      )}
     </div>
   );
 }

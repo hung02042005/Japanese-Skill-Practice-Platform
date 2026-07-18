@@ -33,7 +33,7 @@ Triển khai module xác thực (Authentication) cho Hệ thống Học Tiếng 
 ### 3.4. Services (Nơi chứa Business Logic)
 
 - **`AuthService`**:
-  - Đăng ký: Tạo `StudentUser` (`status='pending'`), hash mật khẩu (bcrypt cost >= 10), tạo email_verification token.
+  - Đăng ký: Tạo `StudentUser` (`status='pending'`), hash mật khẩu (bcrypt cost >= 10), tạo email_verification token dạng mã OTP 6 số (`SecureRandom`, hết hạn sau 10 phút).
   - Đăng nhập: Kiểm tra khóa tài khoản (`locked_until`), trạng thái `suspended`/`pending`, xác thực bcrypt. Xử lý reset số lần đăng nhập sai hoặc tăng bộ đếm/khóa tạm thời.
   - Đổi/Quên mật khẩu: Kiểm tra mật khẩu cũ, tạo password_reset token.
 - **`JwtService`**: Tạo/Parse Access Token (15 phút) và Refresh Token (7 ngày).

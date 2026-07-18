@@ -168,12 +168,13 @@ Phần này đặc tả chi tiết 20 Use Case dành cho học viên, sắp xế
 - **Luồng cơ bản:**
   1. Người dùng nhập: Họ tên, Email, Mật khẩu, Xác nhận mật khẩu.
   2. Hệ thống kiểm tra định dạng email và độ mạnh của mật khẩu.
-  3. Hệ thống gửi email xác minh tài khoản kèm liên kết kích hoạt.
-  4. Người dùng click liên kết kích hoạt tài khoản thành công.
+  3. Hệ thống gửi email chứa mã OTP gồm 6 chữ số để xác minh tài khoản (hết hạn sau 10 phút).
+  4. Người dùng nhập mã OTP vào trang xác minh, xác minh tài khoản thành công.
 - **Luồng thay thế:**
   - *Email đã được sử dụng:* Hệ thống báo lỗi và gợi ý chuyển sang màn hình Đăng nhập.
+  - *Mã OTP sai/hết hạn:* Hệ thống báo lỗi; cho phép yêu cầu gửi lại mã mới (tối đa 1 lần/60 giây). Nhập sai quá 5 lần liên tiếp → mã bị vô hiệu hoá, bắt buộc gửi lại mã mới.
 - **Hậu điều kiện:** Tài khoản mới được tạo ở trạng thái hoạt động.
-- **Bảng dữ liệu liên quan:** `student_users` (status='active'), `auth_tokens` (token_type='email_verification')
+- **Bảng dữ liệu liên quan:** `student_users` (status='active'), `auth_tokens` (token_type='email_verification', token_value = mã OTP 6 chữ số)
 
 ---
 

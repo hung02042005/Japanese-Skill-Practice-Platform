@@ -3,14 +3,19 @@ spring:
     name: jlpt-backend
 
   datasource:
-    url: jdbc:h2:mem:jlptdb_test;MODE=MSSQLServer
+    # H2 MODE=MySQL chỉ GIẢ LẬP MySQL — nó không tái hiện được hành vi utf8mb4,
+    # CHECK constraint, INSERT IGNORE hay timezone của MySQL thật, nên test xanh
+    # ở đây không chứng minh migration chạy được trên production. Việc xác minh
+    # thật nằm ở "docker compose up trên volume trống" (xem MYSQL_MIGRATION_PLAN.md
+    # mục 4). Cân nhắc chuyển sang Testcontainers MySQL — mục 6.2 của plan.
+    url: jdbc:h2:mem:jlptdb_test;MODE=MySQL;DATABASE_TO_LOWER=TRUE
     driver-class-name: org.h2.Driver
     username: sa
-    password:
+    password: 123
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: false
     properties:
       hibernate:
@@ -23,8 +28,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: datzozz1212@gmail.com
-    password: rptl gzay orro tscv
+    username: test-placeholder@example.com
+    password: fake fake fake fake
     properties:
       mail:
         smtp:

@@ -183,7 +183,9 @@ export default function ManagerReviewQueue() {
           <select className="mrq-select" value={typeFilter} onChange={handleFilter(setType)} aria-label="Lọc theo loại">
             <option value="">Tất cả loại</option>
             {Object.entries(TYPE_META)
-              .filter(([k]) => k !== 'quiz') // 'assessment' đã đại diện quiz
+              // Backend ContentType chỉ có 'assessment' (gộp quiz + đề thi) — không có 'exam' riêng,
+              // gửi type=exam sẽ bị 400 VALIDATION_FAILED ở ContentReviewService.getReviewQueue().
+              .filter(([k]) => k !== 'quiz' && k !== 'exam')
               .map(([k, v]) => (
                 <option key={k} value={k}>{v.label}</option>
               ))}

@@ -1,12 +1,5 @@
-<<<<<<< Updated upstream
-
 # SPEC — Flashcard theo Course → Topic (`/flashcard`)
 
-=======
-
-# SPEC — Quản lý Flashcard (`/flashcard`)
->
->>>>>>> Stashed changes
 > **Sprint:** 2 — Core Learning Loop
 > **Prefix:** `fls-` | **activeTab:** `''` | **Guard:** PrivateRoute (STUDENT)
 > **Phụ thuộc:** `USER-SPEC.md §10` · `DESIGN.md` (Hanami Theme) | **Backend ref:** `feat-flashcard-srs/SPEC.md`, `feat-core-learning`

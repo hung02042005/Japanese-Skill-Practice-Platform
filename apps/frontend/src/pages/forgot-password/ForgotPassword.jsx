@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { checkAccountTypeThunk, forgotPasswordThunk, clearError } from '../../store/slices/authSlice';
@@ -17,6 +17,11 @@ function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [isSent, setIsSent] = useState(false);
   const [emailErr, setEmailErr] = useState('');
+
+  // Tránh hiện lại lỗi còn sót từ trang auth khác khi điều hướng client-side sang đây.
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   const isLoading = status === 'loading';
 

@@ -8,7 +8,8 @@ import lombok.Data;
 
 /**
  * Dữ liệu onboarding học viên. Hiện chỉ lưu mục tiêu JLPT ({@code jlptGoal} →
- * target_jlpt_level); {@code dailyMinutes}/{@code focusSkills} nhận nhưng chưa lưu
+ * target_jlpt_level); {@code dailyMinutes}/{@code focusSkills} nhận nhưng chưa
+ * lưu
  * (chưa có cột — xem plan, tránh migration).
  */
 @Data

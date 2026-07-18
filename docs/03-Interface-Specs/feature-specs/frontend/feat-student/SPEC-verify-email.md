@@ -1,68 +1,60 @@
-# SPEC — Xác nhận Email (`/verify-email`)
+# SPEC — Xác nhận Email bằng mã OTP (`/verify-email`)
 >
 > **Sprint:** 1 — Foundation
-> **Prefix:** `vem-` | **activeTab:** `''` | **Guard:** Public (không cần đăng nhập)
+> **Prefix:** `ve-` | **activeTab:** `''` | **Guard:** Public (không cần đăng nhập)
 > **Phụ thuộc:** `USER-SPEC.md §9.4` | **Backend ref:** `feat-auth/UC-02-register.md`
+> **Cập nhật:** 2026-07-12 — thay cơ chế xác minh từ **link (token UUID)** sang **mã OTP 6 số nhập tay**
 
 ---
 
 ## 1. MÔ TẢ TRANG
 
-Trang trung gian xác nhận email sau khi user click link trong email đăng ký. Đọc `?token=xxx` từ URL, gọi API verify, hiển thị 4 trạng thái: verifying / success / expired / error. Là điểm đến của link email — không có navigation phức tạp.
+Trang xác minh email dùng chung cho 2 lối vào:
+1. Sau khi đăng ký thành công, `Register.jsx` chuyển hướng thẳng tới `/verify-email?email={email}`.
+2. Từ banner "chưa xác minh" trên trang Đăng nhập (`Login.jsx`), khi login thất bại với lỗi `EMAIL_NOT_VERIFIED`.
+
+Trang không đọc token từ URL nữa — chỉ đọc `?email=` để prefill ô email (vẫn cho sửa tay). Người dùng tự nhập mã OTP 6 số nhận được qua email và bấm "Xác minh". Có nút "Gửi lại mã xác minh" kèm cooldown 60 giây khớp với rate limit phía backend.
 
 ---
 
 ## 2. MOCKUP
 
 ```
-Trạng thái "verifying":
+Trạng thái nhập mã (mặc định):
 ┌──────────────────────────────────────────────────────────────┐
-│                   [Logo] SakuJi                              │
+│                        [AuthTopBar]                          │
 │                                                              │
 │          ┌─────────────────────────────────────┐            │
+│          │         [SakuChan]                   │            │
+│          │      Nhập mã xác minh                │            │
+│          │  Chúng tôi đã gửi mã gồm 6 chữ số... │            │
 │          │                                     │            │
-│          │     [Spinner 48px sakura pink]       │            │
+│          │  Email:  [___________________]      │            │
+│          │  Mã xác minh: [ 6 chữ số ]           │            │
 │          │                                     │            │
-│          │   Đang xác nhận tài khoản của bạn   │            │
-│          │   Vui lòng chờ trong giây lát...    │            │
+│          │      [ Xác minh ]                    │            │
 │          │                                     │            │
+│          │  📧 Gửi lại mã xác minh (nếu cooldown│            │
+│          │     hiện "Gửi lại mã (45s)")          │            │
+│          │  ← Về trang đăng nhập                 │            │
 │          └─────────────────────────────────────┘            │
 └──────────────────────────────────────────────────────────────┘
 
 Trạng thái "success":
-│          │  [SakuChan celebrate 160px]          │
-│          │                                     │
-│          │  🌸 Tài khoản đã được xác nhận!     │
-│          │  Chào mừng bạn đến với SakuJi.      │
-│          │                                     │
-│          │     [Đăng nhập ngay →]              │
-
-Trạng thái "expired":
-│          │  [SakuChan thinking 140px]           │
-│          │                                     │
-│          │  ⏰ Link xác nhận đã hết hạn         │
-│          │  Link có hiệu lực trong 24 giờ.     │
-│          │                                     │
-│          │     [Gửi lại email xác nhận]        │
-│          │     (Nhập email để gửi lại)          │
-
-Trạng thái "error":
-│          │  [SakuChan wrong 140px]              │
-│          │                                     │
-│          │  ❌ Link không hợp lệ                │
-│          │  Link đã được dùng hoặc không đúng.  │
-│          │                                     │
-│          │    [← Về trang đăng nhập]            │
+│          │  [SakuChan happy]                     │
+│          │  Xác minh thành công!                 │
+│          │  Email của bạn đã được xác minh...    │
+│          │     [ĐĂNG NHẬP NGAY]                  │
 ```
 
 ---
 
-## 3. FILE CẦN TẠO
+## 3. FILE
 
 ```
 pages/verify-email/
-├── VerifyEmail.jsx    (file có sẵn, cần refactor theo spec này)
-└── VerifyEmail.css    (file có sẵn, cần update)
+├── VerifyEmail.jsx    (đã refactor sang OTP entry — không còn auto-verify theo token URL)
+└── VerifyEmail.css
 ```
 
 ---
@@ -70,15 +62,15 @@ pages/verify-email/
 ## 4. STATE
 
 ```js
-// 4 states
-type VerifyState = 'verifying' | 'success' | 'expired' | 'error';
+const [email, setEmail]     = useState(searchParams.get('email') ?? '');
+const [otpCode, setOtpCode] = useState('');
 
-const [state,       setState]   = useState('verifying');
-const [email,       setEmail]   = useState('');           // cho form resend
-const [isSending,   setSending] = useState(false);
-const [resendDone,  setResent]  = useState(false);
-const [searchParams] = useSearchParams();
-const token = searchParams.get('token');
+const [state, setState]       = useState('idle');   // 'idle' | 'verifying' | 'success' | 'error'
+const [errorMsg, setErrorMsg] = useState('');
+
+const [resendStatus, setResendStatus] = useState('idle'); // idle | loading | sent | error
+const [resendMsg, setResendMsg]       = useState('');
+const [cooldown, startCooldown]       = useCountdown(); // hooks/useCountdown.js
 ```
 
 ---
@@ -86,303 +78,44 @@ const token = searchParams.get('token');
 ## 5. API CALLS
 
 ```js
-// 1. Verify token (on mount)
-// GET /api/auth/verify-email?token=xxx
-// Response 200: { message: "Xác nhận thành công" }
-// Response 400: { code: "TOKEN_EXPIRED" | "TOKEN_INVALID" }
+// 1. Xác minh mã OTP
+// POST /api/auth/verify-email
+// Request: { "email": "user@example.com", "otpCode": "123456" }
+// Response 200: { message: "Xác minh email thành công. Bạn có thể đăng nhập." }
+// Response 400: { errorCode: "INVALID_OTP" | "OTP_EXPIRED" | "ACCOUNT_NOT_VERIFIABLE" }
+// Response 429: { errorCode: "TOO_MANY_ATTEMPTS" }
 
-// 2. Resend verification email
+// 2. Gửi lại mã OTP
 // POST /api/auth/resend-verification
 // Request: { "email": "user@example.com" }
-// Response 200: { message: "Email đã được gửi" }
+// Response 200 luôn trả về (kể cả email không tồn tại — chống enumeration)
+// Response 429: { errorCode: "TOO_MANY_REQUESTS" } — chưa đủ 60 giây từ lần gửi trước
 ```
 
 ---
 
-## 6. JSX STRUCTURE
+## 6. LUỒNG XỬ LÝ
 
-```jsx
-import { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import AppLogo from '../../components/common/AppLogo';
-import SakuChan from '../../components/auth/SakuChan';
-import { verifyEmail, resendVerification } from '../../api/authService';
-import './VerifyEmail.css';
-
-const STATES = {
-  verifying: {
-    title: null,
-    subtitle: null,
-  },
-  success: {
-    title: '🌸 Tài khoản đã được xác nhận!',
-    subtitle: 'Chào mừng bạn đến với SakuJi. Bắt đầu hành trình học tiếng Nhật ngay!',
-    mascot: 'celebrate',
-  },
-  expired: {
-    title: '⏰ Link xác nhận đã hết hạn',
-    subtitle: 'Link xác nhận có hiệu lực trong 24 giờ. Vui lòng yêu cầu gửi lại.',
-    mascot: 'thinking',
-  },
-  error: {
-    title: '❌ Link không hợp lệ',
-    subtitle: 'Link đã được sử dụng hoặc không đúng định dạng.',
-    mascot: 'wrong',
-  },
-};
-
-export default function VerifyEmail() {
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
-
-  const [state,     setState]  = useState('verifying');
-  const [email,     setEmail]  = useState('');
-  const [isSending, setSending]= useState(false);
-  const [resendDone,setResent] = useState(false);
-
-  useEffect(() => {
-    if (!token) { setState('error'); return; }
-    verifyEmail(token)
-      .then(() => setState('success'))
-      .catch((err) => {
-        const code = err?.response?.data?.code;
-        setState(code === 'TOKEN_EXPIRED' ? 'expired' : 'error');
-      });
-  }, [token]);
-
-  async function handleResend(e) {
-    e.preventDefault();
-    if (!email) return;
-    setSending(true);
-    try {
-      await resendVerification(email);
-      setResent(true);
-    } catch {
-      /* ignore — hiển thị thành công luôn để tránh user enumeration */
-      setResent(true);
-    } finally {
-      setSending(false);
-    }
-  }
-
-  const cfg = STATES[state];
-
-  return (
-    <div className="vem-page">
-      <div className="vem-topbar">
-        <AppLogo size={28} />
-        <span className="vem-brand">SakuJi</span>
-      </div>
-
-      <div className="vem-card">
-        {/* Verifying */}
-        {state === 'verifying' && (
-          <div className="vem-state vem-state--verifying">
-            <div className="vem-spinner-lg" aria-label="Đang xác nhận" role="status" />
-            <p className="vem-verifying-text">Đang xác nhận tài khoản của bạn...</p>
-          </div>
-        )}
-
-        {/* Success / Expired / Error */}
-        {state !== 'verifying' && (
-          <div className="vem-state">
-            <SakuChan variant={cfg.mascot} size={160} />
-            <h1 className="vem-title">{cfg.title}</h1>
-            <p className="vem-subtitle">{cfg.subtitle}</p>
-
-            {state === 'success' && (
-              <Link to="/login" className="vem-btn vem-btn--primary">
-                Đăng nhập ngay →
-              </Link>
-            )}
-
-            {state === 'expired' && (
-              resendDone ? (
-                <div className="vem-resent-note" role="status">
-                  ✅ Email đã được gửi! Kiểm tra hộp thư của bạn.
-                </div>
-              ) : (
-                <form className="vem-resend-form" onSubmit={handleResend}>
-                  <input
-                    id="vem-email"
-                    type="email"
-                    className="vem-input"
-                    placeholder="Nhập email đăng ký..."
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    aria-label="Email đăng ký"
-                  />
-                  <button
-                    type="submit"
-                    className="vem-btn vem-btn--primary"
-                    disabled={isSending}
-                    aria-busy={isSending}
-                  >
-                    {isSending && <span className="vem-spinner-sm" aria-hidden="true" />}
-                    {isSending ? 'Đang gửi…' : 'Gửi lại email xác nhận'}
-                  </button>
-                </form>
-              )
-            )}
-
-            {state === 'error' && (
-              <Link to="/login" className="vem-btn vem-btn--ghost">
-                ← Về trang đăng nhập
-              </Link>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-```
+1. `handleVerify` — dispatch `verifyEmailThunk({ email, otpCode })`. Thành công → `state = 'success'`. Thất bại → `state = 'error'`, hiển thị `errorMsg` (không tự động phân loại theo mã lỗi cụ thể, hiển thị message backend trả về).
+2. `handleResend` — dispatch `resendVerificationThunk(email)`. Thành công → `resendStatus = 'sent'`, khởi động cooldown 60 giây (`startCooldown(60)`). Nút resend bị disable trong lúc `cooldown > 0`.
+3. Không có bước "verifying" tự động khi vào trang — trang luôn ở trạng thái nhập liệu cho tới khi user bấm "Xác minh" (khác với hành vi cũ vốn tự verify ngay khi có `?token=`).
 
 ---
 
-## 7. CSS
-
-```css
-/* ===== Verify Email (SakuJi Hanami Theme) ===== */
-
-.vem-page {
-  min-height: 100vh;
-  background: var(--color-bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-family: var(--font-base);
-}
-
-.vem-topbar {
-  width: 100%;
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.vem-brand { font-size: 20px; font-weight: 800; color: var(--color-primary); }
-
-.vem-card {
-  background: var(--color-card);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
-  padding: 48px 40px;
-  width: 100%;
-  max-width: 440px;
-  margin: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.vem-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  text-align: center;
-  width: 100%;
-}
-
-/* Spinner large */
-.vem-spinner-lg {
-  width: 48px; height: 48px;
-  border: 4px solid var(--color-primary-light);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-.vem-verifying-text { font-size: 15px; color: var(--color-text-sub); margin: 0; }
-
-.vem-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--color-text);
-  margin: 0;
-}
-.vem-subtitle {
-  font-size: 14px;
-  color: var(--color-text-sub);
-  line-height: 1.6;
-  max-width: 320px;
-  margin: 0;
-}
-
-/* Buttons */
-.vem-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  height: 44px;
-  padding: 0 28px;
-  border-radius: var(--radius-full);
-  font-family: var(--font-base);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
-  border: none;
-  transition: filter var(--transition), transform var(--transition);
-}
-.vem-btn--primary { background: var(--color-secondary); color: white; box-shadow: 0 2px 8px rgba(93,187,105,0.25); }
-.vem-btn--primary:hover { filter: brightness(1.07); }
-.vem-btn--primary:disabled { opacity: 0.60; cursor: not-allowed; }
-.vem-btn--ghost { background: transparent; border: 1.5px solid var(--color-border); color: var(--color-text-sub); }
-.vem-btn--ghost:hover { color: var(--color-text); background: var(--color-bg); }
-
-/* Resend form */
-.vem-resend-form { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-.vem-input {
-  height: 44px;
-  padding: 0 14px;
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-bg);
-  font-family: var(--font-base);
-  font-size: 14px;
-  color: var(--color-text);
-  width: 100%;
-  box-sizing: border-box;
-  transition: border-color var(--transition), box-shadow var(--transition);
-}
-.vem-input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(232,154,170,0.15); background: var(--color-card); }
-
-.vem-resent-note {
-  background: var(--color-secondary-bg);
-  border: 1px solid var(--color-secondary);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  font-size: 14px;
-  color: var(--color-secondary);
-  font-weight: 600;
-}
-
-/* Spinner small */
-.vem-spinner-sm { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.35); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-@media (max-width: 480px) { .vem-card { padding: 32px 20px; } }
-@media (prefers-reduced-motion: reduce) { .vem-page * { animation: none !important; transition-duration: 0ms !important; } }
-```
-
----
-
-## 8. 3 TRẠNG THÁI
+## 7. 3 TRẠNG THÁI CHÍNH
 
 | Trạng thái | Mô tả |
 |:---|:---|
-| `verifying` | Spinner, chờ API verify |
-| `success` | Mascot celebrate, link đến /login |
-| `expired` | Form gửi lại email |
-| `error` | Link về /login |
+| Nhập mã (mặc định) | Form email + OTP, nút Xác minh, nút Gửi lại mã (có cooldown) |
+| `success` | SakuChan happy, nút "ĐĂNG NHẬP NGAY" |
+| lỗi khi xác minh | Banner lỗi ngay trong form (`INVALID_OTP` / `OTP_EXPIRED` / `TOO_MANY_ATTEMPTS`), form vẫn mở để thử lại hoặc gửi lại mã |
 
 ---
 
-## 9. DOMAIN RULES
+## 8. DOMAIN RULES
 
-- Resend luôn trả thành công (kể cả email không tồn tại) để tránh user enumeration.
-- Token chỉ dùng 1 lần — sau khi verify xong, gọi lại sẽ trả `TOKEN_INVALID`.
-- Không tự redirect vào `/dashboard` sau verify — user phải đăng nhập lại.
+- Mã OTP gồm 6 chữ số, hết hạn sau **10 phút** kể từ lúc backend sinh ra (đăng ký hoặc gửi lại).
+- Gửi lại mã bị giới hạn **1 lần / 60 giây** — khớp với cooldown hiển thị trên nút.
+- Nhập sai OTP quá **5 lần liên tiếp** → backend xoá mã hiện tại, bắt buộc phải gửi lại mã mới trước khi thử tiếp.
+- Resend luôn trả HTTP 200 (trừ khi đang bị rate-limit) kể cả khi email không tồn tại, để tránh user enumeration.
+- Không tự động đăng nhập sau khi xác minh thành công — user phải quay lại `/login`.

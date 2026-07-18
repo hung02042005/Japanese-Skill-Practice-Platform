@@ -71,6 +71,11 @@ public class FlashcardSrsService {
 
     private static final Kanji.ContentStatus PUBLISHED = Kanji.ContentStatus.PUBLISHED;
 
+    // Khoá theo (studentId, deck/topic) để tránh race condition khi tạo phiên flashcard đồng thời.
+    // static nên dùng chung cho mọi instance của bean trong 1 JVM, nhưng KHÔNG đồng bộ được giữa
+    // nhiều instance nếu scale ngang (mỗi instance có bộ khoá riêng) — tương tự trade-off đã ghi
+    // trong AuthenticationService.checkAccountTypeAttempts. Entry không bao giờ bị xoá (tăng dần theo số
+    // lượng cặp studentId/deck-topic khác nhau từng được truy cập) — chấp nhận được ở quy mô hiện tại.
     private static final Map<String, Object> SESSION_LOCKS = new ConcurrentHashMap<>();
 
     private final FlashcardRepository flashcardRepository;

@@ -1,6 +1,6 @@
 # Kịch Bản & Bộ Câu Hỏi Bảo Vệ Đồ Án Trước Hội Đồng
 **Dự án:** Hệ Thống Học Tiếng Nhật JLPT (SakuJi)
-**Công nghệ:** Java 21, Spring Boot 3.x, React 18, SQL Server, AI (OCR, Speech Recognition)
+**Công nghệ:** Java 21, Spring Boot 3.x, React 18, MySQL 8, AI (OCR, Speech Recognition)
 
 Tài liệu này tổng hợp kịch bản thuyết trình ngắn gọn và toàn bộ các câu hỏi "xoáy" mà hội đồng có thể đặt ra, kèm theo gợi ý trả lời chuyên sâu dựa trên kiến trúc và luật nghiệp vụ của dự án.
 
@@ -15,7 +15,7 @@ Tài liệu này tổng hợp kịch bản thuyết trình ngắn gọn và toà
 "Hệ thống không chỉ cung cấp bài học lý thuyết mà còn tích hợp các tính năng nâng cao: Flashcard sử dụng thuật toán Lặp lại ngắt quãng (Spaced Repetition), thi thử với cấu trúc y hệt JLPT thực tế, và đặc biệt là tích hợp AI để nhận diện chữ viết Kanji (OCR) và luyện phát âm (Speech Recognition)."
 
 **3. Kiến trúc kỹ thuật (Tech Stack):**
-"Về mặt kỹ thuật, hệ thống sử dụng kiến trúc Client-Server. Backend xây dựng bằng Java 21, Spring Boot 3 theo mô hình Feature-based chuyên biệt, kết nối cơ sở dữ liệu SQL Server. Frontend sử dụng React 18 với giao diện thiết kế chuyên biệt cho trải nghiệm người dùng học ngoại ngữ. Hệ thống được bảo mật chặt chẽ bằng JWT và phân quyền phức tạp giữa Học viên, Nhân viên (Staff/Manager), và Quản trị viên (Admin)."
+"Về mặt kỹ thuật, hệ thống sử dụng kiến trúc Client-Server. Backend xây dựng bằng Java 21, Spring Boot 3 theo mô hình Feature-based chuyên biệt, kết nối cơ sở dữ liệu MySQL. Frontend sử dụng React 18 với giao diện thiết kế chuyên biệt cho trải nghiệm người dùng học ngoại ngữ. Hệ thống được bảo mật chặt chẽ bằng JWT và phân quyền phức tạp giữa Học viên, Nhân viên (Staff/Manager), và Quản trị viên (Admin)."
 
 ---
 
@@ -32,8 +32,8 @@ Tài liệu này tổng hợp kịch bản thuyết trình ngắn gọn và toà
 **Q2: Việc giao tiếp giữa Frontend và Backend thực hiện qua đâu? Em xử lý an toàn dữ liệu như thế nào?**
 * **Trả lời:** Giao tiếp qua RESTful APIs trả về JSON. Để an toàn, chúng em áp dụng nghiêm ngặt **DTO Pattern** (Data Transfer Object). Entity của JPA không bao giờ được trả trực tiếp ra API để tránh rò rỉ cấu trúc DB và lỗi vòng lặp (Circular Reference). Dữ liệu gửi lên cũng được Validate nghiêm ngặt qua Jakarta Annotations ở tầng DTO trước khi vào Controller.
 
-**Q3: Tại sao lại chọn SQL Server mà không phải MySQL hay PostgreSQL?**
-* **Trả lời:** SQL Server mạnh mẽ trong việc xử lý Transaction và toàn vẹn dữ liệu, đồng thời có cơ chế T-SQL hỗ trợ tốt cho các query phức tạp như tính toán lộ trình học, điểm số và log hoạt động. Hệ thống dùng Flyway để tự động hóa việc quản lý schema (Migration).
+**Q3: Tại sao lại chọn MySQL mà không phải SQL Server hay PostgreSQL?**
+* **Trả lời:** MySQL 8 là hệ quản trị cơ sở dữ liệu mã nguồn mở phổ biến, nhẹ, tối ưu tốt cho ứng dụng web, chi phí triển khai thấp và hỗ trợ mạnh mẽ xử lý Transaction thông qua storage engine InnoDB, đồng thời có cộng đồng lớn hỗ trợ. Hệ thống dùng Flyway để tự động hóa việc quản lý schema (Migration).
 
 ### 2.2. Nhóm Câu Hỏi Về Nghiệp Vụ Chuyên Sâu (Domain Business Logic)
 

@@ -157,7 +157,7 @@ export default function Profile() {
             <div className="prf-field">
               <label className="prf-label" htmlFor="prf-email">
                 Email
-                <span className="prf-readonly-badge">Không thể thay đổi</span>
+                <span className="prf-readonly-badge">Đổi tại mục Bảo mật bên dưới</span>
               </label>
               <input
                 id="prf-email"
@@ -170,6 +170,27 @@ export default function Profile() {
             </div>
 
             {/* ── Bảo mật ── */}
+            <div className="prf-security">
+              <div className="prf-security-info">
+                <span className="prf-security-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 6h16v12H4z" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M4 7l8 6 8-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+                <div>
+                  <div className="prf-security-title">Email</div>
+                  <div className="prf-security-desc">Đổi email đăng nhập của bạn</div>
+                </div>
+              </div>
+              <Link to="/settings/change-email" className="prf-security-btn">
+                Đổi email
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Link>
+            </div>
+
             <div className="prf-security">
               <div className="prf-security-info">
                 <span className="prf-security-icon" aria-hidden="true">

@@ -2,7 +2,7 @@
 package com.jlpt.feature.staff;
 
 import com.jlpt.feature.admin.AdminUserService;
-import com.jlpt.feature.auth.AuthService;
+import com.jlpt.feature.auth.AuthenticationService;
 import com.jlpt.feature.auth.dto.request.LoginRequest;
 import com.jlpt.feature.auth.dto.response.LoginApiResponse;
 import com.jlpt.feature.staff.dto.request.ChangeTempPasswordRequest;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class StaffAuthController {
 
-    private final AuthService authService;
+    private final AuthenticationService authenticationService;
     private final StaffPasswordResetService staffPasswordResetService;
     private final AdminUserService adminUserService;
 
@@ -42,7 +42,7 @@ public class StaffAuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginApiResponse>> login(
             @Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
-        LoginApiResponse response = authService.loginStaff(request, httpRequest.getRemoteAddr());
+        LoginApiResponse response = authenticationService.loginStaff(request, httpRequest.getRemoteAddr());
         String message = Boolean.TRUE.equals(response.getRequirePasswordChange())
                 ? "Đăng nhập thành công. Bạn phải đặt mật khẩu mới trước khi tiếp tục."
                 : "Đăng nhập thành công";

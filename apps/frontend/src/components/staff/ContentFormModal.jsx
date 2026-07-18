@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import HanziWriter from 'hanzi-writer';
 import { getStaffVocabularyTopics, createStaffVocabularyTopic } from '../../api/staffService';
-import { lookupKanjiByReading, getKanjiInfo } from '../../utils/kanjiLookup';
+import { lookupKanjiByReading, getKanjiInfo, jpCharDataLoader } from '../../utils/kanjiLookup';
 import { PlusIcon, SpinnerIcon, CheckIcon, XIcon } from '../common/AppIcons';
+import HanziWriter from 'hanzi-writer';
 
 const TYPE_LABELS = {
   course: 'Khóa học',
@@ -138,12 +138,11 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
     let cancelled = false;
     setKanjiCheck({ status: 'checking', strokeCount: null });
     const timer = setTimeout(() => {
-      HanziWriter.loadCharacterData(ch)
+      HanziWriter.loadCharacterData(ch, { charDataLoader: jpCharDataLoader })
         .then((data) => {
           if (cancelled) return;
           const n = data?.strokes?.length || null;
           setKanjiCheck({ status: 'valid', strokeCount: n });
-          // C: lấy số nét đúng từ dữ liệu nét, không để staff gõ tay lệch.
           if (n) setForm((prev) => (prev.strokeCount === n ? prev : { ...prev, strokeCount: n }));
         })
         .catch(() => {
@@ -234,8 +233,17 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
       return;
     }
     // A — Chặn tạo Kanji không có dữ liệu nét (học viên sẽ không tô được).
-    if (contentType === 'kanji' && kanjiCheck.status !== 'valid') {
-      return;
+    if (contentType === 'kanji') {
+      if (status === 'pending_review') {
+        if (kanjiCheck.status === 'checking') {
+          alert('Hệ thống đang tải và kiểm tra dữ liệu nét chữ Hán. Vui lòng đợi trong giây lát.');
+          return;
+        }
+        if (kanjiCheck.status !== 'valid') {
+          alert('Không thể gửi duyệt: Ký tự Kanji này không có dữ liệu nét viết hỗ trợ (học viên sẽ không viết được). Vui lòng chọn chữ khác hoặc chỉ "Lưu nháp".');
+          return;
+        }
+      }
     }
     onSave(getSubmitPayload(status));
   };

@@ -45,6 +45,17 @@ export async function changePassword({ currentPassword, newPassword, confirmPass
   return res.data;
 }
 
+// ─── Email ───────────────────────────────────────────────────────────────────
+export async function requestEmailChange({ newEmail, currentPassword }) {
+  const res = await api.post('/students/me/email/otp', { newEmail, currentPassword });
+  return res.data;
+}
+
+export async function confirmEmailChange({ newEmail, otpCode }) {
+  const res = await api.put('/students/me/email', { newEmail, otpCode });
+  return res.data.data;
+}
+
 // ─── Lessons ─────────────────────────────────────────────────────────────────
 export async function getLessonDetail(lessonId) {
   const res = await api.get(`/lessons/${lessonId}`);

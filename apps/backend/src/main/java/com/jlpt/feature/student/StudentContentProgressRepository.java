@@ -129,7 +129,7 @@ public interface StudentContentProgressRepository extends JpaRepository<StudentC
 
     /**
      * Đếm số ngày khác nhau student đã học trong tháng hiện tại (dựa vào lastStudiedAt).
-     * Dùng native query để tránh vấn đề JPQL với YEAR/MONTH trên SQL Server.
+     * Dùng native query để tránh vấn đề JPQL với YEAR/MONTH.
      */
     @Query(
             value =

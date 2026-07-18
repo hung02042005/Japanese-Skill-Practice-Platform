@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import HanziWriter from 'hanzi-writer';
+import { jpCharDataLoader } from '../../utils/kanjiLookup';
 
 /**
  * KanjiStrokeLayer — SVG overlay với 3 trạng thái nét viết
@@ -44,7 +45,7 @@ export default function KanjiStrokeLayer({
     let cancelled = false;
     setCharData(null);
 
-    HanziWriter.loadCharacterData(character)
+    HanziWriter.loadCharacterData(character, { charDataLoader: jpCharDataLoader })
       .then(data => {
         if (!cancelled) {
           setCharData(data);
@@ -110,10 +111,10 @@ export default function KanjiStrokeLayer({
       <g transform={gTransform}>
 
         {/* ── LAYER: Future strokes — ghost dashed ─────────────────────── */}
-        {strokes.map((d, i) => i > curIdx && (
+        {medians?.map((m, i) => i > curIdx && m?.length > 0 && (
           <path
             key={`${uid}-f${i}`}
-            d={d}
+            d={'M ' + m.map(p => `${p[0]},${p[1]}`).join(' L ')}
             fill="none"
             stroke="#BEB5B0"
             strokeWidth={54}
@@ -158,11 +159,11 @@ export default function KanjiStrokeLayer({
         })}
 
         {/* ── LAYER: Current stroke guide (blue) + direction + brush ───── */}
-        {hasCurrent && (
+        {hasCurrent && medians?.[curIdx]?.length >= 2 && (
           <g>
             {/* Outer glow halo */}
             <path
-              d={strokes[curIdx]}
+              d={'M ' + medians[curIdx].map(p => `${p[0]},${p[1]}`).join(' L ')}
               fill="none"
               stroke="#3B82F6"
               strokeWidth={92}
@@ -172,7 +173,7 @@ export default function KanjiStrokeLayer({
             />
             {/* Guide path — light blue */}
             <path
-              d={strokes[curIdx]}
+              d={'M ' + medians[curIdx].map(p => `${p[0]},${p[1]}`).join(' L ')}
               fill="none"
               stroke="#93C5FD"
               strokeWidth={55}
@@ -186,8 +187,10 @@ export default function KanjiStrokeLayer({
               <DirectionHint median={medians[curIdx]} idx={curIdx} />
             )}
 
-            {/* Brush tip animator — chạy dọc theo stroke path */}
-            <BrushTip pathData={strokes[curIdx]} />
+            {/* Brush tip animator — chạy dọc theo đường xương nét (median) thay vì outline */}
+            {medians?.[curIdx]?.length >= 2 && (
+              <BrushTip pathData={'M ' + medians[curIdx].map(p => `${p[0]},${p[1]}`).join(' L ')} />
+            )}
           </g>
         )}
 

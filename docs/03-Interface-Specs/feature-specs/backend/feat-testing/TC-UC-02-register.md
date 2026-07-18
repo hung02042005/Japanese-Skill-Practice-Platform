@@ -38,8 +38,8 @@ when(passwordEncoder.encode("Abcdef12")).thenReturn("$2a$10$hashed");
 - `entity.emailVerifiedAt` = NULL
 - `entity.passwordHash` = `"$2a$10$hashed"` (KHÔNG phải plaintext)
 - `entity.passwordHash` ≠ `"Abcdef12"`
-- `tokenRepository.save()` được gọi với `tokenType = "email_verification"`, `expiresAt ≈ NOW() + 24h`
-- `emailService.sendVerificationEmail()` được gọi một lần
+- `tokenRepository.save()` được gọi với `tokenType = "email_verification"`, `tokenValue` là chuỗi 6 chữ số (sinh bằng `SecureRandom`), `expiresAt ≈ NOW() + 10 phút`
+- `emailService.sendVerificationEmail()` (mã OTP, không kèm liên kết) được gọi một lần
 - Trả về `RegisterResponse(studentId, email = "new@test.com")`
 - HTTP equivalent: 201
 
@@ -103,7 +103,7 @@ when(userRepository.existsByEmail("existing@test.com")).thenReturn(true);
 
 ---
 
-### TC-U-02-04 — Token xác minh chỉ sử dụng được một lần
+### TC-U-02-04 — Mã OTP đã dùng (đã bị xoá) không thể xác minh lại
 
 | Thuộc tính | Nội dung |
 |:---|:---|
@@ -115,28 +115,27 @@ when(userRepository.existsByEmail("existing@test.com")).thenReturn(true);
 **Setup:**
 
 ```java
-AuthToken token = new AuthToken();
-token.setTokenValue("valid-token-abc");
-token.setTokenType("email_verification");
-token.setRevokedAt(Instant.now()); // ĐÃ bị thu hồi
-token.setExpiresAt(Instant.now().plus(1, ChronoUnit.HOURS)); // chưa hết hạn
+StudentUser pendingUser = aStudent().withStatus("pending").build();
+when(studentUserRepository.findByEmail("pending@test.com")).thenReturn(Optional.of(pendingUser));
 
-when(tokenRepository.findByTokenValueAndTokenType("valid-token-abc", "email_verification"))
-    .thenReturn(Optional.of(token));
+// Mã OTP trước đó đã xác minh thành công → toàn bộ token EMAIL_VERIFICATION của user đã bị XOÁ
+when(tokenRepository.findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(
+        pendingUser.getId(), AuthToken.TokenType.EMAIL_VERIFICATION))
+    .thenReturn(Optional.empty());
 ```
 
 **Steps:**
 
-1. Gọi `authService.verifyEmail("valid-token-abc")`
+1. Gọi `authService.verifyEmail(new VerifyEmailRequest("pending@test.com", "123456"))`
 
 **Expected:**
 
-- Ném `InvalidTokenException`
-- `userRepository.updateStatus()` KHÔNG được gọi
+- Ném `BusinessException(400, "OTP_EXPIRED", ...)`
+- `studentUserRepository.save()` KHÔNG được gọi với `status = "active"`
 
 ---
 
-### TC-U-02-05 — Token xác minh hết hạn sau 24 giờ
+### TC-U-02-05 — Mã OTP hết hạn sau 10 phút
 
 | Thuộc tính | Nội dung |
 |:---|:---|
@@ -148,24 +147,28 @@ when(tokenRepository.findByTokenValueAndTokenType("valid-token-abc", "email_veri
 **Setup:**
 
 ```java
-// Fixed clock tại 2026-05-30T08:00:00Z
+// Fixed clock tại 2026-05-30T08:10:01
 AuthToken token = new AuthToken();
-token.setRevokedAt(null);
-token.setExpiresAt(Instant.parse("2026-05-29T08:00:00Z")); // đã hết hạn hơn 24h trước
+token.setTokenValue("654321");
+token.setTokenType(AuthToken.TokenType.EMAIL_VERIFICATION);
+token.setExpiresAt(LocalDateTime.parse("2026-05-30T08:00:00")); // sinh lúc 07:50:00, hết hạn sau 10 phút
+
+when(tokenRepository.findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(any(), any()))
+    .thenReturn(Optional.of(token));
 ```
 
 **Steps:**
 
-1. Gọi `authService.verifyEmail("expired-token")`
+1. Gọi `authService.verifyEmail(new VerifyEmailRequest("pending@test.com", "654321"))`
 
 **Expected:**
 
-- Ném `InvalidTokenException` với message chứa "hết hạn"
-- `userRepository.updateStatus()` KHÔNG được gọi
+- Ném `BusinessException(400, "OTP_EXPIRED", ...)`
+- `studentUserRepository.save()` KHÔNG được gọi với `status = "active"`
 
 ---
 
-### TC-U-02-06 — Xác minh email thành công: status → active, token bị thu hồi
+### TC-U-02-06 — Xác minh mã OTP thành công: status → active, token OTP bị xoá (không phải thu hồi)
 
 | Thuộc tính | Nội dung |
 |:---|:---|
@@ -177,26 +180,28 @@ token.setExpiresAt(Instant.parse("2026-05-29T08:00:00Z")); // đã hết hạn h
 **Setup:**
 
 ```java
-AuthToken token = validEmailVerificationToken();
-when(tokenRepository.findByTokenValueAndTokenType("valid-tok", "email_verification"))
-    .thenReturn(Optional.of(token));
 StudentUser pendingUser = aStudent().withStatus("pending").build();
-when(userRepository.findById(token.getStudentId())).thenReturn(Optional.of(pendingUser));
+when(studentUserRepository.findByEmail("pending@test.com")).thenReturn(Optional.of(pendingUser));
+
+AuthToken token = validEmailVerificationOtpToken("123456"); // chưa hết hạn
+when(tokenRepository.findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(
+        pendingUser.getId(), AuthToken.TokenType.EMAIL_VERIFICATION))
+    .thenReturn(Optional.of(token));
 ```
 
 **Steps:**
 
-1. Gọi `authService.verifyEmail("valid-tok")`
+1. Gọi `authService.verifyEmail(new VerifyEmailRequest("pending@test.com", "123456"))`
 
 **Expected:**
 
-- `userRepository.save()` được gọi với `status = "active"`, `emailVerifiedAt ≈ NOW()`
-- `tokenRepository.save()` được gọi với `revokedAt ≈ NOW()`
+- `studentUserRepository.save()` được gọi với `status = "active"`, `emailVerifiedAt ≈ NOW()`
+- `tokenRepository.deleteByStudentIdAndTokenType(studentId, EMAIL_VERIFICATION)` được gọi (XOÁ, không set `revokedAt`)
 - Không ném exception
 
 ---
 
-### TC-U-02-07 — Gửi lại email xác minh rate limit: lần thứ 4 trong 1 giờ bị chặn
+### TC-U-02-07 — Gửi lại mã OTP bị chặn khi chưa đủ 60 giây kể từ lần gửi trước
 
 | Thuộc tính | Nội dung |
 |:---|:---|
@@ -208,23 +213,26 @@ when(userRepository.findById(token.getStudentId())).thenReturn(Optional.of(pendi
 **Setup:**
 
 ```java
-// Giả sử đã có 3 token 'email_verification' được tạo trong 1 giờ qua
-when(tokenRepository.countByStudentIdAndTokenTypeAndCreatedAtAfter(
-    studentId, "email_verification", NOW_MINUS_1_HOUR)).thenReturn(3L);
+// Token EMAIL_VERIFICATION gần nhất được tạo cách đây 30 giây (< 60s cooldown)
+AuthToken lastToken = new AuthToken();
+lastToken.setCreatedAt(LocalDateTime.now().minusSeconds(30));
+when(tokenRepository.findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(
+        studentId, AuthToken.TokenType.EMAIL_VERIFICATION))
+    .thenReturn(Optional.of(lastToken));
 ```
 
 **Steps:**
 
-1. Gọi `authService.resendVerificationEmail("pending@test.com")`
+1. Gọi `authService.resendVerification(new ResendVerificationRequest("pending@test.com"))`
 
 **Expected:**
 
-- Ném `RateLimitExceededException` (HTTP 429)
-- `emailService` KHÔNG được gọi
+- Ném `BusinessException(429, "TOO_MANY_REQUESTS", ...)`
+- `emailService`/`eventPublisher` KHÔNG được gọi
 
 ---
 
-### TC-U-02-08 — Gửi lại email xác minh thu hồi token cũ trước khi tạo mới
+### TC-U-02-08 — Gửi lại mã OTP xoá token cũ trước khi tạo mã mới
 
 | Thuộc tính | Nội dung |
 |:---|:---|
@@ -236,21 +244,23 @@ when(tokenRepository.countByStudentIdAndTokenTypeAndCreatedAtAfter(
 **Setup:**
 
 ```java
-when(tokenRepository.countByStudentIdAndTokenTypeAndCreatedAtAfter(...)).thenReturn(0L);
-List<AuthToken> oldTokens = List.of(buildOldValidToken(), buildOldValidToken());
-when(tokenRepository.findValidByStudentAndType(studentId, "email_verification"))
-    .thenReturn(oldTokens);
+// Token cũ được tạo hơn 60 giây trước → không bị rate limit
+AuthToken lastToken = new AuthToken();
+lastToken.setCreatedAt(LocalDateTime.now().minusMinutes(5));
+when(tokenRepository.findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(
+        studentId, AuthToken.TokenType.EMAIL_VERIFICATION))
+    .thenReturn(Optional.of(lastToken));
 ```
 
 **Steps:**
 
-1. Gọi `authService.resendVerificationEmail("pending@test.com")`
+1. Gọi `authService.resendVerification(new ResendVerificationRequest("pending@test.com"))`
 
 **Expected:**
 
-- `tokenRepository.revokeAll(oldTokens)` được gọi TRƯỚC khi tạo token mới
-- `tokenRepository.save(newToken)` được gọi một lần
-- `emailService.sendVerificationEmail()` được gọi
+- `tokenRepository.deleteByStudentIdAndTokenType(studentId, EMAIL_VERIFICATION)` được gọi TRƯỚC khi tạo token mới
+- `tokenRepository.save(newToken)` được gọi một lần với `tokenValue` là chuỗi 6 chữ số mới, `expiresAt ≈ NOW() + 10 phút`
+- `eventPublisher.publishEvent(new SendVerificationEmailEvent(...))` được gọi
 
 ---
 
@@ -278,6 +288,40 @@ when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 - KHÔNG ném exception
 - `emailService` KHÔNG được gọi
 - Trả về "thành công" chung chung (HTTP 200 equivalent)
+
+---
+
+### TC-U-02-10 — Nhập sai mã OTP quá 5 lần liên tiếp → khoá, xoá token
+
+| Thuộc tính | Nội dung |
+|:---|:---|
+| **ID** | TC-U-02-10 |
+| **Tham chiếu** | BR-02-06 |
+| **Loại** | Unit — Service |
+| **Ưu tiên** | P0 — Security |
+
+**Setup:**
+
+```java
+StudentUser pendingUser = aStudent().withStatus("pending").build();
+when(studentUserRepository.findByEmail("pending@test.com")).thenReturn(Optional.of(pendingUser));
+
+AuthToken token = validEmailVerificationOtpToken("123456"); // chưa hết hạn
+when(tokenRepository.findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(
+        pendingUser.getId(), AuthToken.TokenType.EMAIL_VERIFICATION))
+    .thenReturn(Optional.of(token));
+```
+
+**Steps:**
+
+1. Gọi `authService.verifyEmail(new VerifyEmailRequest("pending@test.com", "000000"))` (sai) 5 lần liên tiếp
+2. Gọi lần thứ 6 với `otpCode = "000000"` (vẫn sai) hoặc thậm chí `"123456"` (đúng)
+
+**Expected:**
+
+- 5 lần đầu: mỗi lần ném `BusinessException(400, "INVALID_OTP", ...)`
+- Lần thứ 6: ném `BusinessException(429, "TOO_MANY_ATTEMPTS", ...)` — bất kể mã đúng hay sai
+- `tokenRepository.deleteByStudentIdAndTokenType(studentId, EMAIL_VERIFICATION)` được gọi ở lần thứ 6 (buộc phải gửi lại mã mới)
 
 ---
 
@@ -320,15 +364,15 @@ when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 
 **Steps:**
 
-1. Seed user `status = "pending"` và token `email_verification` hợp lệ
-2. Gọi `authService.verifyEmail(tokenValue)`
+1. Seed user `status = "pending"` và token `email_verification` (mã OTP 6 chữ số) còn hạn 10 phút
+2. Gọi `authService.verifyEmail(new VerifyEmailRequest(email, otpCode))`
 3. Query lại DB
 
 **Expected:**
 
 - `student_users.status = "active"`
 - `student_users.email_verified_at` IS NOT NULL
-- `auth_tokens.revoked_at` IS NOT NULL (token đã bị thu hồi)
+- Bản ghi `auth_tokens` (token_type='email_verification') của user đã bị **xoá hẳn** (không còn row, không phải set `revoked_at`)
 
 ---
 
@@ -485,7 +529,7 @@ HTTP 400
 
 ---
 
-### TC-A-02-07 — POST /api/auth/verify-email — token hợp lệ → HTTP 200
+### TC-A-02-07 — POST /api/auth/verify-email — mã OTP hợp lệ → HTTP 200
 
 | Thuộc tính | Nội dung |
 |:---|:---|
@@ -494,7 +538,13 @@ HTTP 400
 | **Loại** | API — Controller |
 | **Ưu tiên** | P0 |
 
-**Mock:** `authService.verifyEmail()` thành công
+**Request:**
+
+```json
+{ "email": "pending@test.com", "otpCode": "123456" }
+```
+
+**Mock:** `authService.verifyEmail()` thành công (không ném exception)
 
 **Expected:**
 
@@ -504,7 +554,7 @@ HTTP 200
 
 ---
 
-### TC-A-02-08 — POST /api/auth/verify-email — token hết hạn → HTTP 400
+### TC-A-02-08 — POST /api/auth/verify-email — mã OTP hết hạn → HTTP 400
 
 | Thuộc tính | Nội dung |
 |:---|:---|
@@ -513,14 +563,74 @@ HTTP 200
 | **Loại** | API — Controller |
 | **Ưu tiên** | P0 |
 
-**Mock:** `authService.verifyEmail()` ném `InvalidTokenException("EXPIRED")`
+**Request:**
+
+```json
+{ "email": "pending@test.com", "otpCode": "123456" }
+```
+
+**Mock:** `authService.verifyEmail()` ném `BusinessException(400, "OTP_EXPIRED", ...)`
 
 **Expected:**
 
 ```
 HTTP 400
-{ "errorCode": "INVALID_TOKEN" }
+{ "errorCode": "OTP_EXPIRED" }
 ```
+
+---
+
+### TC-A-02-08b — POST /api/auth/verify-email — mã OTP sai → HTTP 400
+
+| Thuộc tính | Nội dung |
+|:---|:---|
+| **ID** | TC-A-02-08b |
+| **Tham chiếu** | AC-02-09 |
+| **Loại** | API — Controller |
+| **Ưu tiên** | P0 |
+
+**Request:**
+
+```json
+{ "email": "pending@test.com", "otpCode": "000000" }
+```
+
+**Mock:** `authService.verifyEmail()` ném `BusinessException(400, "INVALID_OTP", ...)`
+
+**Expected:**
+
+```
+HTTP 400
+{ "errorCode": "INVALID_OTP" }
+```
+
+---
+
+### TC-A-02-08c — POST /api/auth/verify-email — sai OTP quá 5 lần → HTTP 429
+
+| Thuộc tính | Nội dung |
+|:---|:---|
+| **ID** | TC-A-02-08c |
+| **Tham chiếu** | BR-02-06 |
+| **Loại** | API — Controller |
+| **Ưu tiên** | P0 — Security |
+
+**Request:**
+
+```json
+{ "email": "pending@test.com", "otpCode": "000000" }
+```
+
+**Mock:** `authService.verifyEmail()` ném `BusinessException(429, "TOO_MANY_ATTEMPTS", ...)`
+
+**Expected:**
+
+```
+HTTP 429
+{ "errorCode": "TOO_MANY_ATTEMPTS" }
+```
+
+- Client phải điều hướng người dùng sang luồng "Gửi lại mã xác minh" (không thể thử lại mã cũ)
 
 ---
 
@@ -533,7 +643,13 @@ HTTP 400
 | **Loại** | API — Security |
 | **Ưu tiên** | P0 (Security) |
 
-**Mock:** `authService.resendVerificationEmail()` xử lý không ném exception
+**Request:**
+
+```json
+{ "email": "ghost@test.com" }
+```
+
+**Mock:** `authService.resendVerification()` xử lý không ném exception
 
 **Expected:**
 
@@ -545,7 +661,7 @@ HTTP 200
 
 ---
 
-### TC-A-02-10 — POST /api/auth/resend-verification — rate limit vượt → HTTP 429
+### TC-A-02-10 — POST /api/auth/resend-verification — chưa đủ 60 giây → HTTP 429
 
 | Thuộc tính | Nội dung |
 |:---|:---|
@@ -554,7 +670,13 @@ HTTP 200
 | **Loại** | API — Controller |
 | **Ưu tiên** | P1 |
 
-**Mock:** `authService.resendVerificationEmail()` ném `RateLimitExceededException`
+**Request:**
+
+```json
+{ "email": "pending@test.com" }
+```
+
+**Mock:** `authService.resendVerification()` ném `BusinessException(429, "TOO_MANY_REQUESTS", ...)` (chưa đủ 60 giây kể từ lần gửi trước)
 
 **Expected:**
 
@@ -612,7 +734,7 @@ HTTP 429
 
 ---
 
-### TC-F-02-02 — Sau đăng ký thành công, hiển thị thông báo kiểm tra email
+### TC-F-02-02 — Sau đăng ký thành công, điều hướng thẳng sang trang nhập mã OTP
 
 | Thuộc tính | Nội dung |
 |:---|:---|
@@ -629,8 +751,8 @@ HTTP 429
 
 **Expected:**
 
-- Hiển thị message "Kiểm tra email để xác minh" (hoặc tương tự)
-- Form đăng ký KHÔNG còn hiển thị
+- `navigate('/verify-email?email=<email>')` được gọi ngay (KHÔNG hiển thị card "kiểm tra email" inline như trước)
+- Form đăng ký KHÔNG còn hiển thị (đã điều hướng sang trang khác)
 
 ---
 
@@ -640,8 +762,9 @@ HTTP 429
 |:---|:---|:---|
 | BR-02-01: status = pending khi tạo mới | TC-U-02-01, TC-I-02-01 | ✅ |
 | BR-02-02: bcrypt cost ≥ 10 | TC-U-02-02 | ✅ |
-| BR-02-03: Token hết hạn sau 24h | TC-U-02-05 | ✅ |
-| BR-02-04: Token dùng một lần | TC-U-02-04 | ✅ |
-| BR-02-05: Rate limit 3 lần/giờ | TC-U-02-07 | ✅ |
+| BR-02-03: Mã OTP hết hạn sau 10 phút | TC-U-02-05 | ✅ |
+| BR-02-04: Mã OTP dùng một lần (xoá sau khi xác minh) | TC-U-02-04, TC-U-02-06 | ✅ |
+| BR-02-05: Rate limit gửi lại — 1 lần / 60 giây | TC-U-02-07 | ✅ |
+| BR-02-06: Khoá sau 5 lần nhập sai OTP liên tiếp | TC-U-02-10, TC-A-02-08c | ✅ |
 | BR-02-08: Resend không tiết lộ email | TC-U-02-09, TC-A-02-09 | ✅ |
-| BR-02-09: Thu hồi token cũ khi resend | TC-U-02-08 | ✅ |
+| BR-02-09: Xoá token cũ khi resend (không phải thu hồi) | TC-U-02-08 | ✅ |

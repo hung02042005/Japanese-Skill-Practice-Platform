@@ -54,12 +54,15 @@ const DEMO = {
 
 export const fetchDashboardThunk = createAsyncThunk(
   'student/fetchDashboard',
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
       const res = await getDashboard();
       return res.data;
-    } catch {
-      return DEMO;
+    } catch (err) {
+      // Backend chưa sẵn sàng → dùng demo để không vỡ UI (giống vocab-home/courses).
+      // Lỗi thật (500, network, auth...) phải hiện rõ cho người dùng, không âm thầm che bằng data giả.
+      if (err?.response?.status === 404) return DEMO;
+      return rejectWithValue(err?.response?.data?.message ?? 'Không thể tải Dashboard.');
     }
   },
 );
@@ -153,6 +156,7 @@ const studentSlice = createSlice({
     builder
       .addCase(fetchDashboardThunk.pending, (state) => {
         state.status = 'loading';
+        state.error = null;
       })
       .addCase(fetchDashboardThunk.fulfilled, (state, action) => {
         state.status = 'succeeded';

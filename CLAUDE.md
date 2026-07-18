@@ -55,7 +55,7 @@
         ┌─────────────────────┼──────────────────────┐
         ▼                     ▼                      ▼
 ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│   SQL Server    │  │  File Storage   │  │  Email SMTP     │
+│    MySQL 8      │  │  File Storage   │  │  Email SMTP     │
 │  (Primary DB)   │  │  (/uploads, S3) │  │  (Notification) │
 └─────────────────┘  └─────────────────┘  └─────────────────┘
 ```
@@ -221,6 +221,32 @@ Student → Upload image
 
 **Decision**: `@ControllerAdvice` bắt tất cả exceptions
 **Format**: `{ status, message, data }`
+**Status**: ✅ Active
+
+---
+
+### ADR-009: SQL Server → MySQL 8
+
+**Decision**: Chuyển toàn bộ từ SQL Server sang **MySQL 8.4 (LTS)**
+**Thay thế**: ADR-001 phần Database
+
+**Ràng buộc bắt buộc** (vi phạm là hỏng dữ liệu, không phải hỏng build):
+
+1. **MySQL >= 8.0.16** — schema dùng `CHECK constraint` rất nhiều; MySQL cũ hơn *parse rồi bỏ qua im lặng*, dữ liệu sai lọt vào DB mà không báo lỗi.
+2. **utf8mb4 / utf8mb4_unicode_ci trên mọi bảng** — `NVARCHAR` của SQL Server là Unicode mặc định, `VARCHAR` của MySQL thì **không**. Sai charset → kanji bị ghi thành `?`, mất dữ liệu im lặng. Khai báo cả 3 tầng: server (docker command), mỗi `CREATE TABLE`, và JDBC URL.
+3. **Container chạy UTC** (`--default-time-zone=+00:00`) — `SYSUTCDATETIME()` cũ là UTC, `CURRENT_TIMESTAMP` của MySQL là giờ local server. Không ép UTC thì mọi timestamp lệch +7h.
+4. **`ddl-auto: validate`, không phải `update`** — trên MySQL, `update` tự tạo bảng thiếu charset, phá vỡ điều 2.
+
+**Khác biệt phải biết khi sửa migration**:
+
+| SQL Server | MySQL | Ghi chú |
+|---|---|---|
+| Filtered index (`CREATE INDEX ... WHERE`) | **Không có** | Unique filtered index → dùng generated column trả NULL ngoài phạm vi filter (xem `flashcard_decks`) |
+| `'a' + 'b'` nối chuỗi | `+` là **phép cộng số học** | Bắt buộc `CONCAT()` — nếu không, MySQL ghi `0` mà không báo lỗi |
+| DDL trong transaction, rollback được | **Không** | Migration lỗi giữa chừng để lại schema dở dang → phải test trên DB trống |
+| `IF NOT EXISTS (...) INSERT` | Không chạy ngoài stored proc | Dùng `INSERT IGNORE` (khi có UNIQUE) hoặc `INSERT ... SELECT ... WHERE NOT EXISTS` |
+
+**Chi tiết**: `docs/02-SDD-Architecture/database-design/MYSQL_MIGRATION_PLAN.md`
 **Status**: ✅ Active
 
 ---
@@ -474,6 +500,7 @@ ExamAttempt (student_id, exam_id, score, timestamps)
 | ADR-006 | File Media Storage | ✅ Active | 2026-05-27 |
 | ADR-007 | OCR Similarity Only | ✅ Active | 2026-05-27 |
 | ADR-008 | Global Exception Handler | ✅ Active | 2026-05-27 |
+| ADR-009 | SQL Server → MySQL 8 | ✅ Active | 2026-07-16 |
 
 ---
 

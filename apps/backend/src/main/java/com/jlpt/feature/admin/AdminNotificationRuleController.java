@@ -40,7 +40,7 @@ public class AdminNotificationRuleController {
     public ResponseEntity<ApiResponse<NotificationRuleResponse>> create(
             Authentication authentication, @Valid @RequestBody NotificationRuleRequest req) {
         NotificationRuleResponse data = notificationRuleService.createRule(req, currentAdminId(authentication));
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Da tao quy tac thong bao", data));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Da tao quy tac thong bao", data));
     }
 
     @PutMapping("/{ruleKey}")

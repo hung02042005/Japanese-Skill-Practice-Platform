@@ -1,8 +1,8 @@
 # UC-02 — Đăng Ký Tài Khoản (User Register)
 
-> **Feature:** `feat-auth` | **Phiên bản:** 1.0 | **Trạng thái:** Draft
+> **Feature:** `feat-auth` | **Phiên bản:** 2.0 | **Trạng thái:** Draft
 > **Tham chiếu FR:** FR-AUTH-10, FR-AUTH-11, FR-AUTH-12, FR-AUTH-13, FR-AUTH-14
-> **Cập nhật:** 2026-05-30
+> **Cập nhật:** 2026-07-12 — thay cơ chế xác minh email từ **link (token UUID)** sang **mã OTP 6 số nhập tay**
 
 ---
 
@@ -13,7 +13,7 @@
 | **Mã Use Case** | UC-02 |
 | **Tên** | Đăng Ký Tài Khoản (User Register) |
 | **Tác nhân chính** | Khách (Guest) — người dùng chưa có tài khoản |
-| **Mô tả ngắn** | Khách tạo tài khoản mới bằng Email/Mật khẩu và xác minh qua email trước khi được phép đăng nhập |
+| **Mô tả ngắn** | Khách tạo tài khoản mới bằng Email/Mật khẩu và xác minh bằng mã OTP 6 số gửi qua email trước khi được phép đăng nhập |
 | **Độ ưu tiên** | Rất cao (P0) — điều kiện tiên quyết để sử dụng hệ thống |
 
 ---
@@ -25,7 +25,7 @@
 | Tác nhân | Vai trò |
 |:---|:---|
 | **Khách** | Người chủ động đăng ký tài khoản |
-| **Hệ thống Email** | Gửi email xác minh chứa liên kết kích hoạt |
+| **Hệ thống Email** | Gửi email chứa mã OTP 6 số để kích hoạt tài khoản |
 
 ### 2.2 Điều Kiện Tiền Quyết (Preconditions)
 
@@ -35,8 +35,8 @@
 
 ### 2.3 Hậu Điều Kiện (Postconditions)
 
-- **Đăng ký thành công:** Bản ghi `student_users` mới với `status = 'pending'` được tạo; email xác minh được gửi
-- **Xác minh email thành công:** `status` chuyển sang `'active'`; token xác minh bị vô hiệu hoá; tài khoản có thể đăng nhập
+- **Đăng ký thành công:** Bản ghi `student_users` mới với `status = 'pending'` được tạo; email chứa mã OTP được gửi
+- **Xác minh email thành công:** `status` chuyển sang `'active'`; mã OTP bị xoá khỏi hệ thống; tài khoản có thể đăng nhập
 - **Thất bại:** Không tạo tài khoản; hiển thị lỗi cụ thể
 
 ---
@@ -56,43 +56,47 @@ Bước 6 [Backend]:    Tạo bản ghi student_users mới:
                         - password_hash = <bcrypt hash>
                         - email_verified_at = NULL
                         - created_at = NOW()
-Bước 7 [Backend]:    Tạo token xác minh email:
-                        - token_value = random URL-safe string (≥ 32 bytes)
+Bước 7 [Backend]:    Sinh mã OTP xác minh email:
+                        - token_value = 6 chữ số ngẫu nhiên (SecureRandom, "000000"–"999999")
                         - token_type = 'email_verification'
-                        - expires_at = NOW() + 24 giờ
+                        - expires_at = NOW() + 10 phút
                       Lưu vào auth_tokens
-Bước 8 [Backend]:    Gửi email xác minh chứa liên kết:
-                        {BASE_URL}/verify-email?token={token_value}
+Bước 8 [Backend]:    Gửi email chứa mã OTP (không có liên kết) đến địa chỉ vừa đăng ký
 Bước 9 [Backend]:    Trả về HTTP 201 với studentId và email
-Bước 10 [Frontend]:  Hiển thị thông báo "Đăng ký thành công. Kiểm tra email để xác minh tài khoản."
+Bước 10 [Frontend]:  Chuyển hướng ngay sang trang `/verify-email?email={email}` để khách nhập mã
 ```
 
-### 3.2 Luồng Phụ A — Xác Minh Email (Kích Hoạt Tài Khoản)
+### 3.2 Luồng Phụ A — Xác Minh Email Bằng Mã OTP (Kích Hoạt Tài Khoản)
 
 ```
-Bước 1 [Khách]:      Mở email, nhấp vào liên kết xác minh
-Bước 2 [Frontend]:   Đọc token từ query string, gửi POST /api/auth/verify-email {token}
-Bước 3 [Backend]:    Tìm bản ghi trong auth_tokens theo token_value và token_type = 'email_verification'
-Bước 4 [Backend]:    Kiểm tra token chưa bị thu hồi (revoked_at IS NULL)
-Bước 5 [Backend]:    Kiểm tra token chưa hết hạn (expires_at > NOW())
-Bước 6 [Backend]:    Cập nhật student_users:
+Bước 1 [Khách]:      Mở email, đọc mã OTP 6 số, quay lại trang /verify-email và nhập mã
+Bước 2 [Frontend]:   Gửi POST /api/auth/verify-email {email, otpCode}
+Bước 3 [Backend]:    Tìm student_users theo email; nếu status = 'active' → coi như đã xác minh (idempotent), trả 200
+Bước 4 [Backend]:    Lấy token EMAIL_VERIFICATION mới nhất của user (mỗi user chỉ có tối đa 1 token hiệu lực tại một thời điểm)
+Bước 5 [Backend]:    Kiểm tra token chưa hết hạn (expires_at > NOW()); nếu hết hạn → lỗi OTP_EXPIRED
+Bước 6 [Backend]:    Tăng bộ đếm số lần nhập sai (in-memory theo studentId); nếu vượt quá 5 lần →
+                      xoá token hiện tại, trả lỗi TOO_MANY_ATTEMPTS (bắt buộc gửi lại mã mới)
+Bước 7 [Backend]:    So khớp otpCode với token_value; nếu sai → lỗi INVALID_OTP (không tiết lộ lý do chi tiết hơn)
+Bước 8 [Backend]:    Nếu khớp — cập nhật student_users:
                         - status = 'active'
                         - email_verified_at = NOW()
-Bước 7 [Backend]:    Thu hồi token: revoked_at = NOW()
-Bước 8 [Backend]:    Trả về HTTP 200 — thành công
-Bước 9 [Frontend]:   Hiển thị "Xác minh thành công!" và chuyển hướng đến trang Đăng nhập
+                      Xoá TẤT CẢ token EMAIL_VERIFICATION của user (không chỉ token vừa dùng)
+                      Xoá bộ đếm số lần nhập sai
+Bước 9 [Backend]:    Trả về HTTP 200 — thành công
+Bước 10 [Frontend]:  Hiển thị "Xác minh thành công!" và chuyển hướng đến trang Đăng nhập
 ```
 
-### 3.3 Luồng Phụ B — Gửi Lại Email Xác Minh
+### 3.3 Luồng Phụ B — Gửi Lại Mã OTP
 
 ```
-Bước 1 [Khách]:      Nhấn "Gửi lại email xác minh" trên trang thông báo hoặc trang đăng nhập
+Bước 1 [Khách]:      Nhấn "Gửi lại mã xác minh" trên trang /verify-email hoặc từ banner ở trang đăng nhập
 Bước 2 [Frontend]:   Gửi POST /api/auth/resend-verification {email}
-Bước 3 [Backend]:    Kiểm tra tài khoản tồn tại và status = 'pending'
-Bước 4 [Backend]:    Kiểm tra rate limit: chưa gửi quá 3 lần trong 1 giờ qua (đếm token loại 'email_verification' tạo trong 1 giờ gần nhất)
-Bước 5 [Backend]:    Thu hồi tất cả token 'email_verification' cũ còn hợp lệ của user này
-Bước 6 [Backend]:    Tạo token mới (như Bước 7 luồng chính), gửi email
-Bước 7 [Backend]:    Trả về HTTP 200 — (luôn trả 200 dù email không tồn tại để tránh enumeration)
+Bước 3 [Backend]:    Kiểm tra tài khoản tồn tại và status = 'pending' (im lặng bỏ qua nếu không, tránh enumeration)
+Bước 4 [Backend]:    Kiểm tra rate limit: token EMAIL_VERIFICATION gần nhất phải được tạo cách đây ≥ 60 giây
+Bước 5 [Backend]:    Xoá tất cả token 'email_verification' cũ của user này
+Bước 6 [Backend]:    Sinh mã OTP mới (như Bước 7 luồng chính, hết hạn sau 10 phút), gửi email
+Bước 7 [Backend]:    Trả về HTTP 200 — (luôn trả 200 dù email không tồn tại để tránh enumeration;
+                      riêng lỗi rate limit 429 vẫn được trả về khi tài khoản có tồn tại và đang PENDING)
 ```
 
 ### 3.4 Luồng Lỗi — Email Đã Tồn Tại
@@ -115,14 +119,22 @@ Bước X  [Backend]:   Trả về HTTP 422 — WEAK_PASSWORD
                       "Mật khẩu quá yếu: cần tối thiểu 8 ký tự, ít nhất 1 chữ hoa và 1 chữ số"
 ```
 
-### 3.6 Luồng Lỗi — Token Xác Minh Hết Hạn
+### 3.6 Luồng Lỗi — Mã OTP Hết Hạn
 
 > **Tham chiếu:** FR-AUTH-14
 
 ```
 Bước 5 [Backend]:    expires_at < NOW()
-Bước X  [Backend]:   Trả về HTTP 400 — INVALID_TOKEN
-                      "Liên kết xác minh đã hết hạn. Vui lòng yêu cầu gửi lại email xác minh."
+Bước X  [Backend]:   Trả về HTTP 400 — OTP_EXPIRED
+                      "Mã xác minh đã hết hạn, vui lòng yêu cầu gửi lại"
+```
+
+### 3.7 Luồng Lỗi — Nhập Sai Mã OTP Quá Nhiều Lần
+
+```
+Bước 6 [Backend]:    Số lần nhập sai liên tiếp vượt quá 5 lần
+Bước X  [Backend]:   Xoá token hiện tại, trả về HTTP 429 — TOO_MANY_ATTEMPTS
+                      "Nhập sai quá nhiều lần. Vui lòng yêu cầu gửi lại mã mới"
 ```
 
 ---
@@ -133,13 +145,13 @@ Bước X  [Backend]:   Trả về HTTP 400 — INVALID_TOKEN
 |:---|:---|:---|
 | BR-02-01 | Tài khoản mới luôn được tạo với `status = 'pending'` | Bắt buộc xác minh email trước khi đăng nhập |
 | BR-02-02 | Mật khẩu bcrypt với cost factor **≥ 10** | → FR-AUTH-06 |
-| BR-02-03 | Token xác minh email: random URL-safe string **≥ 32 bytes**, hết hạn sau **24 giờ** | → FR-AUTH-13, NFR-AUTH-05 |
-| BR-02-04 | Một token xác minh chỉ sử dụng **một lần** | Sau khi dùng phải set `revoked_at` |
-| BR-02-05 | Rate limit gửi lại email xác minh: tối đa **3 lần/giờ/tài khoản** | Chống spam email |
-| BR-02-06 | Liên kết xác minh email phải dùng **HTTPS** trong môi trường production | Bảo mật token trong transit |
+| BR-02-03 | Mã OTP xác minh email: 6 chữ số sinh bằng `SecureRandom`, hết hạn sau **10 phút** | → FR-AUTH-13, NFR-AUTH-05 |
+| BR-02-04 | Một mã OTP chỉ sử dụng được **một lần**; sau khi xác minh thành công, xoá toàn bộ token EMAIL_VERIFICATION của user | Tránh tái sử dụng |
+| BR-02-05 | Rate limit gửi lại mã OTP: tối đa **1 lần / 60 giây / tài khoản** | Chống spam email, nhất quán với `forgotPassword` |
+| BR-02-06 | Giới hạn tối đa **5 lần** nhập sai OTP; vượt quá → xoá token, bắt buộc gửi lại mã mới | Chống brute-force mã 6 số (1 triệu khả năng) |
 | BR-02-07 | Tên đầy đủ (`full_name`): tối đa 150 ký tự, không chứa ký tự đặc biệt nguy hiểm | Theo schema DB |
-| BR-02-08 | Gửi lại email xác minh luôn trả HTTP 200 dù tài khoản không tồn tại | Chống email enumeration |
-| BR-02-09 | Khi gửi lại, thu hồi token cũ chưa hết hạn trước khi tạo token mới | Tránh nhiều token hợp lệ song song |
+| BR-02-08 | Gửi lại mã OTP luôn trả HTTP 200 dù tài khoản không tồn tại | Chống email enumeration |
+| BR-02-09 | Khi gửi lại, xoá token cũ trước khi tạo token OTP mới | Đảm bảo mỗi user chỉ có 1 token EMAIL_VERIFICATION hiệu lực tại một thời điểm |
 
 ---
 
@@ -203,46 +215,58 @@ sequenceDiagram
             AS->>UR: save(StudentUser{status='pending', passwordHash, ...})
             UR-->>AS: StudentUser đã lưu
 
-            AS->>AS: generateVerificationToken() → 32-byte URL-safe string
-            AS->>TR: save(token, studentId, type='email_verification', expires=+24h)
+            AS->>AS: generateEmailOtpCode() → 6 chữ số (SecureRandom)
+            AS->>TR: save(otpCode, studentId, type='email_verification', expires=+10min)
             TR-->>AS: OK
 
-            AS->>ES: sendVerificationEmail(email, verificationLink)
+            AS->>ES: sendVerificationEmail(email, otpCode)
             ES-->>AS: OK (async)
 
             AS-->>AC: RegisterResponse(studentId, email)
             AC-->>FE: HTTP 201 Created
-            FE-->>Khach: "Đăng ký thành công! Kiểm tra email để xác minh."
+            FE-->>Khach: Chuyển hướng sang /verify-email?email=... để nhập mã
         end
     end
 
-    Note over Khach,ES: Sau khi nhận email...
+    Note over Khach,ES: Sau khi nhận email chứa mã OTP...
 
-    Khach->>FE: Nhấp liên kết xác minh trong email
-    FE->>AC: POST /api/auth/verify-email {token}
-    AC->>AS: verifyEmail(token)
-    AS->>TR: findByTokenValue(token, type='email_verification')
+    Khach->>FE: Nhập email + mã OTP 6 số trên trang /verify-email
+    FE->>AC: POST /api/auth/verify-email {email, otpCode}
+    AC->>AS: verifyEmail(email, otpCode)
+    AS->>UR: findByEmail(email)
 
-    alt Token không tìm thấy
-        TR-->>AS: null
-        AS-->>AC: throw InvalidTokenException
-        AC-->>FE: HTTP 400 INVALID_TOKEN
-        FE-->>Khach: "Liên kết không hợp lệ"
-    else Token tìm thấy
-        TR-->>AS: AuthToken entity
-        AS->>AS: Kiểm tra revoked_at IS NULL
-        AS->>AS: Kiểm tra expires_at > NOW()
+    alt Tài khoản không tồn tại
+        UR-->>AS: empty
+        AS-->>AC: throw BusinessException(INVALID_OTP)
+        AC-->>FE: HTTP 400 INVALID_OTP
+        FE-->>Khach: "Mã xác minh không đúng"
+    else Tài khoản tồn tại
+        UR-->>AS: StudentUser
+        AS->>TR: findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(studentId, EMAIL_VERIFICATION)
 
-        alt Token đã hết hạn hoặc đã dùng
-            AS-->>AC: throw InvalidTokenException(reason)
-            AC-->>FE: HTTP 400 INVALID_TOKEN
-            FE-->>Khach: "Liên kết đã hết hạn. Yêu cầu gửi lại."
-        else Token hợp lệ
-            AS->>UR: updateStatus(studentId, status='active', emailVerifiedAt=NOW())
-            AS->>TR: revoke(tokenId, revokedAt=NOW())
-            AS-->>AC: VerifyEmailResponse(success=true)
-            AC-->>FE: HTTP 200 OK
-            FE-->>Khach: "Xác minh thành công! Chuyển đến đăng nhập..."
+        alt Không có token hoặc đã hết hạn
+            AS-->>AC: throw BusinessException(OTP_EXPIRED)
+            AC-->>FE: HTTP 400 OTP_EXPIRED
+            FE-->>Khach: "Mã đã hết hạn. Yêu cầu gửi lại."
+        else Token còn hiệu lực
+            AS->>AS: Tăng bộ đếm nhập sai theo studentId
+
+            alt Vượt quá 5 lần nhập sai
+                AS->>TR: deleteByStudentIdAndTokenType(studentId, EMAIL_VERIFICATION)
+                AS-->>AC: throw BusinessException(TOO_MANY_ATTEMPTS)
+                AC-->>FE: HTTP 429 TOO_MANY_ATTEMPTS
+                FE-->>Khach: "Nhập sai quá nhiều lần. Yêu cầu gửi lại mã mới."
+            else otpCode không khớp
+                AS-->>AC: throw BusinessException(INVALID_OTP)
+                AC-->>FE: HTTP 400 INVALID_OTP
+                FE-->>Khach: "Mã xác minh không đúng"
+            else otpCode khớp
+                AS->>UR: updateStatus(studentId, status='active', emailVerifiedAt=NOW())
+                AS->>TR: deleteByStudentIdAndTokenType(studentId, EMAIL_VERIFICATION)
+                AS-->>AC: VerifyEmailResponse(success=true)
+                AC-->>FE: HTTP 200 OK
+                FE-->>Khach: "Xác minh thành công! Chuyển đến đăng nhập..."
+            end
         end
     end
 ```
@@ -272,8 +296,8 @@ sequenceDiagram
 - **Thì:**
   - Nhận HTTP 201
   - Bản ghi `student_users` mới với `status = 'pending'`, `email = 'new@test.com'`
-  - Bản ghi `auth_tokens` với `token_type = 'email_verification'`, `expires_at = NOW() + 24h`
-  - Email xác minh được gửi đến `new@test.com`
+  - Bản ghi `auth_tokens` với `token_type = 'email_verification'`, `token_value` là chuỗi 6 chữ số, `expires_at = NOW() + 10 phút`
+  - Email chứa mã OTP được gửi đến `new@test.com`
   - Response chứa `studentId` và `email`
 
 ---
@@ -315,61 +339,71 @@ sequenceDiagram
 
 ---
 
-### AC-02-05 — Xác minh email với token hợp lệ
+### AC-02-05 — Xác minh email với mã OTP hợp lệ
 
 > **Tham chiếu:** FR-AUTH-13
 
-- **Cho trước:** Tài khoản `status = 'pending'`, token xác minh hợp lệ còn trong hạn
-- **Khi:** Gửi POST `/api/auth/verify-email` với token đúng
+- **Cho trước:** Tài khoản `status = 'pending'`, mã OTP hợp lệ còn trong hạn 10 phút
+- **Khi:** Gửi POST `/api/auth/verify-email` với `{email, otpCode}` đúng
 - **Thì:**
   - Nhận HTTP 200
   - `student_users.status` chuyển thành `'active'`
   - `student_users.email_verified_at` được cập nhật
-  - Token trong `auth_tokens` bị thu hồi (`revoked_at` được đặt)
+  - Toàn bộ token `EMAIL_VERIFICATION` của user bị xoá khỏi `auth_tokens`
   - Tài khoản có thể đăng nhập thành công
 
 ---
 
-### AC-02-06 — Token xác minh hết hạn
+### AC-02-06 — Mã OTP hết hạn
 
 > **Tham chiếu:** FR-AUTH-14
 
-- **Cho trước:** Token xác minh được tạo hơn 24 giờ trước
-- **Khi:** Gửi POST `/api/auth/verify-email` với token đã hết hạn
+- **Cho trước:** Mã OTP được tạo hơn 10 phút trước
+- **Khi:** Gửi POST `/api/auth/verify-email` với mã đã hết hạn
 - **Thì:**
   - Nhận HTTP 400
-  - `error_code = "INVALID_TOKEN"`
-  - Thông báo hướng dẫn gửi lại email
+  - `error_code = "OTP_EXPIRED"`
+  - Thông báo hướng dẫn gửi lại mã
   - `student_users.status` KHÔNG thay đổi
 
 ---
 
-### AC-02-07 — Token xác minh đã được dùng (dùng lại)
+### AC-02-07 — Mã OTP đã được dùng (dùng lại)
 
-- **Cho trước:** Token đã được dùng một lần thành công (status = 'active', revoked_at đã được đặt)
-- **Khi:** Gửi lại POST `/api/auth/verify-email` với cùng token đó
+- **Cho trước:** Mã OTP đã được dùng một lần thành công (status = 'active', token đã bị xoá)
+- **Khi:** Gửi lại POST `/api/auth/verify-email` với cùng mã đó
 - **Thì:**
   - Nhận HTTP 400
-  - `error_code = "INVALID_TOKEN"`
+  - `error_code = "OTP_EXPIRED"` (không còn token nào để đối chiếu)
   - `student_users.status` KHÔNG thay đổi lần thứ hai
 
 ---
 
-### AC-02-08 — Gửi lại email bị giới hạn tần suất
+### AC-02-08 — Gửi lại mã OTP bị giới hạn tần suất
 
-- **Cho trước:** Tài khoản `status = 'pending'`, đã gửi lại 3 lần trong vòng 1 giờ
-- **Khi:** Yêu cầu gửi lại lần thứ 4 trong giờ đó
+- **Cho trước:** Tài khoản `status = 'pending'`, vừa yêu cầu gửi lại mã cách đây < 60 giây
+- **Khi:** Yêu cầu gửi lại mã lần nữa trong khoảng thời gian đó
 - **Thì:**
   - Nhận HTTP 429
   - `error_code = "TOO_MANY_REQUESTS"`
-  - Thông báo thời gian chờ
+  - Thông báo thời gian chờ (60 giây)
+
+---
+
+### AC-02-09 — Nhập sai mã OTP quá nhiều lần
+
+- **Cho trước:** Tài khoản `status = 'pending'`, đã nhập sai mã OTP 5 lần liên tiếp
+- **Khi:** Gửi POST `/api/auth/verify-email` lần thứ 6 (dù đúng hay sai)
+- **Thì:**
+  - Nhận HTTP 429
+  - `error_code = "TOO_MANY_ATTEMPTS"`
+  - Token OTP hiện tại bị xoá — bắt buộc gọi `/api/auth/resend-verification` để nhận mã mới
 
 ---
 
 ## 9. Ngoài Phạm Vi (Out of Scope)
 
-- ❌ Đăng ký bằng số điện thoại/OTP — Phase 2
+- ❌ Đăng ký bằng số điện thoại/OTP SMS — Phase 2 (OTP hiện tại chỉ gửi qua **email**)
 - ❌ Đăng ký qua OAuth (Google đăng ký) — đã xử lý trong UC-01 (auto-register khi OAuth lần đầu)
-- ❌ Xác minh email qua SMS — Phase 2
 - ❌ Captcha/reCAPTCHA — có thể thêm ở Phase 2
 - ❌ Admin/Staff tạo tài khoản — xem `feat-system-admin`

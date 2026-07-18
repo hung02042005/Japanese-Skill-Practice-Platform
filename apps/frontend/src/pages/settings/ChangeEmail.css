@@ -1,0 +1,106 @@
+/* ===== Change Email (SakuJi Hanami Theme) ===== */
+
+.ce-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  font-family: var(--font-base);
+}
+
+.ce-body {
+  flex: 1;
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 32px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.ce-back-link { font-size: 13px; color: var(--color-text-sub); text-decoration: none; font-weight: 600; }
+.ce-back-link:hover { color: var(--color-primary); }
+
+.ce-title { font-size: 24px; font-weight: 700; color: var(--color-text); margin: 0; }
+
+.ce-card {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 28px;
+}
+
+.ce-api-error {
+  background: #FFEAEA; border: 1px solid var(--color-error);
+  border-radius: var(--radius-md); padding: 12px 16px;
+  font-size: 13px; color: var(--color-error); margin-bottom: 20px;
+}
+
+.ce-form { display: flex; flex-direction: column; gap: 20px; }
+
+.ce-field { display: flex; flex-direction: column; gap: 6px; }
+.ce-label { font-size: 13px; font-weight: 600; color: var(--color-text); display: flex; align-items: center; gap: 4px; }
+.ce-required { color: var(--color-error); }
+
+.ce-input {
+  height: 44px; padding: 0 14px;
+  border: 1.5px solid var(--color-border); border-radius: var(--radius-md);
+  background: var(--color-bg); font-family: var(--font-base); font-size: 14px; color: var(--color-text);
+  width: 100%; box-sizing: border-box;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.ce-input:focus {
+  outline: none; border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(232,154,170,0.15); background: var(--color-card);
+}
+
+.ce-input--otp {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 8px;
+  text-align: center;
+}
+
+.ce-otp-hint {
+  font-size: 13px;
+  color: var(--color-text-sub);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.ce-resend-link {
+  align-self: flex-start;
+  background: none; border: none; padding: 0;
+  font-family: var(--font-base); font-size: 13px; font-weight: 700;
+  color: var(--color-primary); cursor: pointer;
+}
+.ce-resend-link:hover:not(:disabled) { color: var(--color-primary-dark); text-decoration: underline; }
+.ce-resend-link:disabled { color: var(--color-text-disabled); cursor: not-allowed; }
+
+.ce-submit-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  height: 44px; background: var(--color-primary); color: white; border: none;
+  border-radius: var(--radius-full); font-family: var(--font-base); font-size: 14px; font-weight: 700;
+  cursor: pointer; box-shadow: 0 2px 8px rgba(93,187,105,0.25);
+  transition: filter var(--transition), transform var(--transition);
+}
+.ce-submit-btn:hover:not(:disabled) { filter: brightness(1.07); }
+.ce-submit-btn:active:not(:disabled) { transform: scale(0.97); }
+.ce-submit-btn:disabled { opacity: 0.60; cursor: not-allowed; }
+
+.ce-spinner {
+  display: inline-block; width: 16px; height: 16px;
+  border: 2.5px solid rgba(255,255,255,0.35); border-top-color: white;
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 767px) {
+  .ce-body { padding: 16px 16px 32px; }
+  .ce-card { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ce-page * { animation: none !important; transition-duration: 0ms !important; }
+}

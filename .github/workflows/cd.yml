@@ -55,7 +55,7 @@ jobs:
           # 3. Kiểm tra file .env (BẮT BUỘC để chạy docker compose)
           if [ ! -f ".env" ]; then
             echo "LỖI NGHIÊM TRỌNG: Không tìm thấy file .env tại $(pwd)/.env"
-            echo "Bạn phải tạo file .env trên VPS chứa biến MSSQL_SA_PASSWORD."
+            echo "Bạn phải tạo file .env trên VPS chứa MYSQL_ROOT_PASSWORD, MYSQL_USER, MYSQL_PASSWORD."
             exit 1
           fi
           
@@ -72,14 +72,17 @@ jobs:
           echo "Đang khởi động Database và Redis..."
           docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d db redis
           
-          # Đợi DB sẵn sàng và tạo Database JLPT_LearningDB (Fix triệt để lỗi crash-loop)
-          echo "Đang chờ DB sẵn sàng và tạo cơ sở dữ liệu..."
+          # Đợi DB sẵn sàng (Fix triệt để lỗi crash-loop)
+          # Không cần CREATE DATABASE thủ công như bản SQL Server: biến
+          # MYSQL_DATABASE trong docker-compose.yml đã tự tạo JLPT_LearningDB
+          # ngay lúc container init. Ở đây chỉ cần chờ MySQL nhận connection.
+          echo "Đang chờ DB sẵn sàng..."
           set -a
           source .env
           set +a
           MAX_RETRIES=30
           RETRY_COUNT=0
-          until docker exec jlpt-db /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -C -Q "IF NOT EXISTS(SELECT * FROM sys.databases WHERE name='JLPT_LearningDB') CREATE DATABASE JLPT_LearningDB"; do
+          until docker exec jlpt-db mysqladmin ping -h 127.0.0.1 -u root -p"$MYSQL_ROOT_PASSWORD" --silent; do
             if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
               echo "LỖI: DB không sẵn sàng sau 150 giây."
               exit 1
@@ -93,6 +96,11 @@ jobs:
           # 6. Build và khởi động các service còn lại (backend, frontend)
           echo "Đang build và khởi động Backend, Frontend..."
           docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build backend frontend
+
+          # Đồng bộ các file audio tĩnh vào backend container volume
+          echo "Đang đồng bộ file audio tĩnh vào backend container..."
+          docker cp apps/backend/uploads/audio jlpt-backend:/app/uploads/
+
 
           # 7. POST-DEPLOY SMOKE TEST (P0.1 — xem Deploy_Improvement_Plan.md)
           # `docker compose up -d` chỉ đợi container được TẠO, không đợi ứng dụng

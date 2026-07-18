@@ -1,0 +1,16 @@
+/* (c) JLPT E-Learning Platform */
+package com.jlpt.feature.auth.dto.request;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class ConfirmEmailChangeRequest {
+    @NotBlank(message = "Email mới là bắt buộc")
+    @Email(message = "Email không hợp lệ")
+    private String newEmail;
+
+    @NotBlank(message = "Mã OTP là bắt buộc")
+    private String otpCode;
+}

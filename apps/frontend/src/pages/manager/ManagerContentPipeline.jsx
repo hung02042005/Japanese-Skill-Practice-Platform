@@ -1,4 +1,4 @@
-﻿import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ManagerTopNav from '../../components/layout/ManagerTopNav';
 import { JlptBadge } from '../../components/common/Badges';
@@ -19,6 +19,8 @@ const TYPE_META = {
   grammar:    { label: 'Ngữ pháp', bg: '#F3E5F5', text: '#6A1B9A' },
   kanji:      { label: 'Kanji',   bg: '#FCE4EC', text: '#C62828' },
   exam:       { label: 'Đề thi',  bg: '#FFF3E0', text: '#E65100' },
+  quiz:       { label: 'Quiz',    bg: '#E8EAF6', text: '#283593' },
+  assessment: { label: 'Bài kiểm', bg: '#E8EAF6', text: '#283593' },
 };
 
 function TypeChip({ type }) {
@@ -41,6 +43,7 @@ export default function ManagerContentPipeline() {
   const [levelFilter, setLevel]   = useState('');
   const [currentPage, setPage]    = useState(1);
   const [actionMsg,   setActionMsg] = useState('');
+  const [pendingId,   setPendingId] = useState(null);
 
   const fetchData = useCallback(() => {
     return dispatch(fetchPublishedContentsThunk({
@@ -61,30 +64,63 @@ export default function ManagerContentPipeline() {
   };
 
   async function handleUnpublish(item) {
-    if (!window.confirm(`Hủy xuất bản: ${item.titleOrText ?? item.title}?`)) return;
+    const title = item.titleOrText ?? item.title;
+    if (!window.confirm(`Hủy xuất bản: ${title}?`)) return;
+    const reason = window.prompt('Nhập lý do hủy xuất bản (tùy chọn):', '') ?? '';
+    setPendingId(item.contentId);
     try {
       await dispatch(changePublishedStatusThunk({
         contentId: item.contentId,
-        payload: { newStatus: 'archived' },
+        payload: { contentType: item.contentType, status: 'archived', reason: reason.trim() || undefined },
       })).unwrap();
-      setActionMsg(`Đã hủy xuất bản: ${item.titleOrText ?? item.title}`);
+      setActionMsg(`Đã hủy xuất bản: ${title}`);
       fetchData();
     } catch (err) {
-      setActionMsg(err || 'Lỗi khi hủy xuất bản');
+      setActionMsg(typeof err === 'string' ? err : 'Có lỗi xảy ra khi hủy xuất bản, vui lòng thử lại.');
+    } finally {
+      setPendingId(null);
     }
   }
 
   async function handleRestore(item) {
-    if (!window.confirm(`Khôi phục: ${item.titleOrText ?? item.title}?`)) return;
+    const title = item.titleOrText ?? item.title;
+    if (!window.confirm(`Khôi phục: ${title}?`)) return;
+    setPendingId(item.contentId);
     try {
       await dispatch(restorePublishedContentThunk({
         contentId: item.contentId,
-        payload: { targetStatus: 'published' },
+        payload: { contentType: item.contentType },
       })).unwrap();
-      setActionMsg(`Đã khôi phục: ${item.titleOrText ?? item.title}`);
+      setActionMsg(`Đã khôi phục: ${title}`);
       fetchData();
     } catch (err) {
-      setActionMsg(err || 'Lỗi khi khôi phục');
+      setActionMsg(typeof err === 'string' ? err : 'Có lỗi xảy ra khi khôi phục, vui lòng thử lại.');
+    } finally {
+      setPendingId(null);
+    }
+  }
+
+  async function handleDelete(item) {
+    const title = item.titleOrText ?? item.title;
+    if (!window.confirm(`Bạn có chắc muốn xóa: "${title}"?\nMục này sẽ được chuyển vào Thư mục đã xóa.`)) return;
+    const reason = window.prompt('Nhập lý do xóa (bắt buộc, tối thiểu 10 ký tự):', '') ?? '';
+    if (!reason.trim()) return;
+    if (reason.trim().length < 10) {
+      alert('Lý do xóa phải có ít nhất 10 ký tự.');
+      return;
+    }
+    setPendingId(item.contentId);
+    try {
+      await dispatch(changePublishedStatusThunk({
+        contentId: item.contentId,
+        payload: { contentType: item.contentType, status: 'deleted', reason: reason.trim() },
+      })).unwrap();
+      setActionMsg(`Đã xóa và chuyển vào Thư mục đã xóa: ${title}`);
+      fetchData();
+    } catch (err) {
+      setActionMsg(typeof err === 'string' ? err : 'Có lỗi xảy ra khi xóa, vui lòng thử lại.');
+    } finally {
+      setPendingId(null);
     }
   }
 
@@ -119,7 +155,11 @@ export default function ManagerContentPipeline() {
         <div className="mcp-filter-bar">
           <select className="mcp-select" value={typeFilter} onChange={handleFilter(setType)} aria-label="Lọc theo loại">
             <option value="">Tất cả loại</option>
-            {Object.entries(TYPE_META).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+            {Object.entries(TYPE_META)
+              // Backend ContentType chỉ có 'assessment' (gộp quiz + đề thi) — không có 'exam'/'quiz'
+              // riêng, gửi type=exam hoặc type=quiz sẽ bị 400 VALIDATION_FAILED ở ManagedContentResolver.
+              .filter(([k]) => k !== 'exam' && k !== 'quiz')
+              .map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
           </select>
           <select className="mcp-select" value={levelFilter} onChange={handleFilter(setLevel)} aria-label="Lọc theo cấp độ">
             <option value="">Tất cả cấp độ</option>
@@ -180,21 +220,39 @@ export default function ManagerContentPipeline() {
                           <button
                             className="mcp-btn-archive"
                             onClick={() => handleUnpublish(item)}
+                            disabled={pendingId === item.contentId}
                             title="Hủy xuất bản / Lưu trữ"
                           >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                              <path d="M4 7V4h16v3M4 7l2 13h12l2-13M4 7h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                              <path d="M4 7V4h16v3M4 7l2 13h12l2-13M4 7h16" />
                             </svg>
                             Lưu trữ
                           </button>
+                          
+                          <button
+                            className="mcp-btn-delete"
+                            onClick={() => handleDelete(item)}
+                            disabled={pendingId === item.contentId}
+                            title="Xóa nội dung"
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                              <line x1="10" y1="11" x2="10" y2="17"></line>
+                              <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                            Xóa
+                          </button>
+
                           {item.status === 'archived' && (
                             <button
                               className="mcp-btn-restore"
                               onClick={() => handleRestore(item)}
+                              disabled={pendingId === item.contentId}
                               title="Khôi phục"
                             >
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M3 7v6h6M21 17a9 9 0 0 0-15-6.7L3 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 7v6h6M21 17a9 9 0 0 0-15-6.7L3 13" />
                               </svg>
                               Khôi phục
                             </button>

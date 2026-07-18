@@ -103,6 +103,8 @@ Một bảng token dùng chung cho cả 3 nhóm người dùng. Ràng buộc `CK
 
 `token_type` gồm: `session`, `email_verification`, `password_reset`, `refresh`.
 
+> **Lưu ý `token_value`:** Với `password_reset`, `refresh`, `session`, `token_value` là chuỗi ngẫu nhiên dạng UUID. Riêng với `email_verification`, `token_value` là **mã OTP 6 chữ số** (sinh bằng `SecureRandom`, hết hạn sau 10 phút) — vẫn lưu trong cùng cột `NVARCHAR(500)`, không đổi schema.
+
 ---
 
 ### `lessons`

@@ -28,12 +28,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
+    private final AuthenticationService authenticationService;
+    private final RegistrationService registrationService;
+    private final PasswordResetService passwordResetService;
 
     @PostMapping("/check-account-type")
     public ResponseEntity<ApiResponse<AccountTypeResponse>> checkAccountType(
             @Valid @RequestBody CheckAccountTypeRequest request, HttpServletRequest httpRequest) {
-        AccountTypeResponse response = authService.checkAccountType(request.getEmail(), httpRequest.getRemoteAddr());
+        AccountTypeResponse response =
+                authenticationService.checkAccountType(request.getEmail(), httpRequest.getRemoteAddr());
         return ResponseEntity.ok(ApiResponse.success("OK", response));
     }
 
@@ -41,58 +44,58 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginApiResponse>> login(
             @Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
         String ip = httpRequest.getRemoteAddr();
-        LoginApiResponse response = authService.login(request, ip);
+        LoginApiResponse response = authenticationService.login(request, ip);
         return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", response));
     }
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<StudentResponse>> register(@Valid @RequestBody RegisterRequest request) {
-        StudentResponse response = authService.register(request);
+        StudentResponse response = registrationService.register(request);
         return ResponseEntity.status(201)
-                .body(ApiResponse.success(
+                .body(ApiResponse.created(
                         "Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản.", response));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<RefreshTokenResponse>> refresh(@Valid @RequestBody RefreshTokenRequest request) {
-        RefreshTokenResponse response = authService.refresh(request);
+        RefreshTokenResponse response = authenticationService.refresh(request);
         return ResponseEntity.ok(ApiResponse.success("OK", response));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(@Valid @RequestBody LogoutRequest request) {
-        authService.logout(request);
+        authenticationService.logout(request);
         return ResponseEntity.ok(ApiResponse.success("Đăng xuất thành công.", null));
     }
 
     @PostMapping("/verify-email")
     public ResponseEntity<ApiResponse<Void>> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
-        authService.verifyEmail(request);
+        registrationService.verifyEmail(request);
         return ResponseEntity.ok(ApiResponse.success("Xác minh email thành công. Bạn có thể đăng nhập.", null));
     }
 
     @PostMapping("/resend-verification")
     public ResponseEntity<ApiResponse<Void>> resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
-        authService.resendVerification(request);
+        registrationService.resendVerification(request);
         return ResponseEntity.ok(ApiResponse.success("Nếu email tồn tại, bạn sẽ nhận được link xác minh.", null));
     }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
-        authService.forgotPassword(request);
+        passwordResetService.forgotPassword(request);
         return ResponseEntity.ok(
                 ApiResponse.success("Nếu email tồn tại, bạn sẽ nhận được link đặt lại mật khẩu.", null));
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<ApiResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
-        authService.resetPassword(request);
+        passwordResetService.resetPassword(request);
         return ResponseEntity.ok(ApiResponse.success("Đặt lại mật khẩu thành công.", null));
     }
 
     @PostMapping("/google")
     public ResponseEntity<ApiResponse<AuthResponse>> googleLogin(@Valid @RequestBody GoogleTokenRequest request) {
-        AuthResponse response = authService.loginWithGoogle(request);
+        AuthResponse response = authenticationService.loginWithGoogle(request);
         return ResponseEntity.ok(ApiResponse.success("Đăng nhập bằng Google thành công.", response));
     }
 }

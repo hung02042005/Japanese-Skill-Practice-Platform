@@ -28,4 +28,6 @@ public interface ManagedLessonRepository extends JpaRepository<Lesson, Long> {
             @Param("from") LessonStatus from,
             @Param("to") LessonStatus to,
             @Param("now") LocalDateTime now);
+
+    List<Lesson> findByStatusOrderByUpdatedAtDesc(LessonStatus status);
 }

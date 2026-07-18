@@ -105,13 +105,15 @@
   • Validate client-side (format, strength)
   • POST /auth/register
          ↓ thành công (201)
-[/register] Success Screen
-  • "Kiểm tra email để xác nhận tài khoản"
-  • [Gửi lại email] button
-         ↓ user mở email, click link xác nhận
-[Email Verified] ← ⚠️ MISSING: cần trang /verify-email?token=xxx
-  • Backend kích hoạt account (status: pending → active)
-  • Hiển thị: "Tài khoản đã được xác nhận!"
+         ↓ thành công (201) → navigate ngay, KHÔNG hiện success card inline
+[/verify-email?email=xxx] Nhập mã OTP
+  • Email prefill từ query param (sửa được) + ô nhập mã OTP 6 số
+  • [Xác minh] → POST /api/auth/verify-email { email, otpCode }
+  • [Gửi lại mã xác minh] (cooldown 60 giây) nếu chưa nhận được hoặc mã hết hạn
+         ↓ xác minh thành công
+[Email Verified]
+  • Backend kích hoạt account (status: pending → active), xoá mã OTP đã dùng
+  • Hiển thị: "Xác minh thành công!"
   • CTA: "Đăng nhập ngay →"
          ↓
 [/login] Đăng nhập lần đầu
@@ -594,7 +596,7 @@ Sprint 5 — Administration
 | / | Skeleton Hero | N/A | Toast lỗi load | N/A |
 | /login | Button disabled `ng đăng nhập...` | N/A | `api-error` div từ backkkend | Clear error khi gõ lại input |
 | /register | Button disabled | N/A | api-error (409 email trùng) | Success screen, không auto-login |
-| /verify-email | Loading spinner | Token invalid screen | Link không hợp lệ | Token hết hạn → gửi lại email |
+| /verify-email | Button disabled khi verifying | N/A (luôn hiện form nhập mã) | Banner lỗi trong form (`api-error`) | OTP sai (`INVALID_OTP`) / hết hạn (`OTP_EXPIRED`) / quá 5 lần sai (`TOO_MANY_ATTEMPTS`, HTTP 429) → gửi lại mã (cooldown 60s) |
 | /forgot-password | Button disabled | N/A | api-error | Success screen kể cả email tồn tại |
 | /reset-password | Button disabled | No token screen | api-error | Token hết hạn, link invalid |
 | /dashboard | Skeleton 3 cột | EmptyState mascot | Toast error | VIP hết hạn → modal upgrade |

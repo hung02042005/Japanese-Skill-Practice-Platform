@@ -46,12 +46,7 @@ public class StaffQuestionController {
     public ResponseEntity<ApiResponse<QuestionResponse>> createQuestion(
             @Valid @RequestBody CreateQuestionRequest request, Authentication authentication) {
         QuestionResponse data = staffQuestionService.createQuestion(request, authentication.getName());
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<QuestionResponse>builder()
-                        .status(201)
-                        .message("Tạo câu hỏi thành công")
-                        .data(data)
-                        .build());
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Tạo câu hỏi thành công", data));
     }
 
     /**

@@ -1,3 +1,5 @@
+# [CẢNH BÁO]: FILE NÀY LÀ LEGACY NẾU BẠN SỬ DỤNG KIẾN TRÚC CLOUD NATIVE.
+# File này chỉ còn tác dụng nếu bạn vẫn muốn deploy lên một con VPS nguyên khối.
 # Override dùng trên VPS production, sau khi đã trỏ DNS xong (Bước 1).
 # Chạy cùng file gốc:
 #   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
@@ -21,9 +23,9 @@ services:
 
   backend:
     environment:
-      - DATABASE_URL=jdbc:sqlserver://db:1433;databaseName=JLPT_LearningDB;encrypt=true;trustServerCertificate=true
-      - DATABASE_USERNAME=sa
-      - DATABASE_PASSWORD=${MSSQL_SA_PASSWORD}
+      - DATABASE_URL=jdbc:mysql://db:3306/JLPT_LearningDB?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+      - DATABASE_USERNAME=${MYSQL_USER:-jlpt}
+      - DATABASE_PASSWORD=${MYSQL_PASSWORD}
       - SPRING_DATA_REDIS_HOST=redis
       - APP_FRONTEND_URL=https://sakuji.online
       # Bắt buộc cho Google OAuth2

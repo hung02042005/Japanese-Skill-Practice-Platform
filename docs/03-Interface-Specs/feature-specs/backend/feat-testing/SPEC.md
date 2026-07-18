@@ -72,7 +72,7 @@ Không có test → không có refactoring an toàn → technical debt tích lũ
 | FR-TEST-U-05 | WHEN `resetPassword()` is called with an expired token (`expires_at < NOW`), THE TEST SHALL assert that `InvalidTokenException` is thrown and the password is NOT changed. |
 | FR-TEST-U-06 | WHEN `changePassword()` is called with `newPassword == currentPassword`, THE TEST SHALL assert that `SamePasswordException` (HTTP 422) is thrown. |
 | FR-TEST-U-07 | WHEN `logout()` is called, THE TEST SHALL assert that only the current session token is revoked (not all tokens) and `revoked_at` is set. |
-| FR-TEST-U-08 | THE TEST SHALL verify that the email verification token is invalidated immediately after `verifyEmail()` succeeds (one-time use enforcement). |
+| FR-TEST-U-08 | THE TEST SHALL verify that the email verification OTP token is deleted (not merely revoked) immediately after `verifyEmail()` succeeds (one-time use enforcement). |
 
 #### 3.1.2 feat-assessment: QuizService & ExamService
 

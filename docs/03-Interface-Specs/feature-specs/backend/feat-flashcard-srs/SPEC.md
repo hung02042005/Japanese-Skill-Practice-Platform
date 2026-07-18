@@ -399,15 +399,8 @@ erDiagram
 
 ---
 
-<<<<<<< Updated upstream
-
 ### `PATCH /api/flashcard-decks/{deckId}`
 
-=======
-
-### `DELETE /api/flashcard-decks/{deckName}`
-
->>>>>>> Stashed changes
 **Actor:** Student | **Auth:** Bearer JWT
 > Sửa metadata sổ tay cá nhân (name/description/jlptLevel/topic/color). System deck → 403.
 

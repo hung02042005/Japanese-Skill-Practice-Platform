@@ -44,10 +44,15 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             """)
     int markAllReadByStudentId(@Param("studentId") Long studentId, @Param("readAt") LocalDateTime readAt);
 
-    /** Thong bao kenh email/both da den han ma chua gui email — phuc vu scheduler. */
+    /**
+     * Thong bao kenh email/both da den han ma chua gui email — phuc vu scheduler.
+     * JOIN FETCH n.student de tranh N+1 khi NotificationDispatcher lap qua tung
+     * notification va goi n.getStudent().getEmail().
+     */
     @Query(
             """
             SELECT n FROM Notification n
+            JOIN FETCH n.student
             WHERE n.channel IN :channels
               AND n.sentAt IS NULL
               AND (n.scheduledAt IS NULL OR n.scheduledAt <= :now)

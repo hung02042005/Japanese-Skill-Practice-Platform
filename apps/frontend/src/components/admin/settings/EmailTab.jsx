@@ -10,12 +10,10 @@ function smtpFieldError(key, value) {
       return requiredError(value, 'SMTP Host');
     case 'port':
       return portError(value);
-    case 'username':
-      return emailError(value);
     case 'from_name':
       return requiredError(value, 'Tên hiển thị');
     default:
-      return ''; // password (optional), secure (select)
+      return ''; // password (optional), secure (select), username (can be email or string like "resend")
   }
 }
 
@@ -38,7 +36,7 @@ const SMTP_FIELDS = [
   { key: 'host',       label: 'SMTP Host',     type: 'text',     placeholder: 'smtp.gmail.com',    fullWidth: true  },
   { key: 'port',       label: 'SMTP Port',     type: 'number',   placeholder: '587',               fullWidth: false },
   { key: 'secure',     label: 'Bảo mật',       type: 'select',   options: ['STARTTLS','SSL/TLS','Không'], fullWidth: false },
-  { key: 'username',   label: 'Tên đăng nhập', type: 'email',    placeholder: 'Nhập email (vd: abc@gmail.com)...', fullWidth: true  },
+  { key: 'username',   label: 'Tên đăng nhập', type: 'text',     placeholder: 'Nhập tên đăng nhập (vd: abc@gmail.com hoặc resend)...', fullWidth: true  },
   { key: 'password',   label: 'Mật khẩu',      type: 'password', placeholder: 'Nhập mật khẩu ứng dụng...', fullWidth: true  },
   { key: 'from_email', label: 'Email người gửi', type: 'email',  placeholder: '(để trống = dùng Tên đăng nhập ở trên)', fullWidth: true,
     hint: 'Với Gmail, địa chỉ này bắt buộc phải trùng với Tên đăng nhập ở trên — nếu khác, Gmail sẽ từ chối gửi dù kết nối vẫn thành công.' },

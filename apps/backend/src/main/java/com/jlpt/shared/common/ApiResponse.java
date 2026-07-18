@@ -39,6 +39,10 @@ public class ApiResponse<T> {
                 .build();
     }
 
+    public static <T> ApiResponse<T> created(String message, T data) {
+        return ApiResponse.<T>builder().status(201).message(message).data(data).build();
+    }
+
     public static <T> ApiResponse<T> error(int status, String message) {
         return ApiResponse.<T>builder().status(status).message(message).build();
     }
