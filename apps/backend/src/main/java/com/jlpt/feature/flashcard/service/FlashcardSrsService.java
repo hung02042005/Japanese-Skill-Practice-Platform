@@ -158,71 +158,49 @@ public class FlashcardSrsService {
     // ── Phiên học trộn NEW + REVIEW (§3.6/§3.7) ───────────────────────────────
 
     @Transactional
-    public SessionResponse getSession(Long studentId, Long deckId, Long topicId, Integer newLimit) {
-        String lockKey = studentId + ":" + (deckId != null ? "deck:" + deckId : "topic:" + topicId);
+    public SessionResponse getSession(Long studentId, Long topicId, Integer newLimit) {
+        String lockKey = studentId + ":topic:" + topicId;
         Object lock = SESSION_LOCKS.computeIfAbsent(lockKey, ignored -> new Object());
         synchronized (lock) {
-            return getSessionLocked(studentId, deckId, topicId, newLimit);
+            return getSessionLocked(studentId, topicId, newLimit);
         }
     }
 
-    private SessionResponse getSessionLocked(Long studentId, Long deckId, Long topicId, Integer newLimit) {
+    private SessionResponse getSessionLocked(Long studentId, Long topicId, Integer newLimit) {
         int limit = (newLimit != null && newLimit > 0) ? newLimit : NEW_CARDS_PER_DAY;
         LocalDate today = LocalDate.now();
         StudentUser student = studentUserRepository.getReferenceById(studentId);
 
-        FlashcardDeck sessionDeck;
-        List<Vocabulary> distractorPool;
-        String sessionLevel;
-        String sessionTopicTitle;
+        // FR-redo-topic: phiên theo giáo trình dùng topicId (khoá chủ đề duy nhất).
+        // (Nhánh ôn theo deckId của Sổ tay đã gỡ 2026-07-17 — sổ chỉ còn là danh sách theo dõi;
+        // thẻ trong sổ vẫn được ôn qua phiên topic vì tra thẻ theo (student, content) bất kể deck.)
+        if (topicId == null) {
+            throw new BadRequestException("Cần topicId hợp lệ");
+        }
+        VocabularyTopic topic = vocabularyTopicRepository
+                .findById(topicId)
+                .filter(t -> t.getStatus() == PUBLISHED)
+                .orElseThrow(() -> new ResourceNotFoundException("Chủ đề", topicId));
+        StudentUser.JlptLevel jl = topic.getJlptLevel();
+        String sessionLevel = jl != null ? jl.name() : null;
+        String sessionTopicTitle = topic.getTitleVi();
+        FlashcardDeck sessionDeck = deckSupport.getOrCreateDeck(student, jl.name() + "_" + topic.getSlug());
+        List<Vocabulary> vocabList = vocabularyRepository.findPublishedByTopicId(PUBLISHED, topicId);
+        Map<Long, Flashcard> byContent = flashcardRepository
+                .findByStudentAndContentIds(
+                        studentId,
+                        Flashcard.ContentType.VOCABULARY,
+                        vocabList.stream().map(Vocabulary::getId).toList())
+                .stream()
+                .collect(Collectors.toMap(Flashcard::getContentId, Function.identity(), (a, b) -> a));
         // Tập từ ứng viên cho phiên + thẻ tương ứng (thẻ có thể chưa tồn tại với từ chưa học).
         List<WordCard> words = new ArrayList<>();
-
-        if (deckId != null) {
-            sessionDeck = deckSupport.ownDeckOrThrow(studentId, deckId);
-            sessionLevel = sessionDeck.getJlptLevel();
-            sessionTopicTitle = sessionDeck.getName();
-            List<Flashcard> cards = flashcardRepository.findByStudentAndDeck(studentId, deckId).stream()
-                    .filter(c -> c.getContentType() == Flashcard.ContentType.VOCABULARY && c.getContentId() != null)
-                    .toList();
-            Map<Long, Vocabulary> vocabMap = FlashcardResolver.toMap(
-                    vocabularyRepository.findAllById(
-                            cards.stream().map(Flashcard::getContentId).collect(Collectors.toSet())),
-                    Vocabulary::getId);
-            for (Flashcard c : cards) {
-                Vocabulary v = vocabMap.get(c.getContentId());
-                if (v == null || v.getStatus() != PUBLISHED) continue; // FR-FC-34/65
-                words.add(new WordCard(v, c));
-            }
-            distractorPool = new ArrayList<>(vocabMap.values());
-        } else {
-            // FR-redo-topic: phiên theo giáo trình dùng topicId (khoá chủ đề duy nhất).
-            if (topicId == null) {
-                throw new BadRequestException("Cần deckId hoặc topicId hợp lệ");
-            }
-            VocabularyTopic topic = vocabularyTopicRepository
-                    .findById(topicId)
-                    .filter(t -> t.getStatus() == PUBLISHED)
-                    .orElseThrow(() -> new ResourceNotFoundException("Chủ đề", topicId));
-            StudentUser.JlptLevel jl = topic.getJlptLevel();
-            sessionLevel = jl != null ? jl.name() : null;
-            sessionTopicTitle = topic.getTitleVi();
-            sessionDeck = deckSupport.getOrCreateDeck(student, jl.name() + "_" + topic.getSlug());
-            List<Vocabulary> vocabList = vocabularyRepository.findPublishedByTopicId(PUBLISHED, topicId);
-            Map<Long, Flashcard> byContent = flashcardRepository
-                    .findByStudentAndContentIds(
-                            studentId,
-                            Flashcard.ContentType.VOCABULARY,
-                            vocabList.stream().map(Vocabulary::getId).toList())
-                    .stream()
-                    .collect(Collectors.toMap(Flashcard::getContentId, Function.identity(), (a, b) -> a));
-            for (Vocabulary v : vocabList) {
-                words.add(new WordCard(v, byContent.get(v.getId())));
-            }
-            distractorPool = vocabList.size() >= 2
-                    ? new ArrayList<>(vocabList)
-                    : vocabularyRepository.findPublishedByLevel(PUBLISHED, jl, PageRequest.of(0, 30));
+        for (Vocabulary v : vocabList) {
+            words.add(new WordCard(v, byContent.get(v.getId())));
         }
+        List<Vocabulary> distractorPool = vocabList.size() >= 2
+                ? new ArrayList<>(vocabList)
+                : vocabularyRepository.findPublishedByLevel(PUBLISHED, jl, PageRequest.of(0, 30));
 
         // Ưu tiên từ CHƯA HỌC → ĐẾN HẠN ÔN → còn lại; trộn trong từng nhóm cho đa dạng.
         Collections.shuffle(words);

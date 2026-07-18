@@ -284,45 +284,6 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   FLASHCARD SHORTCUT
-───────────────────────────────────────────────────────────────────── */
-.kp-flash-row {
-  display: flex;
-  justify-content: center;
-}
-
-.kp-flash-btn {
-  height: 38px;
-  padding: 0 22px;
-  border-radius: var(--radius-full);
-  border: 1.5px solid var(--color-primary);
-  background: transparent;
-  color: var(--color-primary);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: var(--font-base);
-  transition: background var(--transition), color var(--transition);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.kp-flash-btn:hover:not(:disabled) {
-  background: var(--color-primary-bg);
-}
-
-.kp-flash-btn--added {
-  border-color: var(--color-secondary);
-  color: var(--color-secondary);
-  background: var(--color-secondary-bg);
-}
-
-.kp-flash-btn:disabled {
-  cursor: default;
-}
-
-/* ─────────────────────────────────────────────────────────────────────
    CTA — Start Learning button
 ───────────────────────────────────────────────────────────────────── */
 .kp-cta-wrap {

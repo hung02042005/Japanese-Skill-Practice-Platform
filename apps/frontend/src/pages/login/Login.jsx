@@ -9,21 +9,37 @@ import EyeIcon from '../../components/auth/EyeIcon';
 import AuthBanner from '../../components/auth/AuthBanner';
 import AuthDivider from '../../components/auth/AuthDivider';
 import { SakuraIcon, WrenchIcon } from '../../components/common/AppIcons';
+import { emailError, isBlank } from '../../utils/validation';
 import './Login.css';
 
 function Login() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { status, error } = useAppSelector((state) => state.auth);
+  const { status, error, errorCode } = useAppSelector((state) => state.auth);
 
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [showPwd, setShowPwd]   = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const isLoading = status === 'loading';
 
+  function clearFieldError(field) {
+    setFieldErrors((prev) => (prev[field] ? { ...prev, [field]: '' } : prev));
+    if (error) dispatch(clearError());
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
+
+    // Validate client-side trước: báo lỗi cụ thể ngay, không cần round-trip.
+    const errs = {};
+    const emErr = emailError(email);
+    if (emErr) errs.email = emErr;
+    if (isBlank(password)) errs.password = 'Mật khẩu là bắt buộc';
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
     try {
       const res = await dispatch(loginThunk({ email, password })).unwrap();
       if (res.requirePasswordChange) {
@@ -54,9 +70,10 @@ function Login() {
     }
   }
 
-  const isMaintenance = error && error.includes('bảo trì');
-  const isLocked   = error && !isMaintenance && (error.includes('khóa') || error.includes('locked'));
-  const needVerify = error && (error.includes('xác minh') || error.includes('verified'));
+  // Phân biệt loại lỗi bằng errorCode máy-đọc (ổn định), không dò chuỗi tiếng Việt.
+  const isMaintenance = errorCode === 'MAINTENANCE_MODE';
+  const isLocked   = errorCode === 'TOO_MANY_REQUESTS' || errorCode === 'ACCOUNT_SUSPENDED';
+  const needVerify = errorCode === 'EMAIL_NOT_VERIFIED';
 
   return (
     <div className="login-page">
@@ -86,7 +103,7 @@ function Login() {
           )}
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
-            <div className="form-field">
+            <div className={`form-field${fieldErrors.email ? ' has-error' : ''}`}>
               <label className="form-label" htmlFor="login-email">Email</label>
               <input
                 id="login-email"
@@ -94,13 +111,18 @@ function Login() {
                 type="email"
                 placeholder="email@example.com"
                 value={email}
-                onChange={(e) => { setEmail(e.target.value); if (error) dispatch(clearError()); }}
+                onChange={(e) => { setEmail(e.target.value); clearFieldError('email'); }}
                 autoComplete="email"
                 autoFocus
+                aria-invalid={!!fieldErrors.email}
+                aria-describedby={fieldErrors.email ? 'login-email-err' : undefined}
               />
+              {fieldErrors.email && (
+                <span id="login-email-err" className="field-error">{fieldErrors.email}</span>
+              )}
             </div>
 
-            <div className="form-field">
+            <div className={`form-field${fieldErrors.password ? ' has-error' : ''}`}>
               <div className="form-label-row">
                 <label className="form-label" htmlFor="login-password">Mật khẩu</label>
                 <Link to="/forgot-password" className="form-forgot-link">Quên mật khẩu?</Link>
@@ -112,8 +134,10 @@ function Login() {
                   type={showPwd ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); if (error) dispatch(clearError()); }}
+                  onChange={(e) => { setPassword(e.target.value); clearFieldError('password'); }}
                   autoComplete="current-password"
+                  aria-invalid={!!fieldErrors.password}
+                  aria-describedby={fieldErrors.password ? 'login-password-err' : undefined}
                 />
                 <button
                   type="button"
@@ -124,6 +148,9 @@ function Login() {
                   <EyeIcon open={showPwd} />
                 </button>
               </div>
+              {fieldErrors.password && (
+                <span id="login-password-err" className="field-error">{fieldErrors.password}</span>
+              )}
             </div>
 
             <button

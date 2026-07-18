@@ -1,8 +1,6 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.student.kanji;
 
-import com.jlpt.feature.flashcard.Flashcard;
-import com.jlpt.feature.flashcard.repository.FlashcardRepository;
 import com.jlpt.feature.learning.Kanji;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
 import com.jlpt.feature.student.StudentContentProgress;
@@ -32,7 +30,6 @@ public class StudentKanjiServiceImpl implements StudentKanjiService {
 
     private final StudentKanjiRepository kanjiRepository;
     private final StudentContentProgressRepository progressRepository;
-    private final FlashcardRepository flashcardRepository;
     private final StudentUserRepository studentUserRepository;
 
     @Override
@@ -61,14 +58,6 @@ public class StudentKanjiServiceImpl implements StudentKanjiService {
                         StudentContentProgress::getContentId,
                         p -> p.getStatus() == StudentContentProgress.ProgressStatus.COMPLETED));
 
-        // isInFlashcard cho danh sách: tránh N+1, truy 1 lần tập contentId rồi tra trong Set.
-        java.util.Set<Long> inFlashcardIds = new java.util.HashSet<>();
-        if (!kanjiIds.isEmpty()) {
-            flashcardRepository
-                    .findByStudentAndContentIds(studentId, Flashcard.ContentType.KANJI, kanjiIds)
-                    .forEach(f -> inFlashcardIds.add(f.getContentId()));
-        }
-
         List<KanjiItemResponse> items = kanjiPage.getContent().stream()
                 .map(k -> KanjiItemResponse.builder()
                         .kanjiId(k.getId())
@@ -79,7 +68,6 @@ public class StudentKanjiServiceImpl implements StudentKanjiService {
                         .strokeCount(k.getStrokeCount())
                         .jlptLevel(k.getJlptLevel() != null ? k.getJlptLevel().name() : null)
                         .isCompleted(completionMap.getOrDefault(k.getId(), false))
-                        .isInFlashcard(inFlashcardIds.contains(k.getId()))
                         .build())
                 .collect(Collectors.toList());
 
@@ -118,10 +106,6 @@ public class StudentKanjiServiceImpl implements StudentKanjiService {
         boolean isCompleted =
                 progress != null && progress.getStatus() == StudentContentProgress.ProgressStatus.COMPLETED;
 
-        boolean isInFlashcard = flashcardRepository
-                .findByStudentAndContent(studentId, Flashcard.ContentType.KANJI, kanjiId)
-                .isPresent();
-
         Long prevKanjiId = kanjiRepository
                 .findFirstByJlptLevelAndStatusAndIdLessThanOrderByIdDesc(
                         kanji.getJlptLevel(), ContentStatus.PUBLISHED, kanjiId)
@@ -146,7 +130,6 @@ public class StudentKanjiServiceImpl implements StudentKanjiService {
                 .exampleReading(kanji.getExampleReading())
                 .exampleMeaning(kanji.getExampleMeaning())
                 .isCompleted(isCompleted)
-                .isInFlashcard(isInFlashcard)
                 .progressStatus(progressStatusStr)
                 .prevKanjiId(prevKanjiId)
                 .nextKanjiId(nextKanjiId)

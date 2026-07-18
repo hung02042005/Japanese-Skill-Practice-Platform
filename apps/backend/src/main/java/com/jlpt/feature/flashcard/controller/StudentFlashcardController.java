@@ -1,7 +1,6 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.flashcard.controller;
 
-import com.jlpt.feature.flashcard.dto.AddFlashcardRequest;
 import com.jlpt.feature.flashcard.dto.BulkDeleteRequest;
 import com.jlpt.feature.flashcard.dto.DeckSummaryResponse;
 import com.jlpt.feature.flashcard.dto.FlashcardResponse;
@@ -59,17 +58,16 @@ public class StudentFlashcardController {
     }
 
     /**
-     * Phiên học trộn (§3.6/§3.7): ?deckId=… HOẶC ?topicId=…&newLimit=10.
+     * Phiên học trộn (§3.6/§3.7): ?topicId=…&newLimit=10.
      * POST (không phải GET) vì build phiên có side-effect: tạo deck/thẻ MỚI cho các từ được chọn.
      */
     @PostMapping("/flashcards/session")
     public ResponseEntity<ApiResponse<SessionResponse>> getSession(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam(required = false) Long deckId,
             @RequestParam(required = false) Long topicId,
             @RequestParam(required = false) Integer newLimit) {
         SessionResponse session =
-                flashcardSrsService.getSession(userDetails.getStudentUser().getId(), deckId, topicId, newLimit);
+                flashcardSrsService.getSession(userDetails.getStudentUser().getId(), topicId, newLimit);
         return ResponseEntity.ok(ApiResponse.success(session));
     }
 
@@ -97,14 +95,6 @@ public class StudentFlashcardController {
             @Valid @RequestBody BulkDeleteRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         int removed = notebookService.bulkDelete(userDetails.getStudentUser().getId(), request.ids());
         return ResponseEntity.ok(ApiResponse.success("Đã gỡ " + removed + " từ khỏi sổ tay", removed));
-    }
-
-    @PostMapping("/flashcards")
-    public ResponseEntity<ApiResponse<FlashcardResponse>> addCard(
-            @Valid @RequestBody AddFlashcardRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        FlashcardResponse response =
-                notebookService.addCard(userDetails.getStudentUser().getId(), request);
-        return ResponseEntity.status(201).body(ApiResponse.created(response));
     }
 
     /** Xác nhận thêm từ sai vào sổ "Từ cần ôn lại" (§3.5). */

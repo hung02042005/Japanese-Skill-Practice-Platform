@@ -133,11 +133,6 @@ export async function markVocabComplete(vocabId) {
   return markProgress('vocabulary', vocabId);
 }
 
-export async function addVocabToFlashcard(vocabId) {
-  const res = await api.post('/flashcards', { contentType: 'VOCABULARY', contentId: vocabId });
-  return res.data.data;
-}
-
 // ─── Flashcard SRS ───────────────────────────────────────────────────────────
 const vocabFlashcardSessionRequests = new Map();
 
@@ -166,17 +161,9 @@ export async function bulkDeleteFlashcards(ids) {
   return res.data.data;
 }
 
-export async function addToFlashcard(contentType, contentId, deckName = 'Mặc định') {
-  // Backend đòi enum CHỮ HOA (VOCABULARY|KANJI|GRAMMAR|CUSTOM); caller truyền chữ thường
-  const res = await api.post('/flashcards', { contentType: contentType.toUpperCase(), contentId, deckName });
-  return res.data.data;
-}
-
-export async function getVocabFlashcardSession({ topicId, newLimit, deckId } = {}) {
-  const params = deckId != null ? { deckId } : { topicId, newLimit };
-  const requestKey = deckId != null
-    ? `deck:${deckId}`
-    : `topic:${topicId}:${newLimit ?? ''}`;
+export async function getVocabFlashcardSession({ topicId, newLimit } = {}) {
+  const params = { topicId, newLimit };
+  const requestKey = `topic:${topicId}:${newLimit ?? ''}`;
 
   if (vocabFlashcardSessionRequests.has(requestKey)) {
     return vocabFlashcardSessionRequests.get(requestKey);

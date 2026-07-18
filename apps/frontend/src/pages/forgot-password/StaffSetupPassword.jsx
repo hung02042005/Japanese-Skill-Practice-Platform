@@ -8,6 +8,7 @@ import AuthBanner from '../../components/auth/AuthBanner';
 import EyeIcon from '../../components/auth/EyeIcon';
 import PasswordStrengthBar from '../../components/auth/PasswordStrengthBar';
 import { SakuraIcon } from '../../components/common/AppIcons';
+import { passwordError, confirmError } from '../../utils/validation';
 import './ResetPassword.css';
 
 function StaffSetupPassword() {
@@ -22,6 +23,7 @@ function StaffSetupPassword() {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isDone, setIsDone] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const isLoading = status === 'loading';
   const confirmOk = confirmPassword.length > 0 && newPassword === confirmPassword;
@@ -29,6 +31,15 @@ function StaffSetupPassword() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!token) return;
+
+    const errs = {};
+    const pwErr = passwordError(newPassword);
+    if (pwErr) errs.newPassword = pwErr;
+    const cfErr = confirmError(newPassword, confirmPassword);
+    if (cfErr) errs.confirmPassword = cfErr;
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
     try {
       await dispatch(setupStaffPasswordThunk({ token, newPassword, confirmPassword })).unwrap();
       setIsDone(true);
@@ -104,7 +115,7 @@ function StaffSetupPassword() {
           )}
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
-            <div className="form-field">
+            <div className={`form-field${fieldErrors.newPassword ? ' has-error' : ''}`}>
               <label className="form-label" htmlFor="ssp-new">Mật khẩu mới</label>
               <div className="form-input-wrapper">
                 <input
@@ -115,10 +126,12 @@ function StaffSetupPassword() {
                   value={newPassword}
                   onChange={(e) => {
                     setNewPassword(e.target.value);
+                    if (fieldErrors.newPassword) setFieldErrors((p) => ({ ...p, newPassword: '' }));
                     if (error) dispatch(clearError());
                   }}
                   autoComplete="new-password"
                   autoFocus
+                  aria-invalid={!!fieldErrors.newPassword}
                 />
                 <button
                   type="button"
@@ -130,9 +143,10 @@ function StaffSetupPassword() {
                 </button>
               </div>
               <PasswordStrengthBar password={newPassword} />
+              {fieldErrors.newPassword && <span className="field-error">{fieldErrors.newPassword}</span>}
             </div>
 
-            <div className="form-field">
+            <div className={`form-field${fieldErrors.confirmPassword ? ' has-error' : ''}`}>
               <label className="form-label" htmlFor="ssp-confirm">Xác nhận mật khẩu mới</label>
               <div className="form-input-wrapper">
                 <input
@@ -143,9 +157,11 @@ function StaffSetupPassword() {
                   value={confirmPassword}
                   onChange={(e) => {
                     setConfirmPassword(e.target.value);
+                    if (fieldErrors.confirmPassword) setFieldErrors((p) => ({ ...p, confirmPassword: '' }));
                     if (error) dispatch(clearError());
                   }}
                   autoComplete="new-password"
+                  aria-invalid={!!fieldErrors.confirmPassword}
                 />
                 {!confirmPassword ? (
                   <button
@@ -170,6 +186,7 @@ function StaffSetupPassword() {
                   </span>
                 )}
               </div>
+              {fieldErrors.confirmPassword && <span className="field-error">{fieldErrors.confirmPassword}</span>}
             </div>
 
             <button className="btn-submit" type="submit" disabled={isLoading || !confirmOk}>

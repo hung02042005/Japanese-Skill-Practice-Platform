@@ -2,6 +2,7 @@
 package com.jlpt.feature.student.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import java.util.List;
 import lombok.Data;
 
@@ -14,6 +15,7 @@ import lombok.Data;
 public class OnboardingRequest {
 
     @NotBlank(message = "Mục tiêu JLPT không được để trống")
+    @Pattern(regexp = "^(N5|N4|N3|N2|N1)$", message = "Cấp độ JLPT không hợp lệ")
     private String jlptGoal;
 
     private Integer dailyMinutes;

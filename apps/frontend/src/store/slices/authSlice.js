@@ -1,6 +1,36 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as authService from '../../api/authService';
 
+/**
+ * Trích lỗi từ axios error → { message, code }. `code` là errorCode máy-đọc do
+ * backend trả (INVALID_CREDENTIALS, EMAIL_NOT_VERIFIED, TOKEN_EXPIRED…), giúp
+ * component switch trên code ổn định thay vì dò chuỗi message tiếng Việt.
+ * `data` (chuỗi chi tiết validate) được nối vào message nếu có.
+ */
+function extractError(err, fallback) {
+  if (!err.response) {
+    return {
+      message: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối và thử lại.',
+      code: 'NETWORK_ERROR',
+    };
+  }
+  const d = err.response.data;
+  const detail = typeof d?.data === 'string' ? `: ${d.data}` : '';
+  return { message: (d?.message ?? fallback) + detail, code: d?.code ?? null };
+}
+
+/** Gán lỗi vào state, chấp nhận cả payload dạng { message, code } lẫn chuỗi cũ. */
+function applyError(state, payload) {
+  state.status = 'failed';
+  if (payload && typeof payload === 'object') {
+    state.error = payload.message ?? null;
+    state.errorCode = payload.code ?? null;
+  } else {
+    state.error = payload ?? null;
+    state.errorCode = null;
+  }
+}
+
 export const verifyEmailThunk = createAsyncThunk(
   'auth/verifyEmail',
   async (token, { rejectWithValue }) => {
@@ -8,7 +38,7 @@ export const verifyEmailThunk = createAsyncThunk(
       const res = await authService.verifyEmail(token);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message ?? 'Xác minh email thất bại');
+      return rejectWithValue(extractError(err, 'Xác minh email thất bại'));
     }
   },
 );
@@ -20,7 +50,7 @@ export const resendVerificationThunk = createAsyncThunk(
       const res = await authService.resendVerification(email);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message ?? 'Gửi lại email xác minh thất bại');
+      return rejectWithValue(extractError(err, 'Gửi lại email xác minh thất bại'));
     }
   },
 );
@@ -61,10 +91,7 @@ export const loginThunk = createAsyncThunk(
       localStorage.setItem('jlpt-user', JSON.stringify(userData));
       return { user: userData, role };
     } catch (err) {
-      if (!err.response) {
-        return rejectWithValue('Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối và thử lại.');
-      }
-      return rejectWithValue(err.response.data?.message ?? 'Đăng nhập thất bại');
+      return rejectWithValue(extractError(err, 'Đăng nhập thất bại'));
     }
   },
 );
@@ -76,12 +103,7 @@ export const registerThunk = createAsyncThunk(
       const res = await authService.register(formData);
       return res.data;
     } catch (err) {
-      const resData = err.response?.data;
-      if (resData) {
-        const detail = (typeof resData.data === 'string') ? `: ${resData.data}` : '';
-        return rejectWithValue((resData.message || 'Đăng ký thất bại') + detail);
-      }
-      return rejectWithValue('Đăng ký thất bại');
+      return rejectWithValue(extractError(err, 'Đăng ký thất bại'));
     }
   },
 );
@@ -104,7 +126,7 @@ export const forgotPasswordThunk = createAsyncThunk(
       const res = await authService.forgotPassword(email);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message ?? 'Gửi email thất bại');
+      return rejectWithValue(extractError(err, 'Gửi email thất bại'));
     }
   },
 );
@@ -116,9 +138,7 @@ export const resetPasswordThunk = createAsyncThunk(
       const res = await authService.resetPassword({ token, newPassword, confirmPassword });
       return res.data;
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message ?? 'Đặt lại mật khẩu thất bại',
-      );
+      return rejectWithValue(extractError(err, 'Đặt lại mật khẩu thất bại'));
     }
   },
 );
@@ -130,7 +150,7 @@ export const checkAccountTypeThunk = createAsyncThunk(
       const res = await authService.checkAccountType(email);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message ?? 'Không thể kiểm tra tài khoản');
+      return rejectWithValue(extractError(err, 'Không thể kiểm tra tài khoản'));
     }
   },
 );
@@ -142,7 +162,7 @@ export const staffForgotPasswordThunk = createAsyncThunk(
       const res = await authService.staffForgotPassword(email);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message ?? 'Gửi yêu cầu thất bại');
+      return rejectWithValue(extractError(err, 'Gửi yêu cầu thất bại'));
     }
   },
 );
@@ -154,7 +174,7 @@ export const setupStaffPasswordThunk = createAsyncThunk(
       const res = await authService.setupStaffPassword({ token, newPassword, confirmPassword });
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message ?? 'Kích hoạt tài khoản thất bại');
+      return rejectWithValue(extractError(err, 'Kích hoạt tài khoản thất bại'));
     }
   },
 );
@@ -169,7 +189,7 @@ export const changeTempPasswordThunk = createAsyncThunk(
       localStorage.removeItem('jlpt-user');
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message ?? 'Đổi mật khẩu tạm thất bại');
+      return rejectWithValue(extractError(err, 'Đổi mật khẩu tạm thất bại'));
     }
   },
 );
@@ -187,10 +207,7 @@ export const loginWithGoogleThunk = createAsyncThunk(
       localStorage.setItem('jlpt-user', JSON.stringify(userData));
       return userData;
     } catch (err) {
-      if (!err.response) {
-        return rejectWithValue('Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối và thử lại.');
-      }
-      return rejectWithValue(err.response.data?.message ?? 'Đăng nhập bằng Google thất bại');
+      return rejectWithValue(extractError(err, 'Đăng nhập bằng Google thất bại'));
     }
   },
 );
@@ -219,10 +236,12 @@ const authSlice = createSlice({
     isAuthenticated: persistedUser !== null,
     status: 'idle',   // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
+    errorCode: null,  // mã lỗi máy-đọc từ backend (để component switch không dò chuỗi)
   },
   reducers: {
     clearError(state) {
       state.error = null;
+      state.errorCode = null;
     },
     // Cập nhật thông tin user hiện tại (vd sau onboarding) + đồng bộ localStorage.
     setUser(state, action) {
@@ -246,6 +265,7 @@ const authSlice = createSlice({
       .addCase(loginThunk.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.errorCode = null;
       })
       .addCase(loginThunk.fulfilled, (state, action) => {
         state.status = 'succeeded';
@@ -253,20 +273,19 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
       })
       .addCase(loginThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
+        applyError(state, action.payload);
       })
       // register
       .addCase(registerThunk.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.errorCode = null;
       })
       .addCase(registerThunk.fulfilled, (state) => {
         state.status = 'succeeded';
       })
       .addCase(registerThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
+        applyError(state, action.payload);
       })
 
       // logout
@@ -281,71 +300,72 @@ const authSlice = createSlice({
       .addCase(forgotPasswordThunk.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.errorCode = null;
       })
       .addCase(forgotPasswordThunk.fulfilled, (state) => {
         state.status = 'succeeded';
       })
       .addCase(forgotPasswordThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
+        applyError(state, action.payload);
       })
 
       // resetPassword
       .addCase(resetPasswordThunk.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.errorCode = null;
       })
       .addCase(resetPasswordThunk.fulfilled, (state) => {
         state.status = 'succeeded';
       })
       .addCase(resetPasswordThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
+        applyError(state, action.payload);
       })
 
       // setupStaffPassword
       .addCase(setupStaffPasswordThunk.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.errorCode = null;
       })
       .addCase(setupStaffPasswordThunk.fulfilled, (state) => {
         state.status = 'succeeded';
       })
       .addCase(setupStaffPasswordThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
+        applyError(state, action.payload);
       })
 
       // checkAccountType
       .addCase(checkAccountTypeThunk.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.errorCode = null;
       })
       .addCase(checkAccountTypeThunk.fulfilled, (state) => {
         state.status = 'succeeded';
       })
       .addCase(checkAccountTypeThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
+        applyError(state, action.payload);
       })
 
       // staffForgotPassword
       .addCase(staffForgotPasswordThunk.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.errorCode = null;
       })
       .addCase(staffForgotPasswordThunk.fulfilled, (state) => {
         state.status = 'succeeded';
       })
       .addCase(staffForgotPasswordThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
+        applyError(state, action.payload);
       })
 
       // changeTempPassword
       .addCase(changeTempPasswordThunk.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.errorCode = null;
       })
       .addCase(changeTempPasswordThunk.fulfilled, (state) => {
         state.status = 'succeeded';
@@ -353,40 +373,40 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
       })
       .addCase(changeTempPasswordThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
+        applyError(state, action.payload);
       })
 
       // verifyEmail
       .addCase(verifyEmailThunk.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.errorCode = null;
       })
       .addCase(verifyEmailThunk.fulfilled, (state) => {
         state.status = 'succeeded';
       })
       .addCase(verifyEmailThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
+        applyError(state, action.payload);
       })
 
       // resendVerification — BUG-09 FIX: thunk còn thiếu
       .addCase(resendVerificationThunk.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.errorCode = null;
       })
       .addCase(resendVerificationThunk.fulfilled, (state) => {
         state.status = 'succeeded';
       })
       .addCase(resendVerificationThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
+        applyError(state, action.payload);
       })
 
       // loginWithGoogle
       .addCase(loginWithGoogleThunk.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.errorCode = null;
       })
       .addCase(loginWithGoogleThunk.fulfilled, (state, action) => {
         state.status = 'succeeded';
@@ -394,8 +414,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
       })
       .addCase(loginWithGoogleThunk.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
+        applyError(state, action.payload);
       });
   },
 });

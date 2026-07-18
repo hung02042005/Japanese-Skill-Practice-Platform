@@ -5,7 +5,7 @@ import { JlptBadge } from '../../components/common/Badges';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import KanjiGridPlayer from '../../components/kanji/KanjiGridPlayer';
 import KanjiWritingCanvas from '../../components/kanji/KanjiWritingCanvas';
-import { getKanjiDetail, addToFlashcard, markProgress } from '../../api/studentService';
+import { getKanjiDetail, markProgress } from '../../api/studentService';
 import './KanjiPractice.css';
 
 export default function KanjiPractice() {
@@ -16,7 +16,6 @@ export default function KanjiPractice() {
   const [kanji,      setKanji]     = useState(null);
   const [isLoading,  setLoading]   = useState(true);
   const [error,      setError]     = useState('');
-  const [addedFlash, setAdded]     = useState(false);
   const [mode,       setMode]      = useState('learn'); // 'learn' | 'write'
   const [, setCurrentStroke] = useState(0);
   const markedRef = useRef(false);
@@ -26,7 +25,6 @@ export default function KanjiPractice() {
     (async () => {
       setLoading(true);
       setError('');
-      setAdded(false);
       setMode('learn');
       setCurrentStroke(0);
       markedRef.current = false;
@@ -56,20 +54,6 @@ export default function KanjiPractice() {
       markedRef.current = false;
     }
   }, [kanji, addToast]);
-
-  async function handleAddFlashcard() {
-    try {
-      await addToFlashcard('kanji', kanji.kanjiId);
-      setAdded(true);
-      addToast('success', `Đã thêm "${kanji.characterValue}" vào Flashcard!`);
-    } catch (err) {
-      if (err?.response?.status === 409) {
-        addToast('info', 'Kanji này đã có trong Flashcard.');
-        return;
-      }
-      addToast('error', 'Không thể thêm vào Flashcard.');
-    }
-  }
 
   // ── Loading ──────────────────────────────────────────────────────────────
   if (isLoading) {
@@ -192,18 +176,6 @@ export default function KanjiPractice() {
             </div>
           )}
         </section>
-
-        {/* ── Flashcard shortcut ── */}
-        <div className="kp-flash-row">
-          <button
-            className={`kp-flash-btn${addedFlash ? ' kp-flash-btn--added' : ''}`}
-            onClick={handleAddFlashcard}
-            disabled={addedFlash}
-            aria-label={`${addedFlash ? 'Đã thêm' : 'Thêm'} "${kanji.characterValue}" vào Flashcard`}
-          >
-            {addedFlash ? '✓ Đã thêm vào Flashcard' : '＋ Thêm vào Flashcard'}
-          </button>
-        </div>
 
         {/* ── Start learning CTA ── */}
         <div className="kp-cta-wrap">

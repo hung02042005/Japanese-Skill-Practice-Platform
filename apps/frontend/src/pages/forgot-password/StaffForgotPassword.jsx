@@ -6,6 +6,7 @@ import AuthTopBar from '../../components/auth/AuthTopBar';
 import SakuChan from '../../components/auth/SakuChan';
 import AuthBanner from '../../components/auth/AuthBanner';
 import { SakuraIcon } from '../../components/common/AppIcons';
+import { emailError } from '../../utils/validation';
 import './ForgotPassword.css';
 
 function StaffForgotPassword() {
@@ -15,10 +16,16 @@ function StaffForgotPassword() {
 
   const [email, setEmail] = useState(searchParams.get('email') ?? '');
   const [isSent, setIsSent] = useState(false);
+  const [emailErr, setEmailErr] = useState('');
   const isLoading = status === 'loading';
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    const emErr = emailError(email);
+    setEmailErr(emErr);
+    if (emErr) return;
+
     try {
       await dispatch(staffForgotPasswordThunk({ email })).unwrap();
       setIsSent(true);
@@ -77,7 +84,7 @@ function StaffForgotPassword() {
           {error && <AuthBanner type="error">{error}</AuthBanner>}
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
-            <div className="form-field">
+            <div className={`form-field${emailErr ? ' has-error' : ''}`}>
               <label className="form-label" htmlFor="staff-fp-email">Email nhân viên</label>
               <input
                 id="staff-fp-email"
@@ -87,11 +94,14 @@ function StaffForgotPassword() {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
+                  if (emailErr) setEmailErr('');
                   if (error) dispatch(clearError());
                 }}
                 autoComplete="email"
                 autoFocus
+                aria-invalid={!!emailErr}
               />
+              {emailErr && <span className="field-error">{emailErr}</span>}
             </div>
 
             <button className="btn-submit" type="submit" disabled={isLoading}>

@@ -9,28 +9,49 @@ import EyeIcon from '../../components/auth/EyeIcon';
 import AuthBanner from '../../components/auth/AuthBanner';
 import AuthDivider from '../../components/auth/AuthDivider';
 import { SakuraIcon } from '../../components/common/AppIcons';
+import { emailError, passwordError, confirmError, isBlank } from '../../utils/validation';
 import './Register.css';
 
 function Register() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { status, error } = useAppSelector((state) => state.auth);
+  const { status, error, errorCode } = useAppSelector((state) => state.auth);
 
   const [form, setForm]               = useState({ fullName: '', email: '', password: '', confirmPassword: '' });
   const [showPwd, setShowPwd]         = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isDone, setIsDone]           = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const isLoading = status === 'loading';
   const confirmOk = form.confirmPassword.length > 0 && form.password === form.confirmPassword;
 
   const setField = useCallback((name, value) => {
     setForm((prev) => ({ ...prev, [name]: value }));
+    setFieldErrors((prev) => (prev[name] ? { ...prev, [name]: '' } : prev));
     if (error) dispatch(clearError());
   }, [error, dispatch]);
 
+  function validate() {
+    const errs = {};
+    if (isBlank(form.fullName)) errs.fullName = 'Họ tên là bắt buộc';
+    else if (form.fullName.trim().length < 2) errs.fullName = 'Họ tên phải có ít nhất 2 ký tự';
+    const emErr = emailError(form.email);
+    if (emErr) errs.email = emErr;
+    const pwErr = passwordError(form.password);
+    if (pwErr) errs.password = pwErr;
+    const cfErr = confirmError(form.password, form.confirmPassword);
+    if (cfErr) errs.confirmPassword = cfErr;
+    return errs;
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
+
+    const errs = validate();
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
     try {
       await dispatch(
         registerThunk({ fullName: form.fullName, email: form.email, password: form.password, confirmPassword: form.confirmPassword }),
@@ -92,14 +113,14 @@ function Register() {
           {error && (
             <AuthBanner type="error">
               {error}
-              {error.includes('đã được sử dụng') && (
+              {errorCode === 'EMAIL_EXISTS' && (
                 <> <Link to="/login" className="auth-banner-link">Đăng nhập ngay?</Link></>
               )}
             </AuthBanner>
           )}
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
-            <div className="form-field">
+            <div className={`form-field${fieldErrors.fullName ? ' has-error' : ''}`}>
               <label className="form-label" htmlFor="reg-name">Họ và tên</label>
               <input
                 id="reg-name"
@@ -110,10 +131,12 @@ function Register() {
                 onChange={(e) => setField('fullName', e.target.value)}
                 autoComplete="name"
                 autoFocus
+                aria-invalid={!!fieldErrors.fullName}
               />
+              {fieldErrors.fullName && <span className="field-error">{fieldErrors.fullName}</span>}
             </div>
 
-            <div className="form-field">
+            <div className={`form-field${fieldErrors.email ? ' has-error' : ''}`}>
               <label className="form-label" htmlFor="reg-email">Email</label>
               <input
                 id="reg-email"
@@ -123,10 +146,12 @@ function Register() {
                 value={form.email}
                 onChange={(e) => setField('email', e.target.value)}
                 autoComplete="email"
+                aria-invalid={!!fieldErrors.email}
               />
+              {fieldErrors.email && <span className="field-error">{fieldErrors.email}</span>}
             </div>
 
-            <div className="form-field">
+            <div className={`form-field${fieldErrors.password ? ' has-error' : ''}`}>
               <label className="form-label" htmlFor="reg-pass">Mật khẩu</label>
               <div className="form-input-wrapper">
                 <input
@@ -137,6 +162,7 @@ function Register() {
                   value={form.password}
                   onChange={(e) => setField('password', e.target.value)}
                   autoComplete="new-password"
+                  aria-invalid={!!fieldErrors.password}
                 />
                 <button
                   type="button"
@@ -147,9 +173,10 @@ function Register() {
                   <EyeIcon open={showPwd} />
                 </button>
               </div>
+              {fieldErrors.password && <span className="field-error">{fieldErrors.password}</span>}
             </div>
 
-            <div className="form-field">
+            <div className={`form-field${fieldErrors.confirmPassword ? ' has-error' : ''}`}>
               <label className="form-label" htmlFor="reg-confirm">Xác nhận mật khẩu</label>
               <div className="form-input-wrapper">
                 <input
@@ -184,6 +211,7 @@ function Register() {
                   </span>
                 )}
               </div>
+              {fieldErrors.confirmPassword && <span className="field-error">{fieldErrors.confirmPassword}</span>}
             </div>
 
             <button

@@ -21,7 +21,4 @@ public class KanjiItemResponse {
 
     @com.fasterxml.jackson.annotation.JsonProperty("isCompleted")
     private boolean isCompleted;
-
-    @com.fasterxml.jackson.annotation.JsonProperty("isInFlashcard")
-    private boolean isInFlashcard;
 }

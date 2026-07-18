@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function LessonVocabCard({ vocab, onAddFlashcard }) {
+export default function LessonVocabCard({ vocab }) {
   const [audioPlaying, setPlaying] = useState(false);
 
   function playAudio() {
@@ -43,13 +43,6 @@ export default function LessonVocabCard({ vocab, onAddFlashcard }) {
           )}
         </div>
       )}
-      <button
-        className="lvc-add-btn"
-        onClick={onAddFlashcard}
-        aria-label={`Thêm "${vocab.word}" vào Flashcard`}
-      >
-        + Flashcard
-      </button>
     </div>
   );
 }

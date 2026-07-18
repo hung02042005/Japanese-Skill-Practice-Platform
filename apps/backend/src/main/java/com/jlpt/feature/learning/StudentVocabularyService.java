@@ -1,8 +1,6 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.learning;
 
-import com.jlpt.feature.flashcard.Flashcard;
-import com.jlpt.feature.flashcard.repository.FlashcardRepository;
 import com.jlpt.feature.learning.dto.VocabTopicResponse;
 import com.jlpt.feature.learning.dto.VocabularyListItemResponse;
 import com.jlpt.feature.learning.dto.VocabularyListResponse;
@@ -35,7 +33,6 @@ public class StudentVocabularyService {
     private final VocabularyTopicRepository topicRepository;
     private final VocabularyRepository vocabularyRepository;
     private final StudentContentProgressRepository progressRepository;
-    private final FlashcardRepository flashcardRepository;
 
     public List<VocabTopicResponse> getTopics(String level) {
         StudentUser.JlptLevel jlptLevel = JlptLevels.parseRequired(level);
@@ -46,7 +43,7 @@ public class StudentVocabularyService {
 
     /**
      * UC-09 (FR-LEARN-30/31/34) — danh sách từ vựng published lọc theo level + topicId + từ khoá.
-     * Đính kèm {@code isCompleted} (tiến độ) và {@code isInFlashcard} (đã thêm flashcard) cho từng từ.
+     * Đính kèm {@code isCompleted} (tiến độ) cho từng từ.
      */
     public VocabularyListResponse getVocabularyList(
             String level, Long topicId, String search, int page, int size, Long studentId) {
@@ -60,7 +57,6 @@ public class StudentVocabularyService {
         List<Long> ids = result.getContent().stream().map(Vocabulary::getId).toList();
 
         Set<Long> completedIds = new HashSet<>();
-        Set<Long> inFlashcardIds = new HashSet<>();
         if (!ids.isEmpty()) {
             progressRepository
                     .findByStudentIdAndContentTypeAndContentIdIn(studentId, ContentType.VOCABULARY, ids)
@@ -69,9 +65,6 @@ public class StudentVocabularyService {
                             completedIds.add(p.getContentId());
                         }
                     });
-            flashcardRepository
-                    .findByStudentAndContentIds(studentId, Flashcard.ContentType.VOCABULARY, ids)
-                    .forEach(f -> inFlashcardIds.add(f.getContentId()));
         }
 
         List<VocabularyListItemResponse> content = result.getContent().stream()
@@ -87,7 +80,6 @@ public class StudentVocabularyService {
                         .exampleSentenceJp(v.getExampleSentenceJp())
                         .exampleSentenceVi(v.getExampleSentenceVi())
                         .isCompleted(completedIds.contains(v.getId()))
-                        .isInFlashcard(inFlashcardIds.contains(v.getId()))
                         .build())
                 .toList();
 

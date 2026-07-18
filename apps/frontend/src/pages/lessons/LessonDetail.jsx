@@ -6,7 +6,7 @@ import { JlptBadge } from '../../components/common/Badges';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import LessonVocabCard from '../../components/student/LessonVocabCard';
 import LessonGrammarPoint from '../../components/student/LessonGrammarPoint';
-import { getLessonDetail, markProgress, addToFlashcard } from '../../api/studentService';
+import { getLessonDetail, markProgress } from '../../api/studentService';
 import './LessonDetail.css';
 
 const TABS = [
@@ -56,16 +56,6 @@ export default function LessonDetail() {
       addToast('error', 'Không thể lưu tiến độ. Thử lại sau.');
     } finally {
       setComplete(false);
-    }
-  }
-
-  async function handleAddFlashcard(vocabId) {
-    try {
-      await addToFlashcard('vocabulary', vocabId);
-      addToast('success', 'Đã thêm vào Flashcard!');
-    } catch (err) {
-      if (err?.response?.status === 409) { addToast('info', 'Từ này đã có trong Flashcard.'); return; }
-      addToast('error', 'Không thể thêm. Thử lại sau.');
     }
   }
 
@@ -163,11 +153,7 @@ export default function LessonDetail() {
               {activeTab === 'vocab' && (
                 <div className="lsn-vocab-list">
                   {lesson.vocabulary.map((v) => (
-                    <LessonVocabCard
-                      key={v.vocabId}
-                      vocab={v}
-                      onAddFlashcard={() => handleAddFlashcard(v.vocabId)}
-                    />
+                    <LessonVocabCard key={v.vocabId} vocab={v} />
                   ))}
                 </div>
               )}

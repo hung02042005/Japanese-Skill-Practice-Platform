@@ -1,9 +1,7 @@
 import { useRef } from 'react';
 
-export default function VocabCard({ word, actionState, onComplete, onAddFlashcard }) {
+export default function VocabCard({ word, actionState, onComplete }) {
   const audioRef  = useRef(null);
-  const isAdding  = actionState[`fc_${word.id}`] === 'adding';
-  const isAdded   = word.isInFlashcard || actionState[`fc_${word.id}`] === 'added';
   const isCompl   = actionState[word.id] === 'completing';
 
   return (
@@ -38,14 +36,6 @@ export default function VocabCard({ word, actionState, onComplete, onAddFlashcar
       </div>
 
       <div className="voc-card-actions">
-        <button
-          className={`voc-btn-fc${isAdded ? ' voc-btn-fc--added' : ''}`}
-          onClick={() => !isAdded && !isAdding && onAddFlashcard(word.id)}
-          disabled={isAdded || isAdding}
-          aria-label={isAdded ? 'Đã thêm Flashcard' : 'Thêm vào Flashcard'}
-        >
-          {isAdding ? '...' : isAdded ? '✓ FC' : '+ FC'}
-        </button>
         <button
           className={`voc-btn-done${word.isCompleted ? ' voc-btn-done--active' : ''}`}
           onClick={() => !word.isCompleted && !isCompl && onComplete(word.id)}

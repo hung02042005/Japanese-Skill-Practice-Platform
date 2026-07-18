@@ -19,3 +19,13 @@ certbot-www/
 
 # Logs
 *.log
+
+# Local tooling & personal docs (không commit)
+.claude/
+docs/.obsidian/
+history chat/
+APHL_SEP490_G78_APHL_Report3_SRS.pdf
+docs/01-SRS-Requirements/SRS_JLPT_Report3.docx
+docs/01-SRS-Requirements/SRS_JLPT_Report3.md
+docs/01-SRS-Requirements/mockups/
+docs/03-Interface-Specs/feature-specs/FLOW_FLASHCARD_DICTIONARY_NOTEBOOK.md

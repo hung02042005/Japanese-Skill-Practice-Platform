@@ -7,11 +7,12 @@ import SakuChan from '../../components/auth/SakuChan';
 import AuthBanner from '../../components/auth/AuthBanner';
 import EyeIcon from '../../components/auth/EyeIcon';
 import { SakuraIcon } from '../../components/common/AppIcons';
+import { passwordError, confirmError } from '../../utils/validation';
 import './ResetPassword.css';
 
 function ResetPassword() {
   const dispatch = useAppDispatch();
-  const { status, error } = useAppSelector((state) => state.auth);
+  const { status, error, errorCode } = useAppSelector((state) => state.auth);
 
   const [searchParams]  = useSearchParams();
   const token           = searchParams.get('token');
@@ -21,6 +22,7 @@ function ResetPassword() {
   const [showNew, setShowNew]                 = useState(false);
   const [showConfirm, setShowConfirm]         = useState(false);
   const [isDone, setIsDone]                   = useState(false);
+  const [fieldErrors, setFieldErrors]         = useState({});
 
   const isLoading = status === 'loading';
   const confirmOk = confirmPassword.length > 0 && newPassword === confirmPassword;
@@ -28,6 +30,15 @@ function ResetPassword() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!token) return;
+
+    const errs = {};
+    const pwErr = passwordError(newPassword);
+    if (pwErr) errs.newPassword = pwErr;
+    const cfErr = confirmError(newPassword, confirmPassword);
+    if (cfErr) errs.confirmPassword = cfErr;
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
     try {
       await dispatch(resetPasswordThunk({ token, newPassword, confirmPassword })).unwrap();
       setIsDone(true);
@@ -104,7 +115,7 @@ function ResetPassword() {
           {error && (
             <AuthBanner type="error">
               {error}
-              {(error.includes('hết hạn') || error.includes('không hợp lệ')) && (
+              {(errorCode === 'TOKEN_EXPIRED' || errorCode === 'INVALID_TOKEN') && (
                 <>{' '}<Link to="/forgot-password" className="auth-banner-link">Gửi lại link mới</Link></>
               )}
             </AuthBanner>
@@ -112,7 +123,7 @@ function ResetPassword() {
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
             {/* Mật khẩu mới */}
-            <div className="form-field">
+            <div className={`form-field${fieldErrors.newPassword ? ' has-error' : ''}`}>
               <label className="form-label" htmlFor="rp-new">Mật khẩu mới</label>
               <div className="form-input-wrapper">
                 <input
@@ -121,9 +132,14 @@ function ResetPassword() {
                   type={showNew ? 'text' : 'password'}
                   placeholder="Ít nhất 8 ký tự, 1 hoa, 1 số"
                   value={newPassword}
-                  onChange={(e) => { setNewPassword(e.target.value); if (error) dispatch(clearError()); }}
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                    if (fieldErrors.newPassword) setFieldErrors((p) => ({ ...p, newPassword: '' }));
+                    if (error) dispatch(clearError());
+                  }}
                   autoComplete="new-password"
                   autoFocus
+                  aria-invalid={!!fieldErrors.newPassword}
                 />
                 <button
                   type="button"
@@ -134,10 +150,11 @@ function ResetPassword() {
                   <EyeIcon open={showNew} />
                 </button>
               </div>
+              {fieldErrors.newPassword && <span className="field-error">{fieldErrors.newPassword}</span>}
             </div>
 
             {/* Xác nhận mật khẩu */}
-            <div className="form-field">
+            <div className={`form-field${fieldErrors.confirmPassword ? ' has-error' : ''}`}>
               <label className="form-label" htmlFor="rp-confirm">Xác nhận mật khẩu mới</label>
               <div className="form-input-wrapper">
                 <input
@@ -146,8 +163,12 @@ function ResetPassword() {
                   type={showConfirm ? 'text' : 'password'}
                   placeholder="Nhập lại mật khẩu mới"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    if (fieldErrors.confirmPassword) setFieldErrors((p) => ({ ...p, confirmPassword: '' }));
+                  }}
                   autoComplete="new-password"
+                  aria-invalid={!!fieldErrors.confirmPassword}
                 />
                 {!confirmPassword ? (
                   <button
@@ -174,6 +195,7 @@ function ResetPassword() {
                   </span>
                 )}
               </div>
+              {fieldErrors.confirmPassword && <span className="field-error">{fieldErrors.confirmPassword}</span>}
             </div>
 
             <button className="btn-submit" type="submit" disabled={isLoading}>

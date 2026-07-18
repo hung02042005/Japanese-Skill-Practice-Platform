@@ -124,16 +124,6 @@
   display: flex; flex-direction: column; gap: 6px;
   align-items: flex-end; flex-shrink: 0;
 }
-.voc-btn-fc {
-  height: 28px; padding: 0 12px;
-  background: var(--color-primary-bg); border: 1.5px solid var(--color-primary-light);
-  border-radius: var(--radius-full); color: var(--color-primary);
-  font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;
-  transition: all var(--transition); font-family: var(--font-base);
-}
-.voc-btn-fc--added { background: var(--color-primary-bg); border-color: var(--color-primary); color: var(--color-primary); cursor: default; }
-.voc-btn-fc:disabled { opacity: 0.6; cursor: not-allowed; }
-
 .voc-btn-done {
   width: 28px; height: 28px; border-radius: var(--radius-full);
   border: 2px solid var(--color-border); background: transparent;

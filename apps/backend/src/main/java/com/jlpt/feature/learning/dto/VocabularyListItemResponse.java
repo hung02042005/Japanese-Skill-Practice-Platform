@@ -22,7 +22,4 @@ public class VocabularyListItemResponse {
 
     @JsonProperty("isCompleted")
     private boolean isCompleted;
-
-    @JsonProperty("isInFlashcard")
-    private boolean isInFlashcard;
 }

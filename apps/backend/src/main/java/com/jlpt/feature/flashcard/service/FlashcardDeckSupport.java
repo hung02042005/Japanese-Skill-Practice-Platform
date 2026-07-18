@@ -24,12 +24,6 @@ public class FlashcardDeckSupport {
     private final FlashcardDeckRepository flashcardDeckRepository;
     private final FlashcardRepository flashcardRepository;
 
-    public FlashcardDeck ownDeckOrThrow(Long studentId, Long deckId) {
-        return flashcardDeckRepository
-                .findByIdAndStudentId(deckId, studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Sổ tay", deckId));
-    }
-
     public Flashcard ownCardOrThrow(Long flashcardId, Long studentId) {
         // 1 query: nạp thẻ rồi so chủ sở hữu trên FK id (student LAZY, getId() không hit DB).
         Flashcard card = flashcardRepository

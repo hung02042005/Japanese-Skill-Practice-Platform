@@ -14,8 +14,6 @@ public interface FlashcardDeckRepository extends JpaRepository<FlashcardDeck, Lo
 
     // @SQLRestriction("is_deleted = 0") đã lọc deck đã xóa cho mọi truy vấn dưới đây.
 
-    Optional<FlashcardDeck> findByIdAndStudentId(Long deckId, Long studentId);
-
     Optional<FlashcardDeck> findByStudentIdAndName(Long studentId, String name);
 
     // Sổ auto "Từ cần ôn lại" — get-or-create (UQ 1 sổ/student, FR-FC-40).

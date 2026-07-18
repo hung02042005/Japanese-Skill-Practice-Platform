@@ -2,9 +2,7 @@
 package com.jlpt.feature.flashcard.service;
 
 import com.jlpt.feature.flashcard.Flashcard;
-import com.jlpt.feature.flashcard.FlashcardConstants;
 import com.jlpt.feature.flashcard.FlashcardDeck;
-import com.jlpt.feature.flashcard.dto.AddFlashcardRequest;
 import com.jlpt.feature.flashcard.dto.DeckSummaryResponse;
 import com.jlpt.feature.flashcard.dto.FlashcardResponse;
 import com.jlpt.feature.flashcard.dto.ReviewDeckAddRequest;
@@ -12,17 +10,11 @@ import com.jlpt.feature.flashcard.dto.ReviewDeckAddResponse;
 import com.jlpt.feature.flashcard.repository.FlashcardDeckRepository;
 import com.jlpt.feature.flashcard.repository.FlashcardRepository;
 import com.jlpt.feature.flashcard.service.FlashcardResolver.ContentMaps;
-import com.jlpt.feature.learning.GrammarPoint;
-import com.jlpt.feature.learning.GrammarPointRepository;
 import com.jlpt.feature.learning.Kanji;
-import com.jlpt.feature.learning.KanjiRepository;
 import com.jlpt.feature.learning.Vocabulary;
 import com.jlpt.feature.learning.VocabularyRepository;
 import com.jlpt.feature.student.StudentUser;
 import com.jlpt.feature.student.StudentUserRepository;
-import com.jlpt.shared.exception.BadRequestException;
-import com.jlpt.shared.exception.DuplicateResourceException;
-import com.jlpt.shared.exception.ResourceNotFoundException;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -50,8 +42,6 @@ public class NotebookService {
     private final FlashcardRepository flashcardRepository;
     private final FlashcardDeckRepository flashcardDeckRepository;
     private final VocabularyRepository vocabularyRepository;
-    private final KanjiRepository kanjiRepository;
-    private final GrammarPointRepository grammarPointRepository;
     private final StudentUserRepository studentUserRepository;
     private final FlashcardResolver resolver;
     private final FlashcardDeckSupport deckSupport;
@@ -142,78 +132,6 @@ public class NotebookService {
         flashcardRepository.save(card);
     }
 
-    // ── Add card (live-resolve: KHÔNG copy text cho thẻ tích hợp, §3.4) ───────
-
-    public FlashcardResponse addCard(Long studentId, AddFlashcardRequest request) {
-        Flashcard.ContentType contentType = Flashcard.ContentType.valueOf(request.contentType());
-
-        if (contentType != Flashcard.ContentType.CUSTOM && request.contentId() == null) {
-            throw new BadRequestException("contentId is required for integrated flashcards");
-        }
-
-        if (contentType != Flashcard.ContentType.CUSTOM) {
-            // FR-FC-31: trùng (student, content_type, content_id) -> 409, không tạo trùng.
-            if (flashcardRepository
-                    .findByStudentAndContent(studentId, contentType, request.contentId())
-                    .isPresent()) {
-                throw new DuplicateResourceException("Nội dung này đã có trong Flashcard");
-            }
-        }
-
-        StudentUser student = studentUserRepository.getReferenceById(studentId);
-        Flashcard.FlashcardBuilder builder = Flashcard.builder()
-                .student(student)
-                .contentType(contentType)
-                .contentId(request.contentId())
-                .isSystem(false)
-                .addedReason("manual")
-                .nextReviewDate(LocalDate.now());
-
-        String requestedDeckName = normalizeDeckName(request.deckName());
-        String deckName;
-        switch (contentType) {
-            case VOCABULARY -> {
-                Vocabulary vocab = vocabularyRepository
-                        .findById(request.contentId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Vocabulary", request.contentId()));
-                deckName = requestedDeckName != null ? requestedDeckName : buildVocabDeckName(vocab);
-                // Thẻ tích hợp: front/back NULL, resolve live khi đọc (FR-FC-30).
-            }
-            case KANJI -> {
-                Kanji kanji = kanjiRepository
-                        .findById(request.contentId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Kanji", request.contentId()));
-                deckName = requestedDeckName != null
-                        ? requestedDeckName
-                        : kanji.getJlptLevel().name() + "_KANJI";
-            }
-            case GRAMMAR -> {
-                GrammarPoint grammar = grammarPointRepository
-                        .findById(request.contentId())
-                        .orElseThrow(() -> new ResourceNotFoundException("GrammarPoint", request.contentId()));
-                deckName = requestedDeckName != null
-                        ? requestedDeckName
-                        : grammar.getJlptLevel().name() + "_GRAMMAR";
-            }
-            case CUSTOM -> {
-                if (request.frontText() == null || request.backText() == null) {
-                    throw new BadRequestException("frontText và backText là bắt buộc cho thẻ tùy chỉnh");
-                }
-                deckName = requestedDeckName != null ? requestedDeckName : FlashcardConstants.DEFAULT_DECK_NAME;
-                builder.frontText(request.frontText()).backText(request.backText());
-            }
-            default -> throw new BadRequestException("contentType không hợp lệ");
-        }
-
-        FlashcardDeck deck = request.deckId() != null
-                ? deckSupport.ownDeckOrThrow(studentId, request.deckId())
-                : deckSupport.getOrCreateDeck(student, deckName);
-        builder.deck(deck);
-
-        Flashcard saved = flashcardRepository.save(builder.build());
-        return resolver.toFlashcardResponse(saved, resolver.loadContentMaps(List.of(saved)));
-    }
-
     /** Xác nhận thêm các từ sai vào sổ "Từ cần ôn lại" (§3.5, FR-FC-43/44). */
     public ReviewDeckAddResponse addWrongWordsToReviewDeck(Long studentId, ReviewDeckAddRequest request) {
         StudentUser student = studentUserRepository.getReferenceById(studentId);
@@ -286,16 +204,4 @@ public class NotebookService {
         };
     }
 
-    private String normalizeDeckName(String deckName) {
-        if (deckName == null || deckName.isBlank()) {
-            return null;
-        }
-        return deckName.trim();
-    }
-
-    private String buildVocabDeckName(Vocabulary vocab) {
-        String level = vocab.getJlptLevel() != null ? vocab.getJlptLevel().name() : "UNKNOWN";
-        String topic = vocab.getTopicRef() != null ? vocab.getTopicRef().getSlug() : "other";
-        return level + "_" + topic;
-    }
 }

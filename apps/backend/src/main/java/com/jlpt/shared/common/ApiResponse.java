@@ -16,6 +16,7 @@ public class ApiResponse<T> {
 
     private int status;
     private String message;
+    private String code;
     private T data;
 
     public static <T> ApiResponse<T> success(T data) {
@@ -47,6 +48,19 @@ public class ApiResponse<T> {
                 .status(status)
                 .message(message)
                 .data(data)
+                .build();
+    }
+
+    /**
+     * Lỗi kèm mã máy-đọc (errorCode) để client phân biệt loại lỗi mà không phải
+     * dò chuỗi message tiếng Việt. Tách tên riêng (không overload `error`) để
+     * tránh đụng chữ ký `error(int, String, T data)` khi T = String.
+     */
+    public static <T> ApiResponse<T> errorWithCode(int status, String message, String code) {
+        return ApiResponse.<T>builder()
+                .status(status)
+                .message(message)
+                .code(code)
                 .build();
     }
 }

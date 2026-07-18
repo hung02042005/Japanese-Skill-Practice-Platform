@@ -5,7 +5,6 @@ import TopNav from '../../components/layout/TopNav';
 import { JlptBadge } from '../../components/common/Badges';
 import { ProgressBar } from '../../components/common/ProgressBar';
 import { EmptyState } from '../../components/common/EmptyState';
-import { NotebookIcon } from '../../components/student/StudentIcons';
 import { SproutIcon, RepeatIcon, SpeakerIcon } from '../../components/common/AppIcons';
 import { ToastContainer, useToast } from '../../components/common/Toast';
 import {
@@ -27,7 +26,6 @@ export default function VocabFlashcardSession() {
   const { user } = useAppSelector((s) => s.auth);
   const { toasts, addToast, removeToast } = useToast();
 
-  const deckId  = searchParams.get('deckId');
   const topicId = searchParams.get('topicId');
   const level   = searchParams.get('level') ?? user?.jlptLevel ?? 'N5';
 
@@ -53,9 +51,7 @@ export default function VocabFlashcardSession() {
     setStatus('loading');
     setError('');
     try {
-      const data = await getVocabFlashcardSession(
-        deckId ? { deckId: Number(deckId) } : { topicId: Number(topicId) },
-      );
+      const data = await getVocabFlashcardSession({ topicId: Number(topicId) });
       setSession(data);
       setIdx(0);
       setRevealed(false);
@@ -75,7 +71,7 @@ export default function VocabFlashcardSession() {
       );
       setStatus('error');
     }
-  }, [deckId, topicId, navigate]);
+  }, [topicId, navigate]);
 
   useEffect(() => { loadSession(); }, [loadSession]);
 
@@ -142,36 +138,27 @@ export default function VocabFlashcardSession() {
     if (url) new Audio(url).play().catch(() => {});
   }
 
-  const backToHub = () =>
-    navigate(deckId ? '/notebook' : `/vocabulary?level=${level}`);
+  const backToHub = () => navigate(`/vocabulary?level=${level}`);
 
   return (
     <div className="vfs-page">
-      <TopNav activeTab={deckId ? '' : 'vocabulary'} />
+      <TopNav activeTab="vocabulary" />
       <main className="vfs-body">
         <button type="button" className="vfs-back" onClick={backToHub}>
-          {deckId ? '← Sổ tay' : '← Lộ trình từ vựng'}
+          ← Lộ trình từ vựng
         </button>
 
         <div className="vfs-head">
           <h1 className="vfs-title">
-            {deckId ? (
-              <span><NotebookIcon size={20} /> Từ cần ôn lại</span>
-            ) : (
-              <>
-                <JlptBadge level={session?.level ?? level} />
-                <span lang="ja">{session?.topicTitle || 'Từ vựng'}</span>
-              </>
-            )}
+            <JlptBadge level={session?.level ?? level} />
+            <span lang="ja">{session?.topicTitle || 'Từ vựng'}</span>
           </h1>
-          {!deckId && (
-            <a
-              className="vfs-listlink"
-              href={`/vocabulary?level=${level}&view=list`}
-            >
-              Xem danh sách từ
-            </a>
-          )}
+          <a
+            className="vfs-listlink"
+            href={`/vocabulary?level=${level}&view=list`}
+          >
+            Xem danh sách từ
+          </a>
         </div>
 
         {/* ── Loading ── */}

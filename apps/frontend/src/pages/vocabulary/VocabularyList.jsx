@@ -13,7 +13,6 @@ import {
   getVocabularyList,
   getVocabTopics,
   markVocabComplete,
-  addVocabToFlashcard,
 } from '../../api/studentService';
 import './VocabularyList.css';
 
@@ -87,17 +86,6 @@ export default function VocabularyList() {
       setAction((prev) => ({ ...prev, [vocabId]: 'done' }));
     } catch {
       setAction((prev) => { const s = { ...prev }; delete s[vocabId]; return s; });
-    }
-  };
-
-  const handleAddFlashcard = async (vocabId) => {
-    setAction((prev) => ({ ...prev, [`fc_${vocabId}`]: 'adding' }));
-    try {
-      await addVocabToFlashcard(vocabId);
-      setWords((prev) => prev.map((w) => w.id === vocabId ? { ...w, isInFlashcard: true } : w));
-      setAction((prev) => ({ ...prev, [`fc_${vocabId}`]: 'added' }));
-    } catch {
-      setAction((prev) => { const s = { ...prev }; delete s[`fc_${vocabId}`]; return s; });
     }
   };
 
@@ -213,7 +201,6 @@ export default function VocabularyList() {
                 word={w}
                 actionState={actionState}
                 onComplete={handleComplete}
-                onAddFlashcard={handleAddFlashcard}
               />
             ))}
           </div>

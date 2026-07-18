@@ -6,6 +6,7 @@ import AuthTopBar from '../../components/auth/AuthTopBar';
 import SakuChan from '../../components/auth/SakuChan';
 import AuthBanner from '../../components/auth/AuthBanner';
 import { SakuraIcon } from '../../components/common/AppIcons';
+import { emailError } from '../../utils/validation';
 import './ForgotPassword.css';
 
 function ForgotPassword() {
@@ -15,11 +16,17 @@ function ForgotPassword() {
 
   const [email, setEmail] = useState('');
   const [isSent, setIsSent] = useState(false);
+  const [emailErr, setEmailErr] = useState('');
 
   const isLoading = status === 'loading';
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    const emErr = emailError(email);
+    setEmailErr(emErr);
+    if (emErr) return;
+
     try {
       const account = await dispatch(checkAccountTypeThunk({ email })).unwrap();
       if (account.accountType === 'staff') {
@@ -83,7 +90,7 @@ function ForgotPassword() {
           {error && <AuthBanner type="error">{error}</AuthBanner>}
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
-            <div className="form-field">
+            <div className={`form-field${emailErr ? ' has-error' : ''}`}>
               <label className="form-label" htmlFor="fp-email">Email</label>
               <input
                 id="fp-email"
@@ -91,10 +98,12 @@ function ForgotPassword() {
                 type="email"
                 placeholder="example@email.com"
                 value={email}
-                onChange={(e) => { setEmail(e.target.value); if (error) dispatch(clearError()); }}
+                onChange={(e) => { setEmail(e.target.value); if (emailErr) setEmailErr(''); if (error) dispatch(clearError()); }}
                 autoComplete="email"
                 autoFocus
+                aria-invalid={!!emailErr}
               />
+              {emailErr && <span className="field-error">{emailErr}</span>}
             </div>
 
             <button className="btn-submit" type="submit" disabled={isLoading}>
