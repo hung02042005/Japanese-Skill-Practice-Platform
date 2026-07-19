@@ -150,8 +150,6 @@ public interface FlashcardRepository extends JpaRepository<Flashcard, Long> {
     @Query("SELECT f FROM Flashcard f WHERE f.student.id = :studentId")
     List<Flashcard> findByStudent(@Param("studentId") Long studentId);
 
-    boolean existsByIdAndStudentId(Long flashcardId, Long studentId);
-
     // Soft delete (ADR-004) nhiều thẻ cùng lúc — gỡ hàng loạt khỏi sổ tay (3B). Quyền sở hữu ép
     // ngay trong WHERE (AND student.id) → không xóa nhầm thẻ của người khác; trả số dòng đã gỡ.
     @Modifying
