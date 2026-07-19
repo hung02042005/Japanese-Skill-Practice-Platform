@@ -17,17 +17,10 @@ public interface AuthTokenRepository extends JpaRepository<AuthToken, Long> {
 
     Optional<AuthToken> findByTokenValueAndTokenType(String tokenValue, AuthToken.TokenType tokenType);
 
-    void deleteByTokenValue(String tokenValue);
-
     void deleteByStudentIdAndTokenType(Long studentId, AuthToken.TokenType tokenType);
 
     Optional<AuthToken> findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(
             Long studentId, AuthToken.TokenType tokenType);
-
-    @Modifying
-    @Query("DELETE FROM AuthToken t WHERE t.tokenValue = :tokenValue AND t.tokenType = :tokenType")
-    void bulkDeleteByTokenValueAndType(
-            @Param("tokenValue") String tokenValue, @Param("tokenType") AuthToken.TokenType tokenType);
 
     /** Revoke all active tokens (SESSION + REFRESH) for a student — used on suspend/delete. */
     @Modifying

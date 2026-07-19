@@ -1,7 +1,6 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.learning;
 
-import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
 import java.util.List;
 import java.util.Optional;
@@ -20,9 +19,6 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
      * Use with {@code Lesson.LessonStatus.DELETED} to exclude deleted rows.
      */
     Optional<Lesson> findByIdAndStatusNot(Long id, Lesson.LessonStatus status);
-
-    /** Lists the lessons owned by a staff member, newest first, excluding soft-deleted rows. */
-    List<Lesson> findByCreatedByAndStatusNotOrderByUpdatedAtDesc(StaffUser createdBy, Lesson.LessonStatus status);
 
     /**
      * Đếm số bài học đã publish của một cấp độ JLPT (SPEC-course-list — totalLessons mỗi khoá).

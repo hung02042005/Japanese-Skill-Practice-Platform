@@ -41,9 +41,4 @@ public interface StaffContentQuestionRepository extends JpaRepository<StaffConte
             @Param("questionType") String questionType,
             @Param("status") String status,
             Pageable pageable);
-
-    /**
-     * Check if any question exists with the given id (used for existence checks).
-     */
-    boolean existsById(Long id);
 }

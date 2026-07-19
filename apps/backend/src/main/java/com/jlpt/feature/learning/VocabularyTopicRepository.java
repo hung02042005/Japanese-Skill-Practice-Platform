@@ -22,9 +22,6 @@ public interface VocabularyTopicRepository extends JpaRepository<VocabularyTopic
     List<VocabularyTopic> findPublishedByLevel(
             @Param("jlptLevel") StudentUser.JlptLevel jlptLevel, @Param("status") Kanji.ContentStatus status);
 
-    // Toàn bộ chủ đề của một cấp độ (mọi trạng thái) — màn quản lý topic của Staff.
-    List<VocabularyTopic> findByJlptLevelOrderByDisplayOrderAscIdAsc(StudentUser.JlptLevel jlptLevel);
-
     List<VocabularyTopic> findByJlptLevelAndStatusNotOrderByDisplayOrderAscIdAsc(
             StudentUser.JlptLevel jlptLevel, Kanji.ContentStatus status);
 

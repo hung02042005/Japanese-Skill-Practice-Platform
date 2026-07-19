@@ -5,7 +5,6 @@ import com.jlpt.feature.learning.Kanji;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -39,22 +38,6 @@ public interface StudentContentProgressRepository extends JpaRepository<StudentC
     long countCompletedVocabularyByLevel(
             @Param("studentId") Long studentId,
             @Param("level") com.jlpt.feature.student.StudentUser.JlptLevel level,
-            @Param("contentType") StudentContentProgress.ContentType contentType,
-            @Param("status") StudentContentProgress.ProgressStatus status);
-
-    /**
-     * Trả về tập hợp contentId mà student đã hoàn thành theo contentType.
-     * Dùng DB query thay vì load toàn bộ bảng vào memory.
-     */
-    @Query(
-            """
-            SELECT p.contentId FROM StudentContentProgress p
-            WHERE p.student.id = :studentId
-              AND p.contentType = :contentType
-              AND p.status = :status
-            """)
-    Set<Long> findCompletedContentIds(
-            @Param("studentId") Long studentId,
             @Param("contentType") StudentContentProgress.ContentType contentType,
             @Param("status") StudentContentProgress.ProgressStatus status);
 
