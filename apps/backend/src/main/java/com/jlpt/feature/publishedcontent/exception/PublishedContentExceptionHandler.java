@@ -26,29 +26,33 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class PublishedContentExceptionHandler {
 
     @ExceptionHandler(ResourceInUseException.class)
-    public ResponseEntity<ApiResponse<Map<String, Object>>> handleResourceInUse(ResourceInUseException ex) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> handleResourceInUse(
+            ResourceInUseException resourceInUseError) {
         log.warn(
                 "RESOURCE_IN_USE: {} blocking reference(s)",
-                ex.getReferences() == null ? 0 : ex.getReferences().size());
+                resourceInUseError.getReferences() == null ? 0 : resourceInUseError.getReferences().size());
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("errorCode", "RESOURCE_IN_USE");
-        data.put("references", ex.getReferences());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(409, ex.getMessage(), data));
+        data.put("references", resourceInUseError.getReferences());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(409, resourceInUseError.getMessage(), data));
     }
 
     @ExceptionHandler(RestoreNotAllowedException.class)
-    public ResponseEntity<ApiResponse<Map<String, Object>>> handleRestoreNotAllowed(RestoreNotAllowedException ex) {
-        log.warn("RESTORE_NOT_ALLOWED: {}", ex.getMessage());
+    public ResponseEntity<ApiResponse<Map<String, Object>>> handleRestoreNotAllowed(
+            RestoreNotAllowedException restoreNotAllowedError) {
+        log.warn("RESTORE_NOT_ALLOWED: {}", restoreNotAllowedError.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ApiResponse.error(409, ex.getMessage(), errorData("RESTORE_NOT_ALLOWED")));
+                .body(ApiResponse.error(409, restoreNotAllowedError.getMessage(), errorData("RESTORE_NOT_ALLOWED")));
     }
 
     @ExceptionHandler(InvalidStateTransitionException.class)
     public ResponseEntity<ApiResponse<Map<String, Object>>> handleInvalidTransition(
-            InvalidStateTransitionException ex) {
-        log.warn("INVALID_STATE_TRANSITION: {}", ex.getMessage());
+            InvalidStateTransitionException invalidStateTransitionError) {
+        log.warn("INVALID_STATE_TRANSITION: {}", invalidStateTransitionError.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ApiResponse.error(409, ex.getMessage(), errorData("INVALID_STATE_TRANSITION")));
+                .body(ApiResponse.error(
+                        409, invalidStateTransitionError.getMessage(), errorData("INVALID_STATE_TRANSITION")));
     }
 
     private Map<String, Object> errorData(String errorCode) {

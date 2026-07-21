@@ -24,28 +24,64 @@ public interface ReviewLessonRepository extends JpaRepository<Lesson, Long> {
     List<Lesson> findPending(@Param("status") LessonStatus status);
 
     @Query("SELECT l FROM Lesson l LEFT JOIN FETCH l.createdBy "
+            + "WHERE l.status = :status AND l.lessonType <> :excludedType "
+            + "ORDER BY l.updatedAt ASC")
+    List<Lesson> findPendingExcludingType(
+            @Param("status") LessonStatus status,
+            @Param("excludedType") Lesson.LessonType excludedLessonType);
+
+    @Query("SELECT l FROM Lesson l LEFT JOIN FETCH l.createdBy "
             + "WHERE l.status = :status AND l.jlptLevel = :level "
             + "ORDER BY l.updatedAt ASC")
     List<Lesson> findPending(@Param("status") LessonStatus status, @Param("level") JlptLevel level);
 
+    @Query("SELECT l FROM Lesson l LEFT JOIN FETCH l.createdBy "
+            + "WHERE l.status = :status AND l.jlptLevel = :level AND l.lessonType <> :excludedType "
+            + "ORDER BY l.updatedAt ASC")
+    List<Lesson> findPendingExcludingType(
+            @Param("status") LessonStatus status,
+            @Param("level") JlptLevel level,
+            @Param("excludedType") Lesson.LessonType excludedLessonType);
+
+    @Query("SELECT l FROM Lesson l LEFT JOIN FETCH l.createdBy "
+            + "WHERE l.status = :status AND l.lessonType = :type ORDER BY l.updatedAt ASC")
+    List<Lesson> findPendingByType(
+            @Param("status") LessonStatus status, @Param("type") Lesson.LessonType lessonType);
+
+    @Query("SELECT l FROM Lesson l LEFT JOIN FETCH l.createdBy "
+            + "WHERE l.status = :status AND l.lessonType = :type AND l.jlptLevel = :level "
+            + "ORDER BY l.updatedAt ASC")
+    List<Lesson> findPendingByTypeAndLevel(
+            @Param("status") LessonStatus status,
+            @Param("type") Lesson.LessonType lessonType,
+            @Param("level") JlptLevel level);
+
     @Query("SELECT l FROM Lesson l LEFT JOIN FETCH l.createdBy WHERE l.id = :id AND l.status <> :deleted")
-    Optional<Lesson> findActiveById(@Param("id") Long id, @Param("deleted") LessonStatus deleted);
+    Optional<Lesson> findActiveById(
+            @Param("id") Long contentId, @Param("deleted") LessonStatus deletedStatus);
+
+    @Query("SELECT l FROM Lesson l LEFT JOIN FETCH l.createdBy "
+            + "WHERE l.id = :id AND l.status <> :deleted AND l.lessonType = :type")
+    Optional<Lesson> findActiveByIdAndType(
+            @Param("id") Long contentId,
+            @Param("deleted") LessonStatus deletedStatus,
+            @Param("type") Lesson.LessonType lessonType);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Lesson l SET l.status = :to, l.approvedBy = :mgr, l.publishedAt = :now, l.updatedAt = :now "
             + "WHERE l.id = :id AND l.status = :from")
     int approve(
-            @Param("id") Long id,
-            @Param("mgr") StaffUser mgr,
-            @Param("now") LocalDateTime now,
-            @Param("from") LessonStatus from,
-            @Param("to") LessonStatus to);
+            @Param("id") Long contentId,
+            @Param("mgr") StaffUser manager,
+            @Param("now") LocalDateTime reviewTimestamp,
+            @Param("from") LessonStatus expectedStatus,
+            @Param("to") LessonStatus targetStatus);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Lesson l SET l.status = :to, l.updatedAt = :now WHERE l.id = :id AND l.status = :from")
     int transition(
-            @Param("id") Long id,
-            @Param("now") LocalDateTime now,
-            @Param("from") LessonStatus from,
-            @Param("to") LessonStatus to);
+            @Param("id") Long contentId,
+            @Param("now") LocalDateTime reviewTimestamp,
+            @Param("from") LessonStatus expectedStatus,
+            @Param("to") LessonStatus targetStatus);
 }

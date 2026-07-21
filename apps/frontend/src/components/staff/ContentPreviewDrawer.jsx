@@ -87,6 +87,31 @@ function LessonBody({ item }) {
   );
 }
 
+function SpeakingBody({ item }) {
+  const questions = item.questions?.length
+    ? item.questions
+    : [{ promptText: item.contentText, sampleAudioUrl: item.audioUrl }].filter((q) => q.promptText);
+
+  return (
+    <>
+      <div className="sfq-badge-row">
+        <JlptBadge level={item.jlptLevel} />
+        <span className="sfq-type-pill">Luyện nói</span>
+      </div>
+      <p className="sfq-question-text">{item.title}</p>
+      {questions.map((question, index) => (
+        <div className="sfq-explanation-text" key={question.speakingQuestionId ?? index}>
+          <p className="sfq-explanation-label">Câu {index + 1}</p>
+          <p lang="ja" style={{ whiteSpace: 'pre-wrap' }}>{question.promptText}</p>
+          {question.instruction && <p>{question.instruction}</p>}
+          {question.sampleAudioUrl && <audio controls preload="none" src={question.sampleAudioUrl} style={{ width: '100%' }} />}
+        </div>
+      ))}
+      <DrawerFooter item={item} />
+    </>
+  );
+}
+
 function VocabBody({ item }) {
   return (
     <>
@@ -243,6 +268,7 @@ const DRAWER_TITLES = {
   vocabulary: 'Xem trước từ vựng',
   grammar:    'Xem trước ngữ pháp',
   kanji:      'Xem trước Kanji',
+  speaking:   'Xem trước bài luyện nói',
 };
 
 export default function ContentPreviewDrawer({ item, contentType, onClose }) {
@@ -265,6 +291,7 @@ export default function ContentPreviewDrawer({ item, contentType, onClose }) {
       case 'vocabulary': return <VocabBody   item={item} />;
       case 'grammar':    return <GrammarBody item={item} />;
       case 'kanji':      return <KanjiBody   item={item} />;
+      case 'speaking':   return <SpeakingBody item={item} />;
       default:           return <LessonBody  item={item} />;
     }
   };

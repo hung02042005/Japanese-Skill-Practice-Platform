@@ -18,7 +18,9 @@ public class SpeakingResultResponse {
     private Long jobId;
     private String status;
     private Integer score; // điểm tổng (%), chỉ có khi COMPLETED
+    private Boolean provisional;
     private String transcript;
     private List<WordResultDto> wordResults;
+    private String feedback;
     private String error; // thông báo thân thiện khi FAILED (không expose raw AI error)
 }

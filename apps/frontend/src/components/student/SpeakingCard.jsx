@@ -1,6 +1,8 @@
 import { MicIcon } from './StudentIcons';
 
 export default function SpeakingCard({ exercise, onStart }) {
+  const questions = exercise.questions ?? [];
+  const previewText = questions[0]?.promptText ?? exercise.targetText;
   return (
     <div className="spk-exercise-card">
       <div className="spk-exercise-main">
@@ -11,7 +13,8 @@ export default function SpeakingCard({ exercise, onStart }) {
             <span className="spk-exercise-level">({exercise.level} — {exercise.category})</span>
           </h3>
         </div>
-        <p className="spk-exercise-text" lang="ja">{exercise.targetText}</p>
+        <p className="spk-exercise-text" lang="ja">{previewText}</p>
+        {questions.length > 1 && <p className="spk-exercise-meta">{questions.length} câu luyện nói</p>}
         <p className="spk-exercise-meta">
           {exercise.attemptCount > 0
             ? `Đã luyện: ${exercise.attemptCount} lần · Điểm tốt nhất: ${exercise.bestScore}%`

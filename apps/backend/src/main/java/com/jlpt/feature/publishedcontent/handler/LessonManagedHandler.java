@@ -1,12 +1,12 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.publishedcontent.handler;
 
-import com.jlpt.feature.contentreview.ContentType;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.learning.Kanji;
 import com.jlpt.feature.learning.Lesson;
 import com.jlpt.feature.learning.Lesson.LessonStatus;
-import com.jlpt.feature.publishedcontent.ManagedContentSnapshot;
-import com.jlpt.feature.publishedcontent.TargetStatus;
+import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
+import com.jlpt.feature.publishedcontent.model.TargetStatus;
 import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.repository.ManagedAssessmentRepository;
 import com.jlpt.feature.publishedcontent.repository.ManagedLessonRepository;
@@ -54,14 +54,14 @@ public class LessonManagedHandler implements ManagedContentHandler {
     }
 
     @Override
-    public int changeStatus(Long contentId, TargetStatus target, LocalDateTime now) {
-        LessonStatus to =
-                switch (target) {
+    public int changeStatus(Long contentId, TargetStatus targetStatus, LocalDateTime changeTimestamp) {
+        LessonStatus targetLessonStatus =
+                switch (targetStatus) {
                     case UNPUBLISHED -> LessonStatus.DRAFT;
                     case ARCHIVED -> LessonStatus.ARCHIVED;
                     case DELETED -> LessonStatus.DELETED;
                 };
-        return repository.transition(contentId, LessonStatus.PUBLISHED, to, now);
+        return repository.transition(contentId, LessonStatus.PUBLISHED, targetLessonStatus, changeTimestamp);
     }
 
     @Override
@@ -69,14 +69,14 @@ public class LessonManagedHandler implements ManagedContentHandler {
         return repository.transition(contentId, LessonStatus.ARCHIVED, LessonStatus.PUBLISHED, now);
     }
 
-    private ManagedContentSnapshot toSnapshot(Lesson l) {
+    private ManagedContentSnapshot toSnapshot(Lesson lesson) {
         return ManagedContentSnapshot.builder()
-                .contentId(l.getId())
+                .contentId(lesson.getId())
                 .contentType(ContentType.LESSON)
-                .titleOrText(l.getTitle())
-                .jlptLevel(l.getJlptLevel() != null ? l.getJlptLevel().name() : null)
-                .status(l.getStatus() != null ? l.getStatus().getValue() : null)
-                .publishedAt(l.getPublishedAt())
+                .titleOrText(lesson.getTitle())
+                .jlptLevel(lesson.getJlptLevel() != null ? lesson.getJlptLevel().name() : null)
+                .status(lesson.getStatus() != null ? lesson.getStatus().getValue() : null)
+                .publishedAt(lesson.getPublishedAt())
                 .build();
     }
 }

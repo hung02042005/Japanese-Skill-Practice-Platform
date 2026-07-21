@@ -4,8 +4,8 @@ package com.jlpt.feature.contentreview.handler;
 import com.jlpt.feature.assessment.Assessment;
 import com.jlpt.feature.assessment.QuestionAssignment;
 import com.jlpt.feature.assessment.QuestionAssignmentRepository;
-import com.jlpt.feature.contentreview.ContentSnapshot;
-import com.jlpt.feature.contentreview.ContentType;
+import com.jlpt.feature.contentreview.model.ContentSnapshot;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.contentreview.repository.ReviewAssessmentRepository;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
 import com.jlpt.feature.staff.StaffUser;
@@ -39,15 +39,17 @@ public class AssessmentContentHandler implements ReviewableContentHandler {
 
     @Override
     public List<ContentSnapshot> findPending(JlptLevel level) {
-        List<Assessment> list = (level == null)
+        List<Assessment> assessments = (level == null)
                 ? repository.findPending(ContentStatus.PENDING_REVIEW)
                 : repository.findPending(ContentStatus.PENDING_REVIEW, level);
-        return list.stream().map(a -> toSnapshot(a, false)).toList();
+        return assessments.stream().map(assessment -> toSnapshot(assessment, false)).toList();
     }
 
     @Override
     public Optional<ContentSnapshot> findActiveById(Long contentId) {
-        return repository.findActiveById(contentId, ContentStatus.DELETED).map(a -> toSnapshot(a, true));
+        return repository
+                .findActiveById(contentId, ContentStatus.DELETED)
+                .map(assessment -> toSnapshot(assessment, true));
     }
 
     @Override
@@ -80,32 +82,32 @@ public class AssessmentContentHandler implements ReviewableContentHandler {
 
     @Override
     public int transitionFromPending(Long contentId, String targetStatus, LocalDateTime now) {
-        ContentStatus to = HandlerSupport.toEnum(ContentStatus.class, targetStatus);
-        return repository.transition(contentId, now, ContentStatus.PENDING_REVIEW, to);
+        ContentStatus targetContentStatus = HandlerSupport.toEnum(ContentStatus.class, targetStatus);
+        return repository.transition(contentId, now, ContentStatus.PENDING_REVIEW, targetContentStatus);
     }
 
-    private ContentSnapshot toSnapshot(Assessment a, boolean withDetail) {
+    private ContentSnapshot toSnapshot(Assessment assessment, boolean withDetail) {
         Map<String, Object> detail = null;
         if (withDetail) {
             detail = HandlerSupport.newDetail();
             HandlerSupport.put(
                     detail,
                     "assessmentType",
-                    a.getAssessmentType() != null ? a.getAssessmentType().getValue() : null);
-            HandlerSupport.put(detail, "topic", a.getTopic());
-            HandlerSupport.put(detail, "durationMin", a.getDurationMin());
-            HandlerSupport.put(detail, "passScore", a.getPassScore());
-            HandlerSupport.put(detail, "totalScore", a.getTotalScore());
+                    assessment.getAssessmentType() != null ? assessment.getAssessmentType().getValue() : null);
+            HandlerSupport.put(detail, "topic", assessment.getTopic());
+            HandlerSupport.put(detail, "durationMin", assessment.getDurationMin());
+            HandlerSupport.put(detail, "passScore", assessment.getPassScore());
+            HandlerSupport.put(detail, "totalScore", assessment.getTotalScore());
         }
         return ContentSnapshot.builder()
-                .contentId(a.getId())
+                .contentId(assessment.getId())
                 .contentType(ContentType.ASSESSMENT)
-                .titleOrText(a.getTitle())
-                .jlptLevel(a.getJlptLevel() != null ? a.getJlptLevel().name() : null)
-                .status(a.getStatus() != null ? a.getStatus().getValue() : null)
-                .createdById(HandlerSupport.creatorId(a.getCreatedBy()))
-                .createdByName(HandlerSupport.creatorName(a.getCreatedBy()))
-                .submittedAt(a.getUpdatedAt())
+                .titleOrText(assessment.getTitle())
+                .jlptLevel(assessment.getJlptLevel() != null ? assessment.getJlptLevel().name() : null)
+                .status(assessment.getStatus() != null ? assessment.getStatus().getValue() : null)
+                .createdById(HandlerSupport.creatorId(assessment.getCreatedBy()))
+                .createdByName(HandlerSupport.creatorName(assessment.getCreatedBy()))
+                .submittedAt(assessment.getUpdatedAt())
                 .detail(detail)
                 .build();
     }

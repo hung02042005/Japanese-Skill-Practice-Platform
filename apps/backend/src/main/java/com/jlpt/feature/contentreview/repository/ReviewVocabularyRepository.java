@@ -29,23 +29,24 @@ public interface ReviewVocabularyRepository extends JpaRepository<Vocabulary, Lo
     List<Vocabulary> findPending(@Param("status") ContentStatus status, @Param("level") JlptLevel level);
 
     @Query("SELECT v FROM Vocabulary v LEFT JOIN FETCH v.createdBy WHERE v.id = :id AND v.status <> :deleted")
-    Optional<Vocabulary> findActiveById(@Param("id") Long id, @Param("deleted") ContentStatus deleted);
+    Optional<Vocabulary> findActiveById(
+            @Param("id") Long contentId, @Param("deleted") ContentStatus deletedStatus);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Vocabulary v SET v.status = :to, v.approvedBy = :mgr, v.publishedAt = :now, v.updatedAt = :now "
             + "WHERE v.id = :id AND v.status = :from")
     int approve(
-            @Param("id") Long id,
-            @Param("mgr") StaffUser mgr,
-            @Param("now") LocalDateTime now,
-            @Param("from") ContentStatus from,
-            @Param("to") ContentStatus to);
+            @Param("id") Long contentId,
+            @Param("mgr") StaffUser manager,
+            @Param("now") LocalDateTime reviewTimestamp,
+            @Param("from") ContentStatus expectedStatus,
+            @Param("to") ContentStatus targetStatus);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Vocabulary v SET v.status = :to, v.updatedAt = :now WHERE v.id = :id AND v.status = :from")
     int transition(
-            @Param("id") Long id,
-            @Param("now") LocalDateTime now,
-            @Param("from") ContentStatus from,
-            @Param("to") ContentStatus to);
+            @Param("id") Long contentId,
+            @Param("now") LocalDateTime reviewTimestamp,
+            @Param("from") ContentStatus expectedStatus,
+            @Param("to") ContentStatus targetStatus);
 }

@@ -1,8 +1,8 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.contentreview.handler;
 
-import com.jlpt.feature.contentreview.ContentSnapshot;
-import com.jlpt.feature.contentreview.ContentType;
+import com.jlpt.feature.contentreview.model.ContentSnapshot;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
 import java.time.LocalDateTime;

@@ -29,23 +29,24 @@ public interface ReviewQuestionRepository extends JpaRepository<Question, Long> 
     List<Question> findPending(@Param("status") ContentStatus status, @Param("level") JlptLevel level);
 
     @Query("SELECT q FROM Question q LEFT JOIN FETCH q.createdBy WHERE q.id = :id AND q.status <> :deleted")
-    Optional<Question> findActiveById(@Param("id") Long id, @Param("deleted") ContentStatus deleted);
+    Optional<Question> findActiveById(
+            @Param("id") Long contentId, @Param("deleted") ContentStatus deletedStatus);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Question q SET q.status = :to, q.approvedBy = :mgr, q.publishedAt = :now, q.updatedAt = :now "
             + "WHERE q.id = :id AND q.status = :from")
     int approve(
-            @Param("id") Long id,
-            @Param("mgr") StaffUser mgr,
-            @Param("now") LocalDateTime now,
-            @Param("from") ContentStatus from,
-            @Param("to") ContentStatus to);
+            @Param("id") Long contentId,
+            @Param("mgr") StaffUser manager,
+            @Param("now") LocalDateTime reviewTimestamp,
+            @Param("from") ContentStatus expectedStatus,
+            @Param("to") ContentStatus targetStatus);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Question q SET q.status = :to, q.updatedAt = :now WHERE q.id = :id AND q.status = :from")
     int transition(
-            @Param("id") Long id,
-            @Param("now") LocalDateTime now,
-            @Param("from") ContentStatus from,
-            @Param("to") ContentStatus to);
+            @Param("id") Long contentId,
+            @Param("now") LocalDateTime reviewTimestamp,
+            @Param("from") ContentStatus expectedStatus,
+            @Param("to") ContentStatus targetStatus);
 }

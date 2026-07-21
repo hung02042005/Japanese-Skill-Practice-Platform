@@ -2,10 +2,10 @@
 package com.jlpt.feature.publishedcontent.handler;
 
 import com.jlpt.feature.assessment.Assessment;
-import com.jlpt.feature.contentreview.ContentType;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
-import com.jlpt.feature.publishedcontent.ManagedContentSnapshot;
-import com.jlpt.feature.publishedcontent.TargetStatus;
+import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
+import com.jlpt.feature.publishedcontent.model.TargetStatus;
 import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.repository.ManagedAssessmentRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
@@ -51,14 +51,14 @@ public class AssessmentManagedHandler implements ManagedContentHandler {
     }
 
     @Override
-    public int changeStatus(Long contentId, TargetStatus target, LocalDateTime now) {
-        ContentStatus to =
-                switch (target) {
+    public int changeStatus(Long contentId, TargetStatus targetStatus, LocalDateTime changeTimestamp) {
+        ContentStatus targetContentStatus =
+                switch (targetStatus) {
                     case UNPUBLISHED -> ContentStatus.DRAFT;
                     case ARCHIVED -> ContentStatus.ARCHIVED;
                     case DELETED -> ContentStatus.DELETED;
                 };
-        return repository.transition(contentId, ContentStatus.PUBLISHED, to, now);
+        return repository.transition(contentId, ContentStatus.PUBLISHED, targetContentStatus, changeTimestamp);
     }
 
     @Override
@@ -66,14 +66,14 @@ public class AssessmentManagedHandler implements ManagedContentHandler {
         return repository.transition(contentId, ContentStatus.ARCHIVED, ContentStatus.PUBLISHED, now);
     }
 
-    private ManagedContentSnapshot toSnapshot(Assessment a) {
+    private ManagedContentSnapshot toSnapshot(Assessment assessment) {
         return ManagedContentSnapshot.builder()
-                .contentId(a.getId())
+                .contentId(assessment.getId())
                 .contentType(ContentType.ASSESSMENT)
-                .titleOrText(a.getTitle())
-                .jlptLevel(a.getJlptLevel() != null ? a.getJlptLevel().name() : null)
-                .status(a.getStatus() != null ? a.getStatus().getValue() : null)
-                .publishedAt(a.getPublishedAt())
+                .titleOrText(assessment.getTitle())
+                .jlptLevel(assessment.getJlptLevel() != null ? assessment.getJlptLevel().name() : null)
+                .status(assessment.getStatus() != null ? assessment.getStatus().getValue() : null)
+                .publishedAt(assessment.getPublishedAt())
                 .build();
     }
 }

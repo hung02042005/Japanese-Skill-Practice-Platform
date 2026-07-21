@@ -27,7 +27,6 @@ export default function SpeakingPage() {
   const [aiError,     setAiError]    = useState('');
   const pollRef    = useRef(null);
   const timeoutRef = useRef(null);
-  const sampleRef  = useRef(null);
 
   useEffect(() => {
     setLoading(true);
@@ -50,7 +49,7 @@ export default function SpeakingPage() {
     pollRef.current = setInterval(async () => {
       try {
         const data = await getSpeakingResult(id);
-        if (data.status === 'COMPLETED') {
+        if (data.status === 'COMPLETED' || data.status === 'AWAITING_REVIEW') {
           clearInterval(pollRef.current);
           clearTimeout(timeoutRef.current);
           setAiResult(data);
@@ -109,7 +108,11 @@ export default function SpeakingPage() {
 
   // ── Practice view ──
   if (view === 'practice' && activeEx) {
-    const scoreStars = aiResult ? Math.round(aiResult.score / 20) : 0;
+    const questions = activeEx.questions?.length
+      ? activeEx.questions
+      : [{ promptText: activeEx.targetText, sampleAudioUrl: activeEx.sampleAudioUrl }];
+    const hasScore = Number.isFinite(aiResult?.score);
+    const scoreStars = hasScore ? Math.round(aiResult.score / 20) : 0;
 
     return (
       <div className="spk-page">
@@ -122,18 +125,21 @@ export default function SpeakingPage() {
             <span className="spk-level-badge">{activeEx.level}</span>
           </h2>
 
-          {/* Step 1: Listen to sample */}
+          {/* Step 1: Review prompts and samples */}
           <div className="spk-step-card">
-            <div className="spk-step-label">Bước 1 — Nghe mẫu</div>
-            <p className="spk-target-text" lang="ja">{activeEx.targetText}</p>
-            <button
-              className="spk-btn-sample"
-              onClick={() => sampleRef.current?.play()}
-              aria-label="Nghe bản mẫu"
-            >
-              ▶ Nghe mẫu
-            </button>
-            <audio ref={sampleRef} src={activeEx.sampleAudioUrl} preload="none" />
+            <div className="spk-step-label">Bước 1 — Đọc câu hỏi và nghe mẫu</div>
+            <div className="spk-question-list">
+              {questions.map((question, index) => (
+                <div className="spk-question-item" key={question.speakingQuestionId ?? index}>
+                  <strong>Câu {index + 1}</strong>
+                  <p className="spk-target-text" lang="ja">{question.promptText}</p>
+                  {question.instruction && <p className="spk-question-instruction">{question.instruction}</p>}
+                  {question.sampleAudioUrl && (
+                    <audio controls preload="none" src={question.sampleAudioUrl} aria-label={`Nghe mẫu câu ${index + 1}`} />
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Step 2: Record */}
@@ -178,12 +184,19 @@ export default function SpeakingPage() {
           {/* AI Result */}
           {submitState === 'done' && aiResult && (
             <div className="spk-result">
-              <div className="spk-result-header">
-                <span className="spk-result-score">{aiResult.score}%</span>
-                <span className="spk-result-stars" aria-label={`${scoreStars} sao`}>
-                  {'●'.repeat(scoreStars)}{'○'.repeat(5 - scoreStars)}
-                </span>
-              </div>
+              {aiResult.provisional && (
+                <div className="spk-provisional">Điểm AI tạm thời — bài đang chờ giáo viên chấm.</div>
+              )}
+              {hasScore ? (
+                <div className="spk-result-header">
+                  <span className="spk-result-score">{aiResult.score}%</span>
+                  <span className="spk-result-stars" aria-label={`${scoreStars} sao`}>
+                    {'●'.repeat(scoreStars)}{'○'.repeat(5 - scoreStars)}
+                  </span>
+                </div>
+              ) : (
+                <div className="spk-status spk-status--loading">Bài đã được ghi nhận và đang chờ giáo viên đánh giá.</div>
+              )}
 
               {aiResult.transcript && (
                 <div className="spk-result-section">
@@ -207,6 +220,13 @@ export default function SpeakingPage() {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {aiResult.feedback && (
+                <div className="spk-result-section">
+                  <div className="spk-result-section-label">Nhận xét:</div>
+                  <p>{aiResult.feedback}</p>
                 </div>
               )}
 

@@ -1,11 +1,11 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.publishedcontent.handler;
 
-import com.jlpt.feature.contentreview.ContentType;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.learning.Kanji;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
-import com.jlpt.feature.publishedcontent.ManagedContentSnapshot;
-import com.jlpt.feature.publishedcontent.TargetStatus;
+import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
+import com.jlpt.feature.publishedcontent.model.TargetStatus;
 import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.repository.ManagedKanjiRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
@@ -50,14 +50,14 @@ public class KanjiManagedHandler implements ManagedContentHandler {
     }
 
     @Override
-    public int changeStatus(Long contentId, TargetStatus target, LocalDateTime now) {
-        ContentStatus to =
-                switch (target) {
+    public int changeStatus(Long contentId, TargetStatus targetStatus, LocalDateTime changeTimestamp) {
+        ContentStatus targetContentStatus =
+                switch (targetStatus) {
                     case UNPUBLISHED -> ContentStatus.DRAFT;
                     case ARCHIVED -> ContentStatus.ARCHIVED;
                     case DELETED -> ContentStatus.DELETED;
                 };
-        return repository.transition(contentId, ContentStatus.PUBLISHED, to, now);
+        return repository.transition(contentId, ContentStatus.PUBLISHED, targetContentStatus, changeTimestamp);
     }
 
     @Override
@@ -65,14 +65,14 @@ public class KanjiManagedHandler implements ManagedContentHandler {
         return repository.transition(contentId, ContentStatus.ARCHIVED, ContentStatus.PUBLISHED, now);
     }
 
-    private ManagedContentSnapshot toSnapshot(Kanji k) {
+    private ManagedContentSnapshot toSnapshot(Kanji kanji) {
         return ManagedContentSnapshot.builder()
-                .contentId(k.getId())
+                .contentId(kanji.getId())
                 .contentType(ContentType.KANJI)
-                .titleOrText(k.getCharacterValue())
-                .jlptLevel(k.getJlptLevel() != null ? k.getJlptLevel().name() : null)
-                .status(k.getStatus() != null ? k.getStatus().getValue() : null)
-                .publishedAt(k.getPublishedAt())
+                .titleOrText(kanji.getCharacterValue())
+                .jlptLevel(kanji.getJlptLevel() != null ? kanji.getJlptLevel().name() : null)
+                .status(kanji.getStatus() != null ? kanji.getStatus().getValue() : null)
+                .publishedAt(kanji.getPublishedAt())
                 .build();
     }
 }

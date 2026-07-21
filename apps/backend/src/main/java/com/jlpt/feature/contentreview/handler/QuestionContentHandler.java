@@ -3,8 +3,8 @@ package com.jlpt.feature.contentreview.handler;
 
 import com.jlpt.feature.assessment.Question;
 import com.jlpt.feature.assessment.Question.ContentStatus;
-import com.jlpt.feature.contentreview.ContentSnapshot;
-import com.jlpt.feature.contentreview.ContentType;
+import com.jlpt.feature.contentreview.model.ContentSnapshot;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.contentreview.repository.ReviewQuestionRepository;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
@@ -34,15 +34,15 @@ public class QuestionContentHandler implements ReviewableContentHandler {
 
     @Override
     public List<ContentSnapshot> findPending(JlptLevel level) {
-        List<Question> list = (level == null)
+        List<Question> questions = (level == null)
                 ? repository.findPending(ContentStatus.PENDING_REVIEW)
                 : repository.findPending(ContentStatus.PENDING_REVIEW, level);
-        return list.stream().map(q -> toSnapshot(q, false)).toList();
+        return questions.stream().map(question -> toSnapshot(question, false)).toList();
     }
 
     @Override
     public Optional<ContentSnapshot> findActiveById(Long contentId) {
-        return repository.findActiveById(contentId, ContentStatus.DELETED).map(q -> toSnapshot(q, true));
+        return repository.findActiveById(contentId, ContentStatus.DELETED).map(question -> toSnapshot(question, true));
     }
 
     @Override
@@ -52,37 +52,37 @@ public class QuestionContentHandler implements ReviewableContentHandler {
 
     @Override
     public int transitionFromPending(Long contentId, String targetStatus, LocalDateTime now) {
-        ContentStatus to = HandlerSupport.toEnum(ContentStatus.class, targetStatus);
-        return repository.transition(contentId, now, ContentStatus.PENDING_REVIEW, to);
+        ContentStatus targetContentStatus = HandlerSupport.toEnum(ContentStatus.class, targetStatus);
+        return repository.transition(contentId, now, ContentStatus.PENDING_REVIEW, targetContentStatus);
     }
 
-    private ContentSnapshot toSnapshot(Question q, boolean withDetail) {
+    private ContentSnapshot toSnapshot(Question question, boolean withDetail) {
         Map<String, Object> detail = null;
         if (withDetail) {
             detail = HandlerSupport.newDetail();
             HandlerSupport.put(
                     detail,
                     "questionType",
-                    q.getQuestionType() != null ? q.getQuestionType().getValue() : null);
+                    question.getQuestionType() != null ? question.getQuestionType().getValue() : null);
             HandlerSupport.put(
-                    detail, "skill", q.getSkill() != null ? q.getSkill().getValue() : null);
-            HandlerSupport.put(detail, "optionA", q.getOptionA());
-            HandlerSupport.put(detail, "optionB", q.getOptionB());
-            HandlerSupport.put(detail, "optionC", q.getOptionC());
-            HandlerSupport.put(detail, "optionD", q.getOptionD());
-            HandlerSupport.put(detail, "correctOption", q.getCorrectOption());
-            HandlerSupport.put(detail, "correctAnswerText", q.getCorrectAnswerText());
-            HandlerSupport.put(detail, "explanation", q.getExplanation());
+                    detail, "skill", question.getSkill() != null ? question.getSkill().getValue() : null);
+            HandlerSupport.put(detail, "optionA", question.getOptionA());
+            HandlerSupport.put(detail, "optionB", question.getOptionB());
+            HandlerSupport.put(detail, "optionC", question.getOptionC());
+            HandlerSupport.put(detail, "optionD", question.getOptionD());
+            HandlerSupport.put(detail, "correctOption", question.getCorrectOption());
+            HandlerSupport.put(detail, "correctAnswerText", question.getCorrectAnswerText());
+            HandlerSupport.put(detail, "explanation", question.getExplanation());
         }
         return ContentSnapshot.builder()
-                .contentId(q.getId())
+                .contentId(question.getId())
                 .contentType(ContentType.QUESTION)
-                .titleOrText(q.getQuestionText())
-                .jlptLevel(q.getJlptLevel() != null ? q.getJlptLevel().name() : null)
-                .status(q.getStatus() != null ? q.getStatus().getValue() : null)
-                .createdById(HandlerSupport.creatorId(q.getCreatedBy()))
-                .createdByName(HandlerSupport.creatorName(q.getCreatedBy()))
-                .submittedAt(q.getUpdatedAt())
+                .titleOrText(question.getQuestionText())
+                .jlptLevel(question.getJlptLevel() != null ? question.getJlptLevel().name() : null)
+                .status(question.getStatus() != null ? question.getStatus().getValue() : null)
+                .createdById(HandlerSupport.creatorId(question.getCreatedBy()))
+                .createdByName(HandlerSupport.creatorName(question.getCreatedBy()))
+                .submittedAt(question.getUpdatedAt())
                 .detail(detail)
                 .build();
     }

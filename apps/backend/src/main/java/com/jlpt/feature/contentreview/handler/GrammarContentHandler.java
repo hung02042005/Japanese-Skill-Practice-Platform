@@ -1,8 +1,8 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.contentreview.handler;
 
-import com.jlpt.feature.contentreview.ContentSnapshot;
-import com.jlpt.feature.contentreview.ContentType;
+import com.jlpt.feature.contentreview.model.ContentSnapshot;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.contentreview.repository.ReviewGrammarRepository;
 import com.jlpt.feature.learning.GrammarPoint;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
@@ -34,15 +34,17 @@ public class GrammarContentHandler implements ReviewableContentHandler {
 
     @Override
     public List<ContentSnapshot> findPending(JlptLevel level) {
-        List<GrammarPoint> list = (level == null)
+        List<GrammarPoint> grammarPoints = (level == null)
                 ? repository.findPending(ContentStatus.PENDING_REVIEW)
                 : repository.findPending(ContentStatus.PENDING_REVIEW, level);
-        return list.stream().map(g -> toSnapshot(g, false)).toList();
+        return grammarPoints.stream().map(grammarPoint -> toSnapshot(grammarPoint, false)).toList();
     }
 
     @Override
     public Optional<ContentSnapshot> findActiveById(Long contentId) {
-        return repository.findActiveById(contentId, ContentStatus.DELETED).map(g -> toSnapshot(g, true));
+        return repository
+                .findActiveById(contentId, ContentStatus.DELETED)
+                .map(grammarPoint -> toSnapshot(grammarPoint, true));
     }
 
     @Override
@@ -52,31 +54,31 @@ public class GrammarContentHandler implements ReviewableContentHandler {
 
     @Override
     public int transitionFromPending(Long contentId, String targetStatus, LocalDateTime now) {
-        ContentStatus to = HandlerSupport.toEnum(ContentStatus.class, targetStatus);
-        return repository.transition(contentId, now, ContentStatus.PENDING_REVIEW, to);
+        ContentStatus targetContentStatus = HandlerSupport.toEnum(ContentStatus.class, targetStatus);
+        return repository.transition(contentId, now, ContentStatus.PENDING_REVIEW, targetContentStatus);
     }
 
-    private ContentSnapshot toSnapshot(GrammarPoint g, boolean withDetail) {
+    private ContentSnapshot toSnapshot(GrammarPoint grammarPoint, boolean withDetail) {
         Map<String, Object> detail = null;
         if (withDetail) {
             detail = HandlerSupport.newDetail();
-            HandlerSupport.put(detail, "structure", g.getStructure());
-            HandlerSupport.put(detail, "formula", g.getFormula());
-            HandlerSupport.put(detail, "meaning", g.getMeaning());
-            HandlerSupport.put(detail, "usageExplanation", g.getUsageExplanation());
-            HandlerSupport.put(detail, "exampleSentenceJp", g.getExampleSentenceJp());
-            HandlerSupport.put(detail, "exampleSentenceVi", g.getExampleSentenceVi());
+            HandlerSupport.put(detail, "structure", grammarPoint.getStructure());
+            HandlerSupport.put(detail, "formula", grammarPoint.getFormula());
+            HandlerSupport.put(detail, "meaning", grammarPoint.getMeaning());
+            HandlerSupport.put(detail, "usageExplanation", grammarPoint.getUsageExplanation());
+            HandlerSupport.put(detail, "exampleSentenceJp", grammarPoint.getExampleSentenceJp());
+            HandlerSupport.put(detail, "exampleSentenceVi", grammarPoint.getExampleSentenceVi());
         }
-        String titleOrText = g.getTitle() != null ? g.getTitle() : g.getStructure();
+        String titleOrText = grammarPoint.getTitle() != null ? grammarPoint.getTitle() : grammarPoint.getStructure();
         return ContentSnapshot.builder()
-                .contentId(g.getId())
+                .contentId(grammarPoint.getId())
                 .contentType(ContentType.GRAMMAR)
                 .titleOrText(titleOrText)
-                .jlptLevel(g.getJlptLevel() != null ? g.getJlptLevel().name() : null)
-                .status(g.getStatus() != null ? g.getStatus().getValue() : null)
-                .createdById(HandlerSupport.creatorId(g.getCreatedBy()))
-                .createdByName(HandlerSupport.creatorName(g.getCreatedBy()))
-                .submittedAt(g.getUpdatedAt())
+                .jlptLevel(grammarPoint.getJlptLevel() != null ? grammarPoint.getJlptLevel().name() : null)
+                .status(grammarPoint.getStatus() != null ? grammarPoint.getStatus().getValue() : null)
+                .createdById(HandlerSupport.creatorId(grammarPoint.getCreatedBy()))
+                .createdByName(HandlerSupport.creatorName(grammarPoint.getCreatedBy()))
+                .submittedAt(grammarPoint.getUpdatedAt())
                 .detail(detail)
                 .build();
     }

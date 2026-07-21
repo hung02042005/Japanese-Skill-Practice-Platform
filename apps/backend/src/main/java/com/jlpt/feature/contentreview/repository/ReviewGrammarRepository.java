@@ -29,23 +29,24 @@ public interface ReviewGrammarRepository extends JpaRepository<GrammarPoint, Lon
     List<GrammarPoint> findPending(@Param("status") ContentStatus status, @Param("level") JlptLevel level);
 
     @Query("SELECT g FROM GrammarPoint g LEFT JOIN FETCH g.createdBy WHERE g.id = :id AND g.status <> :deleted")
-    Optional<GrammarPoint> findActiveById(@Param("id") Long id, @Param("deleted") ContentStatus deleted);
+    Optional<GrammarPoint> findActiveById(
+            @Param("id") Long contentId, @Param("deleted") ContentStatus deletedStatus);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE GrammarPoint g SET g.status = :to, g.approvedBy = :mgr, g.publishedAt = :now, g.updatedAt = :now "
             + "WHERE g.id = :id AND g.status = :from")
     int approve(
-            @Param("id") Long id,
-            @Param("mgr") StaffUser mgr,
-            @Param("now") LocalDateTime now,
-            @Param("from") ContentStatus from,
-            @Param("to") ContentStatus to);
+            @Param("id") Long contentId,
+            @Param("mgr") StaffUser manager,
+            @Param("now") LocalDateTime reviewTimestamp,
+            @Param("from") ContentStatus expectedStatus,
+            @Param("to") ContentStatus targetStatus);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE GrammarPoint g SET g.status = :to, g.updatedAt = :now WHERE g.id = :id AND g.status = :from")
     int transition(
-            @Param("id") Long id,
-            @Param("now") LocalDateTime now,
-            @Param("from") ContentStatus from,
-            @Param("to") ContentStatus to);
+            @Param("id") Long contentId,
+            @Param("now") LocalDateTime reviewTimestamp,
+            @Param("from") ContentStatus expectedStatus,
+            @Param("to") ContentStatus targetStatus);
 }

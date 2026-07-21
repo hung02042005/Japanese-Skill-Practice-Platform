@@ -1,8 +1,8 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.contentreview.handler;
 
-import com.jlpt.feature.contentreview.ContentSnapshot;
-import com.jlpt.feature.contentreview.ContentType;
+import com.jlpt.feature.contentreview.model.ContentSnapshot;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.contentreview.repository.ReviewLessonRepository;
 import com.jlpt.feature.learning.Lesson;
 import com.jlpt.feature.learning.Lesson.LessonStatus;
@@ -34,15 +34,16 @@ public class LessonContentHandler implements ReviewableContentHandler {
 
     @Override
     public List<ContentSnapshot> findPending(JlptLevel level) {
-        List<Lesson> list = (level == null)
-                ? repository.findPending(LessonStatus.PENDING_REVIEW)
-                : repository.findPending(LessonStatus.PENDING_REVIEW, level);
-        return list.stream().map(l -> toSnapshot(l, false)).toList();
+        List<Lesson> lessons = (level == null)
+                ? repository.findPendingExcludingType(LessonStatus.PENDING_REVIEW, Lesson.LessonType.SPEAKING)
+                : repository.findPendingExcludingType(
+                        LessonStatus.PENDING_REVIEW, level, Lesson.LessonType.SPEAKING);
+        return lessons.stream().map(lesson -> toSnapshot(lesson, false)).toList();
     }
 
     @Override
     public Optional<ContentSnapshot> findActiveById(Long contentId) {
-        return repository.findActiveById(contentId, LessonStatus.DELETED).map(l -> toSnapshot(l, true));
+        return repository.findActiveById(contentId, LessonStatus.DELETED).map(lesson -> toSnapshot(lesson, true));
     }
 
     @Override
@@ -52,33 +53,33 @@ public class LessonContentHandler implements ReviewableContentHandler {
 
     @Override
     public int transitionFromPending(Long contentId, String targetStatus, LocalDateTime now) {
-        LessonStatus to = HandlerSupport.toEnum(LessonStatus.class, targetStatus);
-        return repository.transition(contentId, now, LessonStatus.PENDING_REVIEW, to);
+        LessonStatus targetLessonStatus = HandlerSupport.toEnum(LessonStatus.class, targetStatus);
+        return repository.transition(contentId, now, LessonStatus.PENDING_REVIEW, targetLessonStatus);
     }
 
-    private ContentSnapshot toSnapshot(Lesson l, boolean withDetail) {
+    private ContentSnapshot toSnapshot(Lesson lesson, boolean withDetail) {
         Map<String, Object> detail = null;
         if (withDetail) {
             detail = HandlerSupport.newDetail();
             HandlerSupport.put(
                     detail,
                     "lessonType",
-                    l.getLessonType() != null ? l.getLessonType().getValue() : null);
-            HandlerSupport.put(detail, "contentText", l.getContentText());
-            HandlerSupport.put(detail, "explanation", l.getExplanation());
-            HandlerSupport.put(detail, "displayOrder", l.getDisplayOrder());
-            HandlerSupport.put(detail, "videoUrl", l.getVideoUrl());
-            HandlerSupport.put(detail, "audioUrl", l.getAudioUrl());
+                    lesson.getLessonType() != null ? lesson.getLessonType().getValue() : null);
+            HandlerSupport.put(detail, "contentText", lesson.getContentText());
+            HandlerSupport.put(detail, "explanation", lesson.getExplanation());
+            HandlerSupport.put(detail, "displayOrder", lesson.getDisplayOrder());
+            HandlerSupport.put(detail, "videoUrl", lesson.getVideoUrl());
+            HandlerSupport.put(detail, "audioUrl", lesson.getAudioUrl());
         }
         return ContentSnapshot.builder()
-                .contentId(l.getId())
+                .contentId(lesson.getId())
                 .contentType(ContentType.LESSON)
-                .titleOrText(l.getTitle())
-                .jlptLevel(l.getJlptLevel() != null ? l.getJlptLevel().name() : null)
-                .status(l.getStatus() != null ? l.getStatus().getValue() : null)
-                .createdById(HandlerSupport.creatorId(l.getCreatedBy()))
-                .createdByName(HandlerSupport.creatorName(l.getCreatedBy()))
-                .submittedAt(l.getUpdatedAt())
+                .titleOrText(lesson.getTitle())
+                .jlptLevel(lesson.getJlptLevel() != null ? lesson.getJlptLevel().name() : null)
+                .status(lesson.getStatus() != null ? lesson.getStatus().getValue() : null)
+                .createdById(HandlerSupport.creatorId(lesson.getCreatedBy()))
+                .createdByName(HandlerSupport.creatorName(lesson.getCreatedBy()))
+                .submittedAt(lesson.getUpdatedAt())
                 .detail(detail)
                 .build();
     }

@@ -1,11 +1,11 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.publishedcontent.handler;
 
-import com.jlpt.feature.contentreview.ContentType;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
 import com.jlpt.feature.learning.Vocabulary;
-import com.jlpt.feature.publishedcontent.ManagedContentSnapshot;
-import com.jlpt.feature.publishedcontent.TargetStatus;
+import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
+import com.jlpt.feature.publishedcontent.model.TargetStatus;
 import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.repository.ManagedVocabularyRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
@@ -50,14 +50,14 @@ public class VocabularyManagedHandler implements ManagedContentHandler {
     }
 
     @Override
-    public int changeStatus(Long contentId, TargetStatus target, LocalDateTime now) {
-        ContentStatus to =
-                switch (target) {
+    public int changeStatus(Long contentId, TargetStatus targetStatus, LocalDateTime changeTimestamp) {
+        ContentStatus targetContentStatus =
+                switch (targetStatus) {
                     case UNPUBLISHED -> ContentStatus.DRAFT;
                     case ARCHIVED -> ContentStatus.ARCHIVED;
                     case DELETED -> ContentStatus.DELETED;
                 };
-        return repository.transition(contentId, ContentStatus.PUBLISHED, to, now);
+        return repository.transition(contentId, ContentStatus.PUBLISHED, targetContentStatus, changeTimestamp);
     }
 
     @Override
@@ -65,14 +65,14 @@ public class VocabularyManagedHandler implements ManagedContentHandler {
         return repository.transition(contentId, ContentStatus.ARCHIVED, ContentStatus.PUBLISHED, now);
     }
 
-    private ManagedContentSnapshot toSnapshot(Vocabulary v) {
+    private ManagedContentSnapshot toSnapshot(Vocabulary vocabulary) {
         return ManagedContentSnapshot.builder()
-                .contentId(v.getId())
+                .contentId(vocabulary.getId())
                 .contentType(ContentType.VOCABULARY)
-                .titleOrText(v.getWord())
-                .jlptLevel(v.getJlptLevel() != null ? v.getJlptLevel().name() : null)
-                .status(v.getStatus() != null ? v.getStatus().getValue() : null)
-                .publishedAt(v.getPublishedAt())
+                .titleOrText(vocabulary.getWord())
+                .jlptLevel(vocabulary.getJlptLevel() != null ? vocabulary.getJlptLevel().name() : null)
+                .status(vocabulary.getStatus() != null ? vocabulary.getStatus().getValue() : null)
+                .publishedAt(vocabulary.getPublishedAt())
                 .build();
     }
 }

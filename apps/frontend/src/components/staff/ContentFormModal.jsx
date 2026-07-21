@@ -10,6 +10,7 @@ const TYPE_LABELS = {
   vocabulary: 'Từ vựng',
   grammar: 'Ngữ pháp',
   kanji: 'Kanji',
+  speaking: 'Speaking',
 };
 
 const JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
@@ -78,6 +79,19 @@ function buildInitialForm(contentType, editItem) {
         kunyomi: editItem?.kunyomi || '',
         meaning: editItem?.meaning || '',
         strokeCount: editItem?.strokeCount || '',
+      };
+    case 'speaking':
+      return {
+        ...base,
+        title: editItem?.title || '',
+        questions: editItem?.questions?.length
+          ? editItem.questions.map((question) => ({
+              speakingQuestionId: question.speakingQuestionId,
+              promptText: question.promptText || '',
+              instruction: question.instruction || '',
+              sampleAudioUrl: question.sampleAudioUrl || '',
+            }))
+          : [{ promptText: '', instruction: '', sampleAudioUrl: '' }],
       };
     default:
       return base;
@@ -205,6 +219,28 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
 
   const set = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
+  const setSpeakingQuestion = (index, field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      questions: prev.questions.map((question, questionIndex) =>
+        questionIndex === index ? { ...question, [field]: value } : question),
+    }));
+  };
+
+  const addSpeakingQuestion = () => {
+    setForm((prev) => ({
+      ...prev,
+      questions: [...prev.questions, { promptText: '', instruction: '', sampleAudioUrl: '' }],
+    }));
+  };
+
+  const removeSpeakingQuestion = (index) => {
+    setForm((prev) => ({
+      ...prev,
+      questions: prev.questions.filter((_, questionIndex) => questionIndex !== index),
+    }));
+  };
+
   const getSubmitPayload = (status) => {
     const payload = {
       ...form,
@@ -228,6 +264,16 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
 
   // Từ vựng bắt buộc có chủ đề (FR-redo-topic) — chặn submit nếu chưa chọn.
   const submit = (status) => {
+    if (contentType === 'speaking') {
+      if (!form.title?.trim()) {
+        alert('Vui lòng nhập tiêu đề bài Speaking.');
+        return;
+      }
+      if (!form.questions?.length || form.questions.some((question) => !question.promptText?.trim())) {
+        alert('Bài Speaking phải có ít nhất một câu hỏi và nội dung câu hỏi không được để trống.');
+        return;
+      }
+    }
     if (contentType === 'vocabulary' && !form.topicId) {
       setTopicError('Vui lòng chọn (hoặc tạo) một chủ đề cho từ vựng.');
       return;
@@ -550,6 +596,79 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
                   value={form.exampleSentenceVi}
                   onChange={(e) => set('exampleSentenceVi', e.target.value)}
                 />
+              </div>
+            </>
+          )}
+
+          {contentType === 'speaking' && (
+            <>
+              <div className="sfc-field">
+                <label className="sfc-field-label sfc-field-label--req" htmlFor="sfc-speaking-title">
+                  Tiêu đề bài Speaking
+                </label>
+                <input
+                  id="sfc-speaking-title"
+                  className="sfc-input"
+                  type="text"
+                  maxLength={255}
+                  placeholder="Ví dụ: Giới thiệu bản thân"
+                  value={form.title}
+                  onChange={(event) => set('title', event.target.value)}
+                />
+              </div>
+
+              <div className="sfc-field">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                  <label className="sfc-field-label sfc-field-label--req">Danh sách câu hỏi</label>
+                  <button className="sfc-btn-ghost" type="button" onClick={addSpeakingQuestion}>
+                    <PlusIcon size={15} /> Thêm câu hỏi
+                  </button>
+                </div>
+
+                <div style={{ display: 'grid', gap: 14 }}>
+                  {(form.questions || []).map((question, index) => (
+                    <div
+                      key={question.speakingQuestionId ?? index}
+                      style={{ border: '1px solid #E5E7EB', borderRadius: 12, padding: 14, background: '#FAFAFA' }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+                        <strong>Câu {index + 1}</strong>
+                        {(form.questions?.length || 0) > 1 && (
+                          <button
+                            className="sfc-btn-ghost"
+                            type="button"
+                            onClick={() => removeSpeakingQuestion(index)}
+                          >
+                            Xóa
+                          </button>
+                        )}
+                      </div>
+                      <textarea
+                        className="sfc-textarea"
+                        rows={3}
+                        placeholder="Nhập đoạn tiếng Nhật học viên cần đọc..."
+                        value={question.promptText}
+                        onChange={(event) => setSpeakingQuestion(index, 'promptText', event.target.value)}
+                      />
+                      <input
+                        className="sfc-input"
+                        style={{ marginTop: 10 }}
+                        type="text"
+                        placeholder="Hướng dẫn phát âm (không bắt buộc)"
+                        value={question.instruction}
+                        onChange={(event) => setSpeakingQuestion(index, 'instruction', event.target.value)}
+                      />
+                      <input
+                        className="sfc-input"
+                        style={{ marginTop: 10 }}
+                        type="text"
+                        placeholder="URL audio mẫu (không bắt buộc)"
+                        value={question.sampleAudioUrl}
+                        onChange={(event) => setSpeakingQuestion(index, 'sampleAudioUrl', event.target.value)}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}
