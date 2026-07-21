@@ -27,7 +27,7 @@ function StatusPill({ status }) {
   return null;
 }
 
-export default function SubmissionList({ submissions, selectedId, statusTab, pendingCount, onSelect, onTabChange }) {
+export default function SubmissionList({ submissions, selectedId, statusTab, pendingCount, isLoading, onSelect, onTabChange }) {
   return (
     <div className="grd-list-col">
       <div className="grd-tabs" role="tablist">
@@ -51,7 +51,9 @@ export default function SubmissionList({ submissions, selectedId, statusTab, pen
       </div>
 
       <div className="grd-list-scroll" role="list">
-        {submissions.length === 0 ? (
+        {isLoading ? (
+          <div className="grd-empty-list">Đang tải...</div>
+        ) : submissions.length === 0 ? (
           <div className="grd-empty-list">Không có bài nộp nào.</div>
         ) : (
           submissions.map((sub) => {

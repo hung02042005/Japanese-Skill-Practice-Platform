@@ -27,7 +27,7 @@ function formatDuration(s) {
   return `${m} phút ${sec} giây`;
 }
 
-export default function GradingPanel({ submission, detail, onGrade }) {
+export default function GradingPanel({ submission, detail, onGrade, isGrading }) {
   const [manualScore, setScore] = useState('');
   const [feedback, setFeedback] = useState('');
   const [scoreError, setScoreError] = useState('');
@@ -240,9 +240,9 @@ export default function GradingPanel({ submission, detail, onGrade }) {
                 <button
                   className="grd-save-btn"
                   onClick={handleSave}
-                  disabled={saveDisabled}
+                  disabled={saveDisabled || isGrading}
                 >
-                  Lưu điểm ✓
+                  {isGrading ? 'Đang lưu...' : 'Lưu điểm ✓'}
                 </button>
               </div>
             </>

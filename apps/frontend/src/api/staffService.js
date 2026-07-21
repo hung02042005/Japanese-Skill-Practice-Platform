@@ -295,3 +295,25 @@ export async function getContentReviewFeedback(contentId, contentType) {
   const res = await api.get(`/staff/content/${contentId}/feedback`, { params: { contentType } });
   return res.data.data; // ReviewFeedbackResponse
 }
+
+// --- Chấm bài nói (UC-31 · StaffGradingController) ---------------------------
+
+// Danh sách bài nộp speaking để chấm. Trả { content, totalElements, totalPages }.
+export async function getSpeakingSubmissions({ status, page = 0, size = 100 } = {}) {
+  const params = { type: 'speaking', page, size };
+  if (status) params.status = status;
+  const res = await api.get('/staff/submissions', { params });
+  return res.data.data;
+}
+
+// Chi tiết bài nộp + điểm AI (SubmissionResponse).
+export async function getSpeakingSubmissionDetail(submissionId) {
+  const res = await api.get(`/staff/submissions/${submissionId}`);
+  return res.data.data;
+}
+
+// Chấm điểm thủ công (override AI). Backend notify + audit. Trả GradeResponse.
+export async function gradeSpeakingSubmission(submissionId, { manualScore, manualFeedback } = {}) {
+  const res = await api.post(`/staff/submissions/${submissionId}/grade`, { manualScore, manualFeedback });
+  return res.data.data;
+}
