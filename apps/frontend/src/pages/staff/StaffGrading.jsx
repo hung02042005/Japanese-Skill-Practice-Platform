@@ -70,8 +70,8 @@ export default function StaffGrading() {
   const handleGrade = useCallback(
     async (submissionId, manualScoreStr, feedback) => {
       if (isGrading) return;
-      const detail = details[submissionId];
-      const score = manualScoreStr !== '' ? parseFloat(manualScoreStr) : Number(detail?.aiOverallScore ?? 0);
+      const score = parseFloat(manualScoreStr);
+      if (isNaN(score)) return; // GradingPanel đã bắt buộc nhập điểm hợp lệ
 
       setGrading(true);
       try {
@@ -98,7 +98,7 @@ export default function StaffGrading() {
         setGrading(false);
       }
     },
-    [isGrading, details, submissions, addToast]
+    [isGrading, submissions, addToast]
   );
 
   return (

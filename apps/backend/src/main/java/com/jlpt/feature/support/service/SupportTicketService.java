@@ -345,8 +345,8 @@ public class SupportTicketService {
             throw new BusinessException(
                     422, "INVALID_SUBMISSION_TYPE", "Chỉ có thể chấm điểm thủ công bài nói (speaking)");
         }
-        if (submission.getStatus() != StudentSubmission.SubmissionStatus.AI_GRADED) {
-            throw new BusinessException(422, "INVALID_STATUS", "Chỉ chấm được bài đã qua AI chấm (ai_graded)");
+        if (submission.getStatus() == StudentSubmission.SubmissionStatus.REJECTED) {
+            throw new BusinessException(422, "INVALID_STATUS", "Bài nộp đã bị từ chối, không thể chấm");
         }
 
         var staff = findStaffOrThrow(actorEmail);

@@ -1,12 +1,10 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.speaking;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jlpt.feature.assessment.StudentSubmission;
 import com.jlpt.feature.assessment.StudentSubmissionRepository;
 import com.jlpt.feature.learning.Lesson;
 import com.jlpt.feature.learning.LessonRepository;
-import com.jlpt.feature.speaking.dto.SpeakingAiDetail;
 import com.jlpt.feature.speaking.dto.SpeakingExerciseResponse;
 import com.jlpt.feature.speaking.dto.SpeakingResultResponse;
 import com.jlpt.feature.speaking.dto.SpeakingSubmitResponse;
@@ -23,7 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-/** Nghiệp vụ luyện nói + chấm điểm AI async (UC-13). */
+/**
+ * Nghiệp vụ luyện nói (UC-13). Học viên ghi âm & nộp bài; bài được GIÁO VIÊN (staff) chấm thủ công
+ * — không có bước AI tự chấm. Bài nộp giữ trạng thái PENDING cho tới khi staff chấm (→ GRADED).
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -35,10 +36,8 @@ public class SpeakingService {
     private final LessonRepository lessonRepository;
     private final StudentSubmissionRepository submissionRepository;
     private final SpeakingAudioStorageService audioStorage;
-    private final SpeakingAsyncProcessor asyncProcessor;
-    private final ObjectMapper objectMapper;
 
-    /** Danh sách bài luyện nói đã publish theo cấp độ, kèm tiến độ của student. */
+    /** Danh sách bài luyện nói đã publish theo cấp độ, kèm tiến độ (điểm giáo viên chấm) của student. */
     public List<SpeakingExerciseResponse> getExercises(String level, Long studentId) {
         StudentUser.JlptLevel jlptLevel = parseLevel(level);
         List<Lesson> lessons = lessonRepository.findByJlptLevelAndLessonTypeAndStatusOrderByDisplayOrderAscIdAsc(
@@ -57,13 +56,13 @@ public class SpeakingService {
                             .targetText(lesson.getContentText())
                             .sampleAudioUrl(lesson.getAudioUrl())
                             .attemptCount(s == null ? 0 : s[0])
-                            .bestScore(s == null || s[0] == 0 ? null : s[1])
+                            .bestScore(s == null || s[1] < 0 ? null : s[1])
                             .build();
                 })
                 .toList();
     }
 
-    /** Nộp bài: lưu audio, tạo submission PENDING, enqueue chấm điểm AI. Trả ngay jobId (async). */
+    /** Nộp bài: lưu audio, tạo submission PENDING chờ giáo viên chấm. Trả jobId để tra cứu kết quả. */
     public SpeakingSubmitResponse submit(Long exerciseId, MultipartFile audio, StudentUser student) {
         if (exerciseId == null || exerciseId <= 0) {
             throw new BadRequestException("Thiếu hoặc sai exerciseId");
@@ -82,9 +81,13 @@ public class SpeakingService {
                 .exercise(exercise)
                 .recordingUrl(stored.url())
                 .build();
-        submission = submissionRepository.save(submission); // commit ngay để luồng async đọc được
+        submission = submissionRepository.save(submission);
 
-        asyncProcessor.process(submission.getId(), exercise.getContentText(), stored.path());
+        log.info(
+                "[Speaking] student={} nộp bài {} → submission {} (chờ giáo viên chấm)",
+                student.getId(),
+                exerciseId,
+                submission.getId());
 
         return SpeakingSubmitResponse.builder()
                 .jobId(submission.getId())
@@ -92,49 +95,40 @@ public class SpeakingService {
                 .build();
     }
 
-    /** Poll kết quả — chỉ trả bài của chính student. */
+    /** Tra cứu kết quả một lần nộp — chỉ trả bài của chính student. */
     public SpeakingResultResponse getResult(Long jobId, Long studentId) {
         StudentSubmission submission = submissionRepository
                 .findByIdAndStudent_Id(jobId, studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bài nộp", jobId));
 
         return switch (submission.getStatus()) {
-            case PENDING -> SpeakingResultResponse.builder()
-                    .jobId(jobId)
-                    .status("PENDING")
-                    .build();
             case REJECTED -> SpeakingResultResponse.builder()
                     .jobId(jobId)
                     .status("FAILED")
                     .error(REJECTED_MESSAGE)
                     .build();
-            case AI_GRADED, GRADED -> toGradedResponse(submission);
+            case GRADED, AI_GRADED -> toGradedResponse(submission);
+            case PENDING -> SpeakingResultResponse.builder()
+                    .jobId(jobId)
+                    .status("PENDING")
+                    .build();
         };
     }
 
     private SpeakingResultResponse toGradedResponse(StudentSubmission submission) {
-        BigDecimal score =
-                submission.getManualScore() != null ? submission.getManualScore() : submission.getAiOverallScore();
-
-        // AI_GRADED nhưng không có điểm → fallback thất bại (UC-13 §3.3), hiện message thân thiện.
+        // Chỉ tính điểm do giáo viên chấm (manual). Nếu chưa có → vẫn coi là đang chờ chấm.
+        BigDecimal score = submission.getManualScore();
         if (score == null) {
             return SpeakingResultResponse.builder()
                     .jobId(submission.getId())
-                    .status("FAILED")
-                    .error(
-                            submission.getAiSuggestions() != null
-                                    ? submission.getAiSuggestions()
-                                    : "Không thể xử lý bài nộp. Vui lòng thử lại sau.")
+                    .status("PENDING")
                     .build();
         }
-
-        SpeakingAiDetail detail = parseDetail(submission.getAiErrorSummary());
         return SpeakingResultResponse.builder()
                 .jobId(submission.getId())
                 .status("COMPLETED")
                 .score(score.setScale(0, RoundingMode.HALF_UP).intValue())
-                .transcript(detail == null ? null : detail.getTranscript())
-                .wordResults(detail == null ? null : detail.getWordResults())
+                .feedback(submission.getManualFeedback())
                 .build();
     }
 
@@ -148,24 +142,12 @@ public class SpeakingService {
                 submissionRepository.findSpeakingStats(studentId, StudentSubmission.SubmissionType.SPEAKING, ids)) {
             Long exerciseId = (Long) row[0];
             int attempts = ((Number) row[1]).intValue();
-            BigDecimal best = (BigDecimal) row[2];
+            BigDecimal best = (BigDecimal) row[2]; // MAX(manual_score) — null nếu chưa được chấm
             int bestScore =
-                    best == null ? 0 : best.setScale(0, RoundingMode.HALF_UP).intValue();
+                    best == null ? -1 : best.setScale(0, RoundingMode.HALF_UP).intValue();
             stats.put(exerciseId, new int[] {attempts, bestScore});
         }
         return stats;
-    }
-
-    private SpeakingAiDetail parseDetail(String json) {
-        if (json == null || json.isBlank()) {
-            return null;
-        }
-        try {
-            return objectMapper.readValue(json, SpeakingAiDetail.class);
-        } catch (Exception e) {
-            log.warn("[Speaking] Không đọc được chi tiết AI (submission detail): {}", e.getMessage());
-            return null;
-        }
     }
 
     private StudentUser.JlptLevel parseLevel(String level) {

@@ -332,12 +332,7 @@ export async function submitSpeakingAudio(exerciseId, audioBlob) {
     headers: { 'Content-Type': 'multipart/form-data' },
     timeout: 30000,
   });
-  return res.data.data;
-}
-
-export async function getSpeakingResult(jobId) {
-  const res = await api.get(`/speaking/${jobId}`, { timeout: 10000 });
-  return res.data.data;
+  return res.data.data; // { jobId, status: 'PENDING' } — bài chờ giáo viên chấm
 }
 
 // ─── Hỗ trợ / Ticket — UC-29 (SupportController) ──────────────────────────────

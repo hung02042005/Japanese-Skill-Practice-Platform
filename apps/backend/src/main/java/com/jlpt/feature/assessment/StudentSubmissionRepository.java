@@ -19,11 +19,12 @@ public interface StudentSubmissionRepository extends JpaRepository<StudentSubmis
 
     /**
      * Thống kê speaking theo từng bài (exercise) cho một student: [exerciseId, attemptCount, bestScore].
+     * bestScore = điểm cao nhất do GIÁO VIÊN chấm (manual_score); null nếu chưa bài nào được chấm.
      * Dùng để đổ cột "Đã luyện / Điểm tốt nhất" ở danh sách mà không gây N+1.
      */
     @Query(
             """
-            SELECT s.exercise.id, COUNT(s), MAX(s.aiOverallScore)
+            SELECT s.exercise.id, COUNT(s), MAX(s.manualScore)
             FROM StudentSubmission s
             WHERE s.student.id = :studentId
               AND s.submissionType = :type

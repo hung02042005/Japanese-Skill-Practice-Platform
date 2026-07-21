@@ -2,13 +2,13 @@
 package com.jlpt.feature.speaking.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
 /**
- * Kết quả poll (UC-13 §3.1 bước 14-16 / SPEC-speaking §5).
- * {@code status}: PENDING | COMPLETED | FAILED. Các trường điểm/transcript chỉ có khi COMPLETED.
+ * Kết quả một lần nộp bài nói (UC-13, chấm bởi giáo viên).
+ * {@code status}: PENDING (chờ giáo viên chấm) | COMPLETED (đã chấm) | FAILED (bị từ chối).
+ * Điểm/nhận xét chỉ có khi COMPLETED.
  */
 @Data
 @Builder
@@ -17,8 +17,7 @@ public class SpeakingResultResponse {
 
     private Long jobId;
     private String status;
-    private Integer score; // điểm tổng (%), chỉ có khi COMPLETED
-    private String transcript;
-    private List<WordResultDto> wordResults;
-    private String error; // thông báo thân thiện khi FAILED (không expose raw AI error)
+    private Integer score; // điểm giáo viên chấm (%), chỉ có khi COMPLETED
+    private String feedback; // nhận xét của giáo viên
+    private String error; // thông báo khi FAILED
 }

@@ -60,15 +60,14 @@ export default function GradingPanel({ submission, detail, onGrade, isGrading })
   }
 
   const lc = LEVEL_COLORS[detail.jlptLevel] ?? {};
-  const previewScore = manualScore !== '' ? (parseFloat(manualScore) || 0) : detail.aiOverallScore;
+  const hasAiScore = detail.aiOverallScore != null;
+  const scoreNum = parseFloat(manualScore);
+  const scoreValid = manualScore !== '' && !isNaN(scoreNum) && scoreNum >= 0 && scoreNum <= 100;
 
   function handleSave() {
-    if (manualScore !== '') {
-      const v = parseFloat(manualScore);
-      if (isNaN(v) || v < 0 || v > 100) {
-        setScoreError('Điểm phải là số từ 0 đến 100.');
-        return;
-      }
+    if (!scoreValid) {
+      setScoreError('Vui lòng nhập điểm từ 0 đến 100.');
+      return;
     }
     if (!feedback.trim()) return;
     setScoreError('');
@@ -76,7 +75,7 @@ export default function GradingPanel({ submission, detail, onGrade, isGrading })
   }
 
   const isGraded = detail.status === 'graded';
-  const saveDisabled = !feedback.trim() || (manualScore !== '' && (isNaN(parseFloat(manualScore)) || parseFloat(manualScore) < 0 || parseFloat(manualScore) > 100));
+  const saveDisabled = !feedback.trim() || !scoreValid;
 
   return (
     <div className="grd-detail-col">
@@ -131,39 +130,29 @@ export default function GradingPanel({ submission, detail, onGrade, isGrading })
           <span className="grd-duration">Thời lượng: {formatDuration(detail.durationSeconds)}</span>
         </div>
 
-        {/* AI Score */}
-        <div className="grd-section-card">
-          <h3 className="grd-section-title">Kết quả đánh giá AI</h3>
-          <div className="grd-ai-scores">
-            <div className="grd-ai-score-item">
-              <span className="grd-ai-score-num">{detail.aiOverallScore}</span>
-              <span className="grd-ai-score-lbl">Tổng</span>
-              <ProgressBar value={detail.aiOverallScore} />
-            </div>
-            <div className="grd-ai-score-item">
-              <span className="grd-ai-score-num">{detail.aiPronunciationScore}</span>
-              <span className="grd-ai-score-lbl">Phát âm</span>
-              <ProgressBar value={detail.aiPronunciationScore} />
-            </div>
-            <div className="grd-ai-score-item">
-              <span className="grd-ai-score-num">{detail.aiFluencyScore}</span>
-              <span className="grd-ai-score-lbl">Lưu loát</span>
-              <ProgressBar value={detail.aiFluencyScore} />
+        {/* AI Score — chỉ hiện nếu bài có điểm AI (dữ liệu cũ); luồng mới không có AI */}
+        {hasAiScore && (
+          <div className="grd-section-card">
+            <h3 className="grd-section-title">Kết quả đánh giá AI</h3>
+            <div className="grd-ai-scores">
+              <div className="grd-ai-score-item">
+                <span className="grd-ai-score-num">{detail.aiOverallScore}</span>
+                <span className="grd-ai-score-lbl">Tổng</span>
+                <ProgressBar value={detail.aiOverallScore} />
+              </div>
+              <div className="grd-ai-score-item">
+                <span className="grd-ai-score-num">{detail.aiPronunciationScore}</span>
+                <span className="grd-ai-score-lbl">Phát âm</span>
+                <ProgressBar value={detail.aiPronunciationScore} />
+              </div>
+              <div className="grd-ai-score-item">
+                <span className="grd-ai-score-num">{detail.aiFluencyScore}</span>
+                <span className="grd-ai-score-lbl">Lưu loát</span>
+                <ProgressBar value={detail.aiFluencyScore} />
+              </div>
             </div>
           </div>
-          {detail.aiHighlightedErrors && (
-            <div className="grd-ai-errors">
-              <strong>Lỗi phát hiện:</strong>
-              {detail.aiHighlightedErrors}
-            </div>
-          )}
-          {detail.aiSuggestions && (
-            <div className="grd-ai-suggestions">
-              <strong>Gợi ý cải thiện:</strong>
-              {detail.aiSuggestions}
-            </div>
-          )}
-        </div>
+        )}
 
         {/* Manual grading */}
         <div className="grd-section-card">
@@ -192,7 +181,7 @@ export default function GradingPanel({ submission, detail, onGrade, isGrading })
             <>
               <div className="grd-field">
                 <label className="grd-field-label" htmlFor="grd-score-input">
-                  Điểm thủ công (0–100)
+                  Điểm (0–100) *
                 </label>
                 <input
                   id="grd-score-input"
@@ -203,15 +192,12 @@ export default function GradingPanel({ submission, detail, onGrade, isGrading })
                   className={`grd-score-input${scoreError ? ' grd-score-input--err' : ''}`}
                   value={manualScore}
                   onChange={(e) => { setScore(e.target.value); setScoreError(''); }}
-                  placeholder="Để rỗng = dùng điểm AI"
-                  aria-label="Điểm thủ công"
-                  aria-describedby="grd-preview"
+                  placeholder="Nhập điểm cho bài nói"
+                  aria-label="Điểm bài nói"
+                  aria-required="true"
                 />
-                <span className="grd-score-hint">Để rỗng nếu muốn dùng điểm AI ({detail.aiOverallScore})</span>
+                <span className="grd-score-hint">Bắt buộc nhập điểm từ 0 đến 100.</span>
                 {scoreError && <span className="grd-score-error">{scoreError}</span>}
-                <span id="grd-preview" className="grd-preview-score" aria-live="polite">
-                  Điểm kết quả sẽ là: <strong>{previewScore}</strong> / 100
-                </span>
               </div>
 
               <div className="grd-field">

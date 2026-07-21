@@ -1,16 +1,14 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAppSelector } from '../../store/hooks';
 import TopNav from '../../components/layout/TopNav';
 import { EmptyState } from '../../components/common/EmptyState';
 import SpeakingCard from '../../components/student/SpeakingCard';
 import AudioRecorder from '../../components/student/AudioRecorder';
-import { getSpeakingExercises, submitSpeakingAudio, getSpeakingResult } from '../../api/studentService';
+import { getSpeakingExercises, submitSpeakingAudio } from '../../api/studentService';
 import './SpeakingPage.css';
 
 const LEVELS          = ['N5', 'N4', 'N3', 'N2', 'N1'];
 const MAX_RECORD_SECS = 60;
-const POLL_INTERVAL   = 3000;
-const POLL_TIMEOUT    = 60000;
 
 export default function SpeakingPage() {
   const { user } = useAppSelector((s) => s.auth);
@@ -22,12 +20,11 @@ export default function SpeakingPage() {
   const [error,       setError]      = useState('');
   const [activeEx,    setActiveEx]   = useState(null);
   const [audioBlob,   setAudioBlob]  = useState(null);
-  const [submitState, setSubmitState]= useState('idle'); // idle|uploading|polling|done|error
-  const [aiResult,    setAiResult]   = useState(null);
-  const [aiError,     setAiError]    = useState('');
-  const pollRef    = useRef(null);
-  const timeoutRef = useRef(null);
-  const sampleRef  = useRef(null);
+  const [submitState, setSubmitState]= useState('idle'); // idle | uploading | submitted | error
+  const [submitError, setSubmitError]= useState('');
+  const [isSpeaking,  setSpeaking]   = useState(false);
+  const [sampleNote,  setSampleNote] = useState('');
+  const sampleRef = useRef(null);
 
   useEffect(() => {
     setLoading(true);
@@ -38,61 +35,67 @@ export default function SpeakingPage() {
       .finally(() => setLoading(false));
   }, [level]);
 
-  // Cleanup polling on unmount
+  // Dừng đọc mẫu khi rời trang
   useEffect(() => () => {
-    clearInterval(pollRef.current);
-    clearTimeout(timeoutRef.current);
-  }, []);
-
-  const startPolling = useCallback((id) => {
-    setSubmitState('polling');
-
-    pollRef.current = setInterval(async () => {
-      try {
-        const data = await getSpeakingResult(id);
-        if (data.status === 'COMPLETED') {
-          clearInterval(pollRef.current);
-          clearTimeout(timeoutRef.current);
-          setAiResult(data);
-          setSubmitState('done');
-        } else if (data.status === 'FAILED') {
-          clearInterval(pollRef.current);
-          clearTimeout(timeoutRef.current);
-          setAiError(data.error ?? 'AI xử lý thất bại. Vui lòng thử lại.');
-          setSubmitState('error');
-        }
-      } catch {
-        // network hiccup — keep polling until timeout
-      }
-    }, POLL_INTERVAL);
-
-    timeoutRef.current = setTimeout(() => {
-      clearInterval(pollRef.current);
-      setAiError('Hết thời gian chờ AI phân tích. Vui lòng thử lại.');
-      setSubmitState('error');
-    }, POLL_TIMEOUT);
+    if (typeof window !== 'undefined') window.speechSynthesis?.cancel();
   }, []);
 
   const handleSubmit = async () => {
     if (!audioBlob || submitState !== 'idle') return;
     setSubmitState('uploading');
-    setAiError('');
+    setSubmitError('');
     try {
-      const { jobId } = await submitSpeakingAudio(activeEx.exerciseId, audioBlob);
-      startPolling(jobId);
+      await submitSpeakingAudio(activeEx.exerciseId, audioBlob);
+      setSubmitState('submitted');
     } catch (err) {
-      setAiError(err?.response?.data?.message ?? 'Không thể gửi bài. Vui lòng thử lại.');
+      setSubmitError(err?.response?.data?.message ?? 'Không thể gửi bài. Vui lòng thử lại.');
       setSubmitState('error');
     }
   };
 
   const resetPractice = () => {
-    clearInterval(pollRef.current);
-    clearTimeout(timeoutRef.current);
+    if (typeof window !== 'undefined') window.speechSynthesis?.cancel();
+    setSpeaking(false);
     setAudioBlob(null);
     setSubmitState('idle');
-    setAiResult(null);
-    setAiError('');
+    setSubmitError('');
+  };
+
+  // Phát mẫu: ưu tiên file audio nếu bài có; nếu không, đọc câu bằng Web Speech (TTS).
+  const speakTargetText = () => {
+    const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
+    if (!synth || typeof window.SpeechSynthesisUtterance === 'undefined') {
+      setSampleNote('Trình duyệt không hỗ trợ phát mẫu tự động. Hãy dùng Chrome hoặc Edge.');
+      return;
+    }
+    setSampleNote('');
+    synth.cancel();
+    const utter = new window.SpeechSynthesisUtterance(activeEx.targetText || '');
+    utter.lang = 'ja-JP';
+    utter.rate = 0.9;
+    const jaVoice = synth.getVoices().find((v) => v.lang?.toLowerCase().startsWith('ja'));
+    if (jaVoice) utter.voice = jaVoice;
+    utter.onend = () => setSpeaking(false);
+    utter.onerror = () => setSpeaking(false);
+    setSpeaking(true);
+    synth.speak(utter);
+  };
+
+  const playSample = () => {
+    if (!activeEx) return;
+    if (isSpeaking) {
+      window.speechSynthesis?.cancel();
+      setSpeaking(false);
+      return;
+    }
+    if (activeEx.sampleAudioUrl && sampleRef.current) {
+      sampleRef.current
+        .play()
+        .then(() => setSpeaking(true))
+        .catch(() => speakTargetText());
+      return;
+    }
+    speakTargetText();
   };
 
   const openPractice = (ex) => {
@@ -109,8 +112,6 @@ export default function SpeakingPage() {
 
   // ── Practice view ──
   if (view === 'practice' && activeEx) {
-    const scoreStars = aiResult ? Math.round(aiResult.score / 20) : 0;
-
     return (
       <div className="spk-page">
         <TopNav activeTab="speaking" />
@@ -128,12 +129,20 @@ export default function SpeakingPage() {
             <p className="spk-target-text" lang="ja">{activeEx.targetText}</p>
             <button
               className="spk-btn-sample"
-              onClick={() => sampleRef.current?.play()}
-              aria-label="Nghe bản mẫu"
+              onClick={playSample}
+              aria-label={isSpeaking ? 'Dừng phát mẫu' : 'Nghe bản mẫu'}
             >
-              ▶ Nghe mẫu
+              {isSpeaking ? '⏸ Đang phát...' : '▶ Nghe mẫu'}
             </button>
-            <audio ref={sampleRef} src={activeEx.sampleAudioUrl} preload="none" />
+            {sampleNote && <p className="spk-sample-note">{sampleNote}</p>}
+            {activeEx.sampleAudioUrl && (
+              <audio
+                ref={sampleRef}
+                src={activeEx.sampleAudioUrl}
+                preload="none"
+                onEnded={() => setSpeaking(false)}
+              />
+            )}
           </div>
 
           {/* Step 2: Record */}
@@ -156,60 +165,30 @@ export default function SpeakingPage() {
 
           {/* Uploading */}
           {submitState === 'uploading' && (
-            <div className="spk-status spk-status--loading">⏳ Đang gửi bài...</div>
-          )}
-
-          {/* Polling */}
-          {submitState === 'polling' && (
             <div className="spk-status spk-status--loading">
               <span className="spk-spinner" aria-hidden="true" />
-              Đang phân tích giọng nói... (có thể mất 10–30 giây)
+              Đang gửi bài...
             </div>
           )}
 
           {/* Error */}
           {submitState === 'error' && (
             <div className="spk-status spk-status--error" role="alert">
-              {aiError}
+              {submitError}
               <button className="spk-btn-retry" onClick={resetPractice}>Thử lại</button>
             </div>
           )}
 
-          {/* AI Result */}
-          {submitState === 'done' && aiResult && (
+          {/* Submitted — chờ giáo viên chấm */}
+          {submitState === 'submitted' && (
             <div className="spk-result">
-              <div className="spk-result-header">
-                <span className="spk-result-score">{aiResult.score}%</span>
-                <span className="spk-result-stars" aria-label={`${scoreStars} sao`}>
-                  {'●'.repeat(scoreStars)}{'○'.repeat(5 - scoreStars)}
-                </span>
+              <div className="spk-submitted-head">
+                <span className="spk-submitted-check" aria-hidden="true">✓</span>
+                <h3 className="spk-submitted-title">Đã nộp bài thành công</h3>
               </div>
-
-              {aiResult.transcript && (
-                <div className="spk-result-section">
-                  <div className="spk-result-section-label">Bản phiên âm AI nghe được:</div>
-                  <p className="spk-transcript" lang="ja">{aiResult.transcript}</p>
-                </div>
-              )}
-
-              {aiResult.wordResults?.length > 0 && (
-                <div className="spk-result-section">
-                  <div className="spk-result-section-label">Chi tiết từng từ:</div>
-                  <div className="spk-word-results">
-                    {aiResult.wordResults.map((w, i) => (
-                      <div
-                        key={i}
-                        className={`spk-word-chip${w.correct ? ' spk-word-chip--ok' : ' spk-word-chip--bad'}`}
-                        title={w.feedback ?? ''}
-                      >
-                        <span lang="ja">{w.word}</span>
-                        <span>{w.correct ? ' ✓' : ' ✗'}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
+              <p className="spk-submitted-text">
+                Bài nói của bạn đã được gửi tới giáo viên. Bạn sẽ nhận thông báo khi bài được chấm điểm.
+              </p>
               <div className="spk-action-row">
                 <button className="spk-btn-secondary" onClick={resetPractice}>Luyện lại</button>
                 <button className="spk-btn-primary" onClick={backToList}>Chọn bài khác</button>
@@ -228,7 +207,7 @@ export default function SpeakingPage() {
       <main className="spk-body">
         <div className="spk-header">
           <h1 className="spk-title"><span lang="ja">スピーキング</span> Speaking Practice</h1>
-          <p className="spk-subtitle">Luyện phát âm và hội thoại với phản hồi từ AI.</p>
+          <p className="spk-subtitle">Luyện phát âm và hội thoại, giáo viên sẽ chấm và phản hồi.</p>
         </div>
 
         <div className="spk-level-tabs" role="tablist" aria-label="Chọn cấp độ JLPT">
