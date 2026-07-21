@@ -4,7 +4,6 @@ package com.jlpt.feature.staffcontent.learning.controller;
 import com.jlpt.feature.staffcontent.learning.service.LearningContentService;
 
 import com.jlpt.feature.staffcontent.learning.dto.CreateKanjiRequest;
-import com.jlpt.feature.staffcontent.learning.dto.CreateLessonRequest;
 import com.jlpt.feature.staffcontent.learning.dto.CreateVocabularyRequest;
 import com.jlpt.feature.staffcontent.learning.dto.KanjiDetailResponse;
 import com.jlpt.feature.staffcontent.learning.dto.LessonDetailResponse;
@@ -48,13 +47,6 @@ public class StaffLearningContentController {
     private final LearningContentService learningContentService;
 
     // ── Lesson CRUD ────────────────────────────────────────────────
-
-    @PostMapping("/lessons")
-    public ResponseEntity<ApiResponse<LessonDetailResponse>> createLesson(
-            @Valid @RequestBody CreateLessonRequest request, Authentication authentication) {
-        LessonDetailResponse data = learningContentService.createLesson(request, authentication.getName());
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created("Tạo học liệu thành công", data));
-    }
 
     @PutMapping("/lessons/{lessonId}")
     public ResponseEntity<ApiResponse<LessonDetailResponse>> updateLesson(

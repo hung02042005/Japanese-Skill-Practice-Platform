@@ -12,7 +12,6 @@ import {
   fetchKanjiThunk,
 } from "../../store/slices/staffLearningSlice";
 import {
-  createStaffLesson,
   updateStaffLesson,
   createStaffVocabulary,
   updateStaffVocabulary,
@@ -59,6 +58,10 @@ const CONTENT_TABS = [
   { id: "kanji", label: "Kanji" },
   { id: "speaking", label: "Speaking" },
 ];
+
+const CREATABLE_CONTENT_TABS = CONTENT_TABS.filter(
+  ({ id }) => id !== "course" && id !== "lesson",
+);
 
 const PAGE_SIZE = 10;
 
@@ -346,26 +349,15 @@ export default function StaffContent() {
         const payload = ct === "course"
           ? { ...formData, lessonType: formData.lessonType || "lesson" }
           : formData;
-        if (editItem) {
-          const lessonId = editItem.lessonId || editItem.id;
-          const res = await updateStaffLesson(lessonId, payload);
-          if (res.status !== 200) throw new Error(res.message || "Lỗi cập nhật");
-          if (formData.status === "pending_review") {
-            await submitAssessmentForReview("lesson", lessonId);
-            addToast({ type: "success", message: "Đã cập nhật và gửi duyệt học liệu thành công!" });
-          } else {
-            addToast({ type: "success", message: "Đã cập nhật học liệu thành công!" });
-          }
+        if (!editItem) return;
+        const lessonId = editItem.lessonId || editItem.id;
+        const res = await updateStaffLesson(lessonId, payload);
+        if (res.status !== 200) throw new Error(res.message || "Lỗi cập nhật");
+        if (formData.status === "pending_review") {
+          await submitAssessmentForReview("lesson", lessonId);
+          addToast({ type: "success", message: "Đã cập nhật và gửi duyệt học liệu thành công!" });
         } else {
-          const res = await createStaffLesson(payload);
-          if (res.status !== 201) throw new Error(res.message || "Lỗi tạo học liệu");
-          const lessonId = res.data?.lessonId || res.data?.id;
-          if (formData.status === "pending_review" && lessonId) {
-            await submitAssessmentForReview("lesson", lessonId);
-            addToast({ type: "success", message: "Đã tạo và gửi duyệt học liệu thành công!" });
-          } else {
-            addToast({ type: "success", message: "Đã tạo học liệu thành công!" });
-          }
+          addToast({ type: "success", message: "Đã cập nhật học liệu thành công!" });
         }
       } else if (ct === "vocabulary") {
         if (editItem) {
@@ -638,7 +630,7 @@ export default function StaffContent() {
             </button>
             {showDropdown && (
               <div className="sfc-dropdown" role="menu">
-                {CONTENT_TABS.map((tab) => (
+                {CREATABLE_CONTENT_TABS.map((tab) => (
                   <button
                     key={tab.id}
                     className="sfc-dropdown-item"

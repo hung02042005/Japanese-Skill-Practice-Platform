@@ -17,7 +17,6 @@ import com.jlpt.feature.learning.VocabularyTopicRepository;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.feature.staffcontent.learning.dto.CreateKanjiRequest;
-import com.jlpt.feature.staffcontent.learning.dto.CreateLessonRequest;
 import com.jlpt.feature.staffcontent.learning.dto.CreateVocabularyRequest;
 import com.jlpt.feature.staffcontent.learning.dto.KanjiDetailResponse;
 import com.jlpt.feature.staffcontent.learning.dto.LessonDetailResponse;
@@ -58,39 +57,6 @@ public class LearningContentServiceImpl implements LearningContentService {
     private final StaffUserRepository staffUserRepository;
 
     /* ── Lesson ──────────────────────────────────────────────────── */
-
-    @Override
-    @Transactional
-    public LessonDetailResponse createLesson(CreateLessonRequest request, String staffEmail) {
-        StaffUser staff = resolveStaff(staffEmail);
-        JlptLevel level = parseLevel(request.getJlptLevel());
-        LessonType type = parseLessonType(request.getLessonType());
-
-        validateLessonContent(
-                type,
-                request.getContentText(),
-                request.getVideoUrl(),
-                request.getAudioUrl(),
-                request.getAttachmentUrl());
-
-        Lesson lesson = Lesson.builder()
-                .title(request.getTitle().trim())
-                .lessonType(type)
-                .jlptLevel(level)
-                .contentText(trimToNull(request.getContentText()))
-                .videoUrl(trimToNull(request.getVideoUrl()))
-                .audioUrl(trimToNull(request.getAudioUrl()))
-                .attachmentUrl(trimToNull(request.getAttachmentUrl()))
-                .explanation(trimToNull(request.getExplanation()))
-                .displayOrder(request.getDisplayOrder() == null ? 0 : request.getDisplayOrder())
-                .status(LessonStatus.DRAFT) // FR-27-01
-                .createdBy(staff) // FR-27-01
-                .build();
-
-        Lesson saved = lessonRepository.save(lesson);
-        log.info("[INFO] Staff {} CREATED lesson {}", staff.getId(), saved.getId());
-        return toLessonDetail(saved);
-    }
 
     @Override
     @Transactional

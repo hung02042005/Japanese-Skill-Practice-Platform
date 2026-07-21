@@ -2,7 +2,6 @@
 package com.jlpt.feature.staffcontent.learning.service;
 
 import com.jlpt.feature.staffcontent.learning.dto.CreateKanjiRequest;
-import com.jlpt.feature.staffcontent.learning.dto.CreateLessonRequest;
 import com.jlpt.feature.staffcontent.learning.dto.CreateVocabularyRequest;
 import com.jlpt.feature.staffcontent.learning.dto.KanjiDetailResponse;
 import com.jlpt.feature.staffcontent.learning.dto.LessonDetailResponse;
@@ -19,8 +18,6 @@ import org.springframework.data.domain.Page;
  * {@code staffEmail} is the authenticated principal name (JWT subject = email).
  */
 public interface LearningContentService {
-
-    LessonDetailResponse createLesson(CreateLessonRequest request, String staffEmail);
 
     LessonDetailResponse updateLesson(Long lessonId, UpdateLessonRequest request, String staffEmail);
 

@@ -17,7 +17,10 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-/** UC-34 — Handler quản lý trạng thái cho {@code lessons} (phục vụ cả contentType=course). */
+/**
+ * UC-34 — Handler quản lý trạng thái cho {@code lessons} (phục vụ cả
+ * contentType=course).
+ */
 @Component
 @RequiredArgsConstructor
 public class LessonManagedHandler implements ManagedContentHandler {
@@ -49,18 +52,18 @@ public class LessonManagedHandler implements ManagedContentHandler {
 
     @Override
     public List<ReferenceItemResponse> findBlockingReferences(Long contentId) {
-        // FR-34-15 — lesson đang được đề thi published tham chiếu qua assessments.lesson_id.
+        // FR-34-15 — lesson đang được đề thi published tham chiếu qua
+        // assessments.lesson_id.
         return assessmentRepository.findPublishedAssessmentsByLesson(contentId, Kanji.ContentStatus.PUBLISHED);
     }
 
     @Override
     public int changeStatus(Long contentId, TargetStatus targetStatus, LocalDateTime changeTimestamp) {
-        LessonStatus targetLessonStatus =
-                switch (targetStatus) {
-                    case UNPUBLISHED -> LessonStatus.DRAFT;
-                    case ARCHIVED -> LessonStatus.ARCHIVED;
-                    case DELETED -> LessonStatus.DELETED;
-                };
+        LessonStatus targetLessonStatus = switch (targetStatus) {
+            case UNPUBLISHED -> LessonStatus.DRAFT;
+            case ARCHIVED -> LessonStatus.ARCHIVED;
+            case DELETED -> LessonStatus.DELETED;
+        };
         return repository.transition(contentId, LessonStatus.PUBLISHED, targetLessonStatus, changeTimestamp);
     }
 

@@ -196,11 +196,6 @@ export async function submitAssessmentForReview(contentType, contentId) {
 
 // --- Staff Learning Content (UC-27) — base /api/staff -------------------------
 
-export async function createStaffLesson(data) {
-  const res = await api.post('/staff/lessons', data);
-  return res.data; // ApiResponse { status, message, data: LessonDetailResponse }
-}
-
 export async function updateStaffLesson(lessonId, data) {
   const res = await api.put(`/staff/lessons/${lessonId}`, data);
   return res.data;
