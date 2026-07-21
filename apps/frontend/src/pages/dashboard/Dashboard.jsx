@@ -11,16 +11,15 @@ import QuickActionCard from '../../components/student/QuickActionCard';
 import MiniStatCard from '../../components/student/MiniStatCard';
 import {
   KanaIcon, VocabIcon, QuizIcon,
-  ReadingIcon,
+  MicIcon,
 } from '../../components/student/StudentIcons';
 import './Dashboard.css';
 
-// DEFER: bỏ shortcut "Luyện nói" (/speaking) — Speaking chưa có backend (xem SPEC_DEAD_CODE_AUDIT F4)
 const FEATURE_SHORTCUTS = [
   { Icon: KanaIcon,        label: 'Bảng chữ Kana', route: '/kana' },
   { Icon: VocabIcon,       label: 'Từ vựng',        route: '/vocabulary' },
   { Icon: QuizIcon,        label: 'Bài tập Quiz',   route: '/quiz' },
-  { Icon: ReadingIcon,     label: 'Đọc hiểu',       route: '/reading' },
+  { Icon: MicIcon,         label: 'Luyện nói',      route: '/speaking' },
 ];
 
 function SkeletonBlock({ className }) {
