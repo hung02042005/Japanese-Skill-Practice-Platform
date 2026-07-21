@@ -112,7 +112,6 @@ function App() {
         <Route path="/vocabulary/flashcard" element={<PrivateRoute><VocabFlashcardSession /></PrivateRoute>} />
         <Route path="/courses"              element={<PrivateRoute><CourseList /></PrivateRoute>} />
         <Route path="/quiz"         element={<PrivateRoute><QuizPage /></PrivateRoute>} />
-        {/* DEFER: Speaking chưa có backend — gỡ khỏi nav, giữ route cho dev nội bộ (xem SPEC_DEAD_CODE_AUDIT F4) */}
         <Route path="/speaking"     element={<PrivateRoute><SpeakingPage /></PrivateRoute>} />
         <Route path="/support"                  element={<PrivateRoute><SupportTickets /></PrivateRoute>} />
         <Route path="/support/tickets/:ticketId" element={<PrivateRoute><SupportTicketDetail /></PrivateRoute>} />

@@ -31,6 +31,10 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
     /** Một bài học đã publish theo id (trang chi tiết bài học student-facing). */
     Optional<Lesson> findByIdAndStatus(Long id, Lesson.LessonStatus status);
 
+    /** Bài luyện nói (speaking) đã publish của một cấp độ — UC-13 Speaking list. */
+    List<Lesson> findByJlptLevelAndLessonTypeAndStatusOrderByDisplayOrderAscIdAsc(
+            JlptLevel jlptLevel, Lesson.LessonType lessonType, Lesson.LessonStatus status);
+
     /**
      * UC-27 — Filtered paginated query for staff listing their own lessons.
      * All params except {@code staffId} and {@code deletedStatus} are optional.

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { logoutThunk } from '../../store/slices/authSlice';
 import AppLogo from '../common/AppLogo';
-import { VocabIcon, FlameIcon, StarIcon, CalendarIcon } from '../student/StudentIcons';
+import { VocabIcon, FlameIcon, StarIcon, CalendarIcon, MicIcon } from '../student/StudentIcons';
 import { MoonIcon } from '../common/AppIcons';
 import NotificationBell from '../notifications/NotificationBell';
 import './TopNav.css';
@@ -70,6 +70,12 @@ const NAV_TABS = [
         <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
+  },
+  {
+    id: 'speaking',
+    label: 'Luyện nói',
+    route: '/speaking',
+    icon: <MicIcon size={22} />,
   },
 ];
 

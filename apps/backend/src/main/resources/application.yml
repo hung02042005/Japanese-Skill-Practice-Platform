@@ -2,6 +2,12 @@ spring:
   application:
     name: jlpt-backend
 
+  servlet:
+    multipart:
+      # Audio ghi âm speaking + ảnh avatar upload. Mặc định Spring chỉ 1MB/file → phải nâng.
+      max-file-size: 10MB
+      max-request-size: 12MB
+
   datasource:
     # serverTimezone=UTC: container MySQL chạy --default-time-zone=+00:00, khai
     # báo ở đây để driver không tự suy diễn timezone của JVM. Giữ đúng ngữ nghĩa
