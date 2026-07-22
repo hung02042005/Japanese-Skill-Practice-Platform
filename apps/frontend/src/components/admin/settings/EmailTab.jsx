@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getSettings, updateSettings, testSmtp } from '../../../api/adminService';
 import { emailError, requiredError, portError } from '../../../utils/validation';
 
@@ -25,6 +25,12 @@ function emailTypeFieldError(key, value) {
       return requiredError(value, 'Tên hiển thị');
     case 'subject':
       return requiredError(value, 'Tiêu đề email');
+    case 'body_text': {
+      const req = requiredError(value, 'Nội dung email');
+      if (req) return req;
+      if ((value ?? '').trim().length < 10) return 'Nội dung email quá ngắn (tối thiểu 10 ký tự)';
+      return '';
+    }
     default:
       return '';
   }
@@ -46,9 +52,31 @@ const SMTP_FIELDS = [
 /* ─── 3 loại email ────────────────────────────────────────────────────────── */
 
 const EMAIL_TYPE_FIELDS = [
-  { key: 'from_email', label: 'Email người gửi', type: 'email', placeholder: 'jlptelearningplatform@gmail.com', fullWidth: true  },
-  { key: 'from_name',  label: 'Tên hiển thị',    type: 'text',  placeholder: 'JLPT Platform',   fullWidth: false },
-  { key: 'subject',    label: 'Tiêu đề email',   type: 'text',  placeholder: 'Nhập tiêu đề...', fullWidth: false },
+  { key: 'from_email', label: 'Email người gửi', type: 'email',    placeholder: 'jlptelearningplatform@gmail.com', fullWidth: true  },
+  { key: 'from_name',  label: 'Tên hiển thị',    type: 'text',     placeholder: 'JLPT Platform',   fullWidth: false },
+  { key: 'subject',    label: 'Tiêu đề email',   type: 'text',     placeholder: 'Nhập tiêu đề...', fullWidth: false },
+  { key: 'body_text',  label: 'Nội dung email',  type: 'textarea', placeholder: 'Nhập lời nhắn hiển thị trong email…', fullWidth: true },
+];
+
+/* ─── Biến placeholder khả dụng theo từng nhóm email ──────────────────────────
+ * Chỉ là chữ thay thế trong LỜI NHẮN. Mã OTP / nút bấm / link do hệ thống tự chèn
+ * vào khung email, admin không cần nhập. */
+
+const PLACEHOLDERS_BY_GROUP = {
+  email_register: [
+    { token: '{{expiry_minutes}}', label: 'Số phút hết hạn' },
+  ],
+  email_otp: [],
+  email_reset: [
+    { token: '{{expiry_hours}}',   label: 'Số giờ hết hạn' },
+  ],
+};
+
+// Biến dùng chung cho mọi loại email (BE tự thay khi gửi).
+const COMMON_PLACEHOLDERS = [
+  { token: '{{platform_name}}', label: 'Tên nền tảng' },
+  { token: '{{current_year}}',  label: 'Năm hiện tại' },
+  { token: '{{support_email}}', label: 'Email hỗ trợ' },
 ];
 
 const EMAIL_TYPES = [
@@ -308,6 +336,9 @@ function EmailTypeCard({ group, title, description, icon, addToast }) {
   const [errors,    setErrors]  = useState({});
   const [isLoading, setLoading]  = useState(true);
   const [isSaving,  setSaving]   = useState(false);
+  const bodyRef = useRef(null);
+
+  const placeholders = [...(PLACEHOLDERS_BY_GROUP[group] ?? []), ...COMMON_PLACEHOLDERS];
 
   useEffect(() => {
     getSettings(group)
@@ -323,6 +354,21 @@ function EmailTypeCard({ group, title, description, icon, addToast }) {
   function set(key, val) {
     setForm((f) => ({ ...f, [key]: val }));
     if (errors[key]) setErrors((e) => ({ ...e, [key]: '' }));
+  }
+
+  /** Chèn token biến vào ô Nội dung tại vị trí con trỏ (hoặc cuối nếu chưa focus). */
+  function insertPlaceholder(token) {
+    const cur = form.body_html ?? '';
+    const el = bodyRef.current;
+    if (!el) { set('body_html', cur + token); return; }
+    const start = el.selectionStart ?? cur.length;
+    const end   = el.selectionEnd ?? cur.length;
+    set('body_html', cur.slice(0, start) + token + cur.slice(end));
+    requestAnimationFrame(() => {
+      el.focus();
+      const pos = start + token.length;
+      el.setSelectionRange(pos, pos);
+    });
   }
 
   function handleBlur(key) {
@@ -377,16 +423,55 @@ function EmailTypeCard({ group, title, description, icon, addToast }) {
           {EMAIL_TYPE_FIELDS.map((f) => (
             <div key={f.key} className={`ast-field${f.fullWidth ? ' ast-field--full' : ''}`}>
               <label className="ast-field-label" htmlFor={`${group}-${f.key}`}>{f.label}</label>
-              <input
-                id={`${group}-${f.key}`}
-                className={`ast-input${errors[f.key] ? ' ast-input--err' : ''}`}
-                type={f.type}
-                placeholder={f.placeholder}
-                value={form[f.key] ?? ''}
-                onChange={(e) => set(f.key, e.target.value)}
-                onBlur={() => handleBlur(f.key)}
-                aria-invalid={errors[f.key] ? 'true' : undefined}
-              />
+
+              {f.type === 'textarea' ? (
+                <>
+                  <textarea
+                    id={`${group}-${f.key}`}
+                    ref={bodyRef}
+                    className={`ast-input ast-textarea${errors[f.key] ? ' ast-input--err' : ''}`}
+                    rows={5}
+                    placeholder={f.placeholder}
+                    value={form[f.key] ?? ''}
+                    onChange={(e) => set(f.key, e.target.value)}
+                    onBlur={() => handleBlur(f.key)}
+                    aria-invalid={errors[f.key] ? 'true' : undefined}
+                    style={{ minHeight: 120, resize: 'vertical', lineHeight: 1.6 }}
+                  />
+                  <div className="ast-placeholder-chips" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+                    {placeholders.map((p) => (
+                      <button
+                        key={p.token}
+                        type="button"
+                        className="ast-ph-chip"
+                        title={`Chèn ${p.label}`}
+                        onClick={() => insertPlaceholder(p.token)}
+                        style={{
+                          padding: '3px 10px', borderRadius: 999, cursor: 'pointer',
+                          border: '1px solid var(--color-border)', background: 'var(--color-bg)',
+                          font: '12px/1.4 var(--font-base)', color: 'var(--color-text-sub)',
+                        }}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="ast-field-hint">
+                    Chỉ nhập lời nhắn dạng chữ. Mã OTP, nút bấm và link do hệ thống tự chèn. Bấm nhãn để chèn biến động (tự thay khi gửi).
+                  </p>
+                </>
+              ) : (
+                <input
+                  id={`${group}-${f.key}`}
+                  className={`ast-input${errors[f.key] ? ' ast-input--err' : ''}`}
+                  type={f.type}
+                  placeholder={f.placeholder}
+                  value={form[f.key] ?? ''}
+                  onChange={(e) => set(f.key, e.target.value)}
+                  onBlur={() => handleBlur(f.key)}
+                  aria-invalid={errors[f.key] ? 'true' : undefined}
+                />
+              )}
               {errors[f.key] && <p className="ast-field-error">{errors[f.key]}</p>}
             </div>
           ))}
