@@ -2,6 +2,7 @@
 package com.jlpt.feature.flashcard.service;
 
 import com.jlpt.feature.flashcard.Flashcard;
+import com.jlpt.feature.flashcard.FlashcardConstants;
 import com.jlpt.feature.flashcard.FlashcardDeck;
 import com.jlpt.feature.flashcard.dto.DeckSummaryResponse;
 import com.jlpt.feature.flashcard.dto.FlashcardResponse;
@@ -135,7 +136,7 @@ public class NotebookService {
     /** Xác nhận thêm các từ sai vào sổ "Từ cần ôn lại" (§3.5, FR-FC-43/44). */
     public ReviewDeckAddResponse addWrongWordsToReviewDeck(Long studentId, ReviewDeckAddRequest request) {
         StudentUser student = studentUserRepository.getReferenceById(studentId);
-        FlashcardDeck deck = deckSupport.getOrCreateReviewDeck(student);
+        FlashcardDeck deck = getOrCreateReviewDeck(student);
         // Nguồn thẻ (SPEC-notebook §7): 'wrong' từ phiên ôn, 'manual' từ Từ điển. Mặc định 'manual'.
         String reason = (request.reason() != null && !request.reason().isBlank()) ? request.reason() : "manual";
         int added = 0;
@@ -179,6 +180,21 @@ public class NotebookService {
     }
 
     // ── Helpers riêng của Sổ tay ──────────────────────────────────────────────
+
+    /**
+     * Sổ "Từ cần ôn lại" (is_review_deck) — deck hệ thống per-student của Sổ tay, KHÔNG phải thao
+     * tác flashcard nói chung; vì vậy để ở đây thay vì {@link FlashcardDeckSupport}. Tạo lần đầu khi
+     * có từ cần thêm (§3.5).
+     */
+    private FlashcardDeck getOrCreateReviewDeck(StudentUser student) {
+        return flashcardDeckRepository
+                .findByStudentIdAndIsReviewDeckTrue(student.getId())
+                .orElseGet(() -> flashcardDeckRepository.save(FlashcardDeck.builder()
+                        .student(student)
+                        .name(FlashcardConstants.REVIEW_DECK_NAME)
+                        .isReviewDeck(true)
+                        .build()));
+    }
 
     /** Khoá sort hợp lệ; mặc định "due" (lịch ôn) cho client cũ/giá trị lạ. */
     private static String normalizeSort(String sort) {

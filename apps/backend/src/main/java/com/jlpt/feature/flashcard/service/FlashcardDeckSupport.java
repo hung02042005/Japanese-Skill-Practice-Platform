@@ -2,7 +2,6 @@
 package com.jlpt.feature.flashcard.service;
 
 import com.jlpt.feature.flashcard.Flashcard;
-import com.jlpt.feature.flashcard.FlashcardConstants;
 import com.jlpt.feature.flashcard.FlashcardDeck;
 import com.jlpt.feature.flashcard.repository.FlashcardDeckRepository;
 import com.jlpt.feature.flashcard.repository.FlashcardRepository;
@@ -13,9 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * Kiểm tra sở hữu (student ↔ deck/card) và get-or-create deck. Tách khỏi {@link FlashcardSrsService}
- * để phiên ôn (SRS) và Sổ tay ({@link NotebookService}) cùng dùng. Các method chạy trong transaction
- * của caller (cả hai service gọi đều @Transactional) nên không cần @Transactional riêng ở đây.
+ * Kiểm tra sở hữu thẻ (student ↔ card) và get-or-create deck phiên ôn theo topic. Dùng chung cho
+ * {@link FlashcardSrsService} và {@link NotebookService} (sổ tay chỉ cần {@link #ownCardOrThrow};
+ * deck "Từ cần ôn lại" là chuyện riêng của Sổ tay nên nằm trong {@code NotebookService}). Các method
+ * chạy trong transaction của caller (cả hai service gọi đều @Transactional) nên không cần
+ * @Transactional riêng ở đây.
  */
 @Component
 @RequiredArgsConstructor
@@ -38,24 +39,7 @@ public class FlashcardDeckSupport {
     public FlashcardDeck getOrCreateDeck(StudentUser student, String name) {
         return flashcardDeckRepository
                 .findByStudentIdAndName(student.getId(), name)
-                .orElseGet(() -> {
-                    FlashcardDeck.FlashcardDeckBuilder b =
-                            FlashcardDeck.builder().student(student).name(name);
-                    // Tách jlpt_level/topic từ pattern "{level}_{topic}" để deck có metadata.
-                    if (name.matches("N[1-5]_.+")) {
-                        b.jlptLevel(name.substring(0, 2)).topic(name.substring(3));
-                    }
-                    return flashcardDeckRepository.save(b.build());
-                });
-    }
-
-    public FlashcardDeck getOrCreateReviewDeck(StudentUser student) {
-        return flashcardDeckRepository
-                .findByStudentIdAndIsReviewDeckTrue(student.getId())
-                .orElseGet(() -> flashcardDeckRepository.save(FlashcardDeck.builder()
-                        .student(student)
-                        .name(FlashcardConstants.REVIEW_DECK_NAME)
-                        .isReviewDeck(true)
-                        .build()));
+                .orElseGet(() -> flashcardDeckRepository.save(
+                        FlashcardDeck.builder().student(student).name(name).build()));
     }
 }
