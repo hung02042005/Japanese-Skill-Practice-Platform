@@ -1,8 +1,8 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.contentreview.handler;
 
-import com.jlpt.feature.contentreview.ContentSnapshot;
-import com.jlpt.feature.contentreview.ContentType;
+import com.jlpt.feature.contentreview.model.ContentSnapshot;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.contentreview.repository.ReviewVocabularyRepository;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
 import com.jlpt.feature.learning.Vocabulary;
@@ -34,15 +34,17 @@ public class VocabularyContentHandler implements ReviewableContentHandler {
 
     @Override
     public List<ContentSnapshot> findPending(JlptLevel level) {
-        List<Vocabulary> list = (level == null)
+        List<Vocabulary> vocabularyEntries = (level == null)
                 ? repository.findPending(ContentStatus.PENDING_REVIEW)
                 : repository.findPending(ContentStatus.PENDING_REVIEW, level);
-        return list.stream().map(v -> toSnapshot(v, false)).toList();
+        return vocabularyEntries.stream().map(vocabulary -> toSnapshot(vocabulary, false)).toList();
     }
 
     @Override
     public Optional<ContentSnapshot> findActiveById(Long contentId) {
-        return repository.findActiveById(contentId, ContentStatus.DELETED).map(v -> toSnapshot(v, true));
+        return repository
+                .findActiveById(contentId, ContentStatus.DELETED)
+                .map(vocabulary -> toSnapshot(vocabulary, true));
     }
 
     @Override
@@ -52,32 +54,34 @@ public class VocabularyContentHandler implements ReviewableContentHandler {
 
     @Override
     public int transitionFromPending(Long contentId, String targetStatus, LocalDateTime now) {
-        ContentStatus to = HandlerSupport.toEnum(ContentStatus.class, targetStatus);
-        return repository.transition(contentId, now, ContentStatus.PENDING_REVIEW, to);
+        ContentStatus targetContentStatus = HandlerSupport.toEnum(ContentStatus.class, targetStatus);
+        return repository.transition(contentId, now, ContentStatus.PENDING_REVIEW, targetContentStatus);
     }
 
-    private ContentSnapshot toSnapshot(Vocabulary v, boolean withDetail) {
+    private ContentSnapshot toSnapshot(Vocabulary vocabulary, boolean withDetail) {
         Map<String, Object> detail = null;
         if (withDetail) {
             detail = HandlerSupport.newDetail();
-            HandlerSupport.put(detail, "word", v.getWord());
-            HandlerSupport.put(detail, "furigana", v.getFurigana());
-            HandlerSupport.put(detail, "meaning", v.getMeaning());
-            HandlerSupport.put(detail, "wordType", v.getWordType());
+            HandlerSupport.put(detail, "word", vocabulary.getWord());
+            HandlerSupport.put(detail, "furigana", vocabulary.getFurigana());
+            HandlerSupport.put(detail, "meaning", vocabulary.getMeaning());
+            HandlerSupport.put(detail, "wordType", vocabulary.getWordType());
             HandlerSupport.put(
-                    detail, "topic", v.getTopicRef() != null ? v.getTopicRef().getTitleVi() : null);
-            HandlerSupport.put(detail, "exampleSentenceJp", v.getExampleSentenceJp());
-            HandlerSupport.put(detail, "exampleSentenceVi", v.getExampleSentenceVi());
+                    detail,
+                    "topic",
+                    vocabulary.getTopicRef() != null ? vocabulary.getTopicRef().getTitleVi() : null);
+            HandlerSupport.put(detail, "exampleSentenceJp", vocabulary.getExampleSentenceJp());
+            HandlerSupport.put(detail, "exampleSentenceVi", vocabulary.getExampleSentenceVi());
         }
         return ContentSnapshot.builder()
-                .contentId(v.getId())
+                .contentId(vocabulary.getId())
                 .contentType(ContentType.VOCABULARY)
-                .titleOrText(v.getWord())
-                .jlptLevel(v.getJlptLevel() != null ? v.getJlptLevel().name() : null)
-                .status(v.getStatus() != null ? v.getStatus().getValue() : null)
-                .createdById(HandlerSupport.creatorId(v.getCreatedBy()))
-                .createdByName(HandlerSupport.creatorName(v.getCreatedBy()))
-                .submittedAt(v.getUpdatedAt())
+                .titleOrText(vocabulary.getWord())
+                .jlptLevel(vocabulary.getJlptLevel() != null ? vocabulary.getJlptLevel().name() : null)
+                .status(vocabulary.getStatus() != null ? vocabulary.getStatus().getValue() : null)
+                .createdById(HandlerSupport.creatorId(vocabulary.getCreatedBy()))
+                .createdByName(HandlerSupport.creatorName(vocabulary.getCreatedBy()))
+                .submittedAt(vocabulary.getUpdatedAt())
                 .detail(detail)
                 .build();
     }

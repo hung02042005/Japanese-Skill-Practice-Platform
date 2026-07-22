@@ -4,10 +4,10 @@ package com.jlpt.feature.publishedcontent.handler;
 import com.jlpt.feature.assessment.Question;
 import com.jlpt.feature.assessment.Question.ContentStatus;
 import com.jlpt.feature.assessment.QuestionAssignment.ParentType;
-import com.jlpt.feature.contentreview.ContentType;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.learning.Kanji;
-import com.jlpt.feature.publishedcontent.ManagedContentSnapshot;
-import com.jlpt.feature.publishedcontent.TargetStatus;
+import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
+import com.jlpt.feature.publishedcontent.model.TargetStatus;
 import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.repository.ManagedQuestionRepository;
 import com.jlpt.feature.publishedcontent.repository.QuestionReferenceRepository;
@@ -56,14 +56,14 @@ public class QuestionManagedHandler implements ManagedContentHandler {
     }
 
     @Override
-    public int changeStatus(Long contentId, TargetStatus target, LocalDateTime now) {
-        ContentStatus to =
-                switch (target) {
+    public int changeStatus(Long contentId, TargetStatus targetStatus, LocalDateTime changeTimestamp) {
+        ContentStatus targetContentStatus =
+                switch (targetStatus) {
                     case UNPUBLISHED -> ContentStatus.DRAFT;
                     case ARCHIVED -> ContentStatus.ARCHIVED;
                     case DELETED -> ContentStatus.DELETED;
                 };
-        return repository.transition(contentId, ContentStatus.PUBLISHED, to, now);
+        return repository.transition(contentId, ContentStatus.PUBLISHED, targetContentStatus, changeTimestamp);
     }
 
     @Override
@@ -71,14 +71,14 @@ public class QuestionManagedHandler implements ManagedContentHandler {
         return repository.transition(contentId, ContentStatus.ARCHIVED, ContentStatus.PUBLISHED, now);
     }
 
-    private ManagedContentSnapshot toSnapshot(Question q) {
+    private ManagedContentSnapshot toSnapshot(Question question) {
         return ManagedContentSnapshot.builder()
-                .contentId(q.getId())
+                .contentId(question.getId())
                 .contentType(ContentType.QUESTION)
-                .titleOrText(q.getQuestionText())
-                .jlptLevel(q.getJlptLevel() != null ? q.getJlptLevel().name() : null)
-                .status(q.getStatus() != null ? q.getStatus().getValue() : null)
-                .publishedAt(q.getPublishedAt())
+                .titleOrText(question.getQuestionText())
+                .jlptLevel(question.getJlptLevel() != null ? question.getJlptLevel().name() : null)
+                .status(question.getStatus() != null ? question.getStatus().getValue() : null)
+                .publishedAt(question.getPublishedAt())
                 .build();
     }
 }

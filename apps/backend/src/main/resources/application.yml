@@ -14,8 +14,8 @@ spring:
     # UTC mà SYSUTCDATETIME() của bản SQL Server cũ đảm bảo.
     url: ${DATABASE_URL:jdbc:mysql://127.0.0.1:3306/JLPT_LearningDB?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${DATABASE_USERNAME:jlpt}
-    password: ${DATABASE_PASSWORD:123}
+    username: root
+    password: 12345
 
 
   jpa:

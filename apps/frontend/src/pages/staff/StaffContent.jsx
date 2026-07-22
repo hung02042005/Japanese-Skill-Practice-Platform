@@ -12,12 +12,14 @@ import {
   fetchKanjiThunk,
 } from "../../store/slices/staffLearningSlice";
 import {
-  createStaffLesson,
   updateStaffLesson,
   createStaffVocabulary,
   updateStaffVocabulary,
   createStaffKanji,
   updateStaffKanji,
+  createStaffSpeakingLesson,
+  updateStaffSpeakingLesson,
+  getStaffSpeakingLesson,
   submitAssessmentForReview,
   getContentReviewFeedback,
 } from "../../api/staffService";
@@ -37,6 +39,7 @@ import "./StaffContent.css";
 const LESSON_TYPE_LABELS = {
   lesson: "Bài học",
   reading: "Đọc hiểu",
+  speaking: "Speaking",
 };
 
 const STATUS_META = {
@@ -53,7 +56,12 @@ const CONTENT_TABS = [
   { id: "vocabulary", label: "Từ vựng" },
   { id: "grammar", label: "Ngữ pháp" },
   { id: "kanji", label: "Kanji" },
+  { id: "speaking", label: "Speaking" },
 ];
+
+const CREATABLE_CONTENT_TABS = CONTENT_TABS.filter(
+  ({ id }) => id !== "course" && id !== "lesson",
+);
 
 const PAGE_SIZE = 10;
 
@@ -96,6 +104,7 @@ export default function StaffContent() {
     switch (activeContentTab) {
       case "course":
       case "lesson":
+      case "speaking":
         return {
           items: learnState.lessons,
           totalPages: learnState.lessonsTotalPages,
@@ -147,6 +156,8 @@ export default function StaffContent() {
         return dispatch(fetchLessonsThunk({ ...opts, lessonType: undefined }));
       case "lesson":
         return dispatch(fetchLessonsThunk(opts));
+      case "speaking":
+        return dispatch(fetchLessonsThunk({ ...opts, lessonType: "speaking" }));
       case "vocabulary":
         return dispatch(fetchVocabularyThunk(opts));
       case "grammar":
@@ -202,13 +213,32 @@ export default function StaffContent() {
     setShowDropdown(false);
   };
 
-  const handleEdit = (item) => {
+  const handleEdit = async (item) => {
     setCreateType(activeContentTab);
+    if (activeContentTab === "speaking") {
+      try {
+        const detail = await getStaffSpeakingLesson(item.lessonId ?? item.id);
+        setEditItem(detail);
+        setModal(true);
+      } catch (err) {
+        addToast({ type: "error", message: getErrorMessage(err, "Không thể tải nội dung bài Speaking") });
+      }
+      return;
+    }
     setEditItem(item);
     setModal(true);
   };
 
-  const handleView = (item) => {
+  const handleView = async (item) => {
+    if (activeContentTab === "speaking") {
+      try {
+        const detail = await getStaffSpeakingLesson(item.lessonId ?? item.id);
+        setPreviewItem(detail);
+      } catch (err) {
+        addToast({ type: "error", message: getErrorMessage(err, "Không thể tải nội dung bài Speaking") });
+      }
+      return;
+    }
     setPreviewItem(item);
   };
 
@@ -236,6 +266,9 @@ export default function StaffContent() {
           return;
         case "kanji":
           contentType = "kanji";
+          break;
+        case "speaking":
+          contentType = "speaking";
           break;
         default:
           return;
@@ -269,6 +302,10 @@ export default function StaffContent() {
       case "kanji":
         contentType = "kanji";
         contentId = item.kanjiId ?? item.id;
+        break;
+      case "speaking":
+        contentType = "speaking";
+        contentId = item.lessonId ?? item.id;
         break;
       default:
         return;
@@ -312,26 +349,15 @@ export default function StaffContent() {
         const payload = ct === "course"
           ? { ...formData, lessonType: formData.lessonType || "lesson" }
           : formData;
-        if (editItem) {
-          const lessonId = editItem.lessonId || editItem.id;
-          const res = await updateStaffLesson(lessonId, payload);
-          if (res.status !== 200) throw new Error(res.message || "Lỗi cập nhật");
-          if (formData.status === "pending_review") {
-            await submitAssessmentForReview("lesson", lessonId);
-            addToast({ type: "success", message: "Đã cập nhật và gửi duyệt học liệu thành công!" });
-          } else {
-            addToast({ type: "success", message: "Đã cập nhật học liệu thành công!" });
-          }
+        if (!editItem) return;
+        const lessonId = editItem.lessonId || editItem.id;
+        const res = await updateStaffLesson(lessonId, payload);
+        if (res.status !== 200) throw new Error(res.message || "Lỗi cập nhật");
+        if (formData.status === "pending_review") {
+          await submitAssessmentForReview("lesson", lessonId);
+          addToast({ type: "success", message: "Đã cập nhật và gửi duyệt học liệu thành công!" });
         } else {
-          const res = await createStaffLesson(payload);
-          if (res.status !== 201) throw new Error(res.message || "Lỗi tạo học liệu");
-          const lessonId = res.data?.lessonId || res.data?.id;
-          if (formData.status === "pending_review" && lessonId) {
-            await submitAssessmentForReview("lesson", lessonId);
-            addToast({ type: "success", message: "Đã tạo và gửi duyệt học liệu thành công!" });
-          } else {
-            addToast({ type: "success", message: "Đã tạo học liệu thành công!" });
-          }
+          addToast({ type: "success", message: "Đã cập nhật học liệu thành công!" });
         }
       } else if (ct === "vocabulary") {
         if (editItem) {
@@ -373,6 +399,36 @@ export default function StaffContent() {
             addToast({ type: "success", message: "Đã tạo và gửi duyệt Kanji thành công!" });
           } else {
             addToast({ type: "success", message: "Đã tạo Kanji thành công!" });
+          }
+        }
+      } else if (ct === "speaking") {
+        const speakingPayload = {
+          jlptLevel: formData.jlptLevel,
+          title: formData.title,
+          questions: formData.questions.map((question, index) => ({
+            promptText: question.promptText,
+            instruction: question.instruction || null,
+            sampleAudioUrl: question.sampleAudioUrl || null,
+            displayOrder: index + 1,
+          })),
+        };
+        if (editItem) {
+          const lessonId = editItem.lessonId ?? editItem.id;
+          await updateStaffSpeakingLesson(lessonId, speakingPayload);
+          if (formData.status === "pending_review") {
+            await submitAssessmentForReview("speaking", lessonId);
+            addToast({ type: "success", message: "Đã cập nhật và gửi duyệt bài Speaking!" });
+          } else {
+            addToast({ type: "success", message: "Đã cập nhật bài Speaking!" });
+          }
+        } else {
+          const res = await createStaffSpeakingLesson(speakingPayload);
+          const lessonId = res.data?.lessonId ?? res.data?.id;
+          if (formData.status === "pending_review" && lessonId) {
+            await submitAssessmentForReview("speaking", lessonId);
+            addToast({ type: "success", message: "Đã tạo và gửi duyệt bài Speaking!" });
+          } else {
+            addToast({ type: "success", message: "Đã tạo bài Speaking nháp!" });
           }
         }
       }
@@ -501,6 +557,7 @@ export default function StaffContent() {
       vocabulary: ["Từ vựng", "Nghĩa", "Cấp độ", "Trạng thái", "Cập nhật", ""],
       grammar: ["Cấu trúc", "Ý nghĩa", "Cấp độ", "Trạng thái", "Cập nhật", ""],
       kanji: ["Chữ Hán", "Âm On", "Âm Kun", "Cấp độ", "Trạng thái", "Cập nhật", ""],
+      speaking: ["Tiêu đề", "Loại", "Cấp độ", "Trạng thái", "Cập nhật", ""],
     };
     const headers = headerMap[activeContentTab] ?? headerMap.lesson;
 
@@ -510,6 +567,7 @@ export default function StaffContent() {
       vocabulary: renderVocabRow,
       grammar: renderGrammarRow,
       kanji: renderKanjiRow,
+      speaking: renderLessonRow,
     };
     const renderRow = rowMap[activeContentTab] ?? renderLessonRow;
 
@@ -533,7 +591,7 @@ export default function StaffContent() {
         <StaffPageHero
           accent="gold"
           title="Quản Lý Học Liệu"
-          subtitle="Soạn thảo khóa học, bài học, từ vựng, ngữ pháp và Kanji theo từng cấp độ JLPT"
+          subtitle="Soạn thảo khóa học, bài học, Speaking, từ vựng, ngữ pháp và Kanji theo từng cấp độ JLPT"
           icon={
             <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <rect x="10" y="14" width="28" height="20" rx="1.5" />
@@ -572,7 +630,7 @@ export default function StaffContent() {
             </button>
             {showDropdown && (
               <div className="sfc-dropdown" role="menu">
-                {CONTENT_TABS.map((tab) => (
+                {CREATABLE_CONTENT_TABS.map((tab) => (
                   <button
                     key={tab.id}
                     className="sfc-dropdown-item"

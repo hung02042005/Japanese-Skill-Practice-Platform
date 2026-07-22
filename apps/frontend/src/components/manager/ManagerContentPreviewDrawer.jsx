@@ -42,6 +42,7 @@ const QUESTION_TYPE_LABELS = {
 
 const DRAWER_TITLES = {
   lesson:     'Xem trước bài học',
+  speaking:   'Xem trước bài luyện nói',
   vocabulary: 'Xem trước từ vựng',
   grammar:    'Xem trước ngữ pháp',
   kanji:      'Xem trước Kanji',
@@ -96,6 +97,32 @@ function LessonBody({ data }) {
           {d.audioUrl && <p className="sfq-explanation-text">Audio: {d.audioUrl}</p>}
         </div>
       )}
+      <Footer data={data} />
+    </>
+  );
+}
+
+function SpeakingBody({ data }) {
+  const d = data.detail ?? {};
+  const questions = d.questions?.length
+    ? d.questions
+    : [{ promptText: d.contentText, sampleAudioUrl: d.audioUrl }].filter((q) => q.promptText);
+
+  return (
+    <>
+      <div className="sfq-badge-row">
+        <JlptBadge level={data.jlptLevel} />
+        <span className="sfq-type-pill">Luyện nói</span>
+      </div>
+      <p className="sfq-question-text">{data.titleOrText}</p>
+      {questions.map((question, index) => (
+        <div className="sfq-explanation-text" key={question.speakingQuestionId ?? index}>
+          <p className="sfq-explanation-label">Câu {index + 1}</p>
+          <p lang="ja" style={{ whiteSpace: 'pre-wrap' }}>{question.promptText}</p>
+          {question.instruction && <p>{question.instruction}</p>}
+          {question.sampleAudioUrl && <audio controls preload="none" src={question.sampleAudioUrl} style={{ width: '100%' }} />}
+        </div>
+      ))}
       <Footer data={data} />
     </>
   );
@@ -372,6 +399,7 @@ export default function ManagerContentPreviewDrawer({ data, onClose }) {
   function renderBody() {
     switch (ct) {
       case 'lesson':     return <LessonBody     data={data} />;
+      case 'speaking':   return <SpeakingBody   data={data} />;
       case 'vocabulary': return <VocabBody      data={data} />;
       case 'grammar':    return <GrammarBody    data={data} />;
       case 'kanji':      return <KanjiBody      data={data} />;

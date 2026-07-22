@@ -19,13 +19,14 @@ public interface ManagedVocabularyRepository extends JpaRepository<Vocabulary, L
     @Query("SELECT v FROM Vocabulary v "
             + "WHERE v.status = :published AND (:level IS NULL OR v.jlptLevel = :level) "
             + "ORDER BY v.publishedAt DESC")
-    List<Vocabulary> findPublished(@Param("published") ContentStatus published, @Param("level") JlptLevel level);
+    List<Vocabulary> findPublished(
+            @Param("published") ContentStatus publishedStatus, @Param("level") JlptLevel jlptLevel);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Vocabulary v SET v.status = :to, v.updatedAt = :now WHERE v.id = :id AND v.status = :from")
     int transition(
-            @Param("id") Long id,
-            @Param("from") ContentStatus from,
-            @Param("to") ContentStatus to,
-            @Param("now") LocalDateTime now);
+            @Param("id") Long contentId,
+            @Param("from") ContentStatus expectedStatus,
+            @Param("to") ContentStatus targetStatus,
+            @Param("now") LocalDateTime changeTimestamp);
 }

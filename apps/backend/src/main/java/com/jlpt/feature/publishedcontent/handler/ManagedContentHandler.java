@@ -1,9 +1,9 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.publishedcontent.handler;
 
-import com.jlpt.feature.contentreview.ContentType;
-import com.jlpt.feature.publishedcontent.ManagedContentSnapshot;
-import com.jlpt.feature.publishedcontent.TargetStatus;
+import com.jlpt.feature.contentreview.model.ContentType;
+import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
+import com.jlpt.feature.publishedcontent.model.TargetStatus;
 import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
 import java.time.LocalDateTime;

@@ -20,15 +20,16 @@ public interface ManagedAssessmentRepository extends JpaRepository<Assessment, L
     @Query("SELECT a FROM Assessment a "
             + "WHERE a.status = :published AND (:level IS NULL OR a.jlptLevel = :level) "
             + "ORDER BY a.publishedAt DESC")
-    List<Assessment> findPublished(@Param("published") ContentStatus published, @Param("level") JlptLevel level);
+    List<Assessment> findPublished(
+            @Param("published") ContentStatus publishedStatus, @Param("level") JlptLevel jlptLevel);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Assessment a SET a.status = :to, a.updatedAt = :now WHERE a.id = :id AND a.status = :from")
     int transition(
-            @Param("id") Long id,
-            @Param("from") ContentStatus from,
-            @Param("to") ContentStatus to,
-            @Param("now") LocalDateTime now);
+            @Param("id") Long contentId,
+            @Param("from") ContentStatus expectedStatus,
+            @Param("to") ContentStatus targetStatus,
+            @Param("now") LocalDateTime changeTimestamp);
 
     /**
      * FR-34-15 — Các đề thi {@code published} đang trỏ tới lesson qua {@code assessments.lesson_id}.

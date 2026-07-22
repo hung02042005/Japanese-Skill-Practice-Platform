@@ -1,11 +1,11 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.publishedcontent.handler;
 
-import com.jlpt.feature.contentreview.ContentType;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.learning.GrammarPoint;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
-import com.jlpt.feature.publishedcontent.ManagedContentSnapshot;
-import com.jlpt.feature.publishedcontent.TargetStatus;
+import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
+import com.jlpt.feature.publishedcontent.model.TargetStatus;
 import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.repository.ManagedGrammarRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
@@ -50,14 +50,14 @@ public class GrammarManagedHandler implements ManagedContentHandler {
     }
 
     @Override
-    public int changeStatus(Long contentId, TargetStatus target, LocalDateTime now) {
-        ContentStatus to =
-                switch (target) {
+    public int changeStatus(Long contentId, TargetStatus targetStatus, LocalDateTime changeTimestamp) {
+        ContentStatus targetContentStatus =
+                switch (targetStatus) {
                     case UNPUBLISHED -> ContentStatus.DRAFT;
                     case ARCHIVED -> ContentStatus.ARCHIVED;
                     case DELETED -> ContentStatus.DELETED;
                 };
-        return repository.transition(contentId, ContentStatus.PUBLISHED, to, now);
+        return repository.transition(contentId, ContentStatus.PUBLISHED, targetContentStatus, changeTimestamp);
     }
 
     @Override
@@ -65,15 +65,15 @@ public class GrammarManagedHandler implements ManagedContentHandler {
         return repository.transition(contentId, ContentStatus.ARCHIVED, ContentStatus.PUBLISHED, now);
     }
 
-    private ManagedContentSnapshot toSnapshot(GrammarPoint g) {
-        String title = g.getTitle() != null ? g.getTitle() : g.getStructure();
+    private ManagedContentSnapshot toSnapshot(GrammarPoint grammarPoint) {
+        String title = grammarPoint.getTitle() != null ? grammarPoint.getTitle() : grammarPoint.getStructure();
         return ManagedContentSnapshot.builder()
-                .contentId(g.getId())
+                .contentId(grammarPoint.getId())
                 .contentType(ContentType.GRAMMAR)
                 .titleOrText(title)
-                .jlptLevel(g.getJlptLevel() != null ? g.getJlptLevel().name() : null)
-                .status(g.getStatus() != null ? g.getStatus().getValue() : null)
-                .publishedAt(g.getPublishedAt())
+                .jlptLevel(grammarPoint.getJlptLevel() != null ? grammarPoint.getJlptLevel().name() : null)
+                .status(grammarPoint.getStatus() != null ? grammarPoint.getStatus().getValue() : null)
+                .publishedAt(grammarPoint.getPublishedAt())
                 .build();
     }
 }

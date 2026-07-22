@@ -196,11 +196,6 @@ export async function submitAssessmentForReview(contentType, contentId) {
 
 // --- Staff Learning Content (UC-27) — base /api/staff -------------------------
 
-export async function createStaffLesson(data) {
-  const res = await api.post('/staff/lessons', data);
-  return res.data; // ApiResponse { status, message, data: LessonDetailResponse }
-}
-
 export async function updateStaffLesson(lessonId, data) {
   const res = await api.put(`/staff/lessons/${lessonId}`, data);
   return res.data;
@@ -238,8 +233,25 @@ export async function updateStaffKanji(kanjiId, data) {
   return res.data;
 }
 
+// --- Staff Speaking Authoring (UC-SPK-01) -----------------------------------
+
+export async function createStaffSpeakingLesson(data) {
+  const res = await api.post('/staff/speaking-lessons', data);
+  return res.data;
+}
+
+export async function updateStaffSpeakingLesson(lessonId, data) {
+  const res = await api.put(`/staff/speaking-lessons/${lessonId}`, data);
+  return res.data;
+}
+
+export async function getStaffSpeakingLesson(lessonId) {
+  const res = await api.get(`/staff/speaking-lessons/${lessonId}`);
+  return res.data.data;
+}
+
 // submit-review cho learning content dùng chung endpoint contents/submit-review
-// với contentType ∈ { lesson, vocabulary, kanji } — xem submitAssessmentForReview.
+// với contentType ∈ { lesson, speaking, vocabulary, kanji } — xem submitAssessmentForReview.
 
 
 
