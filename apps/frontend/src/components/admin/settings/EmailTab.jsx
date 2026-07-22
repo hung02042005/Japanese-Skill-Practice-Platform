@@ -358,12 +358,12 @@ function EmailTypeCard({ group, title, description, icon, addToast }) {
 
   /** Chèn token biến vào ô Nội dung tại vị trí con trỏ (hoặc cuối nếu chưa focus). */
   function insertPlaceholder(token) {
-    const cur = form.body_html ?? '';
+    const cur = form.body_text ?? '';
     const el = bodyRef.current;
-    if (!el) { set('body_html', cur + token); return; }
+    if (!el) { set('body_text', cur + token); return; }
     const start = el.selectionStart ?? cur.length;
     const end   = el.selectionEnd ?? cur.length;
-    set('body_html', cur.slice(0, start) + token + cur.slice(end));
+    set('body_text', cur.slice(0, start) + token + cur.slice(end));
     requestAnimationFrame(() => {
       el.focus();
       const pos = start + token.length;
