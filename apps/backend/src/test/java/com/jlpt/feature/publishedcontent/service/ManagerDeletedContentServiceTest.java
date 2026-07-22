@@ -17,7 +17,6 @@ import com.jlpt.feature.publishedcontent.repository.ManagedGrammarRepository;
 import com.jlpt.feature.publishedcontent.repository.ManagedKanjiRepository;
 import com.jlpt.feature.publishedcontent.repository.ManagedLessonRepository;
 import com.jlpt.feature.publishedcontent.repository.ManagedQuestionRepository;
-import com.jlpt.feature.publishedcontent.service.ManagerDeletedContentService;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.shared.exception.BusinessException;

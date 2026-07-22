@@ -1,9 +1,8 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.publishedcontent.controller;
 
-import com.jlpt.feature.publishedcontent.service.ManagerDeletedContentService;
-
 import com.jlpt.feature.publishedcontent.dto.DeletedContentResponse;
+import com.jlpt.feature.publishedcontent.service.ManagerDeletedContentService;
 import com.jlpt.shared.common.ApiResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

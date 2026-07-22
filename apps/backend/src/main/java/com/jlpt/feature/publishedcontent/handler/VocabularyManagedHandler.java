@@ -4,9 +4,9 @@ package com.jlpt.feature.publishedcontent.handler;
 import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
 import com.jlpt.feature.learning.Vocabulary;
+import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
 import com.jlpt.feature.publishedcontent.model.TargetStatus;
-import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.repository.ManagedVocabularyRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
 import java.time.LocalDateTime;
@@ -70,7 +70,10 @@ public class VocabularyManagedHandler implements ManagedContentHandler {
                 .contentId(vocabulary.getId())
                 .contentType(ContentType.VOCABULARY)
                 .titleOrText(vocabulary.getWord())
-                .jlptLevel(vocabulary.getJlptLevel() != null ? vocabulary.getJlptLevel().name() : null)
+                .jlptLevel(
+                        vocabulary.getJlptLevel() != null
+                                ? vocabulary.getJlptLevel().name()
+                                : null)
                 .status(vocabulary.getStatus() != null ? vocabulary.getStatus().getValue() : null)
                 .publishedAt(vocabulary.getPublishedAt())
                 .build();

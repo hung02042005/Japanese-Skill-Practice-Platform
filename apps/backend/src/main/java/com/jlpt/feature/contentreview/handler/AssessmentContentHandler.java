@@ -42,7 +42,9 @@ public class AssessmentContentHandler implements ReviewableContentHandler {
         List<Assessment> assessments = (level == null)
                 ? repository.findPending(ContentStatus.PENDING_REVIEW)
                 : repository.findPending(ContentStatus.PENDING_REVIEW, level);
-        return assessments.stream().map(assessment -> toSnapshot(assessment, false)).toList();
+        return assessments.stream()
+                .map(assessment -> toSnapshot(assessment, false))
+                .toList();
     }
 
     @Override
@@ -93,7 +95,9 @@ public class AssessmentContentHandler implements ReviewableContentHandler {
             HandlerSupport.put(
                     detail,
                     "assessmentType",
-                    assessment.getAssessmentType() != null ? assessment.getAssessmentType().getValue() : null);
+                    assessment.getAssessmentType() != null
+                            ? assessment.getAssessmentType().getValue()
+                            : null);
             HandlerSupport.put(detail, "topic", assessment.getTopic());
             HandlerSupport.put(detail, "durationMin", assessment.getDurationMin());
             HandlerSupport.put(detail, "passScore", assessment.getPassScore());
@@ -103,7 +107,10 @@ public class AssessmentContentHandler implements ReviewableContentHandler {
                 .contentId(assessment.getId())
                 .contentType(ContentType.ASSESSMENT)
                 .titleOrText(assessment.getTitle())
-                .jlptLevel(assessment.getJlptLevel() != null ? assessment.getJlptLevel().name() : null)
+                .jlptLevel(
+                        assessment.getJlptLevel() != null
+                                ? assessment.getJlptLevel().name()
+                                : null)
                 .status(assessment.getStatus() != null ? assessment.getStatus().getValue() : null)
                 .createdById(HandlerSupport.creatorId(assessment.getCreatedBy()))
                 .createdByName(HandlerSupport.creatorName(assessment.getCreatedBy()))

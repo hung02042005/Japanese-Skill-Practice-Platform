@@ -5,9 +5,9 @@ import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.learning.Kanji;
 import com.jlpt.feature.learning.Lesson;
 import com.jlpt.feature.learning.Lesson.LessonStatus;
+import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
 import com.jlpt.feature.publishedcontent.model.TargetStatus;
-import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.repository.ManagedAssessmentRepository;
 import com.jlpt.feature.publishedcontent.repository.ManagedLessonRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
@@ -59,11 +59,12 @@ public class LessonManagedHandler implements ManagedContentHandler {
 
     @Override
     public int changeStatus(Long contentId, TargetStatus targetStatus, LocalDateTime changeTimestamp) {
-        LessonStatus targetLessonStatus = switch (targetStatus) {
-            case UNPUBLISHED -> LessonStatus.DRAFT;
-            case ARCHIVED -> LessonStatus.ARCHIVED;
-            case DELETED -> LessonStatus.DELETED;
-        };
+        LessonStatus targetLessonStatus =
+                switch (targetStatus) {
+                    case UNPUBLISHED -> LessonStatus.DRAFT;
+                    case ARCHIVED -> LessonStatus.ARCHIVED;
+                    case DELETED -> LessonStatus.DELETED;
+                };
         return repository.transition(contentId, LessonStatus.PUBLISHED, targetLessonStatus, changeTimestamp);
     }
 

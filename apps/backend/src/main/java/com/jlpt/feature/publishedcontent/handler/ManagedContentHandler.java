@@ -2,9 +2,9 @@
 package com.jlpt.feature.publishedcontent.handler;
 
 import com.jlpt.feature.contentreview.model.ContentType;
+import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
 import com.jlpt.feature.publishedcontent.model.TargetStatus;
-import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
 import java.time.LocalDateTime;
 import java.util.List;

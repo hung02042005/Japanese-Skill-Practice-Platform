@@ -10,7 +10,6 @@ import com.jlpt.feature.learning.VocabularyTopic;
 import com.jlpt.feature.learning.VocabularyTopicRepository;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
-import com.jlpt.feature.staffcontent.learning.service.VocabularyTopicService;
 import com.jlpt.shared.exception.BusinessException;
 import com.jlpt.shared.exception.ForbiddenException;
 import java.util.List;

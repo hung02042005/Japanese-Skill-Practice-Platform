@@ -1,12 +1,6 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.contentreview.service;
 
-import com.jlpt.feature.contentreview.model.ReviewAction;
-
-import com.jlpt.feature.contentreview.model.ContentType;
-
-import com.jlpt.feature.contentreview.model.ContentSnapshot;
-
 import com.jlpt.feature.contentreview.dto.RequestChangesRequest;
 import com.jlpt.feature.contentreview.dto.ReviewActionRequest;
 import com.jlpt.feature.contentreview.dto.ReviewQueueItemResponse;
@@ -18,6 +12,9 @@ import com.jlpt.feature.contentreview.exception.ContentNotFoundException;
 import com.jlpt.feature.contentreview.exception.FeedbackRequiredException;
 import com.jlpt.feature.contentreview.exception.SelfReviewNotAllowedException;
 import com.jlpt.feature.contentreview.handler.ReviewableContentHandler;
+import com.jlpt.feature.contentreview.model.ContentSnapshot;
+import com.jlpt.feature.contentreview.model.ContentType;
+import com.jlpt.feature.contentreview.model.ReviewAction;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;

@@ -37,7 +37,9 @@ public class VocabularyContentHandler implements ReviewableContentHandler {
         List<Vocabulary> vocabularyEntries = (level == null)
                 ? repository.findPending(ContentStatus.PENDING_REVIEW)
                 : repository.findPending(ContentStatus.PENDING_REVIEW, level);
-        return vocabularyEntries.stream().map(vocabulary -> toSnapshot(vocabulary, false)).toList();
+        return vocabularyEntries.stream()
+                .map(vocabulary -> toSnapshot(vocabulary, false))
+                .toList();
     }
 
     @Override
@@ -77,7 +79,10 @@ public class VocabularyContentHandler implements ReviewableContentHandler {
                 .contentId(vocabulary.getId())
                 .contentType(ContentType.VOCABULARY)
                 .titleOrText(vocabulary.getWord())
-                .jlptLevel(vocabulary.getJlptLevel() != null ? vocabulary.getJlptLevel().name() : null)
+                .jlptLevel(
+                        vocabulary.getJlptLevel() != null
+                                ? vocabulary.getJlptLevel().name()
+                                : null)
                 .status(vocabulary.getStatus() != null ? vocabulary.getStatus().getValue() : null)
                 .createdById(HandlerSupport.creatorId(vocabulary.getCreatedBy()))
                 .createdByName(HandlerSupport.creatorName(vocabulary.getCreatedBy()))

@@ -4,9 +4,9 @@ package com.jlpt.feature.publishedcontent.handler;
 import com.jlpt.feature.assessment.Assessment;
 import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
+import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
 import com.jlpt.feature.publishedcontent.model.TargetStatus;
-import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.repository.ManagedAssessmentRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
 import java.time.LocalDateTime;
@@ -71,7 +71,10 @@ public class AssessmentManagedHandler implements ManagedContentHandler {
                 .contentId(assessment.getId())
                 .contentType(ContentType.ASSESSMENT)
                 .titleOrText(assessment.getTitle())
-                .jlptLevel(assessment.getJlptLevel() != null ? assessment.getJlptLevel().name() : null)
+                .jlptLevel(
+                        assessment.getJlptLevel() != null
+                                ? assessment.getJlptLevel().name()
+                                : null)
                 .status(assessment.getStatus() != null ? assessment.getStatus().getValue() : null)
                 .publishedAt(assessment.getPublishedAt())
                 .build();

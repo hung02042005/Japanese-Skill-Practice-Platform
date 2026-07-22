@@ -36,8 +36,7 @@ public class LessonContentHandler implements ReviewableContentHandler {
     public List<ContentSnapshot> findPending(JlptLevel level) {
         List<Lesson> lessons = (level == null)
                 ? repository.findPendingExcludingType(LessonStatus.PENDING_REVIEW, Lesson.LessonType.SPEAKING)
-                : repository.findPendingExcludingType(
-                        LessonStatus.PENDING_REVIEW, level, Lesson.LessonType.SPEAKING);
+                : repository.findPendingExcludingType(LessonStatus.PENDING_REVIEW, level, Lesson.LessonType.SPEAKING);
         return lessons.stream().map(lesson -> toSnapshot(lesson, false)).toList();
     }
 

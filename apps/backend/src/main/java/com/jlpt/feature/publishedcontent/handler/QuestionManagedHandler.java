@@ -6,9 +6,9 @@ import com.jlpt.feature.assessment.Question.ContentStatus;
 import com.jlpt.feature.assessment.QuestionAssignment.ParentType;
 import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.learning.Kanji;
+import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
 import com.jlpt.feature.publishedcontent.model.TargetStatus;
-import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.repository.ManagedQuestionRepository;
 import com.jlpt.feature.publishedcontent.repository.QuestionReferenceRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
@@ -76,7 +76,10 @@ public class QuestionManagedHandler implements ManagedContentHandler {
                 .contentId(question.getId())
                 .contentType(ContentType.QUESTION)
                 .titleOrText(question.getQuestionText())
-                .jlptLevel(question.getJlptLevel() != null ? question.getJlptLevel().name() : null)
+                .jlptLevel(
+                        question.getJlptLevel() != null
+                                ? question.getJlptLevel().name()
+                                : null)
                 .status(question.getStatus() != null ? question.getStatus().getValue() : null)
                 .publishedAt(question.getPublishedAt())
                 .build();

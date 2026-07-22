@@ -19,8 +19,7 @@ public interface ManagedKanjiRepository extends JpaRepository<Kanji, Long> {
     @Query("SELECT k FROM Kanji k "
             + "WHERE k.status = :published AND (:level IS NULL OR k.jlptLevel = :level) "
             + "ORDER BY k.publishedAt DESC")
-    List<Kanji> findPublished(
-            @Param("published") ContentStatus publishedStatus, @Param("level") JlptLevel jlptLevel);
+    List<Kanji> findPublished(@Param("published") ContentStatus publishedStatus, @Param("level") JlptLevel jlptLevel);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Kanji k SET k.status = :to, k.updatedAt = :now WHERE k.id = :id AND k.status = :from")

@@ -1,24 +1,16 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.staffcontent.question.service;
 
-import com.jlpt.feature.staffcontent.question.dto.UpdateQuestionRequest;
-
-import com.jlpt.feature.staffcontent.question.dto.StaffQuestionSubmitReviewResponse;
-
-import com.jlpt.feature.staffcontent.question.exception.StaffQuestionBusinessException;
-
-import com.jlpt.feature.staffcontent.question.repository.StaffContentQuestionRepository;
-
-import com.jlpt.feature.staffcontent.question.entity.StaffContentQuestionEntity;
-
-import com.jlpt.feature.staffcontent.question.repository.StaffContentAttemptAnswerRepository;
-
-import com.jlpt.feature.staffcontent.question.dto.QuestionResponse;
-
-import com.jlpt.feature.staffcontent.question.dto.CreateQuestionRequest;
-
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
+import com.jlpt.feature.staffcontent.question.dto.CreateQuestionRequest;
+import com.jlpt.feature.staffcontent.question.dto.QuestionResponse;
+import com.jlpt.feature.staffcontent.question.dto.StaffQuestionSubmitReviewResponse;
+import com.jlpt.feature.staffcontent.question.dto.UpdateQuestionRequest;
+import com.jlpt.feature.staffcontent.question.entity.StaffContentQuestionEntity;
+import com.jlpt.feature.staffcontent.question.exception.StaffQuestionBusinessException;
+import com.jlpt.feature.staffcontent.question.repository.StaffContentAttemptAnswerRepository;
+import com.jlpt.feature.staffcontent.question.repository.StaffContentQuestionRepository;
 import com.jlpt.shared.exception.ForbiddenException;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;

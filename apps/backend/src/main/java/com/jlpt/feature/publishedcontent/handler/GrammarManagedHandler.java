@@ -4,9 +4,9 @@ package com.jlpt.feature.publishedcontent.handler;
 import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.learning.GrammarPoint;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
+import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
 import com.jlpt.feature.publishedcontent.model.TargetStatus;
-import com.jlpt.feature.publishedcontent.dto.ReferenceItemResponse;
 import com.jlpt.feature.publishedcontent.repository.ManagedGrammarRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
 import java.time.LocalDateTime;
@@ -71,8 +71,14 @@ public class GrammarManagedHandler implements ManagedContentHandler {
                 .contentId(grammarPoint.getId())
                 .contentType(ContentType.GRAMMAR)
                 .titleOrText(title)
-                .jlptLevel(grammarPoint.getJlptLevel() != null ? grammarPoint.getJlptLevel().name() : null)
-                .status(grammarPoint.getStatus() != null ? grammarPoint.getStatus().getValue() : null)
+                .jlptLevel(
+                        grammarPoint.getJlptLevel() != null
+                                ? grammarPoint.getJlptLevel().name()
+                                : null)
+                .status(
+                        grammarPoint.getStatus() != null
+                                ? grammarPoint.getStatus().getValue()
+                                : null)
                 .publishedAt(grammarPoint.getPublishedAt())
                 .build();
     }

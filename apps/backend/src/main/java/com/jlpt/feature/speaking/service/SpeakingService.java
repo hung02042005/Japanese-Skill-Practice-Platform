@@ -157,10 +157,10 @@ public class SpeakingService {
     }
 
     private List<SpeakingQuestionDto> loadQuestions(Lesson lesson) {
-        List<SpeakingQuestionDto> questions = speakingQuestionRepository
-                .findByLesson_IdOrderByDisplayOrderAsc(lesson.getId()).stream()
-                .map(this::toQuestionDto)
-                .toList();
+        List<SpeakingQuestionDto> questions =
+                speakingQuestionRepository.findByLesson_IdOrderByDisplayOrderAsc(lesson.getId()).stream()
+                        .map(this::toQuestionDto)
+                        .toList();
         if (!questions.isEmpty()) {
             return questions;
         }

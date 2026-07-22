@@ -12,7 +12,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface KanjiRepository extends JpaRepository<Kanji, Long> {
 
-   @Query("""
+    @Query(
+            """
         SELECT k FROM Kanji k
         WHERE k.status = :status
           AND (:jlptLevel IS NULL OR k.jlptLevel = :jlptLevel)
@@ -24,11 +25,9 @@ public interface KanjiRepository extends JpaRepository<Kanji, Long> {
           )
         ORDER BY k.characterValue ASC
         """)
-List<Kanji> searchPublished(
-        @Param("keyword") String keyword,
-        @Param("jlptLevel") StudentUser.JlptLevel jlptLevel,
-        @Param("status") Kanji.ContentStatus status,
-        Pageable pageable
-);
-
+    List<Kanji> searchPublished(
+            @Param("keyword") String keyword,
+            @Param("jlptLevel") StudentUser.JlptLevel jlptLevel,
+            @Param("status") Kanji.ContentStatus status,
+            Pageable pageable);
 }

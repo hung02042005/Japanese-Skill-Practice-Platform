@@ -1,18 +1,15 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.speaking.service;
 
-import com.jlpt.feature.speaking.repository.SpeakingQuestionRepository;
-
-import com.jlpt.feature.speaking.entity.SpeakingQuestion;
-
-import com.jlpt.feature.speaking.exception.SpeakingBusinessException;
-
 import com.jlpt.feature.learning.Lesson;
 import com.jlpt.feature.learning.LessonRepository;
 import com.jlpt.feature.speaking.dto.SpeakingLessonCreateRequest;
 import com.jlpt.feature.speaking.dto.SpeakingLessonDetailResponse;
 import com.jlpt.feature.speaking.dto.SpeakingLessonMutationResponse;
 import com.jlpt.feature.speaking.dto.SpeakingQuestionDto;
+import com.jlpt.feature.speaking.entity.SpeakingQuestion;
+import com.jlpt.feature.speaking.exception.SpeakingBusinessException;
+import com.jlpt.feature.speaking.repository.SpeakingQuestionRepository;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.feature.student.StudentUser;
@@ -57,8 +54,7 @@ public class SpeakingAuthoringService {
     }
 
     @Transactional
-    public SpeakingLessonDetailResponse update(
-            Long lessonId, SpeakingLessonCreateRequest request, String staffEmail) {
+    public SpeakingLessonDetailResponse update(Long lessonId, SpeakingLessonCreateRequest request, String staffEmail) {
         StaffUser staff = resolveActiveStaff(staffEmail);
         Lesson lesson = findOwnedSpeakingLesson(lessonId, staff);
         guardEditable(lesson);
@@ -102,7 +98,8 @@ public class SpeakingAuthoringService {
         return lessonRepository
                 .findByIdAndStatusNot(lessonId, Lesson.LessonStatus.DELETED)
                 .filter(lesson -> lesson.getLessonType() == Lesson.LessonType.SPEAKING)
-                .filter(lesson -> lesson.getCreatedBy() != null && lesson.getCreatedBy().getId().equals(staff.getId()))
+                .filter(lesson -> lesson.getCreatedBy() != null
+                        && lesson.getCreatedBy().getId().equals(staff.getId()))
                 .orElseThrow(SpeakingBusinessException::contentNotFound);
     }
 
@@ -125,8 +122,7 @@ public class SpeakingAuthoringService {
     }
 
     private void guardEditable(Lesson lesson) {
-        if (lesson.getStatus() != Lesson.LessonStatus.DRAFT
-                && lesson.getStatus() != Lesson.LessonStatus.REJECTED) {
+        if (lesson.getStatus() != Lesson.LessonStatus.DRAFT && lesson.getStatus() != Lesson.LessonStatus.REJECTED) {
             throw SpeakingBusinessException.invalidStateTransition();
         }
     }
@@ -161,13 +157,14 @@ public class SpeakingAuthoringService {
     }
 
     private SpeakingLessonDetailResponse toDetail(Lesson lesson, List<SpeakingQuestion> questions) {
-        List<SpeakingQuestionDto> responseQuestions = questions.isEmpty() && StringUtils.hasText(lesson.getContentText())
-                ? List.of(SpeakingQuestionDto.builder()
-                        .promptText(lesson.getContentText())
-                        .sampleAudioUrl(lesson.getAudioUrl())
-                        .displayOrder(0)
-                        .build())
-                : questions.stream().map(this::toQuestionDto).toList();
+        List<SpeakingQuestionDto> responseQuestions =
+                questions.isEmpty() && StringUtils.hasText(lesson.getContentText())
+                        ? List.of(SpeakingQuestionDto.builder()
+                                .promptText(lesson.getContentText())
+                                .sampleAudioUrl(lesson.getAudioUrl())
+                                .displayOrder(0)
+                                .build())
+                        : questions.stream().map(this::toQuestionDto).toList();
         return SpeakingLessonDetailResponse.builder()
                 .lessonId(lesson.getId())
                 .title(lesson.getTitle())

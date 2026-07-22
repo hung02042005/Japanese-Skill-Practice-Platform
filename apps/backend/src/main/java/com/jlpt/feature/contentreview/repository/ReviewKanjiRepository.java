@@ -29,8 +29,7 @@ public interface ReviewKanjiRepository extends JpaRepository<Kanji, Long> {
     List<Kanji> findPending(@Param("status") ContentStatus status, @Param("level") JlptLevel level);
 
     @Query("SELECT k FROM Kanji k LEFT JOIN FETCH k.createdBy WHERE k.id = :id AND k.status <> :deleted")
-    Optional<Kanji> findActiveById(
-            @Param("id") Long contentId, @Param("deleted") ContentStatus deletedStatus);
+    Optional<Kanji> findActiveById(@Param("id") Long contentId, @Param("deleted") ContentStatus deletedStatus);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Kanji k SET k.status = :to, k.approvedBy = :mgr, k.publishedAt = :now, k.updatedAt = :now "

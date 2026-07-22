@@ -2,7 +2,6 @@
 package com.jlpt.feature.staffcontent.quiz.repository;
 
 import com.jlpt.feature.staffcontent.quiz.entity.QuizAssessmentEntity;
-
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,10 +1,9 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.contentreview.service;
 
-import com.jlpt.feature.contentreview.model.ContentType;
-
 import com.jlpt.feature.admin.AdminAuditLog;
 import com.jlpt.feature.admin.AdminAuditLogRepository;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.staff.StaffUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

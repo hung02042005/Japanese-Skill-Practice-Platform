@@ -29,8 +29,7 @@ public interface ReviewAssessmentRepository extends JpaRepository<Assessment, Lo
     List<Assessment> findPending(@Param("status") ContentStatus status, @Param("level") JlptLevel level);
 
     @Query("SELECT a FROM Assessment a LEFT JOIN FETCH a.createdBy WHERE a.id = :id AND a.status <> :deleted")
-    Optional<Assessment> findActiveById(
-            @Param("id") Long contentId, @Param("deleted") ContentStatus deletedStatus);
+    Optional<Assessment> findActiveById(@Param("id") Long contentId, @Param("deleted") ContentStatus deletedStatus);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Assessment a SET a.status = :to, a.approvedBy = :mgr, a.publishedAt = :now, a.updatedAt = :now "

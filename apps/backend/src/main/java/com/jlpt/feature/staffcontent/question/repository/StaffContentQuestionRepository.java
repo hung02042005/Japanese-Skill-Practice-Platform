@@ -2,7 +2,6 @@
 package com.jlpt.feature.staffcontent.question.repository;
 
 import com.jlpt.feature.staffcontent.question.entity.StaffContentQuestionEntity;
-
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

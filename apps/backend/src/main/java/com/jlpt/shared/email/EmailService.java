@@ -229,10 +229,7 @@ public class EmailService {
 
     private String htmlEscape(String s) {
         if (s == null) return "";
-        return s.replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;")
-                .replace("\"", "&quot;");
+        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
     }
 
     private void sendHtmlEmail(String to, String subject, String htmlBody) {

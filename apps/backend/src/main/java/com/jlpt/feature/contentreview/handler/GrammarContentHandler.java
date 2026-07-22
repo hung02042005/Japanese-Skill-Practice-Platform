@@ -37,7 +37,9 @@ public class GrammarContentHandler implements ReviewableContentHandler {
         List<GrammarPoint> grammarPoints = (level == null)
                 ? repository.findPending(ContentStatus.PENDING_REVIEW)
                 : repository.findPending(ContentStatus.PENDING_REVIEW, level);
-        return grammarPoints.stream().map(grammarPoint -> toSnapshot(grammarPoint, false)).toList();
+        return grammarPoints.stream()
+                .map(grammarPoint -> toSnapshot(grammarPoint, false))
+                .toList();
     }
 
     @Override
@@ -74,8 +76,14 @@ public class GrammarContentHandler implements ReviewableContentHandler {
                 .contentId(grammarPoint.getId())
                 .contentType(ContentType.GRAMMAR)
                 .titleOrText(titleOrText)
-                .jlptLevel(grammarPoint.getJlptLevel() != null ? grammarPoint.getJlptLevel().name() : null)
-                .status(grammarPoint.getStatus() != null ? grammarPoint.getStatus().getValue() : null)
+                .jlptLevel(
+                        grammarPoint.getJlptLevel() != null
+                                ? grammarPoint.getJlptLevel().name()
+                                : null)
+                .status(
+                        grammarPoint.getStatus() != null
+                                ? grammarPoint.getStatus().getValue()
+                                : null)
                 .createdById(HandlerSupport.creatorId(grammarPoint.getCreatedBy()))
                 .createdByName(HandlerSupport.creatorName(grammarPoint.getCreatedBy()))
                 .submittedAt(grammarPoint.getUpdatedAt())

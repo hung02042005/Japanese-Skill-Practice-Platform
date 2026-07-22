@@ -1,12 +1,11 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.staffcontent.student.controller;
 
-import com.jlpt.feature.staffcontent.student.service.StaffStudentService;
-
 import com.jlpt.feature.staffcontent.student.dto.StaffStudentListResponse;
 import com.jlpt.feature.staffcontent.student.dto.StaffStudentProgressResponse;
 import com.jlpt.feature.staffcontent.student.dto.StaffStudentSummaryResponse;
 import com.jlpt.feature.staffcontent.student.dto.SuspendStudentRequest;
+import com.jlpt.feature.staffcontent.student.service.StaffStudentService;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;

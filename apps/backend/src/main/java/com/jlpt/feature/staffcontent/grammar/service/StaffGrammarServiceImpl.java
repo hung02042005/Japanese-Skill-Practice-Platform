@@ -1,8 +1,6 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.staffcontent.grammar.service;
 
-import com.jlpt.feature.staffcontent.grammar.repository.StaffGrammarRepository;
-
 import com.jlpt.feature.learning.GrammarPoint;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
 import com.jlpt.feature.learning.Lesson;
@@ -11,6 +9,7 @@ import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.feature.staffcontent.grammar.dto.*;
 import com.jlpt.feature.staffcontent.grammar.exception.GrammarBusinessException;
+import com.jlpt.feature.staffcontent.grammar.repository.StaffGrammarRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
 import com.jlpt.shared.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;

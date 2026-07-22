@@ -2,7 +2,6 @@
 package com.jlpt.feature.speaking.repository;
 
 import com.jlpt.feature.speaking.entity.SpeakingQuestion;
-
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

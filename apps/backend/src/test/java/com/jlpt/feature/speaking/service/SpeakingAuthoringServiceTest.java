@@ -12,7 +12,6 @@ import com.jlpt.feature.speaking.dto.SpeakingQuestionDto;
 import com.jlpt.feature.speaking.entity.SpeakingQuestion;
 import com.jlpt.feature.speaking.exception.SpeakingBusinessException;
 import com.jlpt.feature.speaking.repository.SpeakingQuestionRepository;
-import com.jlpt.feature.speaking.service.SpeakingAuthoringService;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.feature.student.StudentUser;
@@ -28,9 +27,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class SpeakingAuthoringServiceTest {
 
-    @Mock private LessonRepository lessonRepository;
-    @Mock private SpeakingQuestionRepository questionRepository;
-    @Mock private StaffUserRepository staffUserRepository;
+    @Mock
+    private LessonRepository lessonRepository;
+
+    @Mock
+    private SpeakingQuestionRepository questionRepository;
+
+    @Mock
+    private StaffUserRepository staffUserRepository;
 
     private SpeakingAuthoringService service;
     private StaffUser staff;
@@ -70,8 +74,11 @@ class SpeakingAuthoringServiceTest {
 
         ArgumentCaptor<SpeakingQuestion> questionCaptor = ArgumentCaptor.forClass(SpeakingQuestion.class);
         verify(questionRepository, times(2)).save(questionCaptor.capture());
-        assertEquals(List.of("Câu một", "Câu hai"),
-                questionCaptor.getAllValues().stream().map(SpeakingQuestion::getPromptText).toList());
+        assertEquals(
+                List.of("Câu một", "Câu hai"),
+                questionCaptor.getAllValues().stream()
+                        .map(SpeakingQuestion::getPromptText)
+                        .toList());
     }
 
     @Test
@@ -114,8 +121,7 @@ class SpeakingAuthoringServiceTest {
                         .displayOrder(1)
                         .build()));
 
-        var response = service.update(
-                42L, request(List.of(question("更新済み", 1))), staff.getEmail());
+        var response = service.update(42L, request(List.of(question("更新済み", 1))), staff.getEmail());
 
         verify(questionRepository).deleteByLesson_Id(42L);
         verify(questionRepository).flush();

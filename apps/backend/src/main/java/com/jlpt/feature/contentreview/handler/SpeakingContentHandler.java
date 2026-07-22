@@ -37,8 +37,7 @@ public class SpeakingContentHandler implements ReviewableContentHandler {
     @Override
     public List<ContentSnapshot> findPending(JlptLevel level) {
         List<Lesson> lessons = level == null
-                ? lessonRepository.findPendingByType(
-                        Lesson.LessonStatus.PENDING_REVIEW, Lesson.LessonType.SPEAKING)
+                ? lessonRepository.findPendingByType(Lesson.LessonStatus.PENDING_REVIEW, Lesson.LessonType.SPEAKING)
                 : lessonRepository.findPendingByTypeAndLevel(
                         Lesson.LessonStatus.PENDING_REVIEW, Lesson.LessonType.SPEAKING, level);
         return lessons.stream().map(lesson -> toSnapshot(lesson, false)).toList();
@@ -60,8 +59,7 @@ public class SpeakingContentHandler implements ReviewableContentHandler {
     @Override
     public int transitionFromPending(Long contentId, String targetStatus, LocalDateTime now) {
         Lesson.LessonStatus target = HandlerSupport.toEnum(Lesson.LessonStatus.class, targetStatus);
-        return lessonRepository.transition(
-                contentId, now, Lesson.LessonStatus.PENDING_REVIEW, target);
+        return lessonRepository.transition(contentId, now, Lesson.LessonStatus.PENDING_REVIEW, target);
     }
 
     private ContentSnapshot toSnapshot(Lesson lesson, boolean withDetail) {
@@ -77,7 +75,10 @@ public class SpeakingContentHandler implements ReviewableContentHandler {
                 .contentId(lesson.getId())
                 .contentType(ContentType.SPEAKING)
                 .titleOrText(lesson.getTitle())
-                .jlptLevel(lesson.getJlptLevel() == null ? null : lesson.getJlptLevel().name())
+                .jlptLevel(
+                        lesson.getJlptLevel() == null
+                                ? null
+                                : lesson.getJlptLevel().name())
                 .status(lesson.getStatus() == null ? null : lesson.getStatus().getValue())
                 .createdById(HandlerSupport.creatorId(lesson.getCreatedBy()))
                 .createdByName(HandlerSupport.creatorName(lesson.getCreatedBy()))
@@ -87,13 +88,17 @@ public class SpeakingContentHandler implements ReviewableContentHandler {
     }
 
     private List<Map<String, Object>> questionsFor(Lesson lesson) {
-        List<SpeakingQuestion> questions =
-                questionRepository.findByLesson_IdOrderByDisplayOrderAsc(lesson.getId());
-        if (questions.isEmpty() && lesson.getContentText() != null && !lesson.getContentText().isBlank()) {
+        List<SpeakingQuestion> questions = questionRepository.findByLesson_IdOrderByDisplayOrderAsc(lesson.getId());
+        if (questions.isEmpty()
+                && lesson.getContentText() != null
+                && !lesson.getContentText().isBlank()) {
             return List.of(Map.of(
-                    "promptText", lesson.getContentText(),
-                    "displayOrder", 0,
-                    "sampleAudioUrl", lesson.getAudioUrl() == null ? "" : lesson.getAudioUrl()));
+                    "promptText",
+                    lesson.getContentText(),
+                    "displayOrder",
+                    0,
+                    "sampleAudioUrl",
+                    lesson.getAudioUrl() == null ? "" : lesson.getAudioUrl()));
         }
         return questions.stream().map(this::questionDetail).toList();
     }

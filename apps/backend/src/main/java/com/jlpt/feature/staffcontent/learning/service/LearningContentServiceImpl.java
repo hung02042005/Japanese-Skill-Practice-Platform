@@ -1,10 +1,6 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.staffcontent.learning.service;
 
-import com.jlpt.feature.staffcontent.learning.repository.StaffVocabularyRepository;
-
-import com.jlpt.feature.staffcontent.learning.repository.StaffKanjiRepository;
-
 import com.jlpt.feature.learning.Kanji;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
 import com.jlpt.feature.learning.Lesson;
@@ -27,6 +23,8 @@ import com.jlpt.feature.staffcontent.learning.dto.UpdateLessonRequest;
 import com.jlpt.feature.staffcontent.learning.dto.UpdateVocabularyRequest;
 import com.jlpt.feature.staffcontent.learning.dto.VocabularyDetailResponse;
 import com.jlpt.feature.staffcontent.learning.exception.LearningContentException;
+import com.jlpt.feature.staffcontent.learning.repository.StaffKanjiRepository;
+import com.jlpt.feature.staffcontent.learning.repository.StaffVocabularyRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
 import com.jlpt.shared.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;

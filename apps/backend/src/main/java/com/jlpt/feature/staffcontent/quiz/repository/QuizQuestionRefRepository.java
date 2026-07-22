@@ -2,7 +2,6 @@
 package com.jlpt.feature.staffcontent.quiz.repository;
 
 import com.jlpt.feature.staffcontent.quiz.entity.QuizQuestionRefEntity;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

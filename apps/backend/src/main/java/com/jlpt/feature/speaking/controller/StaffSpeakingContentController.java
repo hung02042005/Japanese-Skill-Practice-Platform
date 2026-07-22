@@ -1,11 +1,10 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.speaking.controller;
 
-import com.jlpt.feature.speaking.service.SpeakingAuthoringService;
-
 import com.jlpt.feature.speaking.dto.SpeakingLessonCreateRequest;
 import com.jlpt.feature.speaking.dto.SpeakingLessonDetailResponse;
 import com.jlpt.feature.speaking.dto.SpeakingLessonMutationResponse;
+import com.jlpt.feature.speaking.service.SpeakingAuthoringService;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

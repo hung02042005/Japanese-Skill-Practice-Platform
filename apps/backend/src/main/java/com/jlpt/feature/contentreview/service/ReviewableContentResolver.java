@@ -1,9 +1,8 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.contentreview.service;
 
-import com.jlpt.feature.contentreview.model.ContentType;
-
 import com.jlpt.feature.contentreview.handler.ReviewableContentHandler;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.shared.exception.BusinessException;
 import java.util.Collection;
 import java.util.EnumMap;

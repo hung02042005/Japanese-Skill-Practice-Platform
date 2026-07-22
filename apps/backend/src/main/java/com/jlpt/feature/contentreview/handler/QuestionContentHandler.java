@@ -63,9 +63,13 @@ public class QuestionContentHandler implements ReviewableContentHandler {
             HandlerSupport.put(
                     detail,
                     "questionType",
-                    question.getQuestionType() != null ? question.getQuestionType().getValue() : null);
+                    question.getQuestionType() != null
+                            ? question.getQuestionType().getValue()
+                            : null);
             HandlerSupport.put(
-                    detail, "skill", question.getSkill() != null ? question.getSkill().getValue() : null);
+                    detail,
+                    "skill",
+                    question.getSkill() != null ? question.getSkill().getValue() : null);
             HandlerSupport.put(detail, "optionA", question.getOptionA());
             HandlerSupport.put(detail, "optionB", question.getOptionB());
             HandlerSupport.put(detail, "optionC", question.getOptionC());
@@ -78,7 +82,10 @@ public class QuestionContentHandler implements ReviewableContentHandler {
                 .contentId(question.getId())
                 .contentType(ContentType.QUESTION)
                 .titleOrText(question.getQuestionText())
-                .jlptLevel(question.getJlptLevel() != null ? question.getJlptLevel().name() : null)
+                .jlptLevel(
+                        question.getJlptLevel() != null
+                                ? question.getJlptLevel().name()
+                                : null)
                 .status(question.getStatus() != null ? question.getStatus().getValue() : null)
                 .createdById(HandlerSupport.creatorId(question.getCreatedBy()))
                 .createdByName(HandlerSupport.creatorName(question.getCreatedBy()))

@@ -1,13 +1,12 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.publishedcontent.controller;
 
-import com.jlpt.feature.publishedcontent.service.PublishedContentService;
-
 import com.jlpt.feature.publishedcontent.dto.ChangeStatusRequest;
 import com.jlpt.feature.publishedcontent.dto.PublishedContentDetailResponse;
 import com.jlpt.feature.publishedcontent.dto.PublishedContentListResponse;
 import com.jlpt.feature.publishedcontent.dto.RestoreContentRequest;
 import com.jlpt.feature.publishedcontent.dto.StatusChangeResultResponse;
+import com.jlpt.feature.publishedcontent.service.PublishedContentService;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;

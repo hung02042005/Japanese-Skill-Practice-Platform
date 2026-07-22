@@ -1,14 +1,10 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.staffcontent.question.service;
 
-import com.jlpt.feature.staffcontent.question.dto.UpdateQuestionRequest;
-
-import com.jlpt.feature.staffcontent.question.dto.StaffQuestionSubmitReviewResponse;
-
-import com.jlpt.feature.staffcontent.question.dto.QuestionResponse;
-
 import com.jlpt.feature.staffcontent.question.dto.CreateQuestionRequest;
-
+import com.jlpt.feature.staffcontent.question.dto.QuestionResponse;
+import com.jlpt.feature.staffcontent.question.dto.StaffQuestionSubmitReviewResponse;
+import com.jlpt.feature.staffcontent.question.dto.UpdateQuestionRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -2,7 +2,6 @@
 package com.jlpt.feature.staffcontent.quiz.repository;
 
 import com.jlpt.feature.staffcontent.quiz.entity.QuizAssignmentEntity;
-
 import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

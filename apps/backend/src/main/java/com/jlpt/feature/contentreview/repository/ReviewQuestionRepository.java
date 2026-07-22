@@ -29,8 +29,7 @@ public interface ReviewQuestionRepository extends JpaRepository<Question, Long> 
     List<Question> findPending(@Param("status") ContentStatus status, @Param("level") JlptLevel level);
 
     @Query("SELECT q FROM Question q LEFT JOIN FETCH q.createdBy WHERE q.id = :id AND q.status <> :deleted")
-    Optional<Question> findActiveById(
-            @Param("id") Long contentId, @Param("deleted") ContentStatus deletedStatus);
+    Optional<Question> findActiveById(@Param("id") Long contentId, @Param("deleted") ContentStatus deletedStatus);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Question q SET q.status = :to, q.approvedBy = :mgr, q.publishedAt = :now, q.updatedAt = :now "

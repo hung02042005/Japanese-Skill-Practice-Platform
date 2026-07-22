@@ -1,10 +1,9 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.staffcontent.learning.controller;
 
-import com.jlpt.feature.staffcontent.learning.service.VocabularyTopicService;
-
 import com.jlpt.feature.learning.dto.VocabTopicResponse;
 import com.jlpt.feature.staffcontent.learning.dto.CreateVocabTopicRequest;
+import com.jlpt.feature.staffcontent.learning.service.VocabularyTopicService;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
 import java.util.List;

@@ -19,8 +19,7 @@ public interface ManagedLessonRepository extends JpaRepository<Lesson, Long> {
     @Query("SELECT l FROM Lesson l "
             + "WHERE l.status = :published AND (:level IS NULL OR l.jlptLevel = :level) "
             + "ORDER BY l.publishedAt DESC")
-    List<Lesson> findPublished(
-            @Param("published") LessonStatus publishedStatus, @Param("level") JlptLevel jlptLevel);
+    List<Lesson> findPublished(@Param("published") LessonStatus publishedStatus, @Param("level") JlptLevel jlptLevel);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Lesson l SET l.status = :to, l.updatedAt = :now WHERE l.id = :id AND l.status = :from")

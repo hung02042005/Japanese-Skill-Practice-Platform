@@ -1,11 +1,10 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.speaking.controller;
 
-import com.jlpt.feature.speaking.service.SpeakingService;
-
 import com.jlpt.feature.speaking.dto.SpeakingExerciseResponse;
 import com.jlpt.feature.speaking.dto.SpeakingResultResponse;
 import com.jlpt.feature.speaking.dto.SpeakingSubmitResponse;
+import com.jlpt.feature.speaking.service.SpeakingService;
 import com.jlpt.shared.common.ApiResponse;
 import com.jlpt.shared.security.UserDetailsImpl;
 import java.util.List;

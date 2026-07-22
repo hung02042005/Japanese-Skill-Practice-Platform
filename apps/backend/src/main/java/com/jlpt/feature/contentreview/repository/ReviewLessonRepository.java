@@ -27,8 +27,7 @@ public interface ReviewLessonRepository extends JpaRepository<Lesson, Long> {
             + "WHERE l.status = :status AND l.lessonType <> :excludedType "
             + "ORDER BY l.updatedAt ASC")
     List<Lesson> findPendingExcludingType(
-            @Param("status") LessonStatus status,
-            @Param("excludedType") Lesson.LessonType excludedLessonType);
+            @Param("status") LessonStatus status, @Param("excludedType") Lesson.LessonType excludedLessonType);
 
     @Query("SELECT l FROM Lesson l LEFT JOIN FETCH l.createdBy "
             + "WHERE l.status = :status AND l.jlptLevel = :level "
@@ -45,8 +44,7 @@ public interface ReviewLessonRepository extends JpaRepository<Lesson, Long> {
 
     @Query("SELECT l FROM Lesson l LEFT JOIN FETCH l.createdBy "
             + "WHERE l.status = :status AND l.lessonType = :type ORDER BY l.updatedAt ASC")
-    List<Lesson> findPendingByType(
-            @Param("status") LessonStatus status, @Param("type") Lesson.LessonType lessonType);
+    List<Lesson> findPendingByType(@Param("status") LessonStatus status, @Param("type") Lesson.LessonType lessonType);
 
     @Query("SELECT l FROM Lesson l LEFT JOIN FETCH l.createdBy "
             + "WHERE l.status = :status AND l.lessonType = :type AND l.jlptLevel = :level "
@@ -57,8 +55,7 @@ public interface ReviewLessonRepository extends JpaRepository<Lesson, Long> {
             @Param("level") JlptLevel level);
 
     @Query("SELECT l FROM Lesson l LEFT JOIN FETCH l.createdBy WHERE l.id = :id AND l.status <> :deleted")
-    Optional<Lesson> findActiveById(
-            @Param("id") Long contentId, @Param("deleted") LessonStatus deletedStatus);
+    Optional<Lesson> findActiveById(@Param("id") Long contentId, @Param("deleted") LessonStatus deletedStatus);
 
     @Query("SELECT l FROM Lesson l LEFT JOIN FETCH l.createdBy "
             + "WHERE l.id = :id AND l.status <> :deleted AND l.lessonType = :type")

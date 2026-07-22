@@ -1,8 +1,6 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.staffcontent.learning.controller;
 
-import com.jlpt.feature.staffcontent.learning.service.LearningContentService;
-
 import com.jlpt.feature.staffcontent.learning.dto.CreateKanjiRequest;
 import com.jlpt.feature.staffcontent.learning.dto.CreateVocabularyRequest;
 import com.jlpt.feature.staffcontent.learning.dto.KanjiDetailResponse;
@@ -11,6 +9,7 @@ import com.jlpt.feature.staffcontent.learning.dto.UpdateKanjiRequest;
 import com.jlpt.feature.staffcontent.learning.dto.UpdateLessonRequest;
 import com.jlpt.feature.staffcontent.learning.dto.UpdateVocabularyRequest;
 import com.jlpt.feature.staffcontent.learning.dto.VocabularyDetailResponse;
+import com.jlpt.feature.staffcontent.learning.service.LearningContentService;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;

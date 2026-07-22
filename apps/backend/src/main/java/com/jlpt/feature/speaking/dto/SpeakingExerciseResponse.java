@@ -2,9 +2,9 @@
 package com.jlpt.feature.speaking.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
-import java.util.List;
 
 /** Một bài luyện nói trong danh sách (UC-13 §3.1 / SPEC-speaking §5). */
 @Data

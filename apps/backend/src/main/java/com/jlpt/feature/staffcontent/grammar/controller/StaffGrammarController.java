@@ -1,12 +1,11 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.staffcontent.grammar.controller;
 
-import com.jlpt.feature.staffcontent.grammar.service.StaffGrammarService;
-
 import com.jlpt.feature.staffcontent.grammar.dto.CreateGrammarRequest;
 import com.jlpt.feature.staffcontent.grammar.dto.GrammarDetailResponse;
 import com.jlpt.feature.staffcontent.grammar.dto.GrammarSummaryResponse;
 import com.jlpt.feature.staffcontent.grammar.dto.UpdateGrammarRequest;
+import com.jlpt.feature.staffcontent.grammar.service.StaffGrammarService;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;

@@ -30,7 +30,9 @@ public class PublishedContentExceptionHandler {
             ResourceInUseException resourceInUseError) {
         log.warn(
                 "RESOURCE_IN_USE: {} blocking reference(s)",
-                resourceInUseError.getReferences() == null ? 0 : resourceInUseError.getReferences().size());
+                resourceInUseError.getReferences() == null
+                        ? 0
+                        : resourceInUseError.getReferences().size());
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("errorCode", "RESOURCE_IN_USE");
         data.put("references", resourceInUseError.getReferences());

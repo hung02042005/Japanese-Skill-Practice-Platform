@@ -1,10 +1,6 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.publishedcontent.service;
 
-import com.jlpt.feature.publishedcontent.model.TargetStatus;
-
-import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
-
 import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.contentreview.service.ReviewAuditService;
 import com.jlpt.feature.publishedcontent.dto.ChangeStatusRequest;
@@ -19,6 +15,8 @@ import com.jlpt.feature.publishedcontent.exception.InvalidStateTransitionExcepti
 import com.jlpt.feature.publishedcontent.exception.ResourceInUseException;
 import com.jlpt.feature.publishedcontent.exception.RestoreNotAllowedException;
 import com.jlpt.feature.publishedcontent.handler.ManagedContentHandler;
+import com.jlpt.feature.publishedcontent.model.ManagedContentSnapshot;
+import com.jlpt.feature.publishedcontent.model.TargetStatus;
 import com.jlpt.feature.staff.StaffUser;
 import com.jlpt.feature.staff.StaffUserRepository;
 import com.jlpt.feature.student.StudentUser.JlptLevel;
@@ -86,9 +84,10 @@ public class PublishedContentService {
         int startIndex = Math.min(safePage * safeSize, publishedContentSnapshots.size());
         int endIndex = Math.min(startIndex + safeSize, publishedContentSnapshots.size());
 
-        List<PublishedContentItemResponse> contentItems = publishedContentSnapshots.subList(startIndex, endIndex).stream()
-                .map(this::toItem)
-                .toList();
+        List<PublishedContentItemResponse> contentItems =
+                publishedContentSnapshots.subList(startIndex, endIndex).stream()
+                        .map(this::toItem)
+                        .toList();
 
         return PublishedContentListResponse.builder()
                 .content(contentItems)

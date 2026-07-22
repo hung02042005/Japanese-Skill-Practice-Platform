@@ -1,15 +1,12 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.contentreview.controller;
 
-import com.jlpt.feature.contentreview.model.ContentType;
-
-import com.jlpt.feature.contentreview.service.ContentReviewService;
-
 import com.jlpt.feature.contentreview.dto.RequestChangesRequest;
 import com.jlpt.feature.contentreview.dto.ReviewActionRequest;
 import com.jlpt.feature.contentreview.dto.ReviewQueueResponse;
 import com.jlpt.feature.contentreview.dto.ReviewResultResponse;
 import com.jlpt.feature.contentreview.dto.ReviewableContentDetailResponse;
+import com.jlpt.feature.contentreview.service.ContentReviewService;
 import com.jlpt.shared.common.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;

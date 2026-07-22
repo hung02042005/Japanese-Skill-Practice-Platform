@@ -29,8 +29,7 @@ public interface ReviewVocabularyRepository extends JpaRepository<Vocabulary, Lo
     List<Vocabulary> findPending(@Param("status") ContentStatus status, @Param("level") JlptLevel level);
 
     @Query("SELECT v FROM Vocabulary v LEFT JOIN FETCH v.createdBy WHERE v.id = :id AND v.status <> :deleted")
-    Optional<Vocabulary> findActiveById(
-            @Param("id") Long contentId, @Param("deleted") ContentStatus deletedStatus);
+    Optional<Vocabulary> findActiveById(@Param("id") Long contentId, @Param("deleted") ContentStatus deletedStatus);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Vocabulary v SET v.status = :to, v.approvedBy = :mgr, v.publishedAt = :now, v.updatedAt = :now "

@@ -2,7 +2,6 @@
 package com.jlpt.feature.staffcontent.exam.repository;
 
 import com.jlpt.feature.staffcontent.exam.entity.ExamQuestionRefEntity;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
