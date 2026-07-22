@@ -12,7 +12,7 @@ import './Dictionary.css';
 
 /**
  * Từ Điển (SPEC-dictionary.md) — tra cứu kho nội dung published, gom nhóm theo loại.
- * "Lưu vào sổ tay" (chỉ từ vựng) → POST /flashcards/review-deck/add. Bookmark cũ bỏ;
+ * "Lưu vào sổ tay" (chỉ từ vựng) → POST /notebook/words. Bookmark cũ bỏ;
  * thay bằng nút "📓 Sổ tay" điều hướng /notebook.
  * Chip lọc theo loại (Tất cả/Từ vựng/Kanji/Ngữ pháp/Bài học) → param `type` của backend.
  * Vocab & Grammar mở panel chi tiết inline; Kanji/Bài học điều hướng trang chi tiết.

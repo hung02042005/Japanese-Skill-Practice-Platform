@@ -1,0 +1,55 @@
+name: Uptime Check (P2.8)
+
+# P2.8 — xem docs/05-Deployment/Deploy_Improvement_Plan.md
+#
+# Vấn đề đang giải quyết: cả Sự cố 3 và Sự cố 4 (11/07/2026) đều bị NGƯỜI DÙNG
+# phát hiện trước — không có gì canh gác 24/7 ngoài chính người vận hành tự mở
+# web lên kiểm tra. Đây là bản DIY miễn phí, không cần đăng ký tài khoản dịch
+# vụ ngoài (UptimeRobot/Healthchecks.io...): tận dụng chính GitHub Actions làm
+# nơi gọi định kỳ vào domain thật.
+#
+# Đây KHÔNG thay thế hoàn toàn 1 dịch vụ uptime monitoring chuyên dụng — không
+# có SMS/đa kênh cảnh báo, không có status page, và lịch chạy có thể bị GitHub
+# trì hoãn vài phút lúc tải cao (GitHub không đảm bảo cron chạy đúng giờ tuyệt
+# đối cho scheduled workflow). Coi đây là lớp cảnh báo MIỄN PHÍ đầu tiên; nếu
+# cần độ tin cậy cao hơn, đăng ký thêm UptimeRobot (free tier) trỏ vào cùng 2
+# URL bên dưới — chỉ mất ~10 phút, cần tài khoản email của người vận hành nên
+# không tự động hoá được từ phía AI/CI.
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Check sakuji.online is alive
+    runs-on: ubuntu-latest
+    steps:
+    - name: Curl frontend + backend health qua domain thật (sau Cloudflare)
+      run: |
+        set -e
+
+        echo "Đang kiểm tra https://sakuji.online ..."
+        FRONTEND_CODE=$(curl -s -o /dev/null -w '%{http_code}' -m 10 https://sakuji.online)
+        echo "  -> HTTP $FRONTEND_CODE"
+
+        echo "Đang kiểm tra https://sakuji.online/health (Nginx -> backend /actuator/health) ..."
+        HEALTH_BODY=$(curl -s -m 10 https://sakuji.online/health || echo "CURL_FAILED")
+        echo "  -> $HEALTH_BODY"
+
+        FAILED=0
+        if [ "$FRONTEND_CODE" != "200" ]; then
+          echo "::error::Frontend không trả 200 (nhận '$FRONTEND_CODE')"
+          FAILED=1
+        fi
+        if ! echo "$HEALTH_BODY" | grep -q '"status":"UP"'; then
+          echo "::error::Backend health không UP: $HEALTH_BODY"
+          FAILED=1
+        fi
+
+        if [ "$FAILED" -eq 1 ]; then
+          echo "::error::sakuji.online có vấn đề — xem log phía trên."
+          exit 1
+        fi
+
+        echo "OK — frontend + backend đều sống, đi qua đúng domain thật (không chỉ localhost trên VPS)."

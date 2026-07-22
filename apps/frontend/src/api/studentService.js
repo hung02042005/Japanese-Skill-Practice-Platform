@@ -148,12 +148,12 @@ export async function markVocabComplete(vocabId) {
 const vocabFlashcardSessionRequests = new Map();
 
 export async function getFlashcardDecks() {
-  const res = await api.get('/flashcard-decks');
+  const res = await api.get('/notebook/decks');
   return res.data.data;
 }
 
 export async function getFlashcardsByDeck(deckId, page = 0, size = 50, q, dueOnly = false, sort) {
-  const res = await api.get('/flashcards', {
+  const res = await api.get('/notebook/cards', {
     params: {
       deckId, page, size,
       q: q || undefined,
@@ -168,7 +168,7 @@ export async function getFlashcardsByDeck(deckId, page = 0, size = 50, q, dueOnl
 
 // Gỡ hàng loạt thẻ khỏi sổ tay (3B). ids: number[] → trả số thẻ đã gỡ.
 export async function bulkDeleteFlashcards(ids) {
-  const res = await api.post('/flashcards/bulk-delete', { ids });
+  const res = await api.post('/notebook/cards/bulk-delete', { ids });
   return res.data.data;
 }
 
@@ -204,19 +204,19 @@ export async function submitFlashcardReview(
 }
 
 export async function addWrongWordsToReviewDeck(items) {
-  const res = await api.post('/flashcards/review-deck/add', { items, reason: 'wrong' });
+  const res = await api.post('/notebook/words', { items, reason: 'wrong' });
   return res.data.data;
 }
 
 // Gỡ một thẻ khỏi sổ (soft-delete card) — SPEC-notebook §5
 export async function removeFlashcardCard(flashcardId) {
-  const res = await api.delete(`/flashcards/${flashcardId}`);
+  const res = await api.delete(`/notebook/cards/${flashcardId}`);
   return res.data;
 }
 
-// Lưu thủ công 1 từ vào Sổ tay "Từ cần ôn lại" — dùng chung review-deck/add (SPEC-dictionary §5)
+// Lưu thủ công 1 từ vào Sổ tay "Từ cần ôn lại" — dùng chung endpoint thêm từ (SPEC-dictionary §5)
 export async function saveToNotebook(contentType, contentId) {
-  const res = await api.post('/flashcards/review-deck/add', {
+  const res = await api.post('/notebook/words', {
     items: [{ contentType: contentType.toUpperCase(), contentId }],
     reason: 'manual',
   });
