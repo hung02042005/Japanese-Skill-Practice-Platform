@@ -1,10 +1,14 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.shared.email;
 
+import com.jlpt.feature.admin.SystemSetting;
 import com.jlpt.feature.admin.SystemSettingRepository;
 import jakarta.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import java.time.Year;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +45,11 @@ public class EmailService {
 
     @Async
     public void sendVerificationEmail(String toEmail, String otpCode) {
-        String subject = "[JLPT Platform] Mã xác minh địa chỉ email của bạn";
-        String body = buildVerificationOtpEmailBody(otpCode);
-        sendHtmlEmail(toEmail, subject, body);
+        Map<String, String> vars = baseVars();
+        vars.put("expiry_minutes", "10");
+        String content = renderContent("email_register", DEFAULT_REGISTER_CONTENT, vars);
+        String subject = resolveSubject("email_register", "[JLPT Platform] Mã xác minh địa chỉ email của bạn", vars);
+        sendHtmlEmail(toEmail, subject, buildVerificationOtpEmailBody(content, otpCode));
         log.info("[EmailService] Verification OTP email sent to: {}", toEmail);
     }
 
@@ -59,17 +65,20 @@ public class EmailService {
     @Async
     public void sendPasswordResetEmail(String toEmail, String token) {
         String resetLink = frontendUrl + "/reset-password?token=" + token;
-        String subject = "[JLPT Platform] Đặt lại mật khẩu";
-        String body = buildPasswordResetEmailBody(resetLink);
-        sendHtmlEmail(toEmail, subject, body);
+        Map<String, String> vars = baseVars();
+        vars.put("expiry_hours", "1");
+        String content = renderContent("email_reset", DEFAULT_RESET_CONTENT, vars);
+        String subject = resolveSubject("email_reset", "[JLPT Platform] Đặt lại mật khẩu", vars);
+        sendHtmlEmail(toEmail, subject, buildPasswordResetEmailBody(content, resetLink));
         log.info("[EmailService] Password reset email sent to: {}", toEmail);
     }
 
     @Async
     public void sendOtpEmail(String toEmail, String otpCode) {
-        String subject = "[JLPT Platform] Mã xác thực của bạn";
-        String body = buildOtpEmailBody(otpCode);
-        sendHtmlEmail(toEmail, subject, body);
+        Map<String, String> vars = baseVars();
+        String content = renderContent("email_otp", DEFAULT_OTP_CONTENT, vars);
+        String subject = resolveSubject("email_otp", "[JLPT Platform] Mã xác thực của bạn", vars);
+        sendHtmlEmail(toEmail, subject, buildOtpEmailBody(content, otpCode));
         log.info("[EmailService] OTP email sent to: {}", toEmail);
     }
 
@@ -151,6 +160,79 @@ public class EmailService {
                 </html>
                 """
                 .formatted(title, content);
+    }
+
+    // Nội dung (đoạn văn) mặc định — dùng khi DB chưa có body_text. Admin sửa các đoạn này
+    // qua /admin/settings?tab=email; khung HTML (header/OTP box/nút/footer) cố định trong code.
+    private static final String DEFAULT_REGISTER_CONTENT =
+            "Cảm ơn bạn đã đăng ký tài khoản {{platform_name}}! Nhập mã bên dưới trên trang xác minh để kích hoạt tài khoản.";
+    private static final String DEFAULT_OTP_CONTENT =
+            "Sử dụng mã bên dưới để hoàn tất xác thực. Mã có hiệu lực trong thời gian ngắn, vui lòng không chia sẻ mã này cho bất kỳ ai.";
+    private static final String DEFAULT_RESET_CONTENT =
+            "Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. Nhấn nút bên dưới để tạo mật khẩu mới.";
+
+    /** Biến dùng chung mọi email. */
+    private Map<String, String> baseVars() {
+        Map<String, String> v = new HashMap<>();
+        v.put("platform_name", resolveFromName());
+        v.put("current_year", String.valueOf(Year.now().getValue()));
+        v.put("support_email", resolveFromEmail());
+        return v;
+    }
+
+    /** Tiêu đề: lấy từ DB (nhóm.subject) nếu có, thay biến; nếu trống dùng mặc định. */
+    private String resolveSubject(String group, String defaultSubject, Map<String, String> vars) {
+        return settingRepository
+                .findBySettingGroupAndSettingKey(group, "subject")
+                .map(SystemSetting::getSettingValue)
+                .filter(v -> v != null && !v.isBlank())
+                .map(v -> substituteRaw(v, vars))
+                .orElse(defaultSubject);
+    }
+
+    /**
+     * Lấy đoạn nội dung thân thiện (body_text) do admin nhập từ DB, thay biến {{...}}, rồi
+     * chuyển thành HTML an toàn (escape + xuống dòng) để nhét vào khung email. Trống → dùng
+     * defaultText (LESSON-006 — không silent fail).
+     */
+    private String renderContent(String group, String defaultText, Map<String, String> vars) {
+        String text = settingRepository
+                .findBySettingGroupAndSettingKey(group, "body_text")
+                .map(SystemSetting::getSettingValue)
+                .filter(v -> v != null && !v.isBlank())
+                .orElse(defaultText);
+        return textToHtml(substituteRaw(text, vars));
+    }
+
+    /** Thay {{key}} bằng giá trị (chưa escape). Dùng cho subject và trước bước textToHtml. */
+    private String substituteRaw(String template, Map<String, String> vars) {
+        String out = template;
+        for (Map.Entry<String, String> e : vars.entrySet()) {
+            out = out.replace("{{" + e.getKey() + "}}", e.getValue() == null ? "" : e.getValue());
+        }
+        return out;
+    }
+
+    /** Escape toàn bộ văn bản người dùng rồi bọc mỗi đoạn (ngăn bởi dòng trống) vào &lt;p&gt;. */
+    private String textToHtml(String raw) {
+        String safe = htmlEscape(raw);
+        StringBuilder sb = new StringBuilder();
+        for (String para : safe.split("\\n\\s*\\n")) {
+            String p = para.trim().replace("\n", "<br>");
+            if (p.isEmpty()) continue;
+            sb.append("<p style=\"color:#4b5563; font-size:15px; line-height:1.7; margin:0 0 24px;\">")
+                    .append(p)
+                    .append("</p>");
+        }
+        return sb.toString();
+    }
+
+    private String htmlEscape(String s) {
+        if (s == null) return "";
+        return s.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;");
     }
 
     private void sendHtmlEmail(String to, String subject, String htmlBody) {
@@ -346,7 +428,7 @@ public class EmailService {
                 .formatted(setupLink);
     }
 
-    private String buildVerificationOtpEmailBody(String otpCode) {
+    private String buildVerificationOtpEmailBody(String contentHtml, String otpCode) {
         return """
                 <!DOCTYPE html>
                 <html lang="vi">
@@ -365,10 +447,7 @@ public class EmailService {
                         <tr>
                           <td style="padding:40px;">
                             <h2 style="color:#1e1b4b; margin:0 0 16px; font-size:20px;">Xác minh địa chỉ email</h2>
-                            <p style="color:#4b5563; font-size:15px; line-height:1.7; margin:0 0 24px;">
-                              Cảm ơn bạn đã đăng ký tài khoản JLPT Platform! Nhập mã bên dưới trên trang xác minh
-                              để kích hoạt tài khoản.
-                            </p>
+                            %s
                             <table width="100%%" border="0" cellspacing="0" cellpadding="0" style="margin:32px 0;">
                               <tr>
                                 <td align="center">
@@ -393,10 +472,10 @@ public class EmailService {
                 </body>
                 </html>
                 """
-                .formatted(otpCode);
+                .formatted(contentHtml, otpCode);
     }
 
-    private String buildOtpEmailBody(String otpCode) {
+    private String buildOtpEmailBody(String contentHtml, String otpCode) {
         return """
                 <!DOCTYPE html>
                 <html lang="vi">
@@ -415,10 +494,7 @@ public class EmailService {
                         <tr>
                           <td style="padding:40px;">
                             <h2 style="color:#1e1b4b; margin:0 0 16px; font-size:20px;">Mã xác thực của bạn</h2>
-                            <p style="color:#4b5563; font-size:15px; line-height:1.7; margin:0 0 24px;">
-                              Sử dụng mã bên dưới để hoàn tất xác thực. Mã có hiệu lực trong thời gian ngắn,
-                              vui lòng không chia sẻ mã này cho bất kỳ ai.
-                            </p>
+                            %s
                             <table width="100%%" border="0" cellspacing="0" cellpadding="0" style="margin:32px 0;">
                               <tr>
                                 <td align="center">
@@ -443,10 +519,10 @@ public class EmailService {
                 </body>
                 </html>
                 """
-                .formatted(otpCode);
+                .formatted(contentHtml, otpCode);
     }
 
-    private String buildPasswordResetEmailBody(String resetLink) {
+    private String buildPasswordResetEmailBody(String contentHtml, String resetLink) {
         return """
                 <!DOCTYPE html>
                 <html lang="vi">
@@ -465,10 +541,7 @@ public class EmailService {
                         <tr>
                           <td style="padding:40px;">
                             <h2 style="color:#1e1b4b; margin:0 0 16px; font-size:20px;">Yêu cầu đặt lại mật khẩu</h2>
-                            <p style="color:#4b5563; font-size:15px; line-height:1.7; margin:0 0 24px;">
-                              Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.
-                              Nhấn nút bên dưới để tạo mật khẩu mới.
-                            </p>
+                            %s
                             <table width="100%%" border="0" cellspacing="0" cellpadding="0" style="margin:32px 0;">
                               <tr>
                                 <td align="center">
@@ -499,6 +572,6 @@ public class EmailService {
                 </body>
                 </html>
                 """
-                .formatted(resetLink);
+                .formatted(contentHtml, resetLink);
     }
 }
