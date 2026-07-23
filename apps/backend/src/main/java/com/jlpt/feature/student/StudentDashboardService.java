@@ -189,7 +189,7 @@ public class StudentDashboardService {
             categories.add(new Category("VOCAB", "Từ vựng " + lv, "語"));
             categories.add(new Category("GRAMMAR", "Ngữ pháp " + lv, "文"));
             categories.add(new Category("KANJI", "Kanji " + lv, "漢"));
-            categories.add(new Category("LISTENING", "Nghe hiểu " + lv, "聴"));
+            categories.add(new Category("SPEAKING", "Luyện nói " + lv, "言"));
 
             boolean activeAssigned = false;
             for (Category c : categories) {

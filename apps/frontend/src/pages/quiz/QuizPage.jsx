@@ -23,7 +23,7 @@ const SKILLS = [
   { id: '',           label: 'Tất cả'   },
   { id: 'vocabulary', label: 'Từ vựng'  },
   { id: 'grammar',    label: 'Ngữ pháp' },
-  { id: 'listening',  label: 'Nghe'     },
+  { id: 'speaking',   label: 'Luyện nói'},
 ];
 
 export default function QuizPage() {

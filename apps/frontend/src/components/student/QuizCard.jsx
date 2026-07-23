@@ -4,7 +4,7 @@ import { QuizIcon } from './StudentIcons';
 const SKILL_LABELS = {
   vocabulary: 'Từ vựng',
   grammar:    'Ngữ pháp',
-  listening:  'Nghe',
+  speaking:   'Luyện nói',
 };
 
 export default function QuizCard({ quiz, onStart }) {
