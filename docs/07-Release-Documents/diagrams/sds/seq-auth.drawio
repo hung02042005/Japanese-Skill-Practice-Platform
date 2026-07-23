@@ -1,0 +1,148 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400"
+        pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="p_student" value="Student" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_student" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="95" y="70" as="sourcePoint" />
+            <mxPoint x="95" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_fe" value="Frontend" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_fe" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="295" y="70" as="sourcePoint" />
+            <mxPoint x="295" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_ac" value="AuthController" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_ac" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="495" y="70" as="sourcePoint" />
+            <mxPoint x="495" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_as" value="AuthenticationService" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="620" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_as" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="695" y="70" as="sourcePoint" />
+            <mxPoint x="695" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_am" value="AuthenticationManager" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="850" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_am" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="925" y="70" as="sourcePoint" />
+            <mxPoint x="925" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_jwt" value="JwtProvider" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_jwt" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1125" y="70" as="sourcePoint" />
+            <mxPoint x="1125" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_db" value="SQL Server" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_db" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1305" y="70" as="sourcePoint" />
+            <mxPoint x="1305" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="frame_0" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=none;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="200" y="340" width="1100" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_lbl_0" value="alt wrong password -&gt; 401 / correct password -&gt; continue" style="text;html=1;align=left;verticalAlign=top;fontStyle=2;fontSize=10;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="204" y="322" width="1092" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="msg_0" value="1: enter email/password" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="95" y="110" as="sourcePoint" />
+            <mxPoint x="295" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_1" value="2: POST /api/auth/login" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="295" y="150" as="sourcePoint" />
+            <mxPoint x="495" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_2" value="3: login(request, ip)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="495" y="190" as="sourcePoint" />
+            <mxPoint x="695" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_3" value="4: authenticate(email, password)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="695" y="230" as="sourcePoint" />
+            <mxPoint x="925" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_4" value="5: SELECT * FROM student_users WHERE email=?" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="925" y="270" as="sourcePoint" />
+            <mxPoint x="1305" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_5" value="6: return row" style="html=1;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1305" y="310" as="sourcePoint" />
+            <mxPoint x="925" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_6" value="7: Authentication OK" style="html=1;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="925" y="350" as="sourcePoint" />
+            <mxPoint x="695" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_7" value="8: generateAccessToken()/generateRefreshToken()" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="695" y="390" as="sourcePoint" />
+            <mxPoint x="1125" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_8" value="9: INSERT INTO auth_tokens(...)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="695" y="430" as="sourcePoint" />
+            <mxPoint x="1305" y="430" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_9" value="10: LoginApiResponse" style="html=1;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="695" y="470" as="sourcePoint" />
+            <mxPoint x="495" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_10" value="11: 200 OK { accessToken, refreshToken, student }" style="html=1;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="495" y="510" as="sourcePoint" />
+            <mxPoint x="295" y="510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

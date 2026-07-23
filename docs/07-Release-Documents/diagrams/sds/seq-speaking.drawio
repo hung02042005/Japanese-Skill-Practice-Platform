@@ -1,0 +1,175 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600"
+        pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="p_student" value="Student" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_student" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="95" y="70" as="sourcePoint" />
+            <mxPoint x="95" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_fe1" value="Frontend (Speaking)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_fe1" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="275" y="70" as="sourcePoint" />
+            <mxPoint x="275" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_sc" value="SpeakingController" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_sc" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="535" y="70" as="sourcePoint" />
+            <mxPoint x="535" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_ss" value="SpeakingService" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_ss" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="755" y="70" as="sourcePoint" />
+            <mxPoint x="755" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_db" value="SQL Server" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_db" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="955" y="70" as="sourcePoint" />
+            <mxPoint x="955" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_staff" value="Staff" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_staff" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1115" y="70" as="sourcePoint" />
+            <mxPoint x="1115" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_fe2" value="Frontend (StaffGrading)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_fe2" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1255" y="70" as="sourcePoint" />
+            <mxPoint x="1255" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_sgc" value="StaffGradingController" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_sgc" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1515" y="70" as="sourcePoint" />
+            <mxPoint x="1515" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="frame_0" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=none;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="180" y="90" width="760" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_lbl_0" value="1) Student submits (feature/speaking) — no AI grading step anymore" style="text;html=1;align=left;verticalAlign=top;fontStyle=2;fontSize=10;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="184" y="72" width="752" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_1" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=none;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="370" width="500" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_lbl_1" value="2) Staff grades manually (feature/support) — condition: submissionType=SPEAKING and status != REJECTED" style="text;html=1;align=left;verticalAlign=top;fontStyle=2;fontSize=10;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="1004" y="352" width="492" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="msg_0" value="1: record audio, choose exercise" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="95" y="110" as="sourcePoint" />
+            <mxPoint x="275" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_1" value="2: POST /api/speaking/submit (multipart audio)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="275" y="150" as="sourcePoint" />
+            <mxPoint x="535" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_2" value="3: submit(exerciseId, audio, student)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="535" y="190" as="sourcePoint" />
+            <mxPoint x="755" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_3" value="4: INSERT INTO student_submissions (status=PENDING)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="755" y="230" as="sourcePoint" />
+            <mxPoint x="955" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_4" value="5: SpeakingSubmitResponse{jobId,status=PENDING}" style="html=1;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="755" y="270" as="sourcePoint" />
+            <mxPoint x="535" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_5" value="6: 202 Accepted { jobId }" style="html=1;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="535" y="310" as="sourcePoint" />
+            <mxPoint x="275" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_6" value="7: open speaking submissions queue" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1115" y="390" as="sourcePoint" />
+            <mxPoint x="1255" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_7" value="8: GET /api/staff/submissions?type=speaking&amp;status=pending" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1255" y="430" as="sourcePoint" />
+            <mxPoint x="1515" y="430" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_8" value="9: SELECT * FROM student_submissions WHERE status='PENDING'" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1515" y="470" as="sourcePoint" />
+            <mxPoint x="955" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_9" value="10: listen to recording, enter score" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1115" y="510" as="sourcePoint" />
+            <mxPoint x="1255" y="510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_10" value="11: POST /api/staff/submissions/{id}/grade" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1255" y="550" as="sourcePoint" />
+            <mxPoint x="1515" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_11" value="12: UPDATE student_submissions SET manual_score=?,status='GRADED'" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1515" y="590" as="sourcePoint" />
+            <mxPoint x="955" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_12" value="13: 200 OK &quot;Score saved&quot;" style="html=1;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1515" y="630" as="sourcePoint" />
+            <mxPoint x="1255" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

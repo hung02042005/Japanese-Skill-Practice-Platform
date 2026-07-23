@@ -1,0 +1,91 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200"
+        pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="c1" value="StudentAssessmentController" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#ffe6cc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="320" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="c1_m" value="+ listAssessments(...): ApiResponse&#10;+ startAssessment(id, student): ApiResponse&#10;+ submitAssessment(id, request, student): ApiResponse" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c1">
+          <mxGeometry y="26" width="320" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" value="QuizService" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="420" y="40" width="300" height="146" as="geometry" />
+        </mxCell>
+        <mxCell id="c2_m" value="+ startQuiz(quizId, student): ExamStartResponse&#10;+ submitQuiz(quizId, studentId, attemptId, answers): ScoreResponse&#10;- calculateScore(attempt, assessment, answers): ScoreResponse" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c2">
+          <mxGeometry y="26" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" value="AssessmentRepository" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="780" y="40" width="300" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="c3_m" value="+ findByIdAndAssessmentTypeAndStatus(...): Optional~Assessment~" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c3">
+          <mxGeometry y="26" width="300" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" value="QuestionAssignmentRepository" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="780" y="160" width="300" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="c4_m" value="+ findByParentTypeAndParentIdOrderByDisplayOrder(...): List~QuestionAssignment~" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c4">
+          <mxGeometry y="26" width="300" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" value="TestAttemptRepository" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="780" y="280" width="300" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="c5_m" value="+ findByIdForUpdate(attemptId): Optional~TestAttempt~" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c5">
+          <mxGeometry y="26" width="300" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" value="AttemptAnswerRepository" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="780" y="400" width="300" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="c6_m" value="+ saveAll(List~AttemptAnswer~): List~AttemptAnswer~" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c6">
+          <mxGeometry y="26" width="300" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" value="Assessment" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="220" width="260" height="128" as="geometry" />
+        </mxCell>
+        <mxCell id="c7_m" value="+ Long id&#10;+ AssessmentType assessmentType&#10;+ Integer durationMin&#10;+ BigDecimal totalScore&#10;+ BigDecimal passScore" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c7">
+          <mxGeometry y="26" width="260" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" value="TestAttempt" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="400" width="260" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="c8_m" value="+ Long id&#10;+ AttemptStatus status&#10;+ LocalDateTime startedAt&#10;+ BigDecimal maxScore" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c8">
+          <mxGeometry y="26" width="260" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="c9" value="AttemptAnswer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="560" width="260" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="c9_m" value="+ Long id&#10;+ String selectedOption&#10;+ Boolean isCorrect" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c9">
+          <mxGeometry y="26" width="260" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="e900" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c1" target="c2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e901" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e902" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e903" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e904" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e905" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e906" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e907" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

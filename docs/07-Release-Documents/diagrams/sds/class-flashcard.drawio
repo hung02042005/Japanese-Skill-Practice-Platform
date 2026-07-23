@@ -1,0 +1,64 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200"
+        pageHeight="650" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="c1" value="StudentFlashcardController" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#ffe6cc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="300" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="c1_m" value="+ getSession(studentId, deckId, topicId, newLimit): ApiResponse~SessionResponse~&#10;+ submitReview(id, studentId, ReviewRequest): ApiResponse~ReviewResultResponse~" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c1">
+          <mxGeometry y="26" width="300" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" value="FlashcardSrsService" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="400" y="40" width="320" height="164" as="geometry" />
+        </mxCell>
+        <mxCell id="c2_m" value="+ submitReview(flashcardId, studentId, ReviewRequest): ReviewResultResponse&#10;+ getSession(studentId, deckId, topicId, newLimit): SessionResponse&#10;- applySm2(Flashcard, LastRating): void&#10;- getSessionLocked(studentId, deckId, topicId, newLimit): SessionResponse" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c2">
+          <mxGeometry y="26" width="320" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" value="FlashcardDeckSupport" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="780" y="40" width="300" height="146" as="geometry" />
+        </mxCell>
+        <mxCell id="c3_m" value="+ ownCardOrThrow(flashcardId, studentId): Flashcard&#10;+ ownDeckOrThrow(studentId, deckId): FlashcardDeck&#10;+ getOrCreateDeck(student, name): FlashcardDeck" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c3">
+          <mxGeometry y="26" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" value="FlashcardResolver" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="780" y="220" width="300" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="c4_m" value="+ loadContentMaps(List~Flashcard~): ContentMaps" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c4">
+          <mxGeometry y="26" width="300" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" value="FlashcardRepository" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="400" y="260" width="320" height="146" as="geometry" />
+        </mxCell>
+        <mxCell id="c5_m" value="+ findWrongVocabCardsInSession(studentId, sessionId): List~Flashcard~&#10;+ findByStudentAndDeck(studentId, deckId): List~Flashcard~&#10;+ findByStudentAndContentIds(studentId, type, ids): List~Flashcard~" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c5">
+          <mxGeometry y="26" width="320" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" value="Flashcard" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="260" width="300" height="182" as="geometry" />
+        </mxCell>
+        <mxCell id="c6_m" value="+ Long id&#10;+ ContentType contentType&#10;+ LastRating lastRating&#10;+ Integer intervalDays&#10;+ BigDecimal easeFactor&#10;+ Integer repetitionCount&#10;+ LocalDate nextReviewDate&#10;+ String lastSessionId" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c6">
+          <mxGeometry y="26" width="300" height="156" as="geometry" />
+        </mxCell>
+        <mxCell id="e900" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c1" target="c2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e901" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e902" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e903" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e904" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,65 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1250"
+        pageHeight="650" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="c1" value="ManagerReviewController" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#ffe6cc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="320" height="182" as="geometry" />
+        </mxCell>
+        <mxCell id="c1_m" value="+ getReviewQueue(...): ApiResponse~ReviewQueueResponse~&#10;+ getContentDetail(contentId, type): ApiResponse~ReviewableContentDetailResponse~&#10;+ review(ReviewActionRequest): ApiResponse~ReviewResultResponse~&#10;+ requestChanges(RequestChangesRequest): ApiResponse~ReviewResultResponse~" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c1">
+          <mxGeometry y="26" width="320" height="156" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" value="ContentReviewService" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="420" y="40" width="340" height="218" as="geometry" />
+        </mxCell>
+        <mxCell id="c2_m" value="+ getReviewQueue(...): ReviewQueueResponse&#10;+ getContentDetail(managerEmail, contentId, type): ReviewableContentDetailResponse&#10;+ review(managerEmail, ReviewActionRequest): ReviewResultResponse&#10;+ requestChanges(managerEmail, RequestChangesRequest): ReviewResultResponse&#10;- requireManager(email): StaffUser&#10;- guardSelfReview(ContentSnapshot, StaffUser): void&#10;- ensureUpdated(affectedRows): void" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c2">
+          <mxGeometry y="26" width="340" height="192" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" value="ReviewableContentResolver" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="820" y="40" width="320" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="c3_m" value="+ resolve(ContentType): ReviewableContentHandler" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c3">
+          <mxGeometry y="26" width="320" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" value="&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;
+ReviewableContentHandler" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="820" y="220" width="320" height="128" as="geometry" />
+        </mxCell>
+        <mxCell id="c4_m" value="+ findActiveById(contentId): Optional~ContentSnapshot~&#10;+ approve(contentId, manager, now): int&#10;+ transitionFromPending(contentId, status, now): int" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c4">
+          <mxGeometry y="26" width="320" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" value="ReviewAuditService" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="420" y="420" width="320" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="c5_m" value="+ log(manager, action, type, tableName, contentId, feedback): void" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c5">
+          <mxGeometry y="26" width="320" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" value="ContentType" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#e1d5e7;" vertex="1" parent="1">
+          <mxGeometry x="40" y="420" width="260" height="146" as="geometry" />
+        </mxCell>
+        <mxCell id="c6_m" value="LESSON&#10;GRAMMAR&#10;VOCABULARY&#10;KANJI&#10;QUESTION&#10;ASSESSMENT" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c6">
+          <mxGeometry y="26" width="260" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="e900" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c1" target="c2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e901" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e902" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e903" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c3" target="c4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e904" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

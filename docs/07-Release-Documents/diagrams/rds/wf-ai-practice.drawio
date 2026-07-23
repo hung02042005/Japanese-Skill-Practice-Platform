@@ -1,0 +1,34 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1220"
+        pageHeight="820" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="banner" value="[WIREFRAME MOCKUP — not a real screenshot] AI Practice (Speaking / Handwriting)  (/speaking, /kanji/:id/practice, role: Student)" style="text;html=1;align=left;verticalAlign=middle;fontColor=#B71C1C;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="1200" height="26" as="geometry" /></mxCell>
+        <mxCell id="frame" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#90A4AE;" vertex="1" parent="1"><mxGeometry x="0" y="34" width="1200" height="760" as="geometry" /></mxCell>
+        <mxCell id="topbar" value="SakuJi &#8212; Student area" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#37474F;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=14;align=left;spacingLeft=16;" vertex="1" parent="1"><mxGeometry x="0" y="34" width="1200" height="50" as="geometry" /></mxCell>
+        <mxCell id="user" value="Logged in: Student" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontColor=#ffffff;fontSize=11;align=right;spacingRight=16;" vertex="1" parent="1"><mxGeometry x="940" y="34" width="260" height="50" as="geometry" /></mxCell>
+        <mxCell id="sidebar" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#CFD8DC;" vertex="1" parent="1"><mxGeometry x="0" y="84" width="200" height="710" as="geometry" /></mxCell>
+        <mxCell id="nav0" value="Dashboard" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="98" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav1" value="Lessons" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="132" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav2" value="Kanji" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="166" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav3" value="Grammar" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="200" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav4" value="Vocabulary" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="234" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav5" value="Lesson Detail" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="268" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav6" value="Quiz" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="302" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav7" value="Mock Test" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="336" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav8" value="Speaking" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="8" y="370" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav9" value="Progress" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="404" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="pt" value="AI Practice" style="text;html=1;align=left;verticalAlign=middle;fontStyle=1;fontSize=16;" vertex="1" parent="1"><mxGeometry x="220" y="100" width="960" height="30" as="geometry" /></mxCell>
+        <mxCell id="tab0" value="Speaking" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F48FB1;strokeColor=#B0BEC5;fontSize=11;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="220" y="134" width="150" height="32" as="geometry" /></mxCell>
+        <mxCell id="tab1" value="Handwriting (OCR)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#B0BEC5;fontSize=11;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="380" y="134" width="150" height="32" as="geometry" /></mxCell>
+        <mxCell id="upload" value="[Record audio / drop file placeholder]&#10;&#10;Sample sentence: Kyou wa ii tenki desu ne." style="rounded=0;dashed=1;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#B0BEC5;fontSize=12;" vertex="1" parent="1"><mxGeometry x="220" y="180" width="960" height="180" as="geometry" /></mxCell>
+        <mxCell id="submit" value="Submit for AI Grading" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#F48FB1;strokeColor=none;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="220" y="374" width="200" height="34" as="geometry" /></mxCell>
+        <mxCell id="status" value="AI status: PROCESSING" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FB8C00;fontSize=10;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="440" y="374" width="160" height="34" as="geometry" /></mxCell>
+        <mxCell id="result" value="job_id: 8f3e...  status: PROCESSING&#10;Result (when DONE): AI suggested score + Staff final review&#10;On FAILED: fallback message shown, retry allowed (max 3 attempts)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F1F8E9;strokeColor=#AED581;align=left;verticalAlign=top;spacing=10;fontSize=11;" vertex="1" parent="1"><mxGeometry x="220" y="424" width="960" height="140" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

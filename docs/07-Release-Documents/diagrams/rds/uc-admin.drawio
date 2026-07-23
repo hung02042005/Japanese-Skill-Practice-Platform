@@ -1,0 +1,26 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1600" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900"
+        pageHeight="510" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="boundary" value="Japanese Skill Practice Platform" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=none;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="260" y="40" width="600" height="430" as="geometry" /></mxCell>
+        <mxCell id="actorMain" value="Admin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="60" y="225.0" width="30" height="60" as="geometry" /></mxCell>
+        <mxCell id="uc0" value="UC-35 Login System" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;fontSize=11;" vertex="1" parent="1"><mxGeometry x="310" y="130" width="230" height="70" as="geometry" /></mxCell>
+        <mxCell id="uc1" value="UC-36 View Dashboard" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;fontSize=11;" vertex="1" parent="1"><mxGeometry x="310" y="240" width="230" height="70" as="geometry" /></mxCell>
+        <mxCell id="uc2" value="UC-37 User Management" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;fontSize=11;" vertex="1" parent="1"><mxGeometry x="310" y="350" width="230" height="70" as="geometry" /></mxCell>
+        <mxCell id="uc3" value="UC-38 Report Screen" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;fontSize=11;" vertex="1" parent="1"><mxGeometry x="580" y="130" width="230" height="70" as="geometry" /></mxCell>
+        <mxCell id="uc4" value="UC-39 Settings" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;fontSize=11;" vertex="1" parent="1"><mxGeometry x="580" y="240" width="230" height="70" as="geometry" /></mxCell>
+        <mxCell id="uc5" value="UC-40 Notification Rules" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;fontSize=11;" vertex="1" parent="1"><mxGeometry x="580" y="350" width="230" height="70" as="geometry" /></mxCell>
+        <mxCell id="assoc0" style="edgeStyle=none;html=1;endArrow=none;rounded=0;exitX=1;exitY=0.5;" edge="1" parent="1" source="actorMain" target="uc0"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc1" style="edgeStyle=none;html=1;endArrow=none;rounded=0;exitX=1;exitY=0.5;" edge="1" parent="1" source="actorMain" target="uc1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc2" style="edgeStyle=none;html=1;endArrow=none;rounded=0;exitX=1;exitY=0.5;" edge="1" parent="1" source="actorMain" target="uc2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc3" style="edgeStyle=none;html=1;endArrow=none;rounded=0;exitX=1;exitY=0.5;" edge="1" parent="1" source="actorMain" target="uc3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc4" style="edgeStyle=none;html=1;endArrow=none;rounded=0;exitX=1;exitY=0.5;" edge="1" parent="1" source="actorMain" target="uc4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc5" style="edgeStyle=none;html=1;endArrow=none;rounded=0;exitX=1;exitY=0.5;" edge="1" parent="1" source="actorMain" target="uc5"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

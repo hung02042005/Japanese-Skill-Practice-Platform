@@ -1,0 +1,118 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1600" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800"
+        pageHeight="1300" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Auth group (blue) -->
+        <mxCell id="t_admin" value="admin_users" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#dae8fc;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="20" y="20" width="180" height="52" as="geometry" /></mxCell>
+        <mxCell id="t_admin_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_admin"><mxGeometry y="26" width="180" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_staff" value="staff_users" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#dae8fc;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="20" y="100" width="180" height="52" as="geometry" /></mxCell>
+        <mxCell id="t_staff_pk" value="PK  id (staff_role)" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_staff"><mxGeometry y="26" width="180" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_student" value="student_users" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#dae8fc;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="20" y="180" width="180" height="52" as="geometry" /></mxCell>
+        <mxCell id="t_student_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_student"><mxGeometry y="26" width="180" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_auth" value="auth_tokens" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#dae8fc;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="260" y="100" width="200" height="78" as="geometry" /></mxCell>
+        <mxCell id="t_auth_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_auth"><mxGeometry y="26" width="200" height="26" as="geometry" /></mxCell>
+        <mxCell id="t_auth_fk" value="FK  actor_id (actor_type)" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_auth"><mxGeometry y="52" width="200" height="26" as="geometry" /></mxCell>
+
+        <!-- Content group (green) -->
+        <mxCell id="t_course" value="courses" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#d5e8d4;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="540" y="20" width="170" height="52" as="geometry" /></mxCell>
+        <mxCell id="t_course_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_course"><mxGeometry y="26" width="170" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_lesson" value="lessons" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#d5e8d4;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="540" y="100" width="170" height="78" as="geometry" /></mxCell>
+        <mxCell id="t_lesson_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_lesson"><mxGeometry y="26" width="170" height="26" as="geometry" /></mxCell>
+        <mxCell id="t_lesson_fk" value="FK  course_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_lesson"><mxGeometry y="52" width="170" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_kana" value="kana_characters" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#d5e8d4;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="750" y="20" width="170" height="52" as="geometry" /></mxCell>
+        <mxCell id="t_kana_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_kana"><mxGeometry y="26" width="170" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_kanji" value="kanji" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#d5e8d4;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="960" y="20" width="170" height="52" as="geometry" /></mxCell>
+        <mxCell id="t_kanji_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_kanji"><mxGeometry y="26" width="170" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_vocab" value="vocabulary" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#d5e8d4;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="750" y="100" width="170" height="78" as="geometry" /></mxCell>
+        <mxCell id="t_vocab_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_vocab"><mxGeometry y="26" width="170" height="26" as="geometry" /></mxCell>
+        <mxCell id="t_vocab_fk" value="FK  lesson_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_vocab"><mxGeometry y="52" width="170" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_grammar" value="grammar_points" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#d5e8d4;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="960" y="100" width="170" height="78" as="geometry" /></mxCell>
+        <mxCell id="t_grammar_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_grammar"><mxGeometry y="26" width="170" height="26" as="geometry" /></mxCell>
+        <mxCell id="t_grammar_fk" value="FK  lesson_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_grammar"><mxGeometry y="52" width="170" height="26" as="geometry" /></mxCell>
+
+        <!-- Assessment group (yellow) -->
+        <mxCell id="t_question" value="questions" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#fff2cc;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1220" y="20" width="180" height="52" as="geometry" /></mxCell>
+        <mxCell id="t_question_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_question"><mxGeometry y="26" width="180" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_assess" value="assessments" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#fff2cc;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1220" y="180" width="180" height="52" as="geometry" /></mxCell>
+        <mxCell id="t_assess_pk" value="PK  id (assessment_type)" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_assess"><mxGeometry y="26" width="180" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_qassign" value="question_assignments" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#fff2cc;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1220" y="100" width="180" height="52" as="geometry" /></mxCell>
+        <mxCell id="t_qassign_fk" value="FK  question_id, parent_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_qassign"><mxGeometry y="26" width="180" height="26" as="geometry" /></mxCell>
+
+        <!-- Attempt group (orange) -->
+        <mxCell id="t_attempt" value="test_attempts" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#ffe6cc;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="260" y="260" width="200" height="78" as="geometry" /></mxCell>
+        <mxCell id="t_attempt_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_attempt"><mxGeometry y="26" width="200" height="26" as="geometry" /></mxCell>
+        <mxCell id="t_attempt_fk" value="FK  student_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_attempt"><mxGeometry y="52" width="200" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_ans" value="attempt_answers" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#ffe6cc;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="540" y="260" width="200" height="78" as="geometry" /></mxCell>
+        <mxCell id="t_ans_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_ans"><mxGeometry y="26" width="200" height="26" as="geometry" /></mxCell>
+        <mxCell id="t_ans_fk" value="FK  attempt_id, question_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_ans"><mxGeometry y="52" width="200" height="26" as="geometry" /></mxCell>
+
+        <!-- Submission group (red) -->
+        <mxCell id="t_sub" value="student_submissions" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="20" y="340" width="200" height="78" as="geometry" /></mxCell>
+        <mxCell id="t_sub_pk" value="PK  id (submission_type)" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_sub"><mxGeometry y="26" width="200" height="26" as="geometry" /></mxCell>
+        <mxCell id="t_sub_fk" value="FK  student_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_sub"><mxGeometry y="52" width="200" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_kwa" value="kanji_writing_attempts" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#f8cecc;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="20" y="440" width="200" height="78" as="geometry" /></mxCell>
+        <mxCell id="t_kwa_pk" value="PK  attempt_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_kwa"><mxGeometry y="26" width="200" height="26" as="geometry" /></mxCell>
+        <mxCell id="t_kwa_fk" value="FK  student_id, kanji_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_kwa"><mxGeometry y="52" width="200" height="26" as="geometry" /></mxCell>
+
+        <!-- Progress/Flashcard group (purple) -->
+        <mxCell id="t_progress" value="student_content_progress" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#e1d5e7;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="260" y="440" width="220" height="78" as="geometry" /></mxCell>
+        <mxCell id="t_progress_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_progress"><mxGeometry y="26" width="220" height="26" as="geometry" /></mxCell>
+        <mxCell id="t_progress_fk" value="FK  student_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_progress"><mxGeometry y="52" width="220" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_flash" value="flashcards" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#e1d5e7;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="540" y="440" width="200" height="78" as="geometry" /></mxCell>
+        <mxCell id="t_flash_pk" value="PK  flashcard_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_flash"><mxGeometry y="26" width="200" height="26" as="geometry" /></mxCell>
+        <mxCell id="t_flash_fk" value="FK  student_id, deck_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_flash"><mxGeometry y="52" width="200" height="26" as="geometry" /></mxCell>
+
+        <!-- Support/Notification group (gray) -->
+        <mxCell id="t_ticket" value="tickets" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="800" y="340" width="180" height="78" as="geometry" /></mxCell>
+        <mxCell id="t_ticket_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_ticket"><mxGeometry y="26" width="180" height="26" as="geometry" /></mxCell>
+        <mxCell id="t_ticket_fk" value="FK  student_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_ticket"><mxGeometry y="52" width="180" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_reply" value="ticket_replies" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1020" y="340" width="180" height="52" as="geometry" /></mxCell>
+        <mxCell id="t_reply_fk" value="FK  ticket_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_reply"><mxGeometry y="26" width="180" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_notif" value="notifications" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="800" y="440" width="180" height="52" as="geometry" /></mxCell>
+        <mxCell id="t_notif_fk" value="FK  student_id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_notif"><mxGeometry y="26" width="180" height="26" as="geometry" /></mxCell>
+
+        <!-- System/Audit group (dark gray) -->
+        <mxCell id="t_setting" value="system_settings" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#d4d4d4;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1220" y="440" width="180" height="52" as="geometry" /></mxCell>
+        <mxCell id="t_setting_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_setting"><mxGeometry y="26" width="180" height="26" as="geometry" /></mxCell>
+
+        <mxCell id="t_audit" value="admin_audit_logs" style="swimlane;html=1;childLayout=stackLayout;startSize=26;fillColor=#d4d4d4;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1220" y="340" width="180" height="52" as="geometry" /></mxCell>
+        <mxCell id="t_audit_pk" value="PK  id" style="text;html=1;align=left;spacingLeft=6;" vertex="1" parent="t_audit"><mxGeometry y="26" width="180" height="26" as="geometry" /></mxCell>
+
+        <!-- Relationships (backbone thoi, khong exhaustive) -->
+        <mxCell id="r1" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="t_student_pk" target="t_auth_fk"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r2" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="t_course_pk" target="t_lesson_fk"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r3" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="t_lesson_pk" target="t_vocab_fk"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r4" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="t_lesson_pk" target="t_grammar_fk"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r5" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="t_question_pk" target="t_qassign_fk"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r6" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="t_assess_pk" target="t_qassign_fk"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r7" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="t_student_pk" target="t_attempt_fk"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r8" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="t_attempt_pk" target="t_ans_fk"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r9" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="t_student_pk" target="t_sub_fk"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r10" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="t_student_pk" target="t_kwa_fk"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r11" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="t_student_pk" target="t_progress_fk"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r12" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="t_student_pk" target="t_flash_fk"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="r13" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="t_ticket_pk" target="t_reply_fk"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

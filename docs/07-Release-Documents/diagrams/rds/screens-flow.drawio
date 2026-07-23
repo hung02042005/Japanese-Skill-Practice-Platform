@@ -1,0 +1,67 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1600" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1820"
+        pageHeight="560" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="home" value="Home Page
+(/)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="190" height="60" as="geometry" /></mxCell>
+        <mxCell id="register" value="User Register
+(/register)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="300" y="40" width="190" height="60" as="geometry" /></mxCell>
+        <mxCell id="verify" value="Verify Email
+(/verify-email)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="560" y="40" width="190" height="60" as="geometry" /></mxCell>
+        <mxCell id="login" value="User Login
+(/login)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="40" y="160" width="190" height="60" as="geometry" /></mxCell>
+        <mxCell id="forgot" value="Forgot Password
+(/forgot-password)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="300" y="160" width="190" height="60" as="geometry" /></mxCell>
+        <mxCell id="reset" value="Reset Password
+(/reset-password)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="560" y="160" width="190" height="60" as="geometry" /></mxCell>
+        <mxCell id="dashboard" value="Student Dashboard
+(/dashboard, /profile, /settings)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="40" y="300" width="230" height="60" as="geometry" /></mxCell>
+        <mxCell id="corelearn" value="Core Learning
+(/lessons, /kanji, /grammar, /kana, /vocabulary)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="40" y="420" width="210" height="60" as="geometry" /></mxCell>
+        <mxCell id="practice" value="Practice &amp; Review
+(/quiz, /mock-test, /flashcard, /notebook)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="270" y="420" width="210" height="60" as="geometry" /></mxCell>
+        <mxCell id="otherskills" value="Other Skills
+(/reading, /speaking, /progress)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="500" y="420" width="200" height="60" as="geometry" /></mxCell>
+        <mxCell id="support" value="Support &amp; Notifications
+(/support, /notifications)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="720" y="420" width="220" height="60" as="geometry" /></mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="home" target="register"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="register" target="verify"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.7;entryY=0;" edge="1" parent="1" source="verify" target="login"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="home" target="login"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="login" target="forgot"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="forgot" target="reset"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="e7" value="back to Login" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=1;" edge="1" parent="1" source="reset" target="login"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-14" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="e8" value="Student account" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="login" target="dashboard"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-14" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="dashboard" target="corelearn"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="dashboard" target="practice"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="dashboard" target="otherskills"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#000000;fontColor=#000000;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="dashboard" target="support"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="divider" value="" style="html=1;endArrow=none;dashed=1;strokeColor=#999999;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="990" y="20" as="sourcePoint" /><mxPoint x="990" y="560" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="staffdash" value="Staff Dashboard
+(/staff)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1565C0;fontColor=#1565C0;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1040" y="300" width="210" height="60" as="geometry" /></mxCell>
+        <mxCell id="mgrdash" value="Manager Dashboard
+(/manager)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1565C0;fontColor=#1565C0;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1290" y="300" width="210" height="60" as="geometry" /></mxCell>
+        <mxCell id="admindash" value="Admin Dashboard
+(/admin)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1565C0;fontColor=#1565C0;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1540" y="300" width="210" height="60" as="geometry" /></mxCell>
+        <mxCell id="staffwork" value="Staff Workspace
+(/staff/content, /questions, /assessments,
+/grading, /tickets, /students)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1565C0;fontColor=#1565C0;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1040" y="420" width="210" height="80" as="geometry" /></mxCell>
+        <mxCell id="mgrwork" value="Manager Workspace
+(/manager/review-queue, /content-pipeline,
+/deleted-topics, /tickets)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1565C0;fontColor=#1565C0;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1290" y="420" width="210" height="80" as="geometry" /></mxCell>
+        <mxCell id="adminwork" value="Admin Workspace
+(/admin/users, /settings, /reports)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1565C0;fontColor=#1565C0;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1540" y="420" width="210" height="80" as="geometry" /></mxCell>
+        <mxCell id="e14" value="Staff account" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#1565C0;fontColor=#1565C0;labelBackgroundColor=#ffffff;exitX=0.3;exitY=1;entryX=0.3;entryY=0;" edge="1" parent="1" source="login" target="staffdash"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-14" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="e15" value="Manager account" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#1565C0;fontColor=#1565C0;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.3;entryY=0;" edge="1" parent="1" source="login" target="mgrdash"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-14" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="e16" value="Admin account" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#1565C0;fontColor=#1565C0;labelBackgroundColor=#ffffff;exitX=0.7;exitY=1;entryX=0.3;entryY=0;" edge="1" parent="1" source="login" target="admindash"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-14" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#1565C0;fontColor=#1565C0;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="staffdash" target="staffwork"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#1565C0;fontColor=#1565C0;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="mgrdash" target="mgrwork"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+        <mxCell id="e21" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=9;strokeColor=#1565C0;fontColor=#1565C0;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="admindash" target="adminwork"><mxGeometry relative="1" as="geometry"></mxGeometry></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

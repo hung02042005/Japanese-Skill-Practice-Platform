@@ -1,0 +1,31 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2074"
+        pageHeight="490" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pool" value="" style="swimlane;html=1;horizontal=0;startSize=0;fillColor=none;" vertex="1" parent="1"><mxGeometry x="20" y="20" width="2034" height="450" as="geometry" /></mxCell>
+        <mxCell id="lane0" value="Staff" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#dae8fc;fontStyle=1;fontSize=10;swimlaneFillColor=#ffffff;" vertex="1" parent="pool"><mxGeometry x="0" y="0" width="2034" height="150" as="geometry" /></mxCell>
+        <mxCell id="lane1" value="Backend" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#d5e8d4;fontStyle=1;fontSize=10;swimlaneFillColor=#ffffff;" vertex="1" parent="pool"><mxGeometry x="0" y="150" width="2034" height="150" as="geometry" /></mxCell>
+        <mxCell id="lane2" value="StaffManager" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#ffe6cc;fontStyle=1;fontSize=10;swimlaneFillColor=#ffffff;" vertex="1" parent="pool"><mxGeometry x="0" y="300" width="2034" height="150" as="geometry" /></mxCell>
+        <mxCell id="s0" value="1. Create / edit content (draft)" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="lane0"><mxGeometry x="60" y="43.0" width="200" height="64" as="geometry" /></mxCell>
+        <mxCell id="s1" value="2. Submit for review" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="lane0"><mxGeometry x="300" y="43.0" width="200" height="64" as="geometry" /></mxCell>
+        <mxCell id="s2" value="3. Set status = pending_review" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="lane1"><mxGeometry x="540" y="43.0" width="200" height="64" as="geometry" /></mxCell>
+        <mxCell id="s3" value="4. Open review queue" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="lane2"><mxGeometry x="780" y="43.0" width="200" height="64" as="geometry" /></mxCell>
+        <mxCell id="s4" value="5. Approve / Reject / Request changes" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="lane2"><mxGeometry x="1020" y="43.0" width="200" height="64" as="geometry" /></mxCell>
+        <mxCell id="s5" value="6. Update status + write audit log" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="lane1"><mxGeometry x="1260" y="43.0" width="200" height="64" as="geometry" /></mxCell>
+        <mxCell id="s6" value="7. Notify Staff of decision" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="lane1"><mxGeometry x="1500" y="43.0" width="200" height="64" as="geometry" /></mxCell>
+        <mxCell id="s7" value="8. Publish approved content" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="lane2"><mxGeometry x="1740" y="43.0" width="200" height="64" as="geometry" /></mxCell>
+        <mxCell id="e0" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s0" target="s1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s1" target="s2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s2" target="s3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s3" target="s4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s4" target="s5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s5" target="s6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="s6" target="s7"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

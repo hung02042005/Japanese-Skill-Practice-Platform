@@ -1,0 +1,160 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500"
+        pageHeight="680" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="p_student" value="Student" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_student" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="95" y="70" as="sourcePoint" />
+            <mxPoint x="95" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_fe" value="Frontend" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_fe" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="295" y="70" as="sourcePoint" />
+            <mxPoint x="295" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_sac" value="StudentAssessmentController" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_sac" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="495" y="70" as="sourcePoint" />
+            <mxPoint x="495" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_qs" value="QuizService" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_qs" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="755" y="70" as="sourcePoint" />
+            <mxPoint x="755" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_tar" value="TestAttemptRepository" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_tar" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="975" y="70" as="sourcePoint" />
+            <mxPoint x="975" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_aar" value="AttemptAnswerRepository" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_aar" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1175" y="70" as="sourcePoint" />
+            <mxPoint x="1175" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_db" value="SQL Server" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_db" style="html=1;endArrow=none;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1375" y="70" as="sourcePoint" />
+            <mxPoint x="1375" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="frame_0" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=none;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="400" y="340" width="950" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_lbl_0" value="alt status!=IN_PROGRESS-&gt;409 / student_id mismatch-&gt;403 / valid-&gt;continue" style="text;html=1;align=left;verticalAlign=top;fontStyle=2;fontSize=10;fontColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="404" y="322" width="942" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="msg_0" value="1: click &quot;Submit&quot;" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="95" y="110" as="sourcePoint" />
+            <mxPoint x="295" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_1" value="2: POST /api/assessments/{id}/submit" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="295" y="150" as="sourcePoint" />
+            <mxPoint x="495" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_2" value="3: submitQuiz(quizId, studentId, attemptId, answers)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="495" y="190" as="sourcePoint" />
+            <mxPoint x="755" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_3" value="4: findByIdForUpdate(attemptId)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="755" y="230" as="sourcePoint" />
+            <mxPoint x="975" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_4" value="5: SELECT ... FOR UPDATE" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="975" y="270" as="sourcePoint" />
+            <mxPoint x="1375" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_5" value="6: locked row" style="html=1;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1375" y="310" as="sourcePoint" />
+            <mxPoint x="975" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_6" value="7: calculateScore(attempt, assessment, answers)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="755" y="350" as="sourcePoint" />
+            <mxPoint x="755" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_7" value="8: saveAll(attemptAnswers)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="755" y="390" as="sourcePoint" />
+            <mxPoint x="1175" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_8" value="9: INSERT INTO attempt_answers(...)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1175" y="430" as="sourcePoint" />
+            <mxPoint x="1375" y="430" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_9" value="10: save(status=SUBMITTED, score=...)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="755" y="470" as="sourcePoint" />
+            <mxPoint x="975" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_10" value="11: UPDATE test_attempts SET status='SUBMITTED'" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="975" y="510" as="sourcePoint" />
+            <mxPoint x="1375" y="510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_11" value="12: ScoreResponse" style="html=1;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="755" y="550" as="sourcePoint" />
+            <mxPoint x="495" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_12" value="13: 200 OK { score, maxScore, results[] }" style="html=1;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="495" y="590" as="sourcePoint" />
+            <mxPoint x="295" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

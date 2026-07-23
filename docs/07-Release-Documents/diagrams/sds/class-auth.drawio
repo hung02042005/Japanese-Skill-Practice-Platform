@@ -1,0 +1,94 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200"
+        pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="c1" value="AuthController" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#ffe6cc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="300" height="308" as="geometry" />
+        </mxCell>
+        <mxCell id="c1_m" value="+ login(LoginRequest): ApiResponse~LoginApiResponse~&#10;+ register(RegisterRequest): ApiResponse~StudentResponse~&#10;+ refresh(RefreshTokenRequest): ApiResponse~RefreshTokenResponse~&#10;+ logout(LogoutRequest): ApiResponse~Void~&#10;+ verifyEmail(VerifyEmailRequest): ApiResponse~Void~&#10;+ forgotPassword(ForgotPasswordRequest): ApiResponse~Void~&#10;+ resetPassword(ResetPasswordRequest): ApiResponse~Void~&#10;+ googleLogin(GoogleTokenRequest): ApiResponse~AuthResponse~" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c1">
+          <mxGeometry y="26" width="300" height="282" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" value="AuthenticationService" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="400" y="40" width="300" height="218" as="geometry" />
+        </mxCell>
+        <mxCell id="c2_m" value="+ checkAccountType(email, ip): AccountTypeResponse&#10;+ login(LoginRequest, ip): LoginApiResponse&#10;+ loginStaff(LoginRequest, ip): LoginApiResponse&#10;+ refresh(RefreshTokenRequest): RefreshTokenResponse&#10;+ logout(LogoutRequest): void&#10;+ loginWithGoogle(GoogleTokenRequest): AuthResponse" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c2">
+          <mxGeometry y="26" width="300" height="192" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" value="RegistrationService" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="760" y="40" width="260" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="c3_m" value="+ register(RegisterRequest): StudentResponse" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c3">
+          <mxGeometry y="26" width="260" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" value="PasswordResetService" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="760" y="220" width="260" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="c4_m" value="+ forgotPassword(email): void&#10;+ resetPassword(token, newPassword): void" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c4">
+          <mxGeometry y="26" width="260" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" value="JwtProvider" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="400" y="300" width="260" height="128" as="geometry" />
+        </mxCell>
+        <mxCell id="c5_m" value="+ generateAccessToken(actorType, actorId): String&#10;+ generateRefreshToken(actorType, actorId): String&#10;+ validateToken(token): boolean" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c5">
+          <mxGeometry y="26" width="260" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" value="AuthTokenRepository" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="300" width="300" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="c6_m" value="+ findByTokenHashAndTokenType(hash, type): Optional~AuthToken~" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c6">
+          <mxGeometry y="26" width="300" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" value="StudentUserRepository" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="420" width="300" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="c7_m" value="" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c7">
+          <mxGeometry y="26" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" value="StaffUserRepository" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="520" width="300" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="c8_m" value="" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c8">
+          <mxGeometry y="26" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c9" value="AdminUserRepository" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="620" width="300" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="c9_m" value="" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" vertex="1" parent="c9">
+          <mxGeometry y="26" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="e900" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c1" target="c2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e901" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c1" target="c3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e902" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c1" target="c4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e903" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e904" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e905" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e906" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e907" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c2" target="c9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e908" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;" edge="1" parent="1" source="c3" target="c7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
