@@ -38,7 +38,6 @@ import "./StaffContent.css";
 
 const LESSON_TYPE_LABELS = {
   lesson: "Bài học",
-  reading: "Đọc hiểu",
   speaking: "Speaking",
 };
 

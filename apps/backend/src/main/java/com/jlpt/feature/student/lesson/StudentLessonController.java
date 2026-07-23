@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Chi tiết bài học cho học viên. Chỉ khai báo GET /api/lessons/{id} — các route
- * /api/lessons/{id}/reading và /submit thuộc {@code StudentReadingController}.
+ * Chi tiết bài học cho học viên. GET /api/lessons/{id}.
  */
 @RestController
 @RequestMapping("/api/lessons")

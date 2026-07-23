@@ -26,7 +26,6 @@ import KanjiPractice from './pages/kanji/KanjiPractice';
 import Grammar from './pages/grammar/Grammar';
 import Dictionary from './pages/dictionary/Dictionary';
 import Notebook from './pages/notebook/Notebook';
-import Reading from './pages/reading/Reading';
 import NotFound from './pages/error/NotFound';
 import Forbidden from './pages/error/Forbidden';
 import PrivateRoute from './components/common/PrivateRoute';
@@ -106,7 +105,6 @@ function App() {
         <Route path="/grammar"      element={<PrivateRoute><Grammar /></PrivateRoute>} />
         <Route path="/dictionary"   element={<PrivateRoute><Dictionary /></PrivateRoute>} />
         <Route path="/notebook"     element={<PrivateRoute><Notebook /></PrivateRoute>} />
-        <Route path="/reading"      element={<PrivateRoute><Reading /></PrivateRoute>} />
         <Route path="/kana"         element={<PrivateRoute><KanaList /></PrivateRoute>} />
         <Route path="/vocabulary"           element={<PrivateRoute><VocabularyRoute /></PrivateRoute>} />
         <Route path="/vocabulary/flashcard" element={<PrivateRoute><VocabFlashcardSession /></PrivateRoute>} />

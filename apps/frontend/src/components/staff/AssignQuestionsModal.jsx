@@ -7,14 +7,13 @@ const EXAM_SECTIONS = [
   { id: 'vocabulary', label: 'Từ vựng' },
   { id: 'grammar',    label: 'Ngữ pháp' },
   { id: 'kanji',      label: 'Kanji' },
-  { id: 'reading',    label: 'Đọc hiểu' },
   { id: 'listening',  label: 'Nghe' },
 ];
 const VALID_SECTION_IDS = EXAM_SECTIONS.map((s) => s.id);
 
 const SKILL_LABELS = {
   vocabulary: 'Từ vựng', grammar: 'Ngữ pháp', kanji: 'Kanji',
-  reading: 'Đọc hiểu', listening: 'Nghe', mixed: 'Tổng hợp',
+  listening: 'Nghe', mixed: 'Tổng hợp',
 };
 
 function truncate(text, n) {

@@ -4,7 +4,6 @@ import { QuizIcon } from './StudentIcons';
 const SKILL_LABELS = {
   vocabulary: 'Từ vựng',
   grammar:    'Ngữ pháp',
-  reading:    'Đọc hiểu',
   listening:  'Nghe',
 };
 

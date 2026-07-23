@@ -17,7 +17,6 @@ const JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
 
 const LESSON_TYPE_OPTIONS = [
   { value: 'lesson', label: 'Bài học' },
-  { value: 'reading', label: 'Đọc hiểu' },
 ];
 
 const PART_OF_SPEECH_OPTIONS = [

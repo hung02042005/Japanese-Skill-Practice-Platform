@@ -22,7 +22,6 @@ const SKILL_LABELS = {
   vocabulary: 'Từ vựng',
   grammar: 'Ngữ pháp',
   kanji: 'Kanji',
-  reading: 'Đọc hiểu',
   mixed: 'Tổng hợp',
 };
 
@@ -30,7 +29,6 @@ const SKILL_COLORS = {
   vocabulary: { bg: '#E3F2FD', text: '#1565C0' },
   grammar: { bg: '#F3E5F5', text: '#6A1B9A' },
   kanji: { bg: '#FCE4EC', text: '#C62828' },
-  reading: { bg: '#E8F5E9', text: '#2E7D32' },
   mixed: { bg: '#F0EDEB', text: '#6B625E' },
 };
 

@@ -1,7 +1,6 @@
 const SKILLS = [
   { key: 'vocabulary',    label: 'Từ vựng' },
   { key: 'grammar',       label: 'Ngữ pháp' },
-  { key: 'reading',       label: 'Đọc hiểu' },
   { key: 'listening',     label: 'Nghe hiểu' },
   { key: 'pronunciation', label: 'Phát âm' },
 ];

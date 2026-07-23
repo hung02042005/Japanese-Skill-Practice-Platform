@@ -174,7 +174,7 @@ public class StudentDashboardService {
 
     /**
      * Lộ trình kỹ năng (skill-category cards) cho cả 5 cấp độ để FE lọc theo selectedLevel.
-     * Tiến độ KANJI/VOCAB lấy từ dữ liệu thật; KANA/GRAMMAR/READING/LISTENING tạm 0 (sẽ bổ sung sau).
+     * Tiến độ KANJI/VOCAB lấy từ dữ liệu thật; KANA/GRAMMAR/LISTENING tạm 0 (sẽ bổ sung sau).
      */
     private List<DashboardResponse.LessonCard> buildLearningPath(Long studentId) {
         List<DashboardResponse.LessonCard> cards = new ArrayList<>();
@@ -189,7 +189,6 @@ public class StudentDashboardService {
             categories.add(new Category("VOCAB", "Từ vựng " + lv, "語"));
             categories.add(new Category("GRAMMAR", "Ngữ pháp " + lv, "文"));
             categories.add(new Category("KANJI", "Kanji " + lv, "漢"));
-            categories.add(new Category("READING", "Đọc hiểu " + lv, "読"));
             categories.add(new Category("LISTENING", "Nghe hiểu " + lv, "聴"));
 
             boolean activeAssigned = false;

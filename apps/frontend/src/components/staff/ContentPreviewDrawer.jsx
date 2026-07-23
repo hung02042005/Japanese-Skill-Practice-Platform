@@ -13,7 +13,6 @@ const STATUS_MAP = {
 
 const LESSON_TYPE_LABELS = {
   lesson:    'Bài học',
-  reading:   'Đọc hiểu',
   listening: 'Luyện nghe',
   speaking:  'Luyện nói',
 };

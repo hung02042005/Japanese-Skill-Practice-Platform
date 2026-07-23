@@ -23,7 +23,6 @@ const SKILLS = [
   { id: '',           label: 'Tất cả'   },
   { id: 'vocabulary', label: 'Từ vựng'  },
   { id: 'grammar',    label: 'Ngữ pháp' },
-  { id: 'reading',    label: 'Đọc hiểu' },
   { id: 'listening',  label: 'Nghe'     },
 ];
 

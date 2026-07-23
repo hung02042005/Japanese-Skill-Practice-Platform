@@ -327,19 +327,19 @@ public class DevDataSeeder implements CommandLineRunner {
 
         seedExamSection(
                 exam,
-                "reading",
-                Question.Skill.READING,
+                "vocabulary",
+                Question.Skill.VOCABULARY,
                 List.of(
                         new QuizQuestionSeed(
-                                "文章の主旨として最も適切なものはどれか。",
-                                "A案",
-                                "B案",
-                                "C案",
-                                "D案",
-                                "B",
-                                "Đọc kỹ đoạn văn để chọn ý chính."),
+                                "「勉強」の読み方はどれか。",
+                                "べんきょう",
+                                "めんきょう",
+                                "けんきょう",
+                                "せんきょう",
+                                "A",
+                                "勉強 = べんきょう."),
                         new QuizQuestionSeed(
-                                "筆者が言いたいことは何か。", "意見1", "意見2", "意見3", "意見4", "C", "Xem lại đoạn cuối bài.")));
+                                "「友達」の読み方はどれか。", "ともだち", "ゆうだち", "しんだち", "はんだち", "A", "友達 = ともだち.")));
 
         seedExamSection(
                 exam,

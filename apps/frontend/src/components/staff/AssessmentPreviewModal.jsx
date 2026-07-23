@@ -1,11 +1,10 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { JlptBadge } from '../common/Badges';
 
 const SKILL_LABELS = {
   vocabulary: 'Từ vựng',
   grammar:    'Ngữ pháp',
   kanji:      'Kanji',
-  reading:    'Đọc hiểu',
   listening:  'Nghe',
   mixed:      'Tổng hợp',
 };
