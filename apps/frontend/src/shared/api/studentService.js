@@ -307,7 +307,13 @@ export async function getSpeakingExercises(level) {
 export async function submitSpeakingAudio(exerciseId, audioBlob) {
   const formData = new FormData();
   formData.append('exerciseId', exerciseId);
-  formData.append('audio', audioBlob, 'recording.webm');
+  const type = (audioBlob?.type || '').toLowerCase();
+  const ext = type.includes('ogg') ? 'ogg'
+            : type.includes('mp4') || type.includes('m4a') || type.includes('aac') ? 'm4a'
+            : type.includes('wav') ? 'wav'
+            : type.includes('mp3') || type.includes('mpeg') ? 'mp3'
+            : 'webm';
+  formData.append('audio', audioBlob, `recording.${ext}`);
   const res = await api.post('/speaking/submit', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     timeout: 30000,

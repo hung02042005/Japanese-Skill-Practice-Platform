@@ -21,7 +21,20 @@ public class SpeakingAudioStorageService {
 
     private static final long MAX_SIZE = 10L * 1024 * 1024; // 10MB (UC-13 BR)
     private static final Set<String> ALLOWED_TYPES =
-            Set.of("audio/webm", "audio/mpeg", "audio/mp3", "audio/wav", "audio/wave", "audio/x-wav", "video/webm");
+            Set.of(
+                    "audio/webm",
+                    "video/webm",
+                    "audio/mpeg",
+                    "audio/mp3",
+                    "audio/wav",
+                    "audio/wave",
+                    "audio/x-wav",
+                    "audio/ogg",
+                    "audio/mp4",
+                    "audio/m4a",
+                    "audio/x-m4a",
+                    "audio/aac"
+            );
 
     @Value("${app.upload-dir:uploads}")
     private String uploadDir;
@@ -37,15 +50,23 @@ public class SpeakingAudioStorageService {
             throw new BusinessException(400, "FILE_TOO_LARGE", "File ghi âm tối đa 10MB");
         }
         String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_TYPES.contains(contentType.toLowerCase())) {
+        if (contentType == null || contentType.isBlank()) {
+            throw new BusinessException(
+                    400, "INVALID_FILE_TYPE", "Định dạng ghi âm không hợp lệ (chỉ chấp nhận webm/mp3/wav)");
+        }
+
+        String baseType = contentType.split(";")[0].trim().toLowerCase();
+        if (!ALLOWED_TYPES.contains(baseType)) {
             throw new BusinessException(
                     400, "INVALID_FILE_TYPE", "Định dạng ghi âm không hợp lệ (chỉ chấp nhận webm/mp3/wav)");
         }
 
         String ext =
-                switch (contentType.toLowerCase()) {
+                switch (baseType) {
                     case "audio/mpeg", "audio/mp3" -> ".mp3";
                     case "audio/wav", "audio/wave", "audio/x-wav" -> ".wav";
+                    case "audio/ogg" -> ".ogg";
+                    case "audio/mp4", "audio/m4a", "audio/x-m4a", "audio/aac" -> ".m4a";
                     default -> ".webm";
                 };
         String filename = "speaking-" + studentId + "-" + System.currentTimeMillis() + ext;
