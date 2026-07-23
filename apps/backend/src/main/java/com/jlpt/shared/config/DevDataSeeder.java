@@ -330,16 +330,8 @@ public class DevDataSeeder implements CommandLineRunner {
                 "vocabulary",
                 Question.Skill.VOCABULARY,
                 List.of(
-                        new QuizQuestionSeed(
-                                "「勉強」の読み方はどれか。",
-                                "べんきょう",
-                                "めんきょう",
-                                "けんきょう",
-                                "せんきょう",
-                                "A",
-                                "勉強 = べんきょう."),
-                        new QuizQuestionSeed(
-                                "「友達」の読み方はどれか。", "ともだち", "ゆうだち", "しんだち", "はんだち", "A", "友達 = ともだち.")));
+                        new QuizQuestionSeed("「勉強」の読み方はどれか。", "べんきょう", "めんきょう", "けんきょう", "せんきょう", "A", "勉強 = べんきょう."),
+                        new QuizQuestionSeed("「友達」の読み方はどれか。", "ともだち", "ゆうだち", "しんだち", "はんだち", "A", "友達 = ともだち.")));
 
         seedExamSection(
                 exam,
