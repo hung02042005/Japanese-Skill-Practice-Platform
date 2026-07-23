@@ -20,21 +20,19 @@ import org.springframework.web.multipart.MultipartFile;
 public class SpeakingAudioStorageService {
 
     private static final long MAX_SIZE = 10L * 1024 * 1024; // 10MB (UC-13 BR)
-    private static final Set<String> ALLOWED_TYPES =
-            Set.of(
-                    "audio/webm",
-                    "video/webm",
-                    "audio/mpeg",
-                    "audio/mp3",
-                    "audio/wav",
-                    "audio/wave",
-                    "audio/x-wav",
-                    "audio/ogg",
-                    "audio/mp4",
-                    "audio/m4a",
-                    "audio/x-m4a",
-                    "audio/aac"
-            );
+    private static final Set<String> ALLOWED_TYPES = Set.of(
+            "audio/webm",
+            "video/webm",
+            "audio/mpeg",
+            "audio/mp3",
+            "audio/wav",
+            "audio/wave",
+            "audio/x-wav",
+            "audio/ogg",
+            "audio/mp4",
+            "audio/m4a",
+            "audio/x-m4a",
+            "audio/aac");
 
     @Value("${app.upload-dir:uploads}")
     private String uploadDir;
