@@ -42,7 +42,7 @@ Phạm vi PLAN này **không** bao gồm luồng duyệt/publish (thuộc `feat-
 
 - **DD-06 — Bất biến tổng điểm là cổng gửi duyệt:** Σ`score` phải bằng `total_score` (và ≥ 1 câu hỏi; với exam mỗi câu cùng `jlpt_level`) trước khi `submit-review`; lệch ⇒ `422 SCORE_MISMATCH` / `EMPTY_QUIZ` / `EMPTY_EXAM` / `LEVEL_MISMATCH` (FR-26-26/28, FR-28-30/31/25).
 
-- **DD-07 — Endpoint gửi duyệt thống nhất + Resolver đa hình:** Một endpoint `POST /api/staff/contents/submit-review` nhận `contentType ∈ {question, grammar, lesson, vocabulary, kanji, assessment}`. Dùng **`ContentSubmissionResolver`** map `contentType` → repository + chiến lược validate/transition (tránh `if/else` rải rác và God Class — như `ReviewableContentResolver` ở feat-content-review).
+- **DD-07 — Endpoint gửi duyệt thống nhất + Resolver đa hình:** Một endpoint `POST /api/staff/contents/submit-review` nhận `contentType ∈ {question, grammar, vocabulary, kanji, assessment}`. Dùng **`ContentSubmissionResolver`** map `contentType` → repository + chiến lược validate/transition (tránh `if/else` rải rác và God Class — như `ReviewableContentResolver` ở feat-content-review).
 
 - **DD-08 — Media chỉ lưu URL:** audio/image/video/attachment lưu dạURL string; KHÔNG BLOB (ADR-006, LESSON-002, FR-27-03). URL phải qua module upload đã validate extension/size (Constitution §3.3) — ngoài phạm vi các endpoint này.
 
@@ -61,27 +61,27 @@ Phạm vi PLAN này **không** bao gồm luồng duyệt/publish (thuộc `feat-
 
 ### 4.2. Entities (tận dụng có sẵn — chỉ map, không đổi DB)
 
-- `Question`, `GrammarPoint`, `Lesson`, `Vocabulary`, `Kanji`, `Assessment`, `QuestionAssignment`, `StaffUser`, `AttemptAnswer` (read-only — nguồn khóa).
-- Enum dùng chung: `ContentStatus { DRAFT, PENDING_REVIEW, REJECTED, PUBLISHED, ARCHIVED, DELETED }`, `ContentType { QUESTION, GRAMMAR, LESSON, VOCABULARY, KANJI, ASSESSMENT }`, `AssessmentType { QUIZ, EXAM }`, `QuestionType`, `Skill`, `JlptLevel`, `SectionName`.
+- `Question`, `GrammarPoint`, `Vocabulary`, `Kanji`, `Assessment`, `QuestionAssignment`, `StaffUser`, `AttemptAnswer` (read-only — nguồn khóa); `Lesson` chỉ read-only cho các liên kết hiện có.
+- Enum dùng chung: `ContentStatus { DRAFT, PENDING_REVIEW, REJECTED, PUBLISHED, ARCHIVED, DELETED }`, `ContentType { QUESTION, GRAMMAR, VOCABULARY, KANJI, ASSESSMENT }`, `AssessmentType { QUIZ, EXAM }`, `QuestionType`, `Skill`, `JlptLevel`, `SectionName`.
 
 ### 4.3. Repositories
 
 - `QuestionRepository`: `findByStatusAndFilters(...)` (q/skill/level/type/status, paged, loại `deleted`); `existsAttemptAnswerByQuestionId(id)` (khóa); guarded update theo status.
 - `AssessmentRepository`: `findByTypeAndFilters(type, level, status, lessonId, paged)`; `sumAssignedScore(assessmentId)`.
 - `QuestionAssignmentRepository`: `deleteByParent(parentType, parentId)`, `saveAll(...)`, `findByParentOrderByDisplayOrder(...)`.
-- `GrammarPointRepository`, `LessonRepository`, `VocabularyRepository`, `KanjiRepository`: `findByCreatedByAndFilters(...)`, `existsByCharacterValue(...)` (kanji, FR-27-21).
+- `GrammarPointRepository`, `VocabularyRepository`, `KanjiRepository`: `findByCreatedByAndFilters(...)`, `existsByCharacterValue(...)` (kanji, FR-27-21); `LessonRepository` chỉ đọc để kiểm tra liên kết.
 
 ### 4.4. DTOs (Request/Response — không lộ Entity)
 
-- **Request:** `CreateQuestionRequest`/`UpdateQuestionRequest`, `CreateGrammarRequest`/`UpdateGrammarRequest`, `CreateLessonRequest`/`UpdateLessonRequest`, `CreateVocabularyRequest`, `CreateKanjiRequest`, `CreateAssessmentRequest`/`UpdateAssessmentRequest`, `AssignQuestionsRequest` (list item: `questionId, sectionName?, displayOrder, score`), `SubmitReviewRequest` (`contentType, contentId`).
-- **Response:** `QuestionSummaryResponse`/`QuestionDetailResponse` (kèm `isLocked`), `GrammarDetailResponse`, `LessonDetailResponse`, `VocabularyDetailResponse`, `KanjiDetailResponse`, `AssessmentSummaryResponse`/`AssessmentDetailResponse` (kèm `assignedScoreSum`, `scoreMatched`, `sections[]`/`questions[]`), `AssignResultResponse`, `SubmitReviewResponse`, `PageResponse<T>`.
-- **Validation:** `@Valid` + Jakarta annotations; validator nghiệp vụ theo `question_type`/`lesson_type`/`section_name`, range điểm, enum JLPT.
+- **Request:** `CreateQuestionRequest`/`UpdateQuestionRequest`, `CreateGrammarRequest`/`UpdateGrammarRequest`, `CreateVocabularyRequest`, `CreateKanjiRequest`, `CreateAssessmentRequest`/`UpdateAssessmentRequest`, `AssignQuestionsRequest` (list item: `questionId, sectionName?, displayOrder, score`), `SubmitReviewRequest` (`contentType, contentId`).
+- **Response:** `QuestionSummaryResponse`/`QuestionDetailResponse` (kèm `isLocked`), `GrammarDetailResponse`, `VocabularyDetailResponse`, `KanjiDetailResponse`, `AssessmentSummaryResponse`/`AssessmentDetailResponse` (kèm `assignedScoreSum`, `scoreMatched`, `sections[]`/`questions[]`), `AssignResultResponse`, `SubmitReviewResponse`, `PageResponse<T>`.
+- **Validation:** `@Valid` + Jakarta annotations; validator nghiệp vụ theo `question_type`/`section_name`, range điểm, enum JLPT.
 
 ### 4.5. Services (Business Logic — `@Transactional`)
 
 - **`QuestionService`** — create/list/detail/update/lock-guard (UC-24); `assertNotLocked(...)`.
 - **`GrammarService`** — create/list/detail/update + liên kết lesson (khớp `jlpt_level`) (UC-25).
-- **`LearningContentService`** — lesson/vocabulary/kanji create/update + ràng buộc theo type (UC-27); kiểm tra trùng kanji.
+- **`LearningContentService`** — vocabulary/kanji create/update + ràng buộc theo type (UC-27); kiểm tra trùng kanji.
 - **`AssessmentService`** — create/list/detail/update quiz & exam; `assignQuestions(...)` (replace + atomic); tính `assignedScoreSum`/`scoreMatched` (UC-26/UC-28).
 - **`ContentSubmissionService`** — `submitForReview(req, staffId)`: resolve contentType → re-validate bắt buộc + cổng điểm (assessment) → transition `draft/rejected → pending_review`.
 - **`ContentSubmissionResolver`** — map `contentType` → repository + chiến lược validate/transition (tránh God Class).
@@ -92,7 +92,7 @@ Phạm vi PLAN này **không** bao gồm luồng duyệt/publish (thuộc `feat-
 
 - **`StaffQuestionController`** (`/api/staff/questions`): `POST`, `GET`, `GET /{id}`, `PUT /{id}`.
 - **`StaffGrammarController`** (`/api/staff/grammar`): `POST`, `GET`, `GET /{id}`, `PUT /{id}`.
-- **`StaffLearningContentController`** (`/api/staff/lessons`, `/vocabulary`, `/kanji`): create/update.
+- **`StaffLearningContentController`** (`/api/staff/vocabulary`, `/api/staff/kanji`): create/update.
 - **`StaffAssessmentController`** (`/api/staff/assessments`): `POST`, `GET`, `GET /{id}`, `PUT /{id}`, `POST /{id}/assign-questions`.
 - **`StaffContentSubmissionController`** (`/api/staff/contents/submit-review`): `POST`.
 - **Security:** `@PreAuthorize("hasAnyAuthority('STAFF','STAFF_MANAGER')")` + SecurityFilterChain cho `/api/staff/**`; thiếu JWT → 401, sai role → 403.
@@ -102,7 +102,7 @@ Phạm vi PLAN này **không** bao gồm luồng duyệt/publish (thuộc `feat-
 
 - `services/staffContentService` gom API gọi 5 nhóm endpoint (tránh Direct API in Component).
 - `QuestionBankPage` (list + search/filter skill/level/type/status, badge `isLocked`), `QuestionEditorPage`.
-- `GrammarEditorPage`, `LearningContentPage` (tab lesson/vocab/kanji).
+- `GrammarEditorPage`, `LearningContentPage` (tab vocabulary/kanji).
 - `AssessmentBuilderPage`: tạo quiz/exam, gán câu hỏi (kéo-thả `displayOrder`, gán `section_name` cho exam), hiển thị `assignedScoreSum`/`scoreMatched` realtime; nút "Gửi duyệt" disabled khi `scoreMatched=false`/rỗng (UX, không thay backend).
 - Tách UI Staff khỏi StaffManager/Admin (LESSON-001); `ProtectedRoute` theo quyền `staff`; mọi trang có loading/error state.
 

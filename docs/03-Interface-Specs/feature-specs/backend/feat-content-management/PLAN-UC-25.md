@@ -3,7 +3,7 @@
 > **UC Coverage:** UC-25 (Manage Grammar Content)
 > **Trọng tâm:** Tạo / xem / sửa / liên kết lesson / gửi duyệt điểm ngữ pháp (`grammar_points`) — vai trò Staff
 > **Nguồn:** `UC-25-manage-grammar-content.md` | **Cập nhật:** 2026-06-12
-> **Lưu ý:** Hạ tầng dùng chung ở `PLAN.md`. UC-25 **không** có bảng `courses`; chỉ liên kết `lesson_id`. Tên cột DB khác đề bài (xem UC-25 §5).
+> **Lưu ý:** Hạ tầng dùng chung ở `PLAN.md`; UC-25 chỉ liên kết `lesson_id`. Tên cột DB khác đề bài (xem UC-25 §5).
 
 ---
 

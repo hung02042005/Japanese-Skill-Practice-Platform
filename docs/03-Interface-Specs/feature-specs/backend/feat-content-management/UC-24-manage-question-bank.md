@@ -342,7 +342,7 @@ erDiagram
 
 ---
 
-## 8. ACCEPTANCE CRITERIA
+## 8. ACCEPTANCE CRITERIA (tiêu chí chấp nhận)
 
 | ID | Scenario | Given | When | Then |
 |:---|:---|:---|:---|:---|

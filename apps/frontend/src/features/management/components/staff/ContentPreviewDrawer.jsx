@@ -33,26 +33,6 @@ function DrawerFooter({ item }) {
 }
 
 /* ── Content renderers by type ───────────────────────────────────── */
-function CourseBody({ item }) {
-  const desc = item.explanation || item.description;
-  return (
-    <>
-      <div className="sfq-badge-row">
-        <JlptBadge level={item.jlptLevel} />
-        <span className="sfq-type-pill">Khóa học</span>
-      </div>
-      <p className="sfq-question-text">{item.title}</p>
-      {desc && (
-        <div>
-          <p className="sfq-explanation-label">Mô tả</p>
-          <p className="sfq-explanation-text">{desc}</p>
-        </div>
-      )}
-      <DrawerFooter item={item} />
-    </>
-  );
-}
-
 function SpeakingBody({ item }) {
   const questions = item.questions?.length
     ? item.questions
@@ -229,7 +209,6 @@ function KanjiBody({ item }) {
 
 /* ── ContentPreviewDrawer ────────────────────────────────────────── */
 const DRAWER_TITLES = {
-  course:     'Xem trước khóa học',
   vocabulary: 'Xem trước từ vựng',
   grammar:    'Xem trước ngữ pháp',
   kanji:      'Xem trước Kanji',
@@ -251,7 +230,6 @@ export default function ContentPreviewDrawer({ item, contentType, onClose }) {
 
   const renderBody = () => {
     switch (contentType) {
-      case 'course':     return <CourseBody  item={item} />;
       case 'vocabulary': return <VocabBody   item={item} />;
       case 'grammar':    return <GrammarBody item={item} />;
       case 'kanji':      return <KanjiBody   item={item} />;

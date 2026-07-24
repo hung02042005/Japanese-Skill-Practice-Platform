@@ -5,7 +5,6 @@ import { PlusIcon, SpinnerIcon, CheckIcon, XIcon } from '@/shared/components/com
 import HanziWriter from 'hanzi-writer';
 
 const TYPE_LABELS = {
-  course: 'Khóa học',
   vocabulary: 'Từ vựng',
   grammar: 'Ngữ pháp',
   kanji: 'Kanji',
@@ -27,16 +26,6 @@ function buildInitialForm(contentType, editItem) {
   };
 
   switch (contentType) {
-    case 'course': {
-      const exp = editItem?.explanation || editItem?.description || '';
-      return {
-        ...base,
-        title: editItem?.title || '',
-        description: exp,
-        explanation: exp,
-        lessonType: 'lesson',
-      };
-    }
     case 'vocabulary':
       return {
         ...base,
@@ -236,13 +225,6 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
       id: editItem?.id || Date.now(),
       updatedAt: new Date().toLocaleDateString('vi-VN'),
     };
-    if (contentType === 'course') {
-      const exp = form.explanation || form.description || '';
-      payload.lessonType = 'lesson';
-      payload.explanation = exp;
-      payload.description = exp;
-      payload.contentText = exp.trim() || form.title.trim() || 'Course Content';
-    }
     if (contentType === 'vocabulary') {
       payload.topicId = form.topicId ? Number(form.topicId) : null;
     }
@@ -322,36 +304,6 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
               ))}
             </select>
           </div>
-
-          {/* ---- COURSE ---- */}
-          {contentType === 'course' && (
-            <>
-              <div className="sfc-field">
-                <label className="sfc-field-label sfc-field-label--req" htmlFor="sfc-field-title">Tên khóa học</label>
-                <input
-                  id="sfc-field-title"
-                  className="sfc-input"
-                  type="text"
-                  placeholder="Nhập tên khóa học..."
-                  value={form.title}
-                  onChange={(e) => set('title', e.target.value)}
-                />
-              </div>
-              <div className="sfc-field">
-                <label className="sfc-field-label" htmlFor="sfc-field-desc">Mô tả</label>
-                <textarea
-                  id="sfc-field-desc"
-                  className="sfc-textarea"
-                  placeholder="Mô tả khóa học..."
-                  value={form.explanation || form.description || ''}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setForm((prev) => ({ ...prev, explanation: val, description: val }));
-                  }}
-                />
-              </div>
-            </>
-          )}
 
           {/* ---- VOCABULARY ---- */}
           {contentType === 'vocabulary' && (

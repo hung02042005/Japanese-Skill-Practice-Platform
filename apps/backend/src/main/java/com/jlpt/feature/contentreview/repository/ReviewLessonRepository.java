@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-/** UC-33 — Repository kiểm duyệt cho {@code lessons} (cũng phục vụ contentType=course). */
+/** UC-33 — Repository kiểm duyệt cho {@code lessons}. */
 @Repository
 public interface ReviewLessonRepository extends JpaRepository<Lesson, Long> {
 

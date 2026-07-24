@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 /**
  * UC-33 — Ánh xạ {@link ContentType} → {@link ReviewableContentHandler} (PLAN §3).
  *
- * <p>{@link ContentType#COURSE} dùng chung bảng {@code lessons} nên được alias tới handler
- * của {@link ContentType#LESSON}.
  */
 @Component
 public class ReviewableContentResolver {
@@ -24,11 +22,6 @@ public class ReviewableContentResolver {
     public ReviewableContentResolver(List<ReviewableContentHandler> handlerBeans) {
         for (ReviewableContentHandler handler : handlerBeans) {
             handlers.put(handler.type(), handler);
-        }
-        // "course" là bí danh nghiệp vụ của bảng lessons (xác nhận: không có bảng courses riêng).
-        ReviewableContentHandler lessonHandler = handlers.get(ContentType.LESSON);
-        if (lessonHandler != null) {
-            handlers.putIfAbsent(ContentType.COURSE, lessonHandler);
         }
     }
 
@@ -42,7 +35,7 @@ public class ReviewableContentResolver {
         return handler;
     }
 
-    /** Tập handler duy nhất (đã loại bí danh course↔lesson) để duyệt toàn bộ hàng đợi. */
+    /** Tập handler duy nhất để duyệt toàn bộ hàng đợi. */
     public Collection<ReviewableContentHandler> distinctHandlers() {
         return handlers.values().stream().distinct().toList();
     }

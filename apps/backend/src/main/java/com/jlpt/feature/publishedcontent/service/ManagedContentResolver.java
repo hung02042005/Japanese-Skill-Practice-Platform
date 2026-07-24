@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 /**
  * UC-34 — Ánh xạ {@link ContentType} → {@link ManagedContentHandler}.
  *
- * <p>{@link ContentType#COURSE} dùng chung bảng {@code lessons} nên được alias tới handler
- * của {@link ContentType#LESSON} (xác nhận nghiệp vụ: không có bảng {@code courses} riêng).
  */
 @Component
 public class ManagedContentResolver {
@@ -24,10 +22,6 @@ public class ManagedContentResolver {
     public ManagedContentResolver(List<ManagedContentHandler> handlerBeans) {
         for (ManagedContentHandler handler : handlerBeans) {
             handlers.put(handler.type(), handler);
-        }
-        ManagedContentHandler lessonHandler = handlers.get(ContentType.LESSON);
-        if (lessonHandler != null) {
-            handlers.putIfAbsent(ContentType.COURSE, lessonHandler);
         }
     }
 
@@ -41,7 +35,7 @@ public class ManagedContentResolver {
         return handler;
     }
 
-    /** Tập handler duy nhất (đã loại bí danh course↔lesson) để duyệt toàn bộ danh sách. */
+    /** Tập handler duy nhất để duyệt toàn bộ danh sách. */
     public Collection<ManagedContentHandler> distinctHandlers() {
         return handlers.values().stream().distinct().toList();
     }

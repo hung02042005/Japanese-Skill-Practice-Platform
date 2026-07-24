@@ -6,12 +6,8 @@ import com.jlpt.shared.exception.BusinessException;
 /**
  * UC-33 — Loại nội dung chịu kiểm duyệt (discriminator cho {@code contentType}).
  *
- * <p>Lưu ý: hệ thống không có bảng riêng {@code courses}; "course" dùng chung bảng
- * {@code lessons} (xác nhận nghiệp vụ), nên {@link #COURSE} được resolver ánh xạ
- * tới handler của {@link #LESSON}.
  */
 public enum ContentType {
-    COURSE("course"),
     LESSON("lesson"),
     SPEAKING("speaking"),
     GRAMMAR("grammar"),

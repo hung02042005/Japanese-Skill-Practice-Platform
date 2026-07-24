@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-/** UC-34 — Quản lý trạng thái cho {@code lessons} (cũng phục vụ contentType=course) (FR-34-03/10). */
+/** UC-34 — Quản lý trạng thái cho {@code lessons} (FR-34-03/10). */
 @Repository
 public interface ManagedLessonRepository extends JpaRepository<Lesson, Long> {
 

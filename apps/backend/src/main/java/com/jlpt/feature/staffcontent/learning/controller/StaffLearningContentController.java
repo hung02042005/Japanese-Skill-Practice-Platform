@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * UC-27 — Staff endpoints for managing learning content (lesson / vocabulary / kanji).
- * Note: "course" maps to the {@code lessons} table; there is no separate /api/staff/courses (UC-27 §9).
  */
 @RestController
 @RequestMapping("/api/staff")

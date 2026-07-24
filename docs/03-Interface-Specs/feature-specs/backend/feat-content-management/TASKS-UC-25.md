@@ -1,7 +1,7 @@
 # TASKS — Manage Grammar Content (`feat-content-management`) — UC-25
 
 > **UC:** UC-25 (Manage Grammar Content) | **Nguồn:** `UC-25-manage-grammar-content.md`, `PLAN-UC-25.md`
-> **Cập nhật:** 2026-06-12 | **Lưu ý:** Không có bảng `courses`; chỉ liên kết `lesson_id`.
+> **Cập nhật:** 2026-06-12 | **Lưu ý:** Chỉ liên kết `lesson_id`.
 
 ## Phase 1: Database & Domain
 

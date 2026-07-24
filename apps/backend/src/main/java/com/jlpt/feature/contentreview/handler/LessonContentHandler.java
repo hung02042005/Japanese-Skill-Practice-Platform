@@ -15,7 +15,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-/** UC-33 — Handler kiểm duyệt cho {@code lessons} (đồng thời phục vụ contentType=course). */
+/** UC-33 — Handler kiểm duyệt cho {@code lessons}. */
 @Component
 @RequiredArgsConstructor
 public class LessonContentHandler implements ReviewableContentHandler {

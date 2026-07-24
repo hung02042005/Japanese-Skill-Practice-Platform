@@ -18,8 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * UC-34 — Handler quản lý trạng thái cho {@code lessons} (phục vụ cả
- * contentType=course).
+ * UC-34 — Handler quản lý trạng thái cho {@code lessons}.
  */
 @Component
 @RequiredArgsConstructor
