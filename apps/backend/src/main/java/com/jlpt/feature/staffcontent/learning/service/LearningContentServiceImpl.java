@@ -311,17 +311,6 @@ public class LearningContentServiceImpl implements LearningContentService {
 
     @Override
     @Transactional(readOnly = true)
-    public LessonDetailResponse getLesson(Long lessonId, String staffEmail) {
-        StaffUser staff = resolveStaff(staffEmail);
-        Lesson lesson = lessonRepository
-                .findByIdAndStatusNot(lessonId, LessonStatus.DELETED)
-                .orElseThrow(LearningContentException::lessonNotFound);
-        guardOwnership(lesson.getCreatedBy(), staff);
-        return toLessonDetail(lesson);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Page<VocabularyDetailResponse> listVocabulary(
             String q, String jlptLevelStr, Long topicId, String statusStr, int page, int size, String staffEmail) {
         StaffUser staff = resolveStaff(staffEmail);

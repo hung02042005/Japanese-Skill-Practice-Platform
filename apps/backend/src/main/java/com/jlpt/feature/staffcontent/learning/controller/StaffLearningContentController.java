@@ -77,13 +77,6 @@ public class StaffLearningContentController {
         return ResponseEntity.ok(ApiResponse.success("OK", data));
     }
 
-    @GetMapping("/lessons/{lessonId}")
-    public ResponseEntity<ApiResponse<LessonDetailResponse>> getLesson(
-            @PathVariable Long lessonId, Authentication authentication) {
-        LessonDetailResponse data = learningContentService.getLesson(lessonId, authentication.getName());
-        return ResponseEntity.ok(ApiResponse.success("OK", data));
-    }
-
     // ── Vocabulary CRUD ───────────────────────────────────────────
 
     @PostMapping("/vocabulary")

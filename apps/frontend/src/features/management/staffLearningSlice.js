@@ -15,17 +15,6 @@ export const fetchLessonsThunk = createAsyncThunk(
   }
 );
 
-export const getLessonDetailThunk = createAsyncThunk(
-  'staffLearning/getLessonDetail',
-  async (lessonId, { rejectWithValue }) => {
-    try {
-      return await staffService.getStaffLesson(lessonId);
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message || 'Không thể lấy chi tiết bài học');
-    }
-  }
-);
-
 // ─── Vocabulary Thunks ──────────────────────────────────────────────────────
 
 export const fetchVocabularyThunk = createAsyncThunk(
@@ -87,7 +76,6 @@ const initialState = {
   lessonsTotalPages: 0,
   lessonsStatus: 'idle',
   lessonsError: null,
-  lessonDetail: null,
 
   // Vocabulary
   vocabulary: [],
@@ -139,10 +127,6 @@ const staffLearningSlice = createSlice({
         state.lessonsTotalElements = 0;
         state.lessonsTotalPages = 0;
       })
-      .addCase(getLessonDetailThunk.fulfilled, (state, action) => {
-        state.lessonDetail = action.payload;
-      })
-
       // ── Vocabulary ──
       .addCase(fetchVocabularyThunk.pending, (state) => {
         state.vocabularyStatus = 'loading';

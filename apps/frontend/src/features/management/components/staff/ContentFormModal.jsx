@@ -6,7 +6,6 @@ import HanziWriter from 'hanzi-writer';
 
 const TYPE_LABELS = {
   course: 'Khóa học',
-  lesson: 'Bài học',
   vocabulary: 'Từ vựng',
   grammar: 'Ngữ pháp',
   kanji: 'Kanji',
@@ -14,10 +13,6 @@ const TYPE_LABELS = {
 };
 
 const JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
-
-const LESSON_TYPE_OPTIONS = [
-  { value: 'lesson', label: 'Bài học' },
-];
 
 const PART_OF_SPEECH_OPTIONS = [
   { value: '名詞', label: '名詞 — Danh từ' },
@@ -42,13 +37,6 @@ function buildInitialForm(contentType, editItem) {
         lessonType: 'lesson',
       };
     }
-    case 'lesson':
-      return {
-        ...base,
-        title: editItem?.title || '',
-        lessonType: editItem?.lessonType || 'lesson',
-        contentText: editItem?.contentText || '',
-      };
     case 'vocabulary':
       return {
         ...base,
@@ -360,46 +348,6 @@ export default function ContentFormModal({ isOpen, contentType, editItem, onClos
                     const val = e.target.value;
                     setForm((prev) => ({ ...prev, explanation: val, description: val }));
                   }}
-                />
-              </div>
-            </>
-          )}
-
-          {/* ---- LESSON ---- */}
-          {contentType === 'lesson' && (
-            <>
-              <div className="sfc-field">
-                <label className="sfc-field-label sfc-field-label--req" htmlFor="sfc-field-title">Tiêu đề bài học</label>
-                <input
-                  id="sfc-field-title"
-                  className="sfc-input"
-                  type="text"
-                  placeholder="Nhập tiêu đề bài học..."
-                  value={form.title}
-                  onChange={(e) => set('title', e.target.value)}
-                />
-              </div>
-              <div className="sfc-field">
-                <label className="sfc-field-label sfc-field-label--req" htmlFor="sfc-field-lessontype">Loại bài học</label>
-                <select
-                  id="sfc-field-lessontype"
-                  className="sfc-input sfc-select"
-                  value={form.lessonType}
-                  onChange={(e) => set('lessonType', e.target.value)}
-                >
-                  {LESSON_TYPE_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="sfc-field">
-                <label className="sfc-field-label" htmlFor="sfc-field-contenttext">Nội dung bài học</label>
-                <textarea
-                  id="sfc-field-contenttext"
-                  className="sfc-textarea"
-                  placeholder="Nội dung bài học..."
-                  value={form.contentText}
-                  onChange={(e) => set('contentText', e.target.value)}
                 />
               </div>
             </>

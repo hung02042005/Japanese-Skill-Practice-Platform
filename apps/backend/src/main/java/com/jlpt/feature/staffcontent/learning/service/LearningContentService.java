@@ -37,9 +37,6 @@ public interface LearningContentService {
     Page<LessonDetailResponse> listLessons(
             String q, String jlptLevel, String lessonType, String status, int page, int size, String staffEmail);
 
-    /** FR-27-11: Get lesson detail by id. */
-    LessonDetailResponse getLesson(Long lessonId, String staffEmail);
-
     /** FR-27-16: List vocabulary with filters (lọc chủ đề theo topicId). */
     Page<VocabularyDetailResponse> listVocabulary(
             String q, String jlptLevel, Long topicId, String status, int page, int size, String staffEmail);

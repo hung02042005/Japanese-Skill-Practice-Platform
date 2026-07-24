@@ -11,12 +11,6 @@ const STATUS_MAP = {
   archived:       { cls: 'sfq-status--draft',     label: 'Lưu trữ' },
 };
 
-const LESSON_TYPE_LABELS = {
-  lesson:    'Bài học',
-  listening: 'Luyện nghe',
-  speaking:  'Luyện nói',
-};
-
 /* ── Shared footer ───────────────────────────────────────────────── */
 function DrawerFooter({ item }) {
   const statusInfo = STATUS_MAP[item.status] ?? { cls: 'sfq-status--draft', label: item.status };
@@ -52,33 +46,6 @@ function CourseBody({ item }) {
         <div>
           <p className="sfq-explanation-label">Mô tả</p>
           <p className="sfq-explanation-text">{desc}</p>
-        </div>
-      )}
-      <DrawerFooter item={item} />
-    </>
-  );
-}
-
-function LessonBody({ item }) {
-  const typeLabel = LESSON_TYPE_LABELS[item.lessonType] || item.lessonType || 'Bài học';
-  const content = item.contentText || item.content;
-  return (
-    <>
-      <div className="sfq-badge-row">
-        <JlptBadge level={item.jlptLevel} />
-        <span className="sfq-type-pill">{typeLabel}</span>
-      </div>
-      <p className="sfq-question-text">{item.title}</p>
-      {content && (
-        <div>
-          <p className="sfq-explanation-label">Nội dung</p>
-          <p className="sfq-explanation-text">{content}</p>
-        </div>
-      )}
-      {item.explanation && (
-        <div>
-          <p className="sfq-explanation-label">Mô tả / Ghi chú</p>
-          <p className="sfq-explanation-text">{item.explanation}</p>
         </div>
       )}
       <DrawerFooter item={item} />
@@ -263,7 +230,6 @@ function KanjiBody({ item }) {
 /* ── ContentPreviewDrawer ────────────────────────────────────────── */
 const DRAWER_TITLES = {
   course:     'Xem trước khóa học',
-  lesson:     'Xem trước bài học',
   vocabulary: 'Xem trước từ vựng',
   grammar:    'Xem trước ngữ pháp',
   kanji:      'Xem trước Kanji',
@@ -286,12 +252,11 @@ export default function ContentPreviewDrawer({ item, contentType, onClose }) {
   const renderBody = () => {
     switch (contentType) {
       case 'course':     return <CourseBody  item={item} />;
-      case 'lesson':     return <LessonBody  item={item} />;
       case 'vocabulary': return <VocabBody   item={item} />;
       case 'grammar':    return <GrammarBody item={item} />;
       case 'kanji':      return <KanjiBody   item={item} />;
       case 'speaking':   return <SpeakingBody item={item} />;
-      default:           return <LessonBody  item={item} />;
+      default:           return null;
     }
   };
 

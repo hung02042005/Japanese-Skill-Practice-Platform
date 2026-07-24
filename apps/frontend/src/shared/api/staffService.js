@@ -267,11 +267,6 @@ export async function getStaffLessons({ q, jlptLevel, lessonType, status, page =
   return res.data.data; // { content, totalElements, totalPages }
 }
 
-export async function getStaffLesson(lessonId) {
-  const res = await api.get(`/staff/lessons/${lessonId}`);
-  return res.data.data;
-}
-
 export async function getStaffVocabularyList({ q, jlptLevel, topic, status, page = 0, size = 20 } = {}) {
   const params = { page, size };
   if (q) params.q = q;

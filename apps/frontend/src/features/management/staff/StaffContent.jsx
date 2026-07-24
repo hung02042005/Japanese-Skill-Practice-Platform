@@ -51,7 +51,6 @@ const STATUS_META = {
 
 const CONTENT_TABS = [
   { id: "course", label: "Khóa học" },
-  { id: "lesson", label: "Bài học" },
   { id: "vocabulary", label: "Từ vựng" },
   { id: "grammar", label: "Ngữ pháp" },
   { id: "kanji", label: "Kanji" },
@@ -59,7 +58,7 @@ const CONTENT_TABS = [
 ];
 
 const CREATABLE_CONTENT_TABS = CONTENT_TABS.filter(
-  ({ id }) => id !== "course" && id !== "lesson",
+  ({ id }) => id !== "course",
 );
 
 const PAGE_SIZE = 10;
@@ -102,7 +101,6 @@ export default function StaffContent() {
   function getTabState() {
     switch (activeContentTab) {
       case "course":
-      case "lesson":
       case "speaking":
         return {
           items: learnState.lessons,
@@ -153,8 +151,6 @@ export default function StaffContent() {
     switch (activeContentTab) {
       case "course":
         return dispatch(fetchLessonsThunk({ ...opts, lessonType: undefined }));
-      case "lesson":
-        return dispatch(fetchLessonsThunk(opts));
       case "speaking":
         return dispatch(fetchLessonsThunk({ ...opts, lessonType: "speaking" }));
       case "vocabulary":
@@ -252,7 +248,6 @@ export default function StaffContent() {
       let contentType;
       switch (activeContentTab) {
         case "course":
-        case "lesson":
           contentType = "lesson";
           break;
         case "vocabulary":
@@ -286,7 +281,6 @@ export default function StaffContent() {
     let contentId;
     switch (activeContentTab) {
       case "course":
-      case "lesson":
         contentType = "lesson";
         contentId = item.lessonId ?? item.id;
         break;
@@ -344,10 +338,8 @@ export default function StaffContent() {
             addToast({ type: "success", message: "Đã tạo ngữ pháp thành công!" });
           }
         }
-      } else if (ct === "course" || ct === "lesson") {
-        const payload = ct === "course"
-          ? { ...formData, lessonType: formData.lessonType || "lesson" }
-          : formData;
+      } else if (ct === "course") {
+        const payload = { ...formData, lessonType: formData.lessonType || "lesson" };
         if (!editItem) return;
         const lessonId = editItem.lessonId || editItem.id;
         const res = await updateStaffLesson(lessonId, payload);
@@ -552,17 +544,15 @@ export default function StaffContent() {
 
     const headerMap = {
       course: ["Tiêu đề", "Loại", "Cấp độ", "Trạng thái", "Cập nhật", ""],
-      lesson: ["Tiêu đề", "Loại", "Cấp độ", "Trạng thái", "Cập nhật", ""],
       vocabulary: ["Từ vựng", "Nghĩa", "Cấp độ", "Trạng thái", "Cập nhật", ""],
       grammar: ["Cấu trúc", "Ý nghĩa", "Cấp độ", "Trạng thái", "Cập nhật", ""],
       kanji: ["Chữ Hán", "Âm On", "Âm Kun", "Cấp độ", "Trạng thái", "Cập nhật", ""],
       speaking: ["Tiêu đề", "Loại", "Cấp độ", "Trạng thái", "Cập nhật", ""],
     };
-    const headers = headerMap[activeContentTab] ?? headerMap.lesson;
+    const headers = headerMap[activeContentTab] ?? headerMap.course;
 
     const rowMap = {
       course: renderLessonRow,
-      lesson: renderLessonRow,
       vocabulary: renderVocabRow,
       grammar: renderGrammarRow,
       kanji: renderKanjiRow,
@@ -590,7 +580,7 @@ export default function StaffContent() {
         <StaffPageHero
           accent="gold"
           title="Quản Lý Học Liệu"
-          subtitle="Soạn thảo khóa học, bài học, Speaking, từ vựng, ngữ pháp và Kanji theo từng cấp độ JLPT"
+          subtitle="Soạn thảo khóa học, Speaking, từ vựng, ngữ pháp và Kanji theo từng cấp độ JLPT"
           icon={
             <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <rect x="10" y="14" width="28" height="20" rx="1.5" />
