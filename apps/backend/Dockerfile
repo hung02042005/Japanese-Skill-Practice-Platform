@@ -3,9 +3,9 @@ FROM maven:3.9.8-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY pom.xml .
 # Download dependencies first to cache them
-RUN mvn dependency:go-offline -B
+RUN mvn dependency:go-offline -B -ntp
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests -B -ntp
 
 # Stage 2: Run the application
 FROM eclipse-temurin:21-jre-alpine
