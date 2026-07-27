@@ -276,3 +276,63 @@ Theo dõi dữ liệu **"nội dung ticket mới"** (`subject` + `content` Stude
 - **Notification khi có reply mới**: `addStaffReply` có gọi `notificationService.notifyStudent(...)` ([SupportTicketService.java:172-178](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L172-L178)) nhưng `addStudentReply` (phần đang phân tích) thì **không** gọi notification nào cho phía Staff — không tìm thấy cơ chế báo cho Staff biết có ticket/reply mới từ Student trong source code đã đọc. Có thể Staff chỉ biết qua việc chủ động vào danh sách `StaffTickets.jsx` (thuộc nhóm chưa phân tích).
 - **`UserDetailsImpl.getStudentUser()`**: được gọi nhiều lần trong `SupportController` để lấy `studentId`, nhưng file định nghĩa class này (`shared/security/UserDetailsImpl.java` hoặc tương đương) **không nằm trong phạm vi đọc của phân tích này** — chưa xác nhận trực tiếp cách nó được populate lúc xác thực JWT.
 - **Giới hạn độ dài `content`/thread**: không tìm thấy giới hạn số lượng reply tối đa hay giới hạn độ dài `content` (NVARCHAR(MAX) — không giới hạn cứng ở tầng DTO/Entity) trong source code đã đọc.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `SupportController`
+
+Nguồn: [SupportController.java](../../../apps/backend/src/main/java/com/jlpt/feature/support/controller/SupportController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<TicketResponse>> createTicket(@AuthenticationPrincipal UserDetailsImpl principal, @Valid @RequestBody TicketRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/controller/SupportController.java#L36) | `POST /tickets` | Xử lý endpoint `POST /tickets`; thực hiện nghiệp vụ `create ticket`. |
+| 2 | [`ResponseEntity<ApiResponse<TicketDetailResponse>> getTicketDetail(@AuthenticationPrincipal UserDetailsImpl principal, @PathVariable Long ticketId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/controller/SupportController.java#L66) | `GET /tickets/{ticketId}` | Xử lý endpoint `GET /tickets/{ticketId}`; thực hiện nghiệp vụ `get ticket detail`. |
+| 3 | [`ResponseEntity<ApiResponse<TicketReplyResponse>> replyToTicket(@AuthenticationPrincipal UserDetailsImpl principal, @PathVariable Long ticketId, @Valid @RequestBody TicketReplyRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/controller/SupportController.java#L76) | `POST /tickets/{ticketId}/reply` | Xử lý endpoint `POST /tickets/{ticketId}/reply`; thực hiện nghiệp vụ `reply to ticket`. |
+| 4 | [`ResponseEntity<ApiResponse<TicketResponse>> closeTicket(@AuthenticationPrincipal UserDetailsImpl principal, @PathVariable Long ticketId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/controller/SupportController.java#L88) | `POST /tickets/{ticketId}/close` | Xử lý endpoint `POST /tickets/{ticketId}/close`; thực hiện nghiệp vụ `close ticket`. |
+
+### `SupportTicketService`
+
+Nguồn: [SupportTicketService.java](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`TicketResponse createTicket(Long studentId, TicketRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L63) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create ticket`. |
+| 2 | [`Page<TicketResponse> getMyTickets(Long studentId, String status, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L85) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get my tickets`. |
+| 3 | [`TicketDetailResponse getStudentTicketDetail(Long ticketId, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L104) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get student ticket detail`. |
+| 4 | [`TicketDetailResponse getStaffTicketDetail(Long ticketId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L116) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get staff ticket detail`. |
+| 5 | [`TicketReplyResponse addStudentReply(Long ticketId, Long studentId, TicketReplyRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L125) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `add student reply`. |
+| 6 | [`TicketReplyResponse addStaffReply(Long ticketId, String staffEmail, TicketReplyRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L147) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `add staff reply`. |
+| 7 | [`TicketResponse closeTicket(Long ticketId, String actorEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L184) | `—` | Thực hiện xử lý backend `close ticket` trong `SupportTicketService`. |
+| 8 | [`TicketResponse closeStudentTicket(Long ticketId, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L215) | `—` | Thực hiện xử lý backend `close student ticket` trong `SupportTicketService`. |
+| 9 | [`TicketResponse assignTicket(Long ticketId, Long assignToStaffId, String actorEmail, boolean isAdmin)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L231) | `—` | Thực hiện xử lý backend `assign ticket` trong `SupportTicketService`. |
+| 10 | [`Page<TicketResponse> getAllTickets(String status, String category, String priority, String q, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L268) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get all tickets`. |
+| 11 | [`Page<com.jlpt.feature.support.dto.SubmissionResponse> getAllSubmissions(String submissionType, String status, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L278) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get all submissions`. |
+| 12 | [`com.jlpt.feature.support.dto.SubmissionResponse getSubmissionDetail(Long submissionId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L295) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get submission detail`. |
+| 13 | [`com.jlpt.feature.support.dto.SubmissionResponse toSubmissionResponse(StudentSubmission s)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L306) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to submission response`. |
+| 14 | [`GradeResponse manualGrade(Long submissionId, String actorEmail, ManualGradeRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L335) | `—` | Thực hiện xử lý backend `manual grade` trong `SupportTicketService`. |
+| 15 | [`Ticket findTicketOrThrow(Long id)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L398) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find ticket or throw`. |
+| 16 | [`StudentUser findStudentOrThrow(Long id)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L402) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find student or throw`. |
+| 17 | [`StaffUser findStaffOrThrow(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L408) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find staff or throw`. |
+| 18 | [`void checkTicketNotClosed(Ticket ticket)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L414) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `check ticket not closed`. |
+| 19 | [`TicketResponse toTicketResponse(Ticket t)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L420) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to ticket response`. |
+| 20 | [`TicketDetailResponse toTicketDetailResponse(Ticket t, List<TicketReply> replies)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L442) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to ticket detail response`. |
+| 21 | [`TicketReplyResponse toReplyResponse(TicketReply r, String senderName, String role)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L475) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to reply response`. |
+| 22 | [`Ticket.TicketStatus parseStatus(String status)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L486) | `—` | Thực hiện xử lý backend `parse status` trong `SupportTicketService`. |
+| 23 | [`Ticket.Priority parsePriority(String priority)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L495) | `—` | Thực hiện xử lý backend `parse priority` trong `SupportTicketService`. |
+
+### `Ticket`
+
+Nguồn: [Ticket.java](../../../apps/backend/src/main/java/com/jlpt/feature/support/Ticket.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/support/Ticket.java#L72) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+| 2 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/support/Ticket.java#L89) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+
+**Tổng cộng:** `29` hàm backend trong `11` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

@@ -334,3 +334,121 @@ Payload mẫu:
 - Manager Approve không kiểm tra lại số questions; handler chỉ transition. Validation chính nằm khi create/update/submit của Staff.
 - Không tìm thấy thông báo realtime tới Staff sau review; Staff xem kết quả khi tải lại trạng thái/feedback.
 - Luồng Student thu âm và nộp Speaking nằm ngoài phạm vi Create Speaking.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `SpeakingContentHandler`
+
+Nguồn: [SpeakingContentHandler.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/SpeakingContentHandler.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ContentType type()`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/SpeakingContentHandler.java#L27) | `—` | Thực hiện xử lý backend `type` trong `SpeakingContentHandler`. |
+| 2 | [`String tableName()`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/SpeakingContentHandler.java#L32) | `—` | Thực hiện xử lý backend `table name` trong `SpeakingContentHandler`. |
+| 3 | [`List<ContentSnapshot> findPending(JlptLevel level)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/SpeakingContentHandler.java#L37) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find pending`. |
+| 4 | [`Optional<ContentSnapshot> findActiveById(Long contentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/SpeakingContentHandler.java#L46) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find active by id`. |
+| 5 | [`int approve(Long contentId, StaffUser manager, LocalDateTime now)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/SpeakingContentHandler.java#L53) | `—` | Thực hiện xử lý backend `approve` trong `SpeakingContentHandler`. |
+| 6 | [`int transitionFromPending(Long contentId, String targetStatus, LocalDateTime now)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/SpeakingContentHandler.java#L59) | `—` | Thực hiện xử lý backend `transition from pending` trong `SpeakingContentHandler`. |
+| 7 | [`ContentSnapshot toSnapshot(Lesson lesson, boolean withDetail)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/SpeakingContentHandler.java#L65) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to snapshot`. |
+| 8 | [`List<Map<String, Object>> questionsFor(Lesson lesson)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/SpeakingContentHandler.java#L90) | `—` | Thực hiện xử lý backend `questions for` trong `SpeakingContentHandler`. |
+| 9 | [`Map<String, Object> questionDetail(SpeakingQuestion question)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/SpeakingContentHandler.java#L106) | `—` | Thực hiện xử lý backend `question detail` trong `SpeakingContentHandler`. |
+
+### `ContentReviewService`
+
+Nguồn: [ContentReviewService.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ReviewQueueResponse getReviewQueue(String managerEmail, String typeStr, String levelStr, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L54) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get review queue`. |
+| 2 | [`ReviewableContentDetailResponse getContentDetail(String managerEmail, Long contentId, String typeStr)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L91) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get content detail`. |
+| 3 | [`ReviewResultResponse review(String managerEmail, ReviewActionRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L113) | `—` | Thực hiện xử lý backend `review` trong `ContentReviewService`. |
+| 4 | [`ReviewResultResponse requestChanges(String managerEmail, RequestChangesRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L167) | `—` | Thực hiện xử lý backend `request changes` trong `ContentReviewService`. |
+| 5 | [`StaffUser requireManager(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L205) | `—` | Thực hiện xử lý backend `require manager` trong `ContentReviewService`. |
+| 6 | [`void guardSelfReview(ContentSnapshot snapshot, StaffUser manager)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L217) | `—` | Thực hiện xử lý backend `guard self review` trong `ContentReviewService`. |
+| 7 | [`void ensureUpdated(int affectedRows)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L224) | `—` | Thực hiện xử lý backend `ensure updated` trong `ContentReviewService`. |
+| 8 | [`String resolveRequestChangesTarget(String raw)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L231) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve request changes target`. |
+| 9 | [`JlptLevel parseLevel(String levelStr)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L242) | `—` | Thực hiện xử lý backend `parse level` trong `ContentReviewService`. |
+| 10 | [`ReviewQueueItemResponse toQueueItem(ContentSnapshot contentSnapshot)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L253) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to queue item`. |
+
+### `ReviewAuditService`
+
+Nguồn: [ReviewAuditService.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ReviewAuditService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void log(StaffUser actor, String action, ContentType contentType, String targetTable, Long contentId, String feedback)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ReviewAuditService.java#L31) | `—` | Thực hiện xử lý backend `log` trong `ReviewAuditService`. |
+
+### `Lesson`
+
+Nguồn: [Lesson.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Lesson.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Lesson.java#L79) | `—` | Thực hiện xử lý backend `on update` trong `Lesson`. |
+| 2 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Lesson.java#L95) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+| 3 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Lesson.java#L113) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+
+### `StaffSpeakingContentController`
+
+Nguồn: [StaffSpeakingContentController.java](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/controller/StaffSpeakingContentController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<SpeakingLessonMutationResponse>> create(@Valid @RequestBody SpeakingLessonCreateRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/controller/StaffSpeakingContentController.java#L25) | `POST` | Xử lý endpoint `POST`; thực hiện nghiệp vụ `create`. |
+| 2 | [`ResponseEntity<ApiResponse<SpeakingLessonDetailResponse>> update(@PathVariable Long lessonId, @Valid @RequestBody SpeakingLessonCreateRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/controller/StaffSpeakingContentController.java#L32) | `PUT /{lessonId}` | Xử lý endpoint `PUT /{lessonId}`; thực hiện nghiệp vụ `update`. |
+| 3 | [`ResponseEntity<ApiResponse<SpeakingLessonDetailResponse>> getOwnDetail(@PathVariable Long lessonId, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/controller/StaffSpeakingContentController.java#L41) | `GET /{lessonId}` | Xử lý endpoint `GET /{lessonId}`; thực hiện nghiệp vụ `get own detail`. |
+
+### `SpeakingQuestion`
+
+Nguồn: [SpeakingQuestion.java](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/entity/SpeakingQuestion.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/entity/SpeakingQuestion.java#L48) | `—` | Thực hiện xử lý backend `on update` trong `SpeakingQuestion`. |
+
+### `SpeakingQuestionRepository`
+
+Nguồn: [SpeakingQuestionRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/repository/SpeakingQuestionRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`List<SpeakingQuestion> findByLesson_IdOrderByDisplayOrderAsc(Long lessonId)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/repository/SpeakingQuestionRepository.java#L12) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by lesson_ id order by display order asc`. |
+| 2 | [`void deleteByLesson_Id(Long lessonId)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/repository/SpeakingQuestionRepository.java#L14) | `—` | Xóa mềm, thu hồi hoặc loại bỏ dữ liệu trong `delete by lesson_ id`. |
+
+### `SpeakingAuthoringService`
+
+Nguồn: [SpeakingAuthoringService.java](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`SpeakingLessonMutationResponse create(SpeakingLessonCreateRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L34) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create`. |
+| 2 | [`SpeakingLessonDetailResponse update(Long lessonId, SpeakingLessonCreateRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L56) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update`. |
+| 3 | [`SpeakingLessonDetailResponse getOwnDetail(Long lessonId, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L76) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get own detail`. |
+| 4 | [`SpeakingLessonMutationResponse submitForReview(Long lessonId, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L83) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `submit for review`. |
+| 5 | [`Lesson findOwnedSpeakingLesson(Long lessonId, StaffUser staff)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L98) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find owned speaking lesson`. |
+| 6 | [`StaffUser resolveActiveStaff(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L107) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve active staff`. |
+| 7 | [`StudentUser.JlptLevel parseLevel(String level)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L117) | `—` | Thực hiện xử lý backend `parse level` trong `SpeakingAuthoringService`. |
+| 8 | [`void guardEditable(Lesson lesson)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L125) | `—` | Thực hiện xử lý backend `guard editable` trong `SpeakingAuthoringService`. |
+| 9 | [`void validateQuestions(List<SpeakingQuestionDto> questions)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L131) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `validate questions`. |
+| 10 | [`List<SpeakingQuestionDto> orderedQuestions(List<SpeakingQuestionDto> questions)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L139) | `—` | Thực hiện xử lý backend `ordered questions` trong `SpeakingAuthoringService`. |
+| 11 | [`void saveQuestions(Lesson lesson, List<SpeakingQuestionDto> questions)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L146) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `save questions`. |
+| 12 | [`SpeakingLessonDetailResponse toDetail(Lesson lesson, List<SpeakingQuestion> questions)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L160) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to detail`. |
+| 13 | [`SpeakingQuestionDto toQuestionDto(SpeakingQuestion question)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L179) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to question dto`. |
+| 14 | [`SpeakingLessonMutationResponse mutationResponse(Lesson lesson)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L189) | `—` | Thực hiện xử lý backend `mutation response` trong `SpeakingAuthoringService`. |
+| 15 | [`String trimToNull(String value)`](../../../apps/backend/src/main/java/com/jlpt/feature/speaking/service/SpeakingAuthoringService.java#L196) | `—` | Thực hiện xử lý backend `trim to null` trong `SpeakingAuthoringService`. |
+
+### `StaffQuizSubmitReviewController`
+
+Nguồn: [StaffQuizSubmitReviewController.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/quiz/controller/StaffQuizSubmitReviewController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<QuizSubmitReviewResponse>> submitReview(@Valid @RequestBody QuizSubmitReviewRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/quiz/controller/StaffQuizSubmitReviewController.java#L52) | `POST /submit-review` | Xử lý endpoint `POST /submit-review`; thực hiện nghiệp vụ `submit review`. |
+
+**Tổng cộng:** `45` hàm backend trong `12` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

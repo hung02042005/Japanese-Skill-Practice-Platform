@@ -340,3 +340,126 @@ Payload mẫu:
 - Manager Approve không kiểm tra lại stroke data; handler chỉ thực hiện transition có điều kiện.
 - Không tìm thấy thông báo realtime tới Staff sau review; Staff thấy trạng thái/feedback khi tải lại.
 - Luồng Student luyện viết Kanji Published nằm ngoài phạm vi Create Kanji.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `KanjiContentHandler`
+
+Nguồn: [KanjiContentHandler.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/KanjiContentHandler.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ContentType type()`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/KanjiContentHandler.java#L25) | `—` | Thực hiện xử lý backend `type` trong `KanjiContentHandler`. |
+| 2 | [`String tableName()`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/KanjiContentHandler.java#L30) | `—` | Thực hiện xử lý backend `table name` trong `KanjiContentHandler`. |
+| 3 | [`List<ContentSnapshot> findPending(JlptLevel level)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/KanjiContentHandler.java#L35) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find pending`. |
+| 4 | [`Optional<ContentSnapshot> findActiveById(Long contentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/KanjiContentHandler.java#L43) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find active by id`. |
+| 5 | [`int approve(Long contentId, StaffUser manager, LocalDateTime now)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/KanjiContentHandler.java#L48) | `—` | Thực hiện xử lý backend `approve` trong `KanjiContentHandler`. |
+| 6 | [`int transitionFromPending(Long contentId, String targetStatus, LocalDateTime now)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/KanjiContentHandler.java#L53) | `—` | Thực hiện xử lý backend `transition from pending` trong `KanjiContentHandler`. |
+| 7 | [`ContentSnapshot toSnapshot(Kanji kanji, boolean withDetail)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/KanjiContentHandler.java#L59) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to snapshot`. |
+
+### `ContentReviewService`
+
+Nguồn: [ContentReviewService.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ReviewQueueResponse getReviewQueue(String managerEmail, String typeStr, String levelStr, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L54) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get review queue`. |
+| 2 | [`ReviewableContentDetailResponse getContentDetail(String managerEmail, Long contentId, String typeStr)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L91) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get content detail`. |
+| 3 | [`ReviewResultResponse review(String managerEmail, ReviewActionRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L113) | `—` | Thực hiện xử lý backend `review` trong `ContentReviewService`. |
+| 4 | [`ReviewResultResponse requestChanges(String managerEmail, RequestChangesRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L167) | `—` | Thực hiện xử lý backend `request changes` trong `ContentReviewService`. |
+| 5 | [`StaffUser requireManager(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L205) | `—` | Thực hiện xử lý backend `require manager` trong `ContentReviewService`. |
+| 6 | [`void guardSelfReview(ContentSnapshot snapshot, StaffUser manager)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L217) | `—` | Thực hiện xử lý backend `guard self review` trong `ContentReviewService`. |
+| 7 | [`void ensureUpdated(int affectedRows)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L224) | `—` | Thực hiện xử lý backend `ensure updated` trong `ContentReviewService`. |
+| 8 | [`String resolveRequestChangesTarget(String raw)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L231) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve request changes target`. |
+| 9 | [`JlptLevel parseLevel(String levelStr)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L242) | `—` | Thực hiện xử lý backend `parse level` trong `ContentReviewService`. |
+| 10 | [`ReviewQueueItemResponse toQueueItem(ContentSnapshot contentSnapshot)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L253) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to queue item`. |
+
+### `ReviewAuditService`
+
+Nguồn: [ReviewAuditService.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ReviewAuditService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void log(StaffUser actor, String action, ContentType contentType, String targetTable, Long contentId, String feedback)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ReviewAuditService.java#L31) | `—` | Thực hiện xử lý backend `log` trong `ReviewAuditService`. |
+
+### `Kanji`
+
+Nguồn: [Kanji.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Kanji.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Kanji.java#L79) | `—` | Thực hiện xử lý backend `on update` trong `Kanji`. |
+| 2 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Kanji.java#L97) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+
+### `StaffLearningContentController`
+
+Nguồn: [StaffLearningContentController.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/controller/StaffLearningContentController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<LessonDetailResponse>> updateLesson(@PathVariable Long lessonId, @Valid @RequestBody UpdateLessonRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/controller/StaffLearningContentController.java#L49) | `PUT /lessons/{lessonId}` | Xử lý endpoint `PUT /lessons/{lessonId}`; thực hiện nghiệp vụ `update lesson`. |
+| 2 | [`ResponseEntity<ApiResponse<VocabularyDetailResponse>> createVocabulary(@Valid @RequestBody CreateVocabularyRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/controller/StaffLearningContentController.java#L81) | `POST /vocabulary` | Xử lý endpoint `POST /vocabulary`; thực hiện nghiệp vụ `create vocabulary`. |
+| 3 | [`ResponseEntity<ApiResponse<VocabularyDetailResponse>> updateVocabulary(@PathVariable Long vocabularyId, @Valid @RequestBody UpdateVocabularyRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/controller/StaffLearningContentController.java#L88) | `PUT /vocabulary/{vocabularyId}` | Xử lý endpoint `PUT /vocabulary/{vocabularyId}`; thực hiện nghiệp vụ `update vocabulary`. |
+| 4 | [`ResponseEntity<ApiResponse<VocabularyDetailResponse>> getVocabulary(@PathVariable Long vocabularyId, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/controller/StaffLearningContentController.java#L119) | `GET /vocabulary/{vocabularyId}` | Xử lý endpoint `GET /vocabulary/{vocabularyId}`; thực hiện nghiệp vụ `get vocabulary`. |
+| 5 | [`ResponseEntity<ApiResponse<KanjiDetailResponse>> createKanji(@Valid @RequestBody CreateKanjiRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/controller/StaffLearningContentController.java#L128) | `POST /kanji` | Xử lý endpoint `POST /kanji`; thực hiện nghiệp vụ `create kanji`. |
+| 6 | [`ResponseEntity<ApiResponse<KanjiDetailResponse>> updateKanji(@PathVariable Long kanjiId, @Valid @RequestBody UpdateKanjiRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/controller/StaffLearningContentController.java#L135) | `PUT /kanji/{kanjiId}` | Xử lý endpoint `PUT /kanji/{kanjiId}`; thực hiện nghiệp vụ `update kanji`. |
+| 7 | [`ResponseEntity<ApiResponse<KanjiDetailResponse>> getKanji(@PathVariable Long kanjiId, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/controller/StaffLearningContentController.java#L162) | `GET /kanji/{kanjiId}` | Xử lý endpoint `GET /kanji/{kanjiId}`; thực hiện nghiệp vụ `get kanji`. |
+
+### `StaffKanjiRepository`
+
+Nguồn: [StaffKanjiRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/repository/StaffKanjiRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`boolean existsByCharacterValue(String characterValue)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/repository/StaffKanjiRepository.java#L21) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `exists by character value`. |
+| 2 | [`Optional<Kanji> findByIdAndStatusNot(Long id, Kanji.ContentStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/repository/StaffKanjiRepository.java#L24) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by id and status not`. |
+
+### `LearningContentServiceImpl`
+
+Nguồn: [LearningContentServiceImpl.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`LessonDetailResponse updateLesson(Long lessonId, UpdateLessonRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L59) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update lesson`. |
+| 2 | [`VocabularyDetailResponse createVocabulary(CreateVocabularyRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L96) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create vocabulary`. |
+| 3 | [`VocabularyDetailResponse updateVocabulary(Long vocabularyId, UpdateVocabularyRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L132) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update vocabulary`. |
+| 4 | [`KanjiDetailResponse createKanji(CreateKanjiRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L176) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create kanji`. |
+| 5 | [`KanjiDetailResponse updateKanji(Long kanjiId, UpdateKanjiRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L212) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update kanji`. |
+| 6 | [`SubmitReviewResponse submitForReview(SubmitReviewRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L251) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `submit for review`. |
+| 7 | [`Page<LessonDetailResponse> listLessons(String q, String jlptLevelStr, String lessonTypeStr, String statusStr, int page, int size, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L269) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `list lessons`. |
+| 8 | [`Page<VocabularyDetailResponse> listVocabulary(String q, String jlptLevelStr, Long topicId, String statusStr, int page, int size, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L316) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `list vocabulary`. |
+| 9 | [`VocabularyDetailResponse getVocabulary(Long vocabularyId, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L350) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get vocabulary`. |
+| 10 | [`Page<KanjiDetailResponse> listKanji(String q, String jlptLevelStr, String statusStr, int page, int size, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L361) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `list kanji`. |
+| 11 | [`KanjiDetailResponse getKanji(Long kanjiId, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L389) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get kanji`. |
+| 12 | [`StaffUser resolveStaff(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L402) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve staff`. |
+| 13 | [`void guardOwnership(StaffUser owner, StaffUser staff)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L409) | `—` | Thực hiện xử lý backend `guard ownership` trong `LearningContentServiceImpl`. |
+| 14 | [`void guardEditableLesson(LessonStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L419) | `—` | Thực hiện xử lý backend `guard editable lesson` trong `LearningContentServiceImpl`. |
+| 15 | [`void guardEditable(ContentStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L426) | `—` | Thực hiện xử lý backend `guard editable` trong `LearningContentServiceImpl`. |
+| 16 | [`void guardSubmittable(boolean submittable)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L432) | `—` | Thực hiện xử lý backend `guard submittable` trong `LearningContentServiceImpl`. |
+| 17 | [`JlptLevel parseLevel(String value)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L438) | `—` | Thực hiện xử lý backend `parse level` trong `LearningContentServiceImpl`. |
+| 18 | [`VocabularyTopic resolveTopic(Long topicId, JlptLevel vocabLevel)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L450) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve topic`. |
+| 19 | [`LessonType parseLessonType(String value)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L462) | `—` | Thực hiện xử lý backend `parse lesson type` trong `LearningContentServiceImpl`. |
+| 20 | [`void validateLessonContent(LessonType type, String contentText, String videoUrl, String audioUrl, String attachmentUrl)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L471) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `validate lesson content`. |
+| 21 | [`String trimToNull(String value)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L485) | `—` | Thực hiện xử lý backend `trim to null` trong `LearningContentServiceImpl`. |
+| 22 | [`LessonDetailResponse toLessonDetail(Lesson entity)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L493) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to lesson detail`. |
+| 23 | [`VocabularyDetailResponse toVocabularyDetail(Vocabulary entity)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L513) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to vocabulary detail`. |
+| 24 | [`KanjiDetailResponse toKanjiDetail(Kanji entity)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L535) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to kanji detail`. |
+| 25 | [`SubmitReviewResponse submitLesson(Long contentId, StaffUser staff)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L557) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `submit lesson`. |
+| 26 | [`SubmitReviewResponse submitVocabulary(Long contentId, StaffUser staff)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L584) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `submit vocabulary`. |
+| 27 | [`SubmitReviewResponse submitKanji(Long contentId, StaffUser staff)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/learning/service/LearningContentServiceImpl.java#L607) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `submit kanji`. |
+
+### `StaffQuizSubmitReviewController`
+
+Nguồn: [StaffQuizSubmitReviewController.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/quiz/controller/StaffQuizSubmitReviewController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<QuizSubmitReviewResponse>> submitReview(@Valid @RequestBody QuizSubmitReviewRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/quiz/controller/StaffQuizSubmitReviewController.java#L52) | `POST /submit-review` | Xử lý endpoint `POST /submit-review`; thực hiện nghiệp vụ `submit review`. |
+
+**Tổng cộng:** `57` hàm backend trong `10` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

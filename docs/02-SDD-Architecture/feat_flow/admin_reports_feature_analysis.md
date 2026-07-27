@@ -110,3 +110,33 @@ Action/page UI → query params → repository filters → `Page<AdminAuditLog>`
 
 - Không tìm thấy export CSV/PDF hoặc biểu đồ analytics trong source của màn hình này.
 - Tên “Report Screen” trên UI hiện tương ứng audit log report.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `AdminAuditLogRepository`
+
+Nguồn: [AdminAuditLogRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<AdminAuditLog> findFirstByTargetIdAndTargetTableAndActionInOrderByCreatedAtDesc(Long targetId, String targetTable, List<String> actions)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogRepository.java#L28) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find first by target id and target table and action in order by created at desc`. |
+
+### `AdminAuditLogService`
+
+Nguồn: [AdminAuditLogService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Page<AuditLogItemResponse> getAuditLogs(String action, String targetTable, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogService.java#L19) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get audit logs`. |
+| 2 | [`AuditLogItemResponse toResponse(AdminAuditLog l)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogService.java#L28) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to response`. |
+| 3 | [`String actorEmail(AdminAuditLog l)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogService.java#L40) | `—` | Thực hiện xử lý backend `actor email` trong `AdminAuditLogService`. |
+| 4 | [`String actorName(AdminAuditLog l)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogService.java#L47) | `—` | Thực hiện xử lý backend `actor name` trong `AdminAuditLogService`. |
+| 5 | [`String actorRole(AdminAuditLog l)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogService.java#L55) | `—` | Thực hiện xử lý backend `actor role` trong `AdminAuditLogService`. |
+
+**Tổng cộng:** `6` hàm backend trong `5` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

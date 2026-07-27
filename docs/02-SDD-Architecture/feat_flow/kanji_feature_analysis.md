@@ -525,3 +525,122 @@ Hệ thống tuân thủ nguyên tắc thiết kế **ADR-006**: Không lưu d�
 2. **Xử lý Backend**:
    - Client gọi API `DELETE /learning-progress/reset?contentType=KANJI` từ [studentService.js](apps/frontend/src/api/studentService.js).
    - Backend xóa hoặc cập nhật các bản ghi tiến độ tương ứng trong bảng `student_content_progress` thuộc `student_id` hiện tại về trạng thái ban đầu, cho phép Học viên bắt đầu lại lộ trình học tập.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `Kanji`
+
+Nguồn: [Kanji.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Kanji.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Kanji.java#L79) | `—` | Thực hiện xử lý backend `on update` trong `Kanji`. |
+| 2 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Kanji.java#L97) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+
+### `KanjiManagedHandler`
+
+Nguồn: [KanjiManagedHandler.java](../../../apps/backend/src/main/java/com/jlpt/feature/publishedcontent/handler/KanjiManagedHandler.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ContentType type()`](../../../apps/backend/src/main/java/com/jlpt/feature/publishedcontent/handler/KanjiManagedHandler.java#L25) | `—` | Thực hiện xử lý backend `type` trong `KanjiManagedHandler`. |
+| 2 | [`String tableName()`](../../../apps/backend/src/main/java/com/jlpt/feature/publishedcontent/handler/KanjiManagedHandler.java#L30) | `—` | Thực hiện xử lý backend `table name` trong `KanjiManagedHandler`. |
+| 3 | [`List<ManagedContentSnapshot> findPublished(JlptLevel level)`](../../../apps/backend/src/main/java/com/jlpt/feature/publishedcontent/handler/KanjiManagedHandler.java#L35) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find published`. |
+| 4 | [`Optional<ManagedContentSnapshot> findById(Long contentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/publishedcontent/handler/KanjiManagedHandler.java#L42) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by id`. |
+| 5 | [`List<ReferenceItemResponse> findBlockingReferences(Long contentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/publishedcontent/handler/KanjiManagedHandler.java#L47) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find blocking references`. |
+| 6 | [`int changeStatus(Long contentId, TargetStatus targetStatus, LocalDateTime changeTimestamp)`](../../../apps/backend/src/main/java/com/jlpt/feature/publishedcontent/handler/KanjiManagedHandler.java#L52) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `change status`. |
+| 7 | [`int restore(Long contentId, LocalDateTime now)`](../../../apps/backend/src/main/java/com/jlpt/feature/publishedcontent/handler/KanjiManagedHandler.java#L63) | `—` | Thực hiện xử lý backend `restore` trong `KanjiManagedHandler`. |
+| 8 | [`ManagedContentSnapshot toSnapshot(Kanji kanji)`](../../../apps/backend/src/main/java/com/jlpt/feature/publishedcontent/handler/KanjiManagedHandler.java#L68) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to snapshot`. |
+
+### `KanjiWritingService`
+
+Nguồn: [KanjiWritingService.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`KanjiWritingEvaluateResponse evaluateStroke(KanjiWritingEvaluateRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingService.java#L12) | `—` | Thực hiện xử lý backend `evaluate stroke` trong `KanjiWritingService`. |
+| 2 | [`KanjiWritingAttemptResponse saveAttempt(KanjiWritingAttemptRequest request, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingService.java#L15) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `save attempt`. |
+
+### `KanjiWritingServiceImpl`
+
+Nguồn: [KanjiWritingServiceImpl.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`KanjiWritingEvaluateResponse evaluateStroke(KanjiWritingEvaluateRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L38) | `—` | Thực hiện xử lý backend `evaluate stroke` trong `KanjiWritingServiceImpl`. |
+| 2 | [`KanjiWritingAttemptResponse saveAttempt(KanjiWritingAttemptRequest req, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L78) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `save attempt`. |
+| 3 | [`double computeDtw(List<double[]> s1, List<double[]> s2)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L128) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `compute dtw`. |
+| 4 | [`double euclidean(double[] a, double[] b)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L146) | `—` | Thực hiện xử lý backend `euclidean` trong `KanjiWritingServiceImpl`. |
+| 5 | [`List<double[]> normalize(List<double[]> path)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L152) | `—` | Thực hiện xử lý backend `normalize` trong `KanjiWritingServiceImpl`. |
+| 6 | [`List<double[]> downsample(List<double[]> path, int maxPts)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L165) | `—` | Thực hiện xử lý backend `downsample` trong `KanjiWritingServiceImpl`. |
+| 7 | [`String computeDirection(List<double[]> refPath)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L176) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `compute direction`. |
+| 8 | [`String qualityFromDtw(double score)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L191) | `—` | Thực hiện xử lý backend `quality from dtw` trong `KanjiWritingServiceImpl`. |
+| 9 | [`String feedbackMessage(String quality)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L198) | `—` | Thực hiện xử lý backend `feedback message` trong `KanjiWritingServiceImpl`. |
+| 10 | [`List<double[]> toDoubleArray(List<List<Double>> raw)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L207) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to double array`. |
+| 11 | [`String buildStrokeJson(List<KanjiWritingAttemptRequest.StrokeResult> strokes)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L215) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `build stroke json`. |
+
+### `StudentKanjiController`
+
+Nguồn: [StudentKanjiController.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<KanjiDetailResponse>> getKanjiDetail(@PathVariable Long kanjiId, @AuthenticationPrincipal UserDetailsImpl userDetails)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java#L50) | `GET /{kanjiId}` | Xử lý endpoint `GET /{kanjiId}`; thực hiện nghiệp vụ `get kanji detail`. |
+| 2 | [`ResponseEntity<ApiResponse<KanjiWritingEvaluateResponse>> evaluateStroke(@Valid @RequestBody KanjiWritingEvaluateRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java#L63) | `POST /writing/evaluate-stroke` | Xử lý endpoint `POST /writing/evaluate-stroke`; thực hiện nghiệp vụ `evaluate stroke`. |
+| 3 | [`ResponseEntity<ApiResponse<KanjiWritingAttemptResponse>> saveWritingAttempt(@Valid @RequestBody KanjiWritingAttemptRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java#L74) | `POST /writing/attempt` | Xử lý endpoint `POST /writing/attempt`; thực hiện nghiệp vụ `save writing attempt`. |
+
+### `StudentKanjiRepository`
+
+Nguồn: [StudentKanjiRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<Kanji> findFirstByJlptLevelAndStatusAndIdLessThanOrderByIdDesc(JlptLevel level, ContentStatus status, Long id)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiRepository.java#L28) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find first by jlpt level and status and id less than order by id desc`. |
+| 2 | [`Optional<Kanji> findFirstByJlptLevelAndStatusAndIdGreaterThanOrderByIdAsc(JlptLevel level, ContentStatus status, Long id)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiRepository.java#L31) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find first by jlpt level and status and id greater than order by id asc`. |
+
+### `StudentKanjiService`
+
+Nguồn: [StudentKanjiService.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`KanjiListResponse getKanjiList(String level, Long studentId, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiService.java#L8) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get kanji list`. |
+| 2 | [`KanjiDetailResponse getKanjiDetail(Long kanjiId, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiService.java#L10) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get kanji detail`. |
+
+### `StudentKanjiServiceImpl`
+
+Nguồn: [StudentKanjiServiceImpl.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiServiceImpl.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`KanjiListResponse getKanjiList(String level, Long studentId, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiServiceImpl.java#L35) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get kanji list`. |
+| 2 | [`KanjiDetailResponse getKanjiDetail(Long kanjiId, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiServiceImpl.java#L88) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get kanji detail`. |
+
+### `StudentContentProgressRepository`
+
+Nguồn: [StudentContentProgressRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<StudentContentProgress> findByStudentIdAndContentTypeAndContentId(Long studentId, StudentContentProgress.ContentType contentType, Long contentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L17) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student id and content type and content id`. |
+| 2 | [`List<StudentContentProgress> findByStudentIdAndContentTypeAndContentIdIn(Long studentId, StudentContentProgress.ContentType contentType, Collection<Long> contentIds)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L20) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student id and content type and content id in`. |
+| 3 | [`void deleteByStudentIdAndContentType(Long studentId, StudentContentProgress.ContentType contentType)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L23) | `—` | Xóa mềm, thu hồi hoặc loại bỏ dữ liệu trong `delete by student id and content type`. |
+| 4 | [`Optional<StudentContentProgress> findByStudent_IdAndContentTypeAndContentId(Long studentId, StudentContentProgress.ContentType contentType, Long contentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L130) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and content type and content id`. |
+| 5 | [`List<StudentContentProgress> findByStudent_IdAndContentTypeAndContentIdIn(Long studentId, StudentContentProgress.ContentType contentType, List<Long> contentIds)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L133) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and content type and content id in`. |
+| 6 | [`long countByStudent_IdAndContentTypeAndContentIdInAndStatus(Long studentId, StudentContentProgress.ContentType contentType, List<Long> contentIds, StudentContentProgress.ProgressStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L136) | `—` | Đếm dữ liệu phục vụ thống kê `count by student_ id and content type and content id in and status`. |
+
+### `WebConfig`
+
+Nguồn: [WebConfig.java](../../../apps/backend/src/main/java/com/jlpt/shared/config/WebConfig.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void addResourceHandlers(ResourceHandlerRegistry registry)`](../../../apps/backend/src/main/java/com/jlpt/shared/config/WebConfig.java#L24) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `add resource handlers`. |
+
+**Tổng cộng:** `39` hàm backend trong `12` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

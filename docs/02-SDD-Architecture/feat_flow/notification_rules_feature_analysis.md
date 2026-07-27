@@ -127,3 +127,65 @@ Form fields → `NotificationRuleRequest` → JSON map → `system_settings.sett
 
 - Source quản lý cấu hình rule nhưng không cho thấy một scheduler tổng quát tự động đọc và thực thi tất cả rule này.
 - Không có endpoint delete rule trong controller hiện tại.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `AdminAuditLogRepository`
+
+Nguồn: [AdminAuditLogRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<AdminAuditLog> findFirstByTargetIdAndTargetTableAndActionInOrderByCreatedAtDesc(Long targetId, String targetTable, List<String> actions)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogRepository.java#L28) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find first by target id and target table and action in order by created at desc`. |
+
+### `AdminNotificationRuleController`
+
+Nguồn: [AdminNotificationRuleController.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminNotificationRuleController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<List<NotificationRuleResponse>>> list()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminNotificationRuleController.java#L34) | `GET` | Xử lý endpoint `GET`; thực hiện nghiệp vụ `list`. |
+| 2 | [`ResponseEntity<ApiResponse<NotificationRuleResponse>> create(Authentication authentication, @Valid @RequestBody NotificationRuleRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminNotificationRuleController.java#L39) | `POST` | Xử lý endpoint `POST`; thực hiện nghiệp vụ `create`. |
+| 3 | [`ResponseEntity<ApiResponse<NotificationRuleResponse>> update(Authentication authentication, @PathVariable String ruleKey, @Valid @RequestBody NotificationRuleRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminNotificationRuleController.java#L46) | `PUT /{ruleKey}` | Xử lý endpoint `PUT /{ruleKey}`; thực hiện nghiệp vụ `update`. |
+| 4 | [`Long currentAdminId(Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminNotificationRuleController.java#L56) | `—` | Thực hiện xử lý backend `current admin id` trong `AdminNotificationRuleController`. |
+
+### `SystemSetting`
+
+Nguồn: [SystemSetting.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSetting.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSetting.java#L48) | `—` | Thực hiện xử lý backend `on update` trong `SystemSetting`. |
+| 2 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSetting.java#L64) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+
+### `SystemSettingRepository`
+
+Nguồn: [SystemSettingRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`List<SystemSetting> findBySettingGroup(String settingGroup)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java#L10) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by setting group`. |
+| 2 | [`Optional<SystemSetting> findBySettingGroupAndSettingKey(String settingGroup, String settingKey)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java#L12) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by setting group and setting key`. |
+| 3 | [`boolean existsBySettingGroupAndSettingKey(String settingGroup, String settingKey)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java#L14) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `exists by setting group and setting key`. |
+
+### `NotificationRuleService`
+
+Nguồn: [NotificationRuleService.java](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`List<NotificationRuleResponse> listRules()`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L39) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `list rules`. |
+| 2 | [`NotificationRuleResponse createRule(NotificationRuleRequest req, Long adminId)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L49) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create rule`. |
+| 3 | [`NotificationRuleResponse updateRule(String ruleKey, NotificationRuleRequest req, Long adminId)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L80) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update rule`. |
+| 4 | [`SystemSetting findRuleOrThrow(String ruleKey)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L112) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find rule or throw`. |
+| 5 | [`AdminUser findAdminOrThrow(Long adminId)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L118) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find admin or throw`. |
+| 6 | [`String buildJson(NotificationRuleRequest req)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L124) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `build json`. |
+| 7 | [`NotificationRuleResponse parseRule(SystemSetting setting)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L139) | `—` | Thực hiện xử lý backend `parse rule` trong `NotificationRuleService`. |
+
+**Tổng cộng:** `17` hàm backend trong `7` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

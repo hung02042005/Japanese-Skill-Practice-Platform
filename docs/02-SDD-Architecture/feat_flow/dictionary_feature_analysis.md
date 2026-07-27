@@ -379,3 +379,68 @@ Sổ "Từ cần ôn lại" là deck thuần `VOCABULARY` ([notebook_feature_ana
 - **Tìm kiếm là `LIKE '%q%'` trên 3 cột** (`word`, `furigana`, `meaning`) → **không dùng được index prefix**. Khi bảng `vocabulary` lớn lên đây sẽ là điểm nghẽn đầu tiên; cân nhắc FULLTEXT index (MySQL 8) trước khi tối ưu chỗ khác.
 - **Bộ lọc `jlptLevel` là tuỳ chọn và FE hiện không truyền** (`searchDictionary(q, undefined, activeType)`) — tham số đã có sẵn ở BE, chỉ chờ UI.
 - **`status` là `ContentStatus` lưu chữ thường** — nếu thêm query mới cho Từ điển, phải dùng `ContentStatusConverter`, không `@Enumerated(EnumType.STRING)` (xem ghi chú lỗi 500 đã gặp ở `Assessment`/`Question`).
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `DictionaryService`
+
+Nguồn: [DictionaryService.java](../../../apps/backend/src/main/java/com/jlpt/feature/dictionary/service/DictionaryService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`SearchResponse search(String keyword, String jlptLevel, String type)`](../../../apps/backend/src/main/java/com/jlpt/feature/dictionary/service/DictionaryService.java#L35) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `search`. |
+| 2 | [`TypeSearchResponse searchByType(String keyword, String jlptLevel, String type, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/dictionary/service/DictionaryService.java#L81) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `search by type`. |
+| 3 | [`SearchResponse.VocabItem toVocabItem(Vocabulary v)`](../../../apps/backend/src/main/java/com/jlpt/feature/dictionary/service/DictionaryService.java#L120) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to vocab item`. |
+| 4 | [`SearchResponse.KanjiItem toKanjiItem(Kanji k)`](../../../apps/backend/src/main/java/com/jlpt/feature/dictionary/service/DictionaryService.java#L134) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to kanji item`. |
+| 5 | [`SearchResponse.GrammarItem toGrammarItem(GrammarPoint g)`](../../../apps/backend/src/main/java/com/jlpt/feature/dictionary/service/DictionaryService.java#L144) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to grammar item`. |
+| 6 | [`SearchResponse.LessonItem toLessonItem(Lesson l)`](../../../apps/backend/src/main/java/com/jlpt/feature/dictionary/service/DictionaryService.java#L153) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to lesson item`. |
+
+### `StudentNotebookController`
+
+Nguồn: [StudentNotebookController.java](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/controller/StudentNotebookController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<List<DeckSummaryResponse>>> getDecks(@AuthenticationPrincipal UserDetailsImpl userDetails)`](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/controller/StudentNotebookController.java#L36) | `GET /decks` | Xử lý endpoint `GET /decks`; thực hiện nghiệp vụ `get decks`. |
+| 2 | [`ResponseEntity<ApiResponse<Void>> deleteCard(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails)`](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/controller/StudentNotebookController.java#L61) | `DELETE /cards/{id}` | Xử lý endpoint `DELETE /cards/{id}`; thực hiện nghiệp vụ `delete card`. |
+| 3 | [`ResponseEntity<ApiResponse<Integer>> bulkDelete(@Valid @RequestBody BulkDeleteRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails)`](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/controller/StudentNotebookController.java#L69) | `POST /cards/bulk-delete` | Xử lý endpoint `POST /cards/bulk-delete`; thực hiện nghiệp vụ `bulk delete`. |
+| 4 | [`ResponseEntity<ApiResponse<ReviewDeckAddResponse>> addWords(@Valid @RequestBody ReviewDeckAddRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails)`](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/controller/StudentNotebookController.java#L77) | `POST /words` | Xử lý endpoint `POST /words`; thực hiện nghiệp vụ `add words`. |
+
+### `NotebookService`
+
+Nguồn: [NotebookService.java](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/NotebookService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`List<DeckSummaryResponse> getDecks(Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/NotebookService.java#L52) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get decks`. |
+| 2 | [`Page<FlashcardResponse> getCards(Long studentId, Long deckId, boolean dueOnly, String q, String sort, Pageable pageable)`](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/NotebookService.java#L66) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get cards`. |
+| 3 | [`int bulkDelete(Long studentId, List<Long> ids)`](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/NotebookService.java#L122) | `—` | Thực hiện xử lý backend `bulk delete` trong `NotebookService`. |
+| 4 | [`void deleteCard(Long studentId, Long flashcardId)`](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/NotebookService.java#L130) | `—` | Xóa mềm, thu hồi hoặc loại bỏ dữ liệu trong `delete card`. |
+| 5 | [`ReviewDeckAddResponse addWrongWordsToReviewDeck(Long studentId, ReviewDeckAddRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/NotebookService.java#L137) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `add wrong words to review deck`. |
+| 6 | [`FlashcardDeck getOrCreateReviewDeck(StudentUser student)`](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/NotebookService.java#L189) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get or create review deck`. |
+| 7 | [`String normalizeSort(String sort)`](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/NotebookService.java#L200) | `—` | Thực hiện xử lý backend `normalize sort` trong `NotebookService`. |
+| 8 | [`Comparator<FlashcardResponse> responseComparator(String sortKey)`](../../../apps/backend/src/main/java/com/jlpt/feature/flashcard/service/NotebookService.java#L209) | `—` | Thực hiện xử lý backend `response comparator` trong `NotebookService`. |
+
+### `Vocabulary`
+
+Nguồn: [Vocabulary.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Vocabulary.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Vocabulary.java#L82) | `—` | Thực hiện xử lý backend `on update` trong `Vocabulary`. |
+
+### `VocabularyRepository`
+
+Nguồn: [VocabularyRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`long countByTopicRefIdAndStatusNot(Long topicId, Kanji.ContentStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyRepository.java#L91) | `—` | Đếm dữ liệu phục vụ thống kê `count by topic ref id and status not`. |
+
+**Tổng cộng:** `20` hàm backend trong `6` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

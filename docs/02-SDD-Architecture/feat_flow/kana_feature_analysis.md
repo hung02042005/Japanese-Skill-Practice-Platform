@@ -259,3 +259,67 @@ Hệ thống tuân thủ nguyên tắc thiết kế **ADR-006**: Không lưu d�
 2. **Xử lý Backend**:
    - Client gọi API `DELETE /learning-progress/reset?contentType=KANA` từ [studentService.js](apps/frontend/src/api/studentService.js).
    - Backend xóa hoặc cập nhật các bản ghi tiến độ tương ứng trong bảng `student_content_progress` thuộc `student_id` hiện tại về trạng thái ban đầu, cho phép Học viên bắt đầu lại lộ trình học tập.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `KanaCharacter`
+
+Nguồn: [KanaCharacter.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/KanaCharacter.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/KanaCharacter.java#L50) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+
+### `KanaCharacterRepository`
+
+Nguồn: [KanaCharacterRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/repository/KanaCharacterRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`List<KanaCharacter> findByKanaTypeOrderByDisplayOrderAsc(KanaType kanaType)`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/repository/KanaCharacterRepository.java#L12) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by kana type order by display order asc`. |
+
+### `KanaServiceImpl`
+
+Nguồn: [KanaServiceImpl.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kana/service/impl/KanaServiceImpl.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`KanaListResponse getKanaChart(String script, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kana/service/impl/KanaServiceImpl.java#L28) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get kana chart`. |
+| 2 | [`String determineRow(String romaji)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kana/service/impl/KanaServiceImpl.java#L76) | `—` | Thực hiện xử lý backend `determine row` trong `KanaServiceImpl`. |
+
+### `KanaService`
+
+Nguồn: [KanaService.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kana/service/KanaService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`KanaListResponse getKanaChart(String script, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/kana/service/KanaService.java#L7) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get kana chart`. |
+
+### `StudentContentProgressRepository`
+
+Nguồn: [StudentContentProgressRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<StudentContentProgress> findByStudentIdAndContentTypeAndContentId(Long studentId, StudentContentProgress.ContentType contentType, Long contentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L17) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student id and content type and content id`. |
+| 2 | [`List<StudentContentProgress> findByStudentIdAndContentTypeAndContentIdIn(Long studentId, StudentContentProgress.ContentType contentType, Collection<Long> contentIds)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L20) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student id and content type and content id in`. |
+| 3 | [`void deleteByStudentIdAndContentType(Long studentId, StudentContentProgress.ContentType contentType)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L23) | `—` | Xóa mềm, thu hồi hoặc loại bỏ dữ liệu trong `delete by student id and content type`. |
+| 4 | [`Optional<StudentContentProgress> findByStudent_IdAndContentTypeAndContentId(Long studentId, StudentContentProgress.ContentType contentType, Long contentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L130) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and content type and content id`. |
+| 5 | [`List<StudentContentProgress> findByStudent_IdAndContentTypeAndContentIdIn(Long studentId, StudentContentProgress.ContentType contentType, List<Long> contentIds)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L133) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and content type and content id in`. |
+| 6 | [`long countByStudent_IdAndContentTypeAndContentIdInAndStatus(Long studentId, StudentContentProgress.ContentType contentType, List<Long> contentIds, StudentContentProgress.ProgressStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L136) | `—` | Đếm dữ liệu phục vụ thống kê `count by student_ id and content type and content id in and status`. |
+
+### `WebConfig`
+
+Nguồn: [WebConfig.java](../../../apps/backend/src/main/java/com/jlpt/shared/config/WebConfig.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void addResourceHandlers(ResourceHandlerRegistry registry)`](../../../apps/backend/src/main/java/com/jlpt/shared/config/WebConfig.java#L24) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `add resource handlers`. |
+
+**Tổng cộng:** `12` hàm backend trong `7` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

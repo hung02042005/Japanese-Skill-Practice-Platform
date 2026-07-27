@@ -339,3 +339,174 @@ Theo dõi cụ thể trường **`isEnabled`** (cờ bật/tắt rule) — do đ
 4. **Không tìm thấy endpoint DELETE (xóa/vô hiệu hóa cứng) rule** — `AdminNotificationRuleController` chỉ có `list`/`create`/`update`. Việc "xóa" một rule chỉ có thể thực hiện gián tiếp qua `update` với `isEnabled=false` (tắt), phù hợp tinh thần Soft Delete của `CLAUDE.md`/ADR-004, nhưng không có cách xóa hẳn 1 rule key khỏi hệ thống nếu tạo nhầm — cần xác nhận đây có phải là chủ ý thiết kế.
 5. **Không tìm thấy unit test/integration test** cho `NotificationRuleService`, `AdminNotificationRuleController`, hay `NotificationTab.jsx` (đã tìm theo tên file `*Test*` liên quan — không có kết quả).
 6. **`NotificationTypeConverter.java`/`ChannelConverter.java`** thuộc entity `Notification` (bảng `notifications`), không trực tiếp thuộc luồng CRUD rule — được liệt kê ở mục 2.3 vì nằm trong pipeline gửi thông báo mà đáng lẽ phải tiêu thụ rule; không có gì đặc biệt cần bổ sung thêm về 2 file này.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `AdminAuditLogRepository`
+
+Nguồn: [AdminAuditLogRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<AdminAuditLog> findFirstByTargetIdAndTargetTableAndActionInOrderByCreatedAtDesc(Long targetId, String targetTable, List<String> actions)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogRepository.java#L28) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find first by target id and target table and action in order by created at desc`. |
+
+### `AdminNotificationRuleController`
+
+Nguồn: [AdminNotificationRuleController.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminNotificationRuleController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<List<NotificationRuleResponse>>> list()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminNotificationRuleController.java#L34) | `GET` | Xử lý endpoint `GET`; thực hiện nghiệp vụ `list`. |
+| 2 | [`ResponseEntity<ApiResponse<NotificationRuleResponse>> create(Authentication authentication, @Valid @RequestBody NotificationRuleRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminNotificationRuleController.java#L39) | `POST` | Xử lý endpoint `POST`; thực hiện nghiệp vụ `create`. |
+| 3 | [`ResponseEntity<ApiResponse<NotificationRuleResponse>> update(Authentication authentication, @PathVariable String ruleKey, @Valid @RequestBody NotificationRuleRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminNotificationRuleController.java#L46) | `PUT /{ruleKey}` | Xử lý endpoint `PUT /{ruleKey}`; thực hiện nghiệp vụ `update`. |
+| 4 | [`Long currentAdminId(Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminNotificationRuleController.java#L56) | `—` | Thực hiện xử lý backend `current admin id` trong `AdminNotificationRuleController`. |
+
+### `AdminUser`
+
+Nguồn: [AdminUser.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUser.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUser.java#L59) | `—` | Thực hiện xử lý backend `on update` trong `AdminUser`. |
+| 2 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUser.java#L75) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+
+### `AdminUserRepository`
+
+Nguồn: [AdminUserRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<AdminUser> findByEmail(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserRepository.java#L15) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by email`. |
+| 2 | [`boolean existsByEmail(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserRepository.java#L17) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `exists by email`. |
+
+### `SystemSetting`
+
+Nguồn: [SystemSetting.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSetting.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSetting.java#L48) | `—` | Thực hiện xử lý backend `on update` trong `SystemSetting`. |
+| 2 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSetting.java#L64) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+
+### `SystemSettingRepository`
+
+Nguồn: [SystemSettingRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`List<SystemSetting> findBySettingGroup(String settingGroup)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java#L10) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by setting group`. |
+| 2 | [`Optional<SystemSetting> findBySettingGroupAndSettingKey(String settingGroup, String settingKey)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java#L12) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by setting group and setting key`. |
+| 3 | [`boolean existsBySettingGroupAndSettingKey(String settingGroup, String settingKey)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java#L14) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `exists by setting group and setting key`. |
+
+### `ChannelConverter`
+
+Nguồn: [ChannelConverter.java](../../../apps/backend/src/main/java/com/jlpt/feature/notification/ChannelConverter.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`String convertToDatabaseColumn(Notification.Channel attribute)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/ChannelConverter.java#L11) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `convert to database column`. |
+| 2 | [`Notification.Channel convertToEntityAttribute(String dbData)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/ChannelConverter.java#L16) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `convert to entity attribute`. |
+
+### `Notification`
+
+Nguồn: [Notification.java](../../../apps/backend/src/main/java/com/jlpt/feature/notification/Notification.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/Notification.java#L93) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+| 2 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/Notification.java#L108) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+
+### `NotificationTypeConverter`
+
+Nguồn: [NotificationTypeConverter.java](../../../apps/backend/src/main/java/com/jlpt/feature/notification/NotificationTypeConverter.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`String convertToDatabaseColumn(Notification.NotificationType attribute)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/NotificationTypeConverter.java#L11) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `convert to database column`. |
+| 2 | [`Notification.NotificationType convertToEntityAttribute(String dbData)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/NotificationTypeConverter.java#L16) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `convert to entity attribute`. |
+
+### `IN_APP`
+
+Nguồn: [NotificationDispatcher.java](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationDispatcher.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`CompletableFuture<Void> broadcastAsync(List<StudentUser> targets, SendNotificationRequest req, StaffUser staffCreator)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationDispatcher.java#L36) | `—` | Gửi hoặc phân phối thông tin cho nghiệp vụ `broadcast async`. |
+| 2 | [`void deliverPendingEmails()`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationDispatcher.java#L64) | `—` | Gửi hoặc phân phối thông tin cho nghiệp vụ `deliver pending emails`. |
+
+### `NotificationService`
+
+Nguồn: [NotificationService.java](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void notifyStudent(StudentUser student, String title, String content, Notification.NotificationType type, String ruleKey, StaffUser staffCreator)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L44) | `—` | Gửi hoặc phân phối thông tin cho nghiệp vụ `notify student`. |
+| 2 | [`Page<NotificationResponse> getMyNotifications(Long studentId, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L66) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get my notifications`. |
+| 3 | [`long getUnreadCount(Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L73) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get unread count`. |
+| 4 | [`void markNotificationRead(Long notificationId, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L78) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `mark notification read`. |
+| 5 | [`int markAllNotificationsRead(Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L91) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `mark all notifications read`. |
+| 6 | [`String broadcast(String actorEmail, SendNotificationRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L98) | `—` | Gửi hoặc phân phối thông tin cho nghiệp vụ `broadcast`. |
+| 7 | [`List<StudentUser> resolveTargets(String targetJlptLevel)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L118) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve targets`. |
+| 8 | [`NotificationResponse toNotificationResponse(Notification n)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L131) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to notification response`. |
+
+### `SupportTicketService`
+
+Nguồn: [SupportTicketService.java](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`TicketResponse createTicket(Long studentId, TicketRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L63) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create ticket`. |
+| 2 | [`Page<TicketResponse> getMyTickets(Long studentId, String status, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L85) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get my tickets`. |
+| 3 | [`TicketDetailResponse getStudentTicketDetail(Long ticketId, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L104) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get student ticket detail`. |
+| 4 | [`TicketDetailResponse getStaffTicketDetail(Long ticketId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L116) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get staff ticket detail`. |
+| 5 | [`TicketReplyResponse addStudentReply(Long ticketId, Long studentId, TicketReplyRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L125) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `add student reply`. |
+| 6 | [`TicketReplyResponse addStaffReply(Long ticketId, String staffEmail, TicketReplyRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L147) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `add staff reply`. |
+| 7 | [`TicketResponse closeTicket(Long ticketId, String actorEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L184) | `—` | Thực hiện xử lý backend `close ticket` trong `SupportTicketService`. |
+| 8 | [`TicketResponse closeStudentTicket(Long ticketId, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L215) | `—` | Thực hiện xử lý backend `close student ticket` trong `SupportTicketService`. |
+| 9 | [`TicketResponse assignTicket(Long ticketId, Long assignToStaffId, String actorEmail, boolean isAdmin)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L231) | `—` | Thực hiện xử lý backend `assign ticket` trong `SupportTicketService`. |
+| 10 | [`Page<TicketResponse> getAllTickets(String status, String category, String priority, String q, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L268) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get all tickets`. |
+| 11 | [`Page<com.jlpt.feature.support.dto.SubmissionResponse> getAllSubmissions(String submissionType, String status, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L278) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get all submissions`. |
+| 12 | [`com.jlpt.feature.support.dto.SubmissionResponse getSubmissionDetail(Long submissionId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L295) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get submission detail`. |
+| 13 | [`com.jlpt.feature.support.dto.SubmissionResponse toSubmissionResponse(StudentSubmission s)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L306) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to submission response`. |
+| 14 | [`GradeResponse manualGrade(Long submissionId, String actorEmail, ManualGradeRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L335) | `—` | Thực hiện xử lý backend `manual grade` trong `SupportTicketService`. |
+| 15 | [`Ticket findTicketOrThrow(Long id)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L398) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find ticket or throw`. |
+| 16 | [`StudentUser findStudentOrThrow(Long id)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L402) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find student or throw`. |
+| 17 | [`StaffUser findStaffOrThrow(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L408) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find staff or throw`. |
+| 18 | [`void checkTicketNotClosed(Ticket ticket)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L414) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `check ticket not closed`. |
+| 19 | [`TicketResponse toTicketResponse(Ticket t)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L420) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to ticket response`. |
+| 20 | [`TicketDetailResponse toTicketDetailResponse(Ticket t, List<TicketReply> replies)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L442) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to ticket detail response`. |
+| 21 | [`TicketReplyResponse toReplyResponse(TicketReply r, String senderName, String role)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L475) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to reply response`. |
+| 22 | [`Ticket.TicketStatus parseStatus(String status)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L486) | `—` | Thực hiện xử lý backend `parse status` trong `SupportTicketService`. |
+| 23 | [`Ticket.Priority parsePriority(String priority)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L495) | `—` | Thực hiện xử lý backend `parse priority` trong `SupportTicketService`. |
+
+### `SecurityConfig`
+
+Nguồn: [SecurityConfig.java](../../../apps/backend/src/main/java/com/jlpt/shared/config/SecurityConfig.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`SecurityFilterChain securityFilterChain(HttpSecurity http)`](../../../apps/backend/src/main/java/com/jlpt/shared/config/SecurityConfig.java#L48) | `—` | Thực hiện xử lý backend `security filter chain` trong `SecurityConfig`. |
+| 2 | [`PasswordEncoder passwordEncoder()`](../../../apps/backend/src/main/java/com/jlpt/shared/config/SecurityConfig.java#L86) | `—` | Thực hiện xử lý backend `password encoder` trong `SecurityConfig`. |
+| 3 | [`CorsConfigurationSource corsConfigurationSource()`](../../../apps/backend/src/main/java/com/jlpt/shared/config/SecurityConfig.java#L91) | `—` | Thực hiện xử lý backend `cors configuration source` trong `SecurityConfig`. |
+
+### `NotificationRuleService`
+
+Nguồn: [NotificationRuleService.java](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`List<NotificationRuleResponse> listRules()`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L39) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `list rules`. |
+| 2 | [`NotificationRuleResponse createRule(NotificationRuleRequest req, Long adminId)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L49) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create rule`. |
+| 3 | [`NotificationRuleResponse updateRule(String ruleKey, NotificationRuleRequest req, Long adminId)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L80) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update rule`. |
+| 4 | [`SystemSetting findRuleOrThrow(String ruleKey)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L112) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find rule or throw`. |
+| 5 | [`AdminUser findAdminOrThrow(Long adminId)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L118) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find admin or throw`. |
+| 6 | [`String buildJson(NotificationRuleRequest req)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L124) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `build json`. |
+| 7 | [`NotificationRuleResponse parseRule(SystemSetting setting)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L139) | `—` | Thực hiện xử lý backend `parse rule` trong `NotificationRuleService`. |
+
+**Tổng cộng:** `63` hàm backend trong `20` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

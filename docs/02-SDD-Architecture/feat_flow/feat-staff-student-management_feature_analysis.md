@@ -352,3 +352,132 @@ Các điểm sau **không xác định được đầy đủ hoặc không tìm 
 3. **`StudentStatusConverter.java`** ([apps/backend/src/main/java/com/jlpt/feature/student/StudentStatusConverter.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentStatusConverter.java)) — có tồn tại trong repo nhưng **chưa được đọc chi tiết** trong phân tích này; giả định nó chỉ convert qua lại giữa enum và chuỗi DB dựa trên tên file và cách dùng tại `@Convert(converter = StudentStatusConverter.class)` ([StudentUser.java:36](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUser.java#L36)), chưa xác nhận logic converter cụ thể (ví dụ có xử lý hoa/thường hay giá trị lạ không).
 4. **`AdminUserService.suspendUser`** được nhắc tới trong comment tại [StaffStudentService.java:136](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/student/StaffStudentService.java#L136) ("parity với AdminUserService.suspendUser") nhưng **không nằm trong phạm vi entry point được giao** cho phân tích này nên chưa được đọc — đây là tính năng suspend phía Admin (`feature/admin`), khác với suspend phía Staff đang phân tích. Nếu cần so sánh 2 luồng suspend (Admin vs Staff) để phát hiện khác biệt hành vi, cần yêu cầu phân tích bổ sung riêng cho `feature/admin`.
 5. **Không xác nhận được ai (role nào) thực sự đang gọi 2 endpoint suspend/activate trong thực tế** — vì không có test file hoặc Postman collection nào được khảo sát trong phạm vi nhiệm vụ này. Nếu có file test (`*Test.java`, `*.http`, Postman collection) mô tả cách gọi 2 endpoint này, nên cung cấp đường dẫn để xác nhận thêm.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `AssessmentRepository`
+
+Nguồn: [AssessmentRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/AssessmentRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<Assessment> findByIdAndStatus(Long id, Kanji.ContentStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/AssessmentRepository.java#L34) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by id and status`. |
+| 2 | [`Optional<Assessment> findByIdAndAssessmentTypeAndStatus(Long id, Assessment.AssessmentType assessmentType, Kanji.ContentStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/AssessmentRepository.java#L36) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by id and assessment type and status`. |
+| 3 | [`boolean existsByTitle(String title)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/AssessmentRepository.java#L39) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `exists by title`. |
+| 4 | [`Optional<Assessment> findByIdAndIsDeletedFalse(Long id)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/AssessmentRepository.java#L41) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by id and is deleted false`. |
+| 5 | [`long countByCreatedBy_IdAndStatus(Long staffId, Kanji.ContentStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/AssessmentRepository.java#L44) | `—` | Đếm dữ liệu phục vụ thống kê `count by created by_ id and status`. |
+| 6 | [`List<Assessment> findTop8ByCreatedBy_IdAndIsDeletedFalseOrderByUpdatedAtDesc(Long staffId)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/AssessmentRepository.java#L47) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find top8 by created by_ id and is deleted false order by updated at desc`. |
+
+### `TestAttemptRepository`
+
+Nguồn: [TestAttemptRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/TestAttemptRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Page<TestAttempt> findByStudent_IdAndStatusOrderBySubmittedAtDesc(Long studentId, TestAttempt.AttemptStatus status, Pageable pageable)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/TestAttemptRepository.java#L18) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and status order by submitted at desc`. |
+| 2 | [`Page<TestAttempt> findByStudent_IdAndParentIdAndStatusOrderBySubmittedAtDesc(Long studentId, Long parentId, TestAttempt.AttemptStatus status, Pageable pageable)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/TestAttemptRepository.java#L21) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and parent id and status order by submitted at desc`. |
+| 3 | [`List<TestAttempt> findByStudent_IdAndParentIdAndStatus(Long studentId, Long parentId, TestAttempt.AttemptStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/TestAttemptRepository.java#L24) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and parent id and status`. |
+| 4 | [`Page<TestAttempt> findByStudent_IdAndAttemptTypeAndStatusInOrderBySubmittedAtDesc(Long studentId, TestAttempt.AttemptType attemptType, List<TestAttempt.AttemptStatus> statuses, Pageable pageable)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/TestAttemptRepository.java#L27) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and attempt type and status in order by submitted at desc`. |
+| 5 | [`List<TestAttempt> findByStudent_IdAndStatusIn(Long studentId, List<TestAttempt.AttemptStatus> statuses)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/TestAttemptRepository.java#L38) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and status in`. |
+
+### `AuthTokenRepository`
+
+Nguồn: [AuthTokenRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthTokenRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<AuthToken> findByTokenValue(String tokenValue)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthTokenRepository.java#L16) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by token value`. |
+| 2 | [`Optional<AuthToken> findByTokenValueAndTokenType(String tokenValue, AuthToken.TokenType tokenType)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthTokenRepository.java#L18) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by token value and token type`. |
+| 3 | [`void deleteByStudentIdAndTokenType(Long studentId, AuthToken.TokenType tokenType)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthTokenRepository.java#L20) | `—` | Xóa mềm, thu hồi hoặc loại bỏ dữ liệu trong `delete by student id and token type`. |
+| 4 | [`Optional<AuthToken> findFirstByStudentIdAndTokenTypeOrderByCreatedAtDesc(Long studentId, AuthToken.TokenType tokenType)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthTokenRepository.java#L22) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find first by student id and token type order by created at desc`. |
+
+### `StaffManagerGuard`
+
+Nguồn: [StaffManagerGuard.java](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffManagerGuard.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`StaffUser requireManager(String email, String forbiddenMessage)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffManagerGuard.java#L23) | `—` | Thực hiện xử lý backend `require manager` trong `StaffManagerGuard`. |
+
+### `StudentContentProgressRepository`
+
+Nguồn: [StudentContentProgressRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<StudentContentProgress> findByStudentIdAndContentTypeAndContentId(Long studentId, StudentContentProgress.ContentType contentType, Long contentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L17) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student id and content type and content id`. |
+| 2 | [`List<StudentContentProgress> findByStudentIdAndContentTypeAndContentIdIn(Long studentId, StudentContentProgress.ContentType contentType, Collection<Long> contentIds)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L20) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student id and content type and content id in`. |
+| 3 | [`void deleteByStudentIdAndContentType(Long studentId, StudentContentProgress.ContentType contentType)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L23) | `—` | Xóa mềm, thu hồi hoặc loại bỏ dữ liệu trong `delete by student id and content type`. |
+| 4 | [`Optional<StudentContentProgress> findByStudent_IdAndContentTypeAndContentId(Long studentId, StudentContentProgress.ContentType contentType, Long contentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L130) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and content type and content id`. |
+| 5 | [`List<StudentContentProgress> findByStudent_IdAndContentTypeAndContentIdIn(Long studentId, StudentContentProgress.ContentType contentType, List<Long> contentIds)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L133) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and content type and content id in`. |
+| 6 | [`long countByStudent_IdAndContentTypeAndContentIdInAndStatus(Long studentId, StudentContentProgress.ContentType contentType, List<Long> contentIds, StudentContentProgress.ProgressStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentContentProgressRepository.java#L136) | `—` | Đếm dữ liệu phục vụ thống kê `count by student_ id and content type and content id in and status`. |
+
+### `StudentStatusConverter`
+
+Nguồn: [StudentStatusConverter.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentStatusConverter.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`String convertToDatabaseColumn(StudentUser.StudentStatus attribute)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentStatusConverter.java#L10) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `convert to database column`. |
+| 2 | [`StudentUser.StudentStatus convertToEntityAttribute(String dbData)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentStatusConverter.java#L15) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `convert to entity attribute`. |
+
+### `StudentUser`
+
+Nguồn: [StudentUser.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUser.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUser.java#L103) | `—` | Thực hiện xử lý backend `on update` trong `StudentUser`. |
+| 2 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUser.java#L119) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+| 3 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUser.java#L135) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+
+### `StudentUserRepository`
+
+Nguồn: [StudentUserRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUserRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<StudentUser> findByEmail(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUserRepository.java#L15) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by email`. |
+| 2 | [`boolean existsByEmail(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUserRepository.java#L17) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `exists by email`. |
+
+### `ApiResponse`
+
+Nguồn: [ApiResponse.java](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`static <T> ApiResponse<T> success(T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L22) | `—` | Thực hiện xử lý backend `success` trong `ApiResponse`. |
+| 2 | [`static <T> ApiResponse<T> success(String message, T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L30) | `—` | Thực hiện xử lý backend `success` trong `ApiResponse`. |
+| 3 | [`static <T> ApiResponse<T> created(T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L34) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `created`. |
+| 4 | [`static <T> ApiResponse<T> created(String message, T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L42) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `created`. |
+| 5 | [`static <T> ApiResponse<T> error(int status, String message)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L46) | `—` | Thực hiện xử lý backend `error` trong `ApiResponse`. |
+| 6 | [`static <T> ApiResponse<T> error(int status, String message, T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L50) | `—` | Thực hiện xử lý backend `error` trong `ApiResponse`. |
+| 7 | [`static <T> ApiResponse<T> errorWithCode(int status, String message, String code)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L63) | `—` | Thực hiện xử lý backend `error with code` trong `ApiResponse`. |
+
+### `GlobalExceptionHandler`
+
+Nguồn: [GlobalExceptionHandler.java](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<Void>> handleNotFound(ResourceNotFoundException ex)`](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java#L21) | `—` | Thực hiện xử lý backend `handle not found` trong `GlobalExceptionHandler`. |
+| 2 | [`ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException ex)`](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java#L27) | `—` | Thực hiện xử lý backend `handle no resource found` trong `GlobalExceptionHandler`. |
+| 3 | [`ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException ex)`](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java#L34) | `—` | Thực hiện xử lý backend `handle business exception` trong `GlobalExceptionHandler`. |
+| 4 | [`ResponseEntity<ApiResponse<Void>> handleBadRequest(BadRequestException ex)`](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java#L41) | `—` | Thực hiện xử lý backend `handle bad request` trong `GlobalExceptionHandler`. |
+| 5 | [`ResponseEntity<ApiResponse<Void>> handleForbidden(ForbiddenException ex)`](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java#L47) | `—` | Thực hiện xử lý backend `handle forbidden` trong `GlobalExceptionHandler`. |
+| 6 | [`ResponseEntity<ApiResponse<Void>> handleConflict(DuplicateResourceException ex)`](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java#L53) | `—` | Thực hiện xử lý backend `handle conflict` trong `GlobalExceptionHandler`. |
+| 7 | [`ResponseEntity<ApiResponse<Void>> handleBusinessRule(BusinessRuleException ex)`](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java#L59) | `—` | Thực hiện xử lý backend `handle business rule` trong `GlobalExceptionHandler`. |
+| 8 | [`ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex)`](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java#L65) | `—` | Thực hiện xử lý backend `handle access denied` trong `GlobalExceptionHandler`. |
+| 9 | [`ResponseEntity<ApiResponse<String>> handleConstraintViolation(ConstraintViolationException ex)`](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java#L72) | `—` | Thực hiện xử lý backend `handle constraint violation` trong `GlobalExceptionHandler`. |
+| 10 | [`ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex)`](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java#L86) | `—` | Thực hiện xử lý backend `handle illegal argument` trong `GlobalExceptionHandler`. |
+| 11 | [`ResponseEntity<ApiResponse<String>> handleValidation(MethodArgumentNotValidException ex)`](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java#L93) | `—` | Thực hiện xử lý backend `handle validation` trong `GlobalExceptionHandler`. |
+| 12 | [`ResponseEntity<ApiResponse<Void>> handleOptimisticLocking(ObjectOptimisticLockingFailureException ex)`](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java#L103) | `—` | Thực hiện xử lý backend `handle optimistic locking` trong `GlobalExceptionHandler`. |
+| 13 | [`ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex)`](../../../apps/backend/src/main/java/com/jlpt/shared/exception/GlobalExceptionHandler.java#L110) | `—` | Thực hiện xử lý backend `handle general` trong `GlobalExceptionHandler`. |
+
+**Tổng cộng:** `49` hàm backend trong `14` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

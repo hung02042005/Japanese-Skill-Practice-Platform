@@ -599,3 +599,115 @@ POST /api/manager/reviews
     → APPROVE: PUBLISHED
     → REJECT: REJECTED + audit feedback
 ```
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `ManagerReviewController`
+
+Nguồn: [ManagerReviewController.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/controller/ManagerReviewController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<ReviewableContentDetailResponse>> getContentDetail(@PathVariable Long contentId, @RequestParam String contentType, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/controller/ManagerReviewController.java#L60) | `GET /contents/{contentId}` | Xử lý endpoint `GET /contents/{contentId}`; thực hiện nghiệp vụ `get content detail`. |
+| 2 | [`ResponseEntity<ApiResponse<ReviewResultResponse>> review(@Valid @RequestBody ReviewActionRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/controller/ManagerReviewController.java#L69) | `POST /reviews` | Xử lý endpoint `POST /reviews`; thực hiện nghiệp vụ `review`. |
+| 3 | [`ResponseEntity<ApiResponse<ReviewResultResponse>> requestChanges(@Valid @RequestBody RequestChangesRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/controller/ManagerReviewController.java#L79) | `POST /reviews/request-changes` | Xử lý endpoint `POST /reviews/request-changes`; thực hiện nghiệp vụ `request changes`. |
+
+### `GrammarContentHandler`
+
+Nguồn: [GrammarContentHandler.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/GrammarContentHandler.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ContentType type()`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/GrammarContentHandler.java#L25) | `—` | Thực hiện xử lý backend `type` trong `GrammarContentHandler`. |
+| 2 | [`String tableName()`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/GrammarContentHandler.java#L30) | `—` | Thực hiện xử lý backend `table name` trong `GrammarContentHandler`. |
+| 3 | [`List<ContentSnapshot> findPending(JlptLevel level)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/GrammarContentHandler.java#L35) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find pending`. |
+| 4 | [`Optional<ContentSnapshot> findActiveById(Long contentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/GrammarContentHandler.java#L45) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find active by id`. |
+| 5 | [`int approve(Long contentId, StaffUser manager, LocalDateTime now)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/GrammarContentHandler.java#L52) | `—` | Thực hiện xử lý backend `approve` trong `GrammarContentHandler`. |
+| 6 | [`int transitionFromPending(Long contentId, String targetStatus, LocalDateTime now)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/GrammarContentHandler.java#L57) | `—` | Thực hiện xử lý backend `transition from pending` trong `GrammarContentHandler`. |
+| 7 | [`ContentSnapshot toSnapshot(GrammarPoint grammarPoint, boolean withDetail)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/GrammarContentHandler.java#L63) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to snapshot`. |
+
+### `ContentReviewService`
+
+Nguồn: [ContentReviewService.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ReviewQueueResponse getReviewQueue(String managerEmail, String typeStr, String levelStr, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L54) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get review queue`. |
+| 2 | [`ReviewableContentDetailResponse getContentDetail(String managerEmail, Long contentId, String typeStr)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L91) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get content detail`. |
+| 3 | [`ReviewResultResponse review(String managerEmail, ReviewActionRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L113) | `—` | Thực hiện xử lý backend `review` trong `ContentReviewService`. |
+| 4 | [`ReviewResultResponse requestChanges(String managerEmail, RequestChangesRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L167) | `—` | Thực hiện xử lý backend `request changes` trong `ContentReviewService`. |
+| 5 | [`StaffUser requireManager(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L205) | `—` | Thực hiện xử lý backend `require manager` trong `ContentReviewService`. |
+| 6 | [`void guardSelfReview(ContentSnapshot snapshot, StaffUser manager)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L217) | `—` | Thực hiện xử lý backend `guard self review` trong `ContentReviewService`. |
+| 7 | [`void ensureUpdated(int affectedRows)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L224) | `—` | Thực hiện xử lý backend `ensure updated` trong `ContentReviewService`. |
+| 8 | [`String resolveRequestChangesTarget(String raw)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L231) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve request changes target`. |
+| 9 | [`JlptLevel parseLevel(String levelStr)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L242) | `—` | Thực hiện xử lý backend `parse level` trong `ContentReviewService`. |
+| 10 | [`ReviewQueueItemResponse toQueueItem(ContentSnapshot contentSnapshot)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L253) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to queue item`. |
+
+### `ReviewableContentResolver`
+
+Nguồn: [ReviewableContentResolver.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ReviewableContentResolver.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ReviewableContentHandler resolve(ContentType type)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ReviewableContentResolver.java#L29) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve`. |
+| 2 | [`Collection<ReviewableContentHandler> distinctHandlers()`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ReviewableContentResolver.java#L39) | `—` | Thực hiện xử lý backend `distinct handlers` trong `ReviewableContentResolver`. |
+
+### `ReviewAuditService`
+
+Nguồn: [ReviewAuditService.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ReviewAuditService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void log(StaffUser actor, String action, ContentType contentType, String targetTable, Long contentId, String feedback)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ReviewAuditService.java#L31) | `—` | Thực hiện xử lý backend `log` trong `ReviewAuditService`. |
+
+### `GrammarPoint`
+
+Nguồn: [GrammarPoint.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/GrammarPoint.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/GrammarPoint.java#L77) | `—` | Thực hiện xử lý backend `on update` trong `GrammarPoint`. |
+
+### `StaffGrammarController`
+
+Nguồn: [StaffGrammarController.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/controller/StaffGrammarController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<GrammarDetailResponse>> createGrammar(@Valid @RequestBody CreateGrammarRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/controller/StaffGrammarController.java#L39) | `POST` | Xử lý endpoint `POST`; thực hiện nghiệp vụ `create grammar`. |
+| 2 | [`ResponseEntity<ApiResponse<GrammarDetailResponse>> getGrammar(@PathVariable Long grammarId, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/controller/StaffGrammarController.java#L70) | `GET /{grammarId}` | Xử lý endpoint `GET /{grammarId}`; thực hiện nghiệp vụ `get grammar`. |
+| 3 | [`ResponseEntity<ApiResponse<GrammarDetailResponse>> updateGrammar(@PathVariable Long grammarId, @Valid @RequestBody UpdateGrammarRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/controller/StaffGrammarController.java#L77) | `PUT /{grammarId}` | Xử lý endpoint `PUT /{grammarId}`; thực hiện nghiệp vụ `update grammar`. |
+
+### `StaffGrammarSubmitReviewController`
+
+Nguồn: [StaffGrammarSubmitReviewController.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/controller/StaffGrammarSubmitReviewController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<GrammarSubmitReviewResponse>> submitReview(@org.springframework.web.bind.annotation.PathVariable Long grammarId, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/controller/StaffGrammarSubmitReviewController.java#L27) | `POST /{grammarId}/submit-review` | Xử lý endpoint `POST /{grammarId}/submit-review`; thực hiện nghiệp vụ `submit review`. |
+
+### `StaffGrammarServiceImpl`
+
+Nguồn: [StaffGrammarServiceImpl.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/service/StaffGrammarServiceImpl.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`GrammarDetailResponse createGrammar(CreateGrammarRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/service/StaffGrammarServiceImpl.java#L35) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create grammar`. |
+| 2 | [`Page<GrammarSummaryResponse> listGrammars(String jlptLevelStr, String statusStr, Pageable pageable, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/service/StaffGrammarServiceImpl.java#L75) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `list grammars`. |
+| 3 | [`GrammarDetailResponse getGrammar(Long grammarId, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/service/StaffGrammarServiceImpl.java#L103) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get grammar`. |
+| 4 | [`GrammarDetailResponse updateGrammar(Long grammarId, UpdateGrammarRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/service/StaffGrammarServiceImpl.java#L116) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update grammar`. |
+| 5 | [`GrammarSubmitReviewResponse submitForReview(Long grammarId, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/service/StaffGrammarServiceImpl.java#L176) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `submit for review`. |
+| 6 | [`StaffUser resolveStaff(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/service/StaffGrammarServiceImpl.java#L213) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve staff`. |
+| 7 | [`Lesson resolveLesson(Long lessonId)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/service/StaffGrammarServiceImpl.java#L219) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve lesson`. |
+| 8 | [`void guardOwnershipOrManager(GrammarPoint grammar, StaffUser staff)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/service/StaffGrammarServiceImpl.java#L225) | `—` | Thực hiện xử lý backend `guard ownership or manager` trong `StaffGrammarServiceImpl`. |
+| 9 | [`String trimToNull(String value)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/service/StaffGrammarServiceImpl.java#L234) | `—` | Thực hiện xử lý backend `trim to null` trong `StaffGrammarServiceImpl`. |
+| 10 | [`GrammarSummaryResponse toSummaryResponse(GrammarPoint entity)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/service/StaffGrammarServiceImpl.java#L240) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to summary response`. |
+| 11 | [`GrammarDetailResponse toDetailResponse(GrammarPoint entity)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/grammar/service/StaffGrammarServiceImpl.java#L253) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to detail response`. |
+
+**Tổng cộng:** `39` hàm backend trong `12` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

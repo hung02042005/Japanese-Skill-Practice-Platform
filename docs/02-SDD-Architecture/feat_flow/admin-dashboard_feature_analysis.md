@@ -450,3 +450,101 @@ Tóm lại: tên field `totalUsers` **không đổi tên** từ Service → DTO 
 4. **`SkeletonRow.jsx`**: như đã nêu ở mục 2.1, file này được cung cấp trong danh sách "file liên quan" ban đầu nhưng xác minh qua import thực tế cho thấy nó **không thuộc** feature admin-dashboard (thuộc `ManageUsers.jsx`). Đã loại khỏi bản đồ kết nối/luồng xử lý để tránh thông tin sai.
 5. **Cơ chế `MaintenanceModeService`** và **cơ chế ghi/đọc `admin_audit_logs`** (`AdminAuditLogService`, `AdminAuditLogRepository`, entity `AdminAuditLog`) chỉ được nêu ở mức điểm-kết-nối theo đúng yêu cầu phạm vi — chi tiết đầy đủ nằm ở [admin-system_feature_analysis.md](../../../docs/02-SDD-Architecture/feat_flow/admin-system_feature_analysis.md) (đã có) và tài liệu phân tích Admin Reports/Audit Log (UC-38, đang được viết song song, chưa tồn tại tại thời điểm phân tích này).
 6. **Test tự động**: không tìm thấy file test (unit/integration) riêng cho `AdminDashboardService`/`AdminDashboardController` trong phạm vi khảo sát — không thể xác nhận coverage hiện tại của feature này.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `AdminDashboardController`
+
+Nguồn: [AdminDashboardController.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<AdminDashboardResponse>> getDashboard()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardController.java#L22) | `GET` | Xử lý endpoint `GET`; thực hiện nghiệp vụ `get dashboard`. |
+
+### `AdminDashboardService`
+
+Nguồn: [AdminDashboardService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`AdminDashboardResponse getOverview()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java#L40) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get overview`. |
+| 2 | [`DashboardResponse buildKpi()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java#L48) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `build kpi`. |
+| 3 | [`AdminDashboardSummaryResponse buildSummary()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java#L66) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `build summary`. |
+| 4 | [`String resolveSystemStatus()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java#L78) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve system status`. |
+
+### `AdminUserRepository`
+
+Nguồn: [AdminUserRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<AdminUser> findByEmail(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserRepository.java#L15) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by email`. |
+| 2 | [`boolean existsByEmail(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserRepository.java#L17) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `exists by email`. |
+
+### `MaintenanceModeService`
+
+Nguồn: [MaintenanceModeService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/MaintenanceModeService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`boolean isEnabled()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/MaintenanceModeService.java#L19) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `is enabled`. |
+
+### `StudentSubmissionRepository`
+
+Nguồn: [StudentSubmissionRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/StudentSubmissionRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<StudentSubmission> findByIdAndStudent_Id(Long id, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/StudentSubmissionRepository.java#L18) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by id and student_ id`. |
+
+### `TestAttemptRepository`
+
+Nguồn: [TestAttemptRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/TestAttemptRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Page<TestAttempt> findByStudent_IdAndStatusOrderBySubmittedAtDesc(Long studentId, TestAttempt.AttemptStatus status, Pageable pageable)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/TestAttemptRepository.java#L18) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and status order by submitted at desc`. |
+| 2 | [`Page<TestAttempt> findByStudent_IdAndParentIdAndStatusOrderBySubmittedAtDesc(Long studentId, Long parentId, TestAttempt.AttemptStatus status, Pageable pageable)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/TestAttemptRepository.java#L21) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and parent id and status order by submitted at desc`. |
+| 3 | [`List<TestAttempt> findByStudent_IdAndParentIdAndStatus(Long studentId, Long parentId, TestAttempt.AttemptStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/TestAttemptRepository.java#L24) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and parent id and status`. |
+| 4 | [`Page<TestAttempt> findByStudent_IdAndAttemptTypeAndStatusInOrderBySubmittedAtDesc(Long studentId, TestAttempt.AttemptType attemptType, List<TestAttempt.AttemptStatus> statuses, Pageable pageable)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/TestAttemptRepository.java#L27) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and attempt type and status in order by submitted at desc`. |
+| 5 | [`List<TestAttempt> findByStudent_IdAndStatusIn(Long studentId, List<TestAttempt.AttemptStatus> statuses)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/TestAttemptRepository.java#L38) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by student_ id and status in`. |
+
+### `StaffUserRepository`
+
+Nguồn: [StaffUserRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffUserRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<StaffUser> findByEmail(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffUserRepository.java#L15) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by email`. |
+| 2 | [`boolean existsByEmail(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffUserRepository.java#L17) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `exists by email`. |
+
+### `StudentUserRepository`
+
+Nguồn: [StudentUserRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUserRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<StudentUser> findByEmail(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUserRepository.java#L15) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by email`. |
+| 2 | [`boolean existsByEmail(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUserRepository.java#L17) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `exists by email`. |
+
+### `ApiResponse`
+
+Nguồn: [ApiResponse.java](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`static <T> ApiResponse<T> success(T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L22) | `—` | Thực hiện xử lý backend `success` trong `ApiResponse`. |
+| 2 | [`static <T> ApiResponse<T> success(String message, T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L30) | `—` | Thực hiện xử lý backend `success` trong `ApiResponse`. |
+| 3 | [`static <T> ApiResponse<T> created(T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L34) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `created`. |
+| 4 | [`static <T> ApiResponse<T> created(String message, T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L42) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `created`. |
+| 5 | [`static <T> ApiResponse<T> error(int status, String message)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L46) | `—` | Thực hiện xử lý backend `error` trong `ApiResponse`. |
+| 6 | [`static <T> ApiResponse<T> error(int status, String message, T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L50) | `—` | Thực hiện xử lý backend `error` trong `ApiResponse`. |
+| 7 | [`static <T> ApiResponse<T> errorWithCode(int status, String message, String code)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L63) | `—` | Thực hiện xử lý backend `error with code` trong `ApiResponse`. |
+
+**Tổng cộng:** `25` hàm backend trong `15` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

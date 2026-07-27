@@ -328,3 +328,108 @@ Lưu ý: nhánh `multiple_choice` dùng `optionA-D` và `correctOption`; nhánh 
 - Feedback Reject được ghi qua `ReviewAuditService`; chi tiết schema bảng audit nằm ngoài nhóm file lõi của tài liệu này.
 - Thông báo thời gian thực cho Staff sau khi Manager review: không tìm thấy WebSocket/event trong luồng; Staff thấy trạng thái mới khi danh sách được tải lại.
 - Entity Staff dùng chuỗi trạng thái trong `StaffContentQuestionEntity`, còn Review handler dùng enum của `assessment.Question`; cả hai ánh xạ cùng bảng `questions`. Đây là thiết kế có thật trong source và cần cẩn thận khi thay đổi mapping.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `ManagerReviewController`
+
+Nguồn: [ManagerReviewController.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/controller/ManagerReviewController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<ReviewableContentDetailResponse>> getContentDetail(@PathVariable Long contentId, @RequestParam String contentType, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/controller/ManagerReviewController.java#L60) | `GET /contents/{contentId}` | Xử lý endpoint `GET /contents/{contentId}`; thực hiện nghiệp vụ `get content detail`. |
+| 2 | [`ResponseEntity<ApiResponse<ReviewResultResponse>> review(@Valid @RequestBody ReviewActionRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/controller/ManagerReviewController.java#L69) | `POST /reviews` | Xử lý endpoint `POST /reviews`; thực hiện nghiệp vụ `review`. |
+| 3 | [`ResponseEntity<ApiResponse<ReviewResultResponse>> requestChanges(@Valid @RequestBody RequestChangesRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/controller/ManagerReviewController.java#L79) | `POST /reviews/request-changes` | Xử lý endpoint `POST /reviews/request-changes`; thực hiện nghiệp vụ `request changes`. |
+
+### `QuestionContentHandler`
+
+Nguồn: [QuestionContentHandler.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/QuestionContentHandler.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ContentType type()`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/QuestionContentHandler.java#L25) | `—` | Thực hiện xử lý backend `type` trong `QuestionContentHandler`. |
+| 2 | [`String tableName()`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/QuestionContentHandler.java#L30) | `—` | Thực hiện xử lý backend `table name` trong `QuestionContentHandler`. |
+| 3 | [`List<ContentSnapshot> findPending(JlptLevel level)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/QuestionContentHandler.java#L35) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find pending`. |
+| 4 | [`Optional<ContentSnapshot> findActiveById(Long contentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/QuestionContentHandler.java#L43) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find active by id`. |
+| 5 | [`int approve(Long contentId, StaffUser manager, LocalDateTime now)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/QuestionContentHandler.java#L48) | `—` | Thực hiện xử lý backend `approve` trong `QuestionContentHandler`. |
+| 6 | [`int transitionFromPending(Long contentId, String targetStatus, LocalDateTime now)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/QuestionContentHandler.java#L53) | `—` | Thực hiện xử lý backend `transition from pending` trong `QuestionContentHandler`. |
+| 7 | [`ContentSnapshot toSnapshot(Question question, boolean withDetail)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/QuestionContentHandler.java#L59) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to snapshot`. |
+
+### `ContentReviewService`
+
+Nguồn: [ContentReviewService.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ReviewQueueResponse getReviewQueue(String managerEmail, String typeStr, String levelStr, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L54) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get review queue`. |
+| 2 | [`ReviewableContentDetailResponse getContentDetail(String managerEmail, Long contentId, String typeStr)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L91) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get content detail`. |
+| 3 | [`ReviewResultResponse review(String managerEmail, ReviewActionRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L113) | `—` | Thực hiện xử lý backend `review` trong `ContentReviewService`. |
+| 4 | [`ReviewResultResponse requestChanges(String managerEmail, RequestChangesRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L167) | `—` | Thực hiện xử lý backend `request changes` trong `ContentReviewService`. |
+| 5 | [`StaffUser requireManager(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L205) | `—` | Thực hiện xử lý backend `require manager` trong `ContentReviewService`. |
+| 6 | [`void guardSelfReview(ContentSnapshot snapshot, StaffUser manager)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L217) | `—` | Thực hiện xử lý backend `guard self review` trong `ContentReviewService`. |
+| 7 | [`void ensureUpdated(int affectedRows)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L224) | `—` | Thực hiện xử lý backend `ensure updated` trong `ContentReviewService`. |
+| 8 | [`String resolveRequestChangesTarget(String raw)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L231) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve request changes target`. |
+| 9 | [`JlptLevel parseLevel(String levelStr)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L242) | `—` | Thực hiện xử lý backend `parse level` trong `ContentReviewService`. |
+| 10 | [`ReviewQueueItemResponse toQueueItem(ContentSnapshot contentSnapshot)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L253) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to queue item`. |
+
+### `ReviewAuditService`
+
+Nguồn: [ReviewAuditService.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ReviewAuditService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void log(StaffUser actor, String action, ContentType contentType, String targetTable, Long contentId, String feedback)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ReviewAuditService.java#L31) | `—` | Thực hiện xử lý backend `log` trong `ReviewAuditService`. |
+
+### `StaffQuestionController`
+
+Nguồn: [StaffQuestionController.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/controller/StaffQuestionController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<QuestionResponse>> createQuestion(@Valid @RequestBody CreateQuestionRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/controller/StaffQuestionController.java#L50) | `POST` | Xử lý endpoint `POST`; thực hiện nghiệp vụ `create question`. |
+| 2 | [`ResponseEntity<ApiResponse<QuestionResponse>> getQuestion(@PathVariable Long questionId)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/controller/StaffQuestionController.java#L92) | `GET /{questionId}` | Xử lý endpoint `GET /{questionId}`; thực hiện nghiệp vụ `get question`. |
+| 3 | [`ResponseEntity<ApiResponse<QuestionResponse>> updateQuestion(@PathVariable Long questionId, @Valid @RequestBody UpdateQuestionRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/controller/StaffQuestionController.java#L101) | `PUT /{questionId}` | Xử lý endpoint `PUT /{questionId}`; thực hiện nghiệp vụ `update question`. |
+| 4 | [`ResponseEntity<ApiResponse<StaffQuestionSubmitReviewResponse>> submitForReview(@PathVariable Long questionId, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/controller/StaffQuestionController.java#L113) | `POST /{questionId}/submit-review` | Xử lý endpoint `POST /{questionId}/submit-review`; thực hiện nghiệp vụ `submit for review`. |
+
+### `StaffContentQuestionEntity`
+
+Nguồn: [StaffContentQuestionEntity.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/entity/StaffContentQuestionEntity.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/entity/StaffContentQuestionEntity.java#L86) | `—` | Thực hiện xử lý backend `on update` trong `StaffContentQuestionEntity`. |
+
+### `StaffContentQuestionRepository`
+
+Nguồn: [StaffContentQuestionRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/repository/StaffContentQuestionRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<StaffContentQuestionEntity> findByIdAndStatusNot(Long id, String status)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/repository/StaffContentQuestionRepository.java#L22) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by id and status not`. |
+
+### `StaffQuestionServiceImpl`
+
+Nguồn: [StaffQuestionServiceImpl.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/service/StaffQuestionServiceImpl.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`QuestionResponse createQuestion(CreateQuestionRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/service/StaffQuestionServiceImpl.java#L41) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create question`. |
+| 2 | [`Page<QuestionResponse> listQuestions(String q, String skill, String jlptLevel, String questionType, String status, Pageable pageable)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/service/StaffQuestionServiceImpl.java#L83) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `list questions`. |
+| 3 | [`QuestionResponse getQuestion(Long questionId)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/service/StaffQuestionServiceImpl.java#L112) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get question`. |
+| 4 | [`QuestionResponse updateQuestion(Long questionId, UpdateQuestionRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/service/StaffQuestionServiceImpl.java#L124) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update question`. |
+| 5 | [`StaffQuestionSubmitReviewResponse submitForReview(Long questionId, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/service/StaffQuestionServiceImpl.java#L188) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `submit for review`. |
+| 6 | [`StaffUser resolveStaff(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/service/StaffQuestionServiceImpl.java#L229) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve staff`. |
+| 7 | [`StaffContentQuestionEntity findActive(Long id)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/service/StaffQuestionServiceImpl.java#L235) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find active`. |
+| 8 | [`void guardOwnership(Long questionOwnerId, StaffUser current)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/service/StaffQuestionServiceImpl.java#L244) | `—` | Thực hiện xử lý backend `guard ownership` trong `StaffQuestionServiceImpl`. |
+| 9 | [`void validateQuestionFields(String questionType, String optionA, String optionB, String optionC, String optionD, String correctOption, String correctAnswerText)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/service/StaffQuestionServiceImpl.java#L256) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `validate question fields`. |
+| 10 | [`String trimToNull(String value)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/service/StaffQuestionServiceImpl.java#L288) | `—` | Thực hiện xử lý backend `trim to null` trong `StaffQuestionServiceImpl`. |
+| 11 | [`String applyUpdate(String oldValue, String newValue)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/service/StaffQuestionServiceImpl.java#L300) | `—` | Thực hiện xử lý backend `apply update` trong `StaffQuestionServiceImpl`. |
+| 12 | [`QuestionResponse toResponse(StaffContentQuestionEntity entity, boolean locked)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/question/service/StaffQuestionServiceImpl.java#L312) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to response`. |
+
+**Tổng cộng:** `39` hàm backend trong `10` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

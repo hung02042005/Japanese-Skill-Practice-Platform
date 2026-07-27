@@ -116,3 +116,40 @@ Count từ repositories → `AdminDashboardSummaryResponse` + `DashboardResponse
 
 - `submissionRepository` được autowire tùy chọn; khi không có bean, pending submissions trả 0.
 - Dashboard không dùng realtime push; dữ liệu được tải khi page/effect chạy.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `AdminDashboardController`
+
+Nguồn: [AdminDashboardController.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<AdminDashboardResponse>> getDashboard()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardController.java#L22) | `GET` | Xử lý endpoint `GET`; thực hiện nghiệp vụ `get dashboard`. |
+
+### `AdminDashboardService`
+
+Nguồn: [AdminDashboardService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`AdminDashboardResponse getOverview()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java#L40) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get overview`. |
+| 2 | [`DashboardResponse buildKpi()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java#L48) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `build kpi`. |
+| 3 | [`AdminDashboardSummaryResponse buildSummary()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java#L66) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `build summary`. |
+| 4 | [`String resolveSystemStatus()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java#L78) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve system status`. |
+
+### `MaintenanceModeService`
+
+Nguồn: [MaintenanceModeService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/MaintenanceModeService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`boolean isEnabled()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/MaintenanceModeService.java#L19) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `is enabled`. |
+
+**Tổng cộng:** `6` hàm backend trong `4` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

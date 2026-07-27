@@ -487,3 +487,116 @@ Theo dõi dữ liệu **cờ bảo trì** xuyên suốt 2 luồng: (a) Admin ghi
 5. **`AdminAuditLog` — thao tác bật/tắt bảo trì có được ghi audit log không?** — Khác với các thao tác ở feature quản lý người dùng (`suspendUser`, `softDeleteUser`, ...) đều gọi `auditLog(...)` sau khi ghi, hàm `upsert()` trong `AdminSettingsService` **không** thấy gọi `AdminAuditLogRepository` hay tương đương. Nghĩa là việc Admin bật/tắt chế độ bảo trì — một hành động có tác động toàn hệ thống — **hiện không để lại vết audit log** theo source code đã đọc. Đây có thể là một khoảng trống cần lưu ý (không phải bug về mặt chức năng, nhưng đáng cân nhắc bổ sung).
 
 6. **Spring Security Config chi tiết** — Tương tự các phân tích feature admin khác, chưa đọc `apps/backend/src/main/java/com/jlpt/shared/security/` để xác nhận cách `hasRole('ADMIN')` được wire với JWT filter.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `AdminDashboardService`
+
+Nguồn: [AdminDashboardService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`AdminDashboardResponse getOverview()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java#L40) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get overview`. |
+| 2 | [`DashboardResponse buildKpi()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java#L48) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `build kpi`. |
+| 3 | [`AdminDashboardSummaryResponse buildSummary()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java#L66) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `build summary`. |
+| 4 | [`String resolveSystemStatus()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java#L78) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve system status`. |
+
+### `AdminSettingsController`
+
+Nguồn: [AdminSettingsController.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<List<SettingResponse>>> getByGroup(@PathVariable String group)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsController.java#L31) | `GET /{group}` | Xử lý endpoint `GET /{group}`; thực hiện nghiệp vụ `get by group`. |
+| 2 | [`ResponseEntity<ApiResponse<SettingResponse>> updateSetting(@PathVariable String group, @PathVariable String key, @Valid @RequestBody UpdateSettingRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsController.java#L38) | `PUT /{group}/{key}` | Xử lý endpoint `PUT /{group}/{key}`; thực hiện nghiệp vụ `update setting`. |
+| 3 | [`ResponseEntity<ApiResponse<List<SettingResponse>>> updateSettings(@PathVariable String group, @Valid @RequestBody UpdateSettingsBatchRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsController.java#L46) | `PUT /{group}` | Xử lý endpoint `PUT /{group}`; thực hiện nghiệp vụ `update settings`. |
+
+### `AdminSettingsService`
+
+Nguồn: [AdminSettingsService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`List<SettingResponse> getByGroup(String group)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L31) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get by group`. |
+| 2 | [`SettingResponse updateSetting(String group, String key, String value)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L50) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update setting`. |
+| 3 | [`List<SettingResponse> updateSettings(String group, List<UpdateSettingsBatchRequest.Item> items)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L57) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update settings`. |
+| 4 | [`SettingResponse upsert(String group, String key, String value)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L77) | `—` | Thực hiện xử lý backend `upsert` trong `AdminSettingsService`. |
+| 5 | [`void testSmtpConnection(SmtpTestRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L111) | `—` | Thực hiện xử lý backend `test smtp connection` trong `AdminSettingsService`. |
+| 6 | [`void applySmtpSettingsToMailSender()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L202) | `—` | Thực hiện xử lý backend `apply smtp settings to mail sender` trong `AdminSettingsService`. |
+| 7 | [`void validateGroup(String group)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L273) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `validate group`. |
+| 8 | [`boolean isPassword(String key)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L279) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `is password`. |
+
+### `MaintenanceModeService`
+
+Nguồn: [MaintenanceModeService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/MaintenanceModeService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`boolean isEnabled()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/MaintenanceModeService.java#L19) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `is enabled`. |
+
+### `SystemSetting`
+
+Nguồn: [SystemSetting.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSetting.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSetting.java#L48) | `—` | Thực hiện xử lý backend `on update` trong `SystemSetting`. |
+| 2 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSetting.java#L64) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+
+### `SystemSettingRepository`
+
+Nguồn: [SystemSettingRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`List<SystemSetting> findBySettingGroup(String settingGroup)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java#L10) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by setting group`. |
+| 2 | [`Optional<SystemSetting> findBySettingGroupAndSettingKey(String settingGroup, String settingKey)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java#L12) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by setting group and setting key`. |
+| 3 | [`boolean existsBySettingGroupAndSettingKey(String settingGroup, String settingKey)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java#L14) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `exists by setting group and setting key`. |
+
+### `ValueTypeConverter`
+
+Nguồn: [ValueTypeConverter.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/ValueTypeConverter.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`String convertToDatabaseColumn(SystemSetting.ValueType type)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/ValueTypeConverter.java#L10) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `convert to database column`. |
+| 2 | [`SystemSetting.ValueType convertToEntityAttribute(String dbValue)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/ValueTypeConverter.java#L15) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `convert to entity attribute`. |
+
+### `AuthenticationService`
+
+Nguồn: [AuthenticationService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`AccountTypeResponse checkAccountType(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java#L83) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `check account type`. |
+| 2 | [`AccountTypeResponse checkAccountType(String email, String ip)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java#L88) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `check account type`. |
+| 3 | [`AccountTypeResponse resolveAccountType(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java#L94) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve account type`. |
+| 4 | [`void enforceCheckAccountTypeRateLimit(String ip)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java#L105) | `—` | Thực hiện xử lý backend `enforce check account type rate limit` trong `AuthenticationService`. |
+| 5 | [`LoginApiResponse login(LoginRequest request, String ip)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java#L125) | `—` | Thực hiện xử lý backend `login` trong `AuthenticationService`. |
+| 6 | [`LoginApiResponse loginStaff(LoginRequest request, String ip)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java#L146) | `—` | Thực hiện xử lý backend `login staff` trong `AuthenticationService`. |
+| 7 | [`LoginApiResponse handleStaffLogin(StaffUser staff, String rawPassword, String ip)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java#L154) | `—` | Thực hiện xử lý backend `handle staff login` trong `AuthenticationService`. |
+| 8 | [`LoginApiResponse handleStudentLogin(StudentUser user, String rawPassword, String ip)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java#L215) | `—` | Thực hiện xử lý backend `handle student login` trong `AuthenticationService`. |
+| 9 | [`RefreshTokenResponse refresh(RefreshTokenRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java#L264) | `—` | Thực hiện xử lý backend `refresh` trong `AuthenticationService`. |
+| 10 | [`void logout(LogoutRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java#L301) | `—` | Thực hiện xử lý backend `logout` trong `AuthenticationService`. |
+| 11 | [`AuthResponse loginWithGoogle(GoogleTokenRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java#L307) | `—` | Thực hiện xử lý backend `login with google` trong `AuthenticationService`. |
+| 12 | [`GoogleIdToken.Payload verifyGoogleToken(String idToken)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java#L379) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `verify google token`. |
+| 13 | [`String resolveEmailFromToken(AuthToken token)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java#L399) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve email from token`. |
+
+### `RegistrationService`
+
+Nguồn: [RegistrationService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/RegistrationService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`StudentResponse register(RegisterRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/RegistrationService.java#L50) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `register`. |
+| 2 | [`void verifyEmail(VerifyEmailRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/RegistrationService.java#L90) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `verify email`. |
+| 3 | [`void resendVerification(ResendVerificationRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/RegistrationService.java#L146) | `—` | Thực hiện xử lý backend `resend verification` trong `RegistrationService`. |
+| 4 | [`String generateEmailOtpCode()`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/RegistrationService.java#L184) | `—` | Thực hiện xử lý backend `generate email otp code` trong `RegistrationService`. |
+
+**Tổng cộng:** `40` hàm backend trong `13` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

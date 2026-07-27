@@ -363,3 +363,231 @@ Tóm lại: field `reason` (input tự do do Admin gõ ở 1 form khác) đi xuy
 - **`update_user` và `restore_user`** (ghi bởi `AdminUserService.java` dòng 236/248/543/560) **không có trong `ACTION_LABELS`/`ACTION_GROUPS`** của `auditMeta.js` — nghĩa là khi các hành động này xuất hiện trong bảng, `getActionLabel()` sẽ fallback trả nguyên chuỗi thô (`"update_user"`) thay vì nhãn tiếng Việt, và người dùng **không thể lọc riêng 2 loại action này** qua dropdown (vì không có trong `ACTION_GROUPS`). Đây là quan sát từ code, chưa xác nhận có phải là thiếu sót cần fix hay là chủ đích (có thể do các action này ít quan trọng hơn để hiển thị nhãn đẹp).
 - **Nội dung 2 tài liệu phân tích chéo** `admin-panel-login_feature_analysis.md` và `admin-user-management_feature_analysis.md` (đường dẫn được nêu ở mục 3.3) **chưa tồn tại tại thời điểm viết tài liệu này** (đã kiểm tra bằng liệt kê thư mục `docs/02-SDD-Architecture/feat_flow/`) — chúng được cho biết là đang được viết song song bởi task khác; nội dung liên kết là dự đoán theo quy ước đặt tên, không phải xác nhận từ file thật.
 - **`targetTable` filter** (`GET /api/admin/audit-logs?targetTable=...`) được BE hỗ trợ đầy đủ (`AdminAuditLogController`, `AdminAuditLogService`, `AdminAuditLogRepository` đều xử lý param này) nhưng **`AdminReports.jsx` không có UI nào để chọn `targetTable`** — chỉ `adminService.js` khai báo tham số này trong hàm `getAuditLog`, không được trang gọi tới. Không rõ đây là tính năng đã bỏ dở ở FE hay chủ đích chỉ dùng nội bộ (VD: từ trang khác gọi kèm `targetTable` để xem log 1 đối tượng cụ thể) — không tìm thấy nơi nào trong FE truyền `targetTable` khi gọi `getAuditLog`.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `AdminAuditLogRepository`
+
+Nguồn: [AdminAuditLogRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<AdminAuditLog> findFirstByTargetIdAndTargetTableAndActionInOrderByCreatedAtDesc(Long targetId, String targetTable, List<String> actions)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogRepository.java#L28) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find first by target id and target table and action in order by created at desc`. |
+
+### `AdminAuditLogService`
+
+Nguồn: [AdminAuditLogService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Page<AuditLogItemResponse> getAuditLogs(String action, String targetTable, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogService.java#L19) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get audit logs`. |
+| 2 | [`AuditLogItemResponse toResponse(AdminAuditLog l)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogService.java#L28) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to response`. |
+| 3 | [`String actorEmail(AdminAuditLog l)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogService.java#L40) | `—` | Thực hiện xử lý backend `actor email` trong `AdminAuditLogService`. |
+| 4 | [`String actorName(AdminAuditLog l)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogService.java#L47) | `—` | Thực hiện xử lý backend `actor name` trong `AdminAuditLogService`. |
+| 5 | [`String actorRole(AdminAuditLog l)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuditLogService.java#L55) | `—` | Thực hiện xử lý backend `actor role` trong `AdminAuditLogService`. |
+
+### `AdminAuthService`
+
+Nguồn: [AdminAuthService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuthService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`LoginApiResponse processAdminLogin(AdminUser admin, String rawPassword, String ip)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuthService.java#L34) | `—` | Thực hiện xử lý backend `process admin login` trong `AdminAuthService`. |
+| 2 | [`String generateToken()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuthService.java#L114) | `—` | Thực hiện xử lý backend `generate token` trong `AdminAuthService`. |
+| 3 | [`void audit(AdminUser admin, String action, String targetTable, Long targetId, String ip, String desc)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminAuthService.java#L120) | `—` | Thực hiện xử lý backend `audit` trong `AdminAuthService`. |
+
+### `AdminSettingsService`
+
+Nguồn: [AdminSettingsService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`List<SettingResponse> getByGroup(String group)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L31) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get by group`. |
+| 2 | [`SettingResponse updateSetting(String group, String key, String value)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L50) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update setting`. |
+| 3 | [`List<SettingResponse> updateSettings(String group, List<UpdateSettingsBatchRequest.Item> items)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L57) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update settings`. |
+| 4 | [`SettingResponse upsert(String group, String key, String value)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L77) | `—` | Thực hiện xử lý backend `upsert` trong `AdminSettingsService`. |
+| 5 | [`void testSmtpConnection(SmtpTestRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L111) | `—` | Thực hiện xử lý backend `test smtp connection` trong `AdminSettingsService`. |
+| 6 | [`void applySmtpSettingsToMailSender()`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L202) | `—` | Thực hiện xử lý backend `apply smtp settings to mail sender` trong `AdminSettingsService`. |
+| 7 | [`void validateGroup(String group)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L273) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `validate group`. |
+| 8 | [`boolean isPassword(String key)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java#L279) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `is password`. |
+
+### `AdminUserService`
+
+Nguồn: [AdminUserService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Page<UserSummaryResponse> listUsers(String type, String q, String status, String jlptLevel, String staffRole, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L62) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `list users`. |
+| 2 | [`Object getUserDetail(String type, Long userId)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L93) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get user detail`. |
+| 3 | [`yield toStudentDetail(s)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L100) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to student detail`. |
+| 4 | [`yield toStaffDetail(st)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L106) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to staff detail`. |
+| 5 | [`yield toAdminDetail(a)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L112) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to admin detail`. |
+| 6 | [`CreateStaffResponse createStaff(String adminEmail, CreateStaffRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L120) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create staff`. |
+| 7 | [`void setupStaffPassword(com.jlpt.feature.staff.dto.request.StaffSetupPasswordRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L166) | `—` | Thực hiện xử lý backend `setup staff password` trong `AdminUserService`. |
+| 8 | [`Object updateUser(String adminEmail, String type, Long userId, Object request)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L208) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update user`. |
+| 9 | [`yield toStudentDetail(s)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L237) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to student detail`. |
+| 10 | [`yield toStaffDetail(st)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L249) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to staff detail`. |
+| 11 | [`SuspendUserResponse suspendUser(String adminEmail, String type, Long userId, SuspendUserRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L259) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `suspend user`. |
+| 12 | [`ActivateUserResponse activateUser(String adminEmail, String type, Long userId)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L336) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `activate user`. |
+| 13 | [`void resetPassword(String adminEmail, String type, Long userId)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L403) | `—` | Thực hiện xử lý backend `reset password` trong `AdminUserService`. |
+| 14 | [`SoftDeleteUserResponse softDeleteUser(String adminEmail, String type, Long userId)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L476) | `—` | Thực hiện xử lý backend `soft delete user` trong `AdminUserService`. |
+| 15 | [`RestoreUserResponse restoreUser(String adminEmail, String type, Long userId)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L527) | `—` | Thực hiện xử lý backend `restore user` trong `AdminUserService`. |
+| 16 | [`ChangeStaffRoleResponse changeStaffRole(String adminEmail, Long staffId, ChangeStaffRoleRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L575) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `change staff role`. |
+| 17 | [`String normalizeType(String type)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L611) | `—` | Thực hiện xử lý backend `normalize type` trong `AdminUserService`. |
+| 18 | [`AdminUser resolveAdmin(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L616) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve admin`. |
+| 19 | [`void checkSelfModification(Long actorAdminId, String type, Long targetId)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L623) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `check self modification`. |
+| 20 | [`void auditLog(AdminUser actor, String action, String targetTable, Long targetId, String description)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L629) | `—` | Thực hiện xử lý backend `audit log` trong `AdminUserService`. |
+| 21 | [`String generateUrlSafeToken(int bytes)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L639) | `—` | Thực hiện xử lý backend `generate url safe token` trong `AdminUserService`. |
+| 22 | [`UserSummaryResponse toStudentSummary(StudentUser s)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L647) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to student summary`. |
+| 23 | [`UserSummaryResponse toStaffSummary(StaffUser st)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L663) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to staff summary`. |
+| 24 | [`UserSummaryResponse toAdminSummary(AdminUser a)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L675) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to admin summary`. |
+| 25 | [`StudentDetailResponse toStudentDetail(StudentUser s)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L686) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to student detail`. |
+| 26 | [`StaffDetailResponse toStaffDetail(StaffUser st)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L708) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to staff detail`. |
+| 27 | [`AdminDetailResponse toAdminDetail(AdminUser a)`](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminUserService.java#L721) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to admin detail`. |
+
+### `MockExamService`
+
+Nguồn: [MockExamService.java](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/MockExamService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`String canonicalSection(String raw)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/MockExamService.java#L56) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `canonical section`. |
+| 2 | [`ExamStartResponse startExam(Long assessmentId, StudentUser student)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/MockExamService.java#L77) | `—` | Thực hiện xử lý backend `start exam` trong `MockExamService`. |
+| 3 | [`ExamSubmitResponse submitExam(Long assessmentId, Long studentId, SubmitExamRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/MockExamService.java#L117) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `submit exam`. |
+| 4 | [`Page<ExamHistoryResponse> getExamHistory(Long studentId, Pageable pageable)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/MockExamService.java#L154) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get exam history`. |
+| 5 | [`ExamReviewResponse getExamReview(Long attemptId, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/MockExamService.java#L173) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get exam review`. |
+| 6 | [`ExamSubmitResponse gradeAndPersist(TestAttempt attempt, Assessment assessment, List<QuestionAssignment> assignments, List<AnswerRequest> answers, boolean isAutoSubmit, LocalDateTime now)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/MockExamService.java#L193) | `—` | Thực hiện xử lý backend `grade and persist` trong `MockExamService`. |
+| 7 | [`TestAttempt findOwnedAttempt(Long attemptId, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/MockExamService.java#L305) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find owned attempt`. |
+| 8 | [`LocalDateTime computeExpiresAt(Assessment assessment, LocalDateTime startedAt)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/MockExamService.java#L315) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `compute expires at`. |
+| 9 | [`SectionScoresResponse toSectionScores(TestAttempt attempt)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/MockExamService.java#L319) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to section scores`. |
+| 10 | [`ExamHistoryResponse toHistoryResponse(TestAttempt attempt, Assessment assessment)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/MockExamService.java#L327) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to history response`. |
+| 11 | [`ExamReviewItem toReviewItem(AttemptAnswer answer)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/MockExamService.java#L345) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to review item`. |
+
+### `QuizService`
+
+Nguồn: [QuizService.java](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/QuizService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`QuizResponse createQuiz(QuizRequest request, StaffUser staffUser)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/QuizService.java#L52) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create quiz`. |
+| 2 | [`QuizResponse updateAssessment(Long assessmentId, QuizRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/QuizService.java#L74) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update assessment`. |
+| 3 | [`void softDeleteAssessment(Long assessmentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/QuizService.java#L93) | `—` | Thực hiện xử lý backend `soft delete assessment` trong `QuizService`. |
+| 4 | [`void addQuestions(Long quizId, List<QuestionRequest> questions, StaffUser staffUser)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/QuizService.java#L110) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `add questions`. |
+| 5 | [`Page<AssessmentSummaryResponse> listAssessmentsForStaff(Assessment.AssessmentType type, Kanji.ContentStatus status, StudentUser.JlptLevel jlptLevel, Pageable pageable)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/QuizService.java#L171) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `list assessments for staff`. |
+| 6 | [`List<QuestionResponse> getQuestionsOfAssessment(Long assessmentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/QuizService.java#L182) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get questions of assessment`. |
+| 7 | [`ExamStartResponse startQuiz(Long quizId, StudentUser student)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/QuizService.java#L199) | `—` | Thực hiện xử lý backend `start quiz` trong `QuizService`. |
+| 8 | [`ScoreResponse submitQuiz(Long quizId, Long studentId, Long attemptId, List<AnswerRequest> answers)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/QuizService.java#L233) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `submit quiz`. |
+| 9 | [`AssessmentSummaryResponse toSummaryResponse(Assessment assessment)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/QuizService.java#L257) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to summary response`. |
+| 10 | [`ScoreResponse calculateScore(TestAttempt attempt, Assessment assessment, List<AnswerRequest> answers)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/QuizService.java#L279) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `calculate score`. |
+| 11 | [`QuizResponse mapToQuizResponse(Assessment a)`](../../../apps/backend/src/main/java/com/jlpt/feature/assessment/QuizService.java#L368) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `map to quiz response`. |
+
+### `NotificationService`
+
+Nguồn: [NotificationService.java](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void notifyStudent(StudentUser student, String title, String content, Notification.NotificationType type, String ruleKey, StaffUser staffCreator)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L44) | `—` | Gửi hoặc phân phối thông tin cho nghiệp vụ `notify student`. |
+| 2 | [`Page<NotificationResponse> getMyNotifications(Long studentId, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L66) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get my notifications`. |
+| 3 | [`long getUnreadCount(Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L73) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get unread count`. |
+| 4 | [`void markNotificationRead(Long notificationId, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L78) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `mark notification read`. |
+| 5 | [`int markAllNotificationsRead(Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L91) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `mark all notifications read`. |
+| 6 | [`String broadcast(String actorEmail, SendNotificationRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L98) | `—` | Gửi hoặc phân phối thông tin cho nghiệp vụ `broadcast`. |
+| 7 | [`List<StudentUser> resolveTargets(String targetJlptLevel)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L118) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve targets`. |
+| 8 | [`NotificationResponse toNotificationResponse(Notification n)`](../../../apps/backend/src/main/java/com/jlpt/feature/notification/service/NotificationService.java#L131) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to notification response`. |
+
+### `StaffPasswordResetService`
+
+Nguồn: [StaffPasswordResetService.java](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void requestReset(StaffForgotPasswordRequest request, String ip)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java#L50) | `—` | Thực hiện xử lý backend `request reset` trong `StaffPasswordResetService`. |
+| 2 | [`List<StaffResetRequestResponse> listRequests(String status)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java#L56) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `list requests`. |
+| 3 | [`IssueTempPasswordResponse issueTempPassword(String adminEmail, Long staffId, IssueTempPasswordRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java#L64) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `issue temp password`. |
+| 4 | [`void changeTempPassword(String limitedToken, ChangeTempPasswordRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java#L107) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `change temp password`. |
+| 5 | [`void createRequestForActiveStaff(StaffUser staff, String ip)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java#L139) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create request for active staff`. |
+| 6 | [`void validateIssueRequest(StaffPasswordResetRequest resetRequest, Long staffId)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java#L161) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `validate issue request`. |
+| 7 | [`void validateLimitedToken(AuthToken token)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java#L176) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `validate limited token`. |
+| 8 | [`void validateStrongPassword(String password)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java#L182) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `validate strong password`. |
+| 9 | [`String generateTempPassword()`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java#L190) | `—` | Thực hiện xử lý backend `generate temp password` trong `StaffPasswordResetService`. |
+| 10 | [`char randomChar(String source)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java#L206) | `—` | Thực hiện xử lý backend `random char` trong `StaffPasswordResetService`. |
+| 11 | [`StaffPasswordResetRequest.ResetStatus parseStatus(String status)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java#L210) | `—` | Thực hiện xử lý backend `parse status` trong `StaffPasswordResetService`. |
+| 12 | [`StaffResetRequestResponse toResponse(StaffPasswordResetRequest resetRequest)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java#L221) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to response`. |
+| 13 | [`void audit(AdminUser admin, String action, String targetTable, Long targetId, String description)`](../../../apps/backend/src/main/java/com/jlpt/feature/staff/StaffPasswordResetService.java#L235) | `—` | Thực hiện xử lý backend `audit` trong `StaffPasswordResetService`. |
+
+### `SupportTicketService`
+
+Nguồn: [SupportTicketService.java](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`TicketResponse createTicket(Long studentId, TicketRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L63) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create ticket`. |
+| 2 | [`Page<TicketResponse> getMyTickets(Long studentId, String status, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L85) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get my tickets`. |
+| 3 | [`TicketDetailResponse getStudentTicketDetail(Long ticketId, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L104) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get student ticket detail`. |
+| 4 | [`TicketDetailResponse getStaffTicketDetail(Long ticketId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L116) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get staff ticket detail`. |
+| 5 | [`TicketReplyResponse addStudentReply(Long ticketId, Long studentId, TicketReplyRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L125) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `add student reply`. |
+| 6 | [`TicketReplyResponse addStaffReply(Long ticketId, String staffEmail, TicketReplyRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L147) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `add staff reply`. |
+| 7 | [`TicketResponse closeTicket(Long ticketId, String actorEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L184) | `—` | Thực hiện xử lý backend `close ticket` trong `SupportTicketService`. |
+| 8 | [`TicketResponse closeStudentTicket(Long ticketId, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L215) | `—` | Thực hiện xử lý backend `close student ticket` trong `SupportTicketService`. |
+| 9 | [`TicketResponse assignTicket(Long ticketId, Long assignToStaffId, String actorEmail, boolean isAdmin)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L231) | `—` | Thực hiện xử lý backend `assign ticket` trong `SupportTicketService`. |
+| 10 | [`Page<TicketResponse> getAllTickets(String status, String category, String priority, String q, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L268) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get all tickets`. |
+| 11 | [`Page<com.jlpt.feature.support.dto.SubmissionResponse> getAllSubmissions(String submissionType, String status, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L278) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get all submissions`. |
+| 12 | [`com.jlpt.feature.support.dto.SubmissionResponse getSubmissionDetail(Long submissionId)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L295) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get submission detail`. |
+| 13 | [`com.jlpt.feature.support.dto.SubmissionResponse toSubmissionResponse(StudentSubmission s)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L306) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to submission response`. |
+| 14 | [`GradeResponse manualGrade(Long submissionId, String actorEmail, ManualGradeRequest req)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L335) | `—` | Thực hiện xử lý backend `manual grade` trong `SupportTicketService`. |
+| 15 | [`Ticket findTicketOrThrow(Long id)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L398) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find ticket or throw`. |
+| 16 | [`StudentUser findStudentOrThrow(Long id)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L402) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find student or throw`. |
+| 17 | [`StaffUser findStaffOrThrow(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L408) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find staff or throw`. |
+| 18 | [`void checkTicketNotClosed(Ticket ticket)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L414) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `check ticket not closed`. |
+| 19 | [`TicketResponse toTicketResponse(Ticket t)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L420) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to ticket response`. |
+| 20 | [`TicketDetailResponse toTicketDetailResponse(Ticket t, List<TicketReply> replies)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L442) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to ticket detail response`. |
+| 21 | [`TicketReplyResponse toReplyResponse(TicketReply r, String senderName, String role)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L475) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to reply response`. |
+| 22 | [`Ticket.TicketStatus parseStatus(String status)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L486) | `—` | Thực hiện xử lý backend `parse status` trong `SupportTicketService`. |
+| 23 | [`Ticket.Priority parsePriority(String priority)`](../../../apps/backend/src/main/java/com/jlpt/feature/support/service/SupportTicketService.java#L495) | `—` | Thực hiện xử lý backend `parse priority` trong `SupportTicketService`. |
+
+### `ApiResponse`
+
+Nguồn: [ApiResponse.java](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`static <T> ApiResponse<T> success(T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L22) | `—` | Thực hiện xử lý backend `success` trong `ApiResponse`. |
+| 2 | [`static <T> ApiResponse<T> success(String message, T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L30) | `—` | Thực hiện xử lý backend `success` trong `ApiResponse`. |
+| 3 | [`static <T> ApiResponse<T> created(T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L34) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `created`. |
+| 4 | [`static <T> ApiResponse<T> created(String message, T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L42) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `created`. |
+| 5 | [`static <T> ApiResponse<T> error(int status, String message)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L46) | `—` | Thực hiện xử lý backend `error` trong `ApiResponse`. |
+| 6 | [`static <T> ApiResponse<T> error(int status, String message, T data)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L50) | `—` | Thực hiện xử lý backend `error` trong `ApiResponse`. |
+| 7 | [`static <T> ApiResponse<T> errorWithCode(int status, String message, String code)`](../../../apps/backend/src/main/java/com/jlpt/shared/common/ApiResponse.java#L63) | `—` | Thực hiện xử lý backend `error with code` trong `ApiResponse`. |
+
+### `SecurityConfig`
+
+Nguồn: [SecurityConfig.java](../../../apps/backend/src/main/java/com/jlpt/shared/config/SecurityConfig.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`SecurityFilterChain securityFilterChain(HttpSecurity http)`](../../../apps/backend/src/main/java/com/jlpt/shared/config/SecurityConfig.java#L48) | `—` | Thực hiện xử lý backend `security filter chain` trong `SecurityConfig`. |
+| 2 | [`PasswordEncoder passwordEncoder()`](../../../apps/backend/src/main/java/com/jlpt/shared/config/SecurityConfig.java#L86) | `—` | Thực hiện xử lý backend `password encoder` trong `SecurityConfig`. |
+| 3 | [`CorsConfigurationSource corsConfigurationSource()`](../../../apps/backend/src/main/java/com/jlpt/shared/config/SecurityConfig.java#L91) | `—` | Thực hiện xử lý backend `cors configuration source` trong `SecurityConfig`. |
+
+### `NotificationRuleService`
+
+Nguồn: [NotificationRuleService.java](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`List<NotificationRuleResponse> listRules()`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L39) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `list rules`. |
+| 2 | [`NotificationRuleResponse createRule(NotificationRuleRequest req, Long adminId)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L49) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create rule`. |
+| 3 | [`NotificationRuleResponse updateRule(String ruleKey, NotificationRuleRequest req, Long adminId)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L80) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update rule`. |
+| 4 | [`SystemSetting findRuleOrThrow(String ruleKey)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L112) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find rule or throw`. |
+| 5 | [`AdminUser findAdminOrThrow(Long adminId)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L118) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find admin or throw`. |
+| 6 | [`String buildJson(NotificationRuleRequest req)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L124) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `build json`. |
+| 7 | [`NotificationRuleResponse parseRule(SystemSetting setting)`](../../../apps/backend/src/main/java/com/jlpt/shared/notification/service/NotificationRuleService.java#L139) | `—` | Thực hiện xử lý backend `parse rule` trong `NotificationRuleService`. |
+
+**Tổng cộng:** `127` hàm backend trong `16` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

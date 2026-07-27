@@ -425,3 +425,99 @@ Theo dõi dữ liệu **"mục tiêu JLPT" (`jlptGoal`/`targetJlptLevel`)** xuy�
 4. **`UserDetailsImpl.getStudentUser()`** — được gọi liên tục trong `StudentController` để lấy `studentId`, nhưng file định nghĩa class này (`shared/security/UserDetailsImpl.java`) **không nằm trong phạm vi đọc** của phân tích này — chưa xác nhận trực tiếp cách nó được populate lúc xác thực JWT.
 5. **Rate-limit / brute-force cho `changePassword`/`requestEmailChange`** — không tìm thấy cơ chế giới hạn số lần thử nhập sai `currentPassword` ở 2 luồng này trong source code đã đọc (khác với luồng login có `checkAccountTypeAttempts` rate-limit theo IP).
 6. **Không có audit log cho các thao tác tự quản lý này** — khác với các thao tác Admin thực hiện lên tài khoản người khác (có `AdminAuditLog`), việc Student tự đổi mật khẩu/email/hồ sơ của chính mình không thấy ghi log nào trong source code đã đọc — có thể là chủ đích (không cần audit hành động trên chính tài khoản của mình) chứ không phải thiếu sót.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `PasswordResetService`
+
+Nguồn: [PasswordResetService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/PasswordResetService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void forgotPassword(ForgotPasswordRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/PasswordResetService.java#L32) | `—` | Thực hiện xử lý backend `forgot password` trong `PasswordResetService`. |
+| 2 | [`void resetPassword(ResetPasswordRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/PasswordResetService.java#L68) | `—` | Thực hiện xử lý backend `reset password` trong `PasswordResetService`. |
+| 3 | [`void changePassword(Long studentId, ChangePasswordRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/PasswordResetService.java#L92) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `change password`. |
+
+### `StudentProfileService`
+
+Nguồn: [StudentProfileService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`StudentResponse getProfile(Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L35) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get profile`. |
+| 2 | [`StudentResponse updateProfile(Long studentId, UpdateProfileRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L42) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update profile`. |
+| 3 | [`StudentResponse submitOnboarding(Long studentId, OnboardingRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L68) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `submit onboarding`. |
+| 4 | [`StudentResponse updateAvatar(Long studentId, String avatarUrl)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L83) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update avatar`. |
+| 5 | [`void requestEmailChange(Long studentId, RequestEmailChangeRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L94) | `—` | Thực hiện xử lý backend `request email change` trong `StudentProfileService`. |
+| 6 | [`StudentResponse confirmEmailChange(Long studentId, ConfirmEmailChangeRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L119) | `—` | Thực hiện xử lý backend `confirm email change` trong `StudentProfileService`. |
+
+### `StudentResponseMapper`
+
+Nguồn: [StudentResponseMapper.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentResponseMapper.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`StudentResponse toResponse(StudentUser user)`](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentResponseMapper.java#L12) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to response`. |
+
+### `AvatarStorageService`
+
+Nguồn: [AvatarStorageService.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/AvatarStorageService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`String store(MultipartFile file, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/AvatarStorageService.java#L28) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `store`. |
+
+### `StudentController`
+
+Nguồn: [StudentController.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<DashboardResponse>> getDashboard(@AuthenticationPrincipal UserDetailsImpl userDetails)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L40) | `GET /dashboard` | Xử lý endpoint `GET /dashboard`; thực hiện nghiệp vụ `get dashboard`. |
+| 2 | [`ResponseEntity<ApiResponse<StudentStatsResponse>> getMyStats(@AuthenticationPrincipal UserDetailsImpl userDetails)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L48) | `GET /me/stats` | Xử lý endpoint `GET /me/stats`; thực hiện nghiệp vụ `get my stats`. |
+| 3 | [`ResponseEntity<ApiResponse<NextLessonResponse>> getNextLesson(@AuthenticationPrincipal UserDetailsImpl userDetails)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L56) | `GET /next-lesson` | Xử lý endpoint `GET /next-lesson`; thực hiện nghiệp vụ `get next lesson`. |
+| 4 | [`ResponseEntity<ApiResponse<StudentResponse>> submitOnboarding(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody OnboardingRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L64) | `POST /onboarding` | Xử lý endpoint `POST /onboarding`; thực hiện nghiệp vụ `submit onboarding`. |
+| 5 | [`ResponseEntity<ApiResponse<CourseListResponse>> getCourses(@AuthenticationPrincipal UserDetailsImpl userDetails)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L89) | `GET /courses` | Xử lý endpoint `GET /courses`; thực hiện nghiệp vụ `get courses`. |
+| 6 | [`ResponseEntity<ApiResponse<StudentResponse>> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L97) | `GET /me` | Xử lý endpoint `GET /me`; thực hiện nghiệp vụ `get profile`. |
+| 7 | [`ResponseEntity<ApiResponse<StudentResponse>> updateProfile(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody UpdateProfileRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L105) | `PUT /me` | Xử lý endpoint `PUT /me`; thực hiện nghiệp vụ `update profile`. |
+| 8 | [`ResponseEntity<ApiResponse<Void>> changePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody ChangePasswordRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L113) | `PUT /me/password` | Xử lý endpoint `PUT /me/password`; thực hiện nghiệp vụ `change password`. |
+| 9 | [`ResponseEntity<ApiResponse<Void>> requestEmailChange(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody RequestEmailChangeRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L120) | `POST /me/email/otp` | Xử lý endpoint `POST /me/email/otp`; thực hiện nghiệp vụ `request email change`. |
+| 10 | [`ResponseEntity<ApiResponse<StudentResponse>> confirmEmailChange(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody ConfirmEmailChangeRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L128) | `PUT /me/email` | Xử lý endpoint `PUT /me/email`; thực hiện nghiệp vụ `confirm email change`. |
+
+### `StudentUser`
+
+Nguồn: [StudentUser.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUser.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUser.java#L103) | `—` | Thực hiện xử lý backend `on update` trong `StudentUser`. |
+| 2 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUser.java#L119) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+| 3 | [`String getValue()`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUser.java#L135) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get value`. |
+
+### `StudentUserRepository`
+
+Nguồn: [StudentUserRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUserRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<StudentUser> findByEmail(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUserRepository.java#L15) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by email`. |
+| 2 | [`boolean existsByEmail(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUserRepository.java#L17) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `exists by email`. |
+
+### `OtpVerificationService`
+
+Nguồn: [OtpVerificationService.java](../../../apps/backend/src/main/java/com/jlpt/shared/security/OtpVerificationService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void generateAndSend(String email)`](../../../apps/backend/src/main/java/com/jlpt/shared/security/OtpVerificationService.java#L36) | `—` | Thực hiện xử lý backend `generate and send` trong `OtpVerificationService`. |
+| 2 | [`boolean verify(String email, String code)`](../../../apps/backend/src/main/java/com/jlpt/shared/security/OtpVerificationService.java#L52) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `verify`. |
+| 3 | [`String generateCode()`](../../../apps/backend/src/main/java/com/jlpt/shared/security/OtpVerificationService.java#L66) | `—` | Thực hiện xử lý backend `generate code` trong `OtpVerificationService`. |
+| 4 | [`record OtpEntry(String code, LocalDateTime createdAt, LocalDateTime expiresAt)`](../../../apps/backend/src/main/java/com/jlpt/shared/security/OtpVerificationService.java#L71) | `—` | Thực hiện xử lý backend `otp entry` trong `OtpVerificationService`. |
+
+**Tổng cộng:** `30` hàm backend trong `14` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

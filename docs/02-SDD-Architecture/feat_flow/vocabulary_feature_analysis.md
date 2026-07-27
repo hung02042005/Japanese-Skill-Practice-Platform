@@ -254,3 +254,73 @@ Theo dõi dữ liệu **"trạng thái hoàn thành 1 từ vựng" (`isCompleted
 - **`StudentContentProgressRepository`** (dùng trong `StudentVocabularyService`) không nằm trong phạm vi file được đọc trực tiếp — các method `findByStudentIdAndContentTypeAndContentIdIn`, `countCompleted`, `countCompletedVocabularyByLevel` chỉ được xác nhận qua cách gọi tại call site, chưa đọc source thật của repository này.
 - **Độ ưu tiên toán tử trong JPQL** ở `VocabularyRepository.findPublished` (mục 5.3) — cần xác nhận thêm bằng test nếu cần khẳng định 100% hành vi khi có `search` nhưng không có `level`/`topicId`.
 - **Route `/vocabulary/flashcard`** và component `VocabFlashcardSession.jsx` (được `VocabHome.jsx`/`VocabularyList.jsx` điều hướng tới sau khi chọn bài học) nằm ngoài phạm vi file được đọc của phân tích này — thuộc sang feature Flashcard SRS.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `VocabTopicResponse`
+
+Nguồn: [VocabTopicResponse.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/dto/VocabTopicResponse.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`VocabTopicResponse from(VocabularyTopic t)`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/dto/VocabTopicResponse.java#L13) | `—` | Thực hiện xử lý backend `from` trong `VocabTopicResponse`. |
+
+### `StudentVocabularyController`
+
+Nguồn: [StudentVocabularyController.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<List<VocabTopicResponse>>> getTopics(@RequestParam String level)`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyController.java#L36) | `GET /topics` | Xử lý endpoint `GET /topics`; thực hiện nghiệp vụ `get topics`. |
+
+### `StudentVocabularyService`
+
+Nguồn: [StudentVocabularyService.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`List<VocabTopicResponse> getTopics(String level)`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java#L37) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get topics`. |
+| 2 | [`VocabularyListResponse getVocabularyList(String level, Long topicId, String search, int page, int size, Long studentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java#L48) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get vocabulary list`. |
+
+### `Vocabulary`
+
+Nguồn: [Vocabulary.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Vocabulary.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Vocabulary.java#L82) | `—` | Thực hiện xử lý backend `on update` trong `Vocabulary`. |
+
+### `VocabularyRepository`
+
+Nguồn: [VocabularyRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`long countByTopicRefIdAndStatusNot(Long topicId, Kanji.ContentStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyRepository.java#L91) | `—` | Đếm dữ liệu phục vụ thống kê `count by topic ref id and status not`. |
+
+### `VocabularyTopic`
+
+Nguồn: [VocabularyTopic.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopic.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopic.java#L66) | `—` | Thực hiện xử lý backend `on update` trong `VocabularyTopic`. |
+
+### `VocabularyTopicRepository`
+
+Nguồn: [VocabularyTopicRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopicRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`List<VocabularyTopic> findByJlptLevelAndStatusNotOrderByDisplayOrderAscIdAsc(StudentUser.JlptLevel jlptLevel, Kanji.ContentStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopicRepository.java#L25) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by jlpt level and status not order by display order asc id asc`. |
+| 2 | [`List<VocabularyTopic> findByStatusOrderByUpdatedAtDesc(Kanji.ContentStatus status)`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopicRepository.java#L28) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by status order by updated at desc`. |
+| 3 | [`boolean existsByJlptLevelAndSlug(StudentUser.JlptLevel jlptLevel, String slug)`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopicRepository.java#L30) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `exists by jlpt level and slug`. |
+| 4 | [`boolean existsByJlptLevelAndTitleVi(StudentUser.JlptLevel jlptLevel, String titleVi)`](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopicRepository.java#L32) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `exists by jlpt level and title vi`. |
+
+**Tổng cộng:** `11` hàm backend trong `9` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->

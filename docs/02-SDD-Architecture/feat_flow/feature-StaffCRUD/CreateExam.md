@@ -395,3 +395,112 @@ Assignments mẫu:
 - Submit-review cho phép tổng điểm chưa khớp; Manager Approve mới chặn cứng.
 - Không tìm thấy thông báo realtime cho Staff sau khi review; Staff thấy kết quả khi tải lại danh sách/feedback.
 - Luồng Student bắt đầu làm Exam sau khi published nằm ngoài phạm vi tài liệu này.
+
+<!-- BACKEND-METHOD-INVENTORY:START -->
+
+## Phụ lục — Danh mục đầy đủ hàm backend
+
+> Phần này được đối chiếu trực tiếp từ source backend hiện tại. Chỉ liệt kê các hàm khai báo tường minh trong những file Java mà tài liệu này tham chiếu; các hàm do Lombok/JPA sinh tự động không xuất hiện trong source nên không liệt kê.
+
+### `AssessmentContentHandler`
+
+Nguồn: [AssessmentContentHandler.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/AssessmentContentHandler.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ContentType type()`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/AssessmentContentHandler.java#L30) | `—` | Thực hiện xử lý backend `type` trong `AssessmentContentHandler`. |
+| 2 | [`String tableName()`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/AssessmentContentHandler.java#L35) | `—` | Thực hiện xử lý backend `table name` trong `AssessmentContentHandler`. |
+| 3 | [`List<ContentSnapshot> findPending(JlptLevel level)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/AssessmentContentHandler.java#L40) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find pending`. |
+| 4 | [`Optional<ContentSnapshot> findActiveById(Long contentId)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/AssessmentContentHandler.java#L50) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find active by id`. |
+| 5 | [`int approve(Long contentId, StaffUser manager, LocalDateTime now)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/AssessmentContentHandler.java#L57) | `—` | Thực hiện xử lý backend `approve` trong `AssessmentContentHandler`. |
+| 6 | [`int transitionFromPending(Long contentId, String targetStatus, LocalDateTime now)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/AssessmentContentHandler.java#L85) | `—` | Thực hiện xử lý backend `transition from pending` trong `AssessmentContentHandler`. |
+| 7 | [`ContentSnapshot toSnapshot(Assessment assessment, boolean withDetail)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/AssessmentContentHandler.java#L91) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to snapshot`. |
+
+### `ContentReviewService`
+
+Nguồn: [ContentReviewService.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ReviewQueueResponse getReviewQueue(String managerEmail, String typeStr, String levelStr, int page, int size)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L54) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get review queue`. |
+| 2 | [`ReviewableContentDetailResponse getContentDetail(String managerEmail, Long contentId, String typeStr)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L91) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get content detail`. |
+| 3 | [`ReviewResultResponse review(String managerEmail, ReviewActionRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L113) | `—` | Thực hiện xử lý backend `review` trong `ContentReviewService`. |
+| 4 | [`ReviewResultResponse requestChanges(String managerEmail, RequestChangesRequest request)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L167) | `—` | Thực hiện xử lý backend `request changes` trong `ContentReviewService`. |
+| 5 | [`StaffUser requireManager(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L205) | `—` | Thực hiện xử lý backend `require manager` trong `ContentReviewService`. |
+| 6 | [`void guardSelfReview(ContentSnapshot snapshot, StaffUser manager)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L217) | `—` | Thực hiện xử lý backend `guard self review` trong `ContentReviewService`. |
+| 7 | [`void ensureUpdated(int affectedRows)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L224) | `—` | Thực hiện xử lý backend `ensure updated` trong `ContentReviewService`. |
+| 8 | [`String resolveRequestChangesTarget(String raw)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L231) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve request changes target`. |
+| 9 | [`JlptLevel parseLevel(String levelStr)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L242) | `—` | Thực hiện xử lý backend `parse level` trong `ContentReviewService`. |
+| 10 | [`ReviewQueueItemResponse toQueueItem(ContentSnapshot contentSnapshot)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java#L253) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to queue item`. |
+
+### `ReviewAuditService`
+
+Nguồn: [ReviewAuditService.java](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ReviewAuditService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void log(StaffUser actor, String action, ContentType contentType, String targetTable, Long contentId, String feedback)`](../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ReviewAuditService.java#L31) | `—` | Thực hiện xử lý backend `log` trong `ReviewAuditService`. |
+
+### `StaffExamController`
+
+Nguồn: [StaffExamController.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/controller/StaffExamController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<ExamDetailResponse>> createExam(@Valid @RequestBody CreateExamRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/controller/StaffExamController.java#L44) | `POST` | Xử lý endpoint `POST`; thực hiện nghiệp vụ `create exam`. |
+| 2 | [`ResponseEntity<ApiResponse<ExamDetailResponse>> getExam(@PathVariable Long assessmentId, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/controller/StaffExamController.java#L65) | `GET /{assessmentId}` | Xử lý endpoint `GET /{assessmentId}`; thực hiện nghiệp vụ `get exam`. |
+| 3 | [`ResponseEntity<ApiResponse<ExamDetailResponse>> updateExam(@PathVariable Long assessmentId, @Valid @RequestBody UpdateExamRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/controller/StaffExamController.java#L72) | `PUT /{assessmentId}` | Xử lý endpoint `PUT /{assessmentId}`; thực hiện nghiệp vụ `update exam`. |
+| 4 | [`ResponseEntity<ApiResponse<ExamAssignResultResponse>> assignQuestions(@PathVariable Long assessmentId, @Valid @RequestBody ExamAssignQuestionsRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/controller/StaffExamController.java#L81) | `POST /{assessmentId}/assign-questions` | Xử lý endpoint `POST /{assessmentId}/assign-questions`; thực hiện nghiệp vụ `assign questions`. |
+
+### `name`
+
+Nguồn: [ExamAssessmentEntity.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/entity/ExamAssessmentEntity.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`void onUpdate()`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/entity/ExamAssessmentEntity.java#L77) | `—` | Thực hiện xử lý backend `on update` trong `name`. |
+
+### `ExamAssessmentRepository`
+
+Nguồn: [ExamAssessmentRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/repository/ExamAssessmentRepository.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`Optional<ExamAssessmentEntity> findByIdAndAssessmentTypeAndStatusNot(Long id, String assessmentType, String status)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/repository/ExamAssessmentRepository.java#L28) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `find by id and assessment type and status not`. |
+
+### `StaffExamService`
+
+Nguồn: [StaffExamService.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ExamDetailResponse createExam(CreateExamRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L71) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `create exam`. |
+| 2 | [`ExamListResponse listExams(String level, String status, int page, int size, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L102) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `list exams`. |
+| 3 | [`ExamDetailResponse getExam(Long assessmentId, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L123) | `—` | Đọc hoặc tra cứu dữ liệu phục vụ `get exam`. |
+| 4 | [`ExamDetailResponse updateExam(Long assessmentId, UpdateExamRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L137) | `—` | Cập nhật trạng thái/dữ liệu cho nghiệp vụ `update exam`. |
+| 5 | [`ExamAssignResultResponse assignQuestions(Long assessmentId, ExamAssignQuestionsRequest request, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L169) | `—` | Thực hiện xử lý backend `assign questions` trong `StaffExamService`. |
+| 6 | [`ExamSubmitReviewResponse submitForReview(Long assessmentId, String staffEmail)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L268) | `—` | Tạo hoặc ghi dữ liệu cho nghiệp vụ `submit for review`. |
+| 7 | [`StaffUser resolveStaff(String email)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L302) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `resolve staff`. |
+| 8 | [`ExamAssessmentEntity requireExam(Long id)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L308) | `—` | Thực hiện xử lý backend `require exam` trong `StaffExamService`. |
+| 9 | [`void guardOwnership(ExamAssessmentEntity exam, StaffUser staff)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L315) | `—` | Thực hiện xử lý backend `guard ownership` trong `StaffExamService`. |
+| 10 | [`void guardNoPublish(String requestedStatus)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L325) | `—` | Thực hiện xử lý backend `guard no publish` trong `StaffExamService`. |
+| 11 | [`void guardEditableStatus(String status)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L336) | `—` | Thực hiện xử lý backend `guard editable status` trong `StaffExamService`. |
+| 12 | [`boolean isEditable(String status)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L342) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `is editable`. |
+| 13 | [`void validateLevel(String level)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L346) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `validate level`. |
+| 14 | [`void validateScoreRange(Integer durationMin, Integer passScore, Integer totalScore)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L352) | `—` | Kiểm tra điều kiện/trạng thái phục vụ `validate score range`. |
+| 15 | [`boolean scoreMatches(BigDecimal assignedSum, Integer totalScore)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L365) | `—` | Thực hiện xử lý backend `score matches` trong `StaffExamService`. |
+| 16 | [`String trimToNull(String value)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L370) | `—` | Thực hiện xử lý backend `trim to null` trong `StaffExamService`. |
+| 17 | [`ExamSummaryResponse toSummary(ExamAssessmentEntity exam)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L380) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to summary`. |
+| 18 | [`ExamDetailResponse toDetail(ExamAssessmentEntity exam, List<ExamAssignmentEntity> assignments, List<Object[]> sectionAggregates)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/exam/service/StaffExamService.java#L397) | `—` | Biến đổi/tổng hợp dữ liệu nội bộ cho `to detail`. |
+
+### `StaffQuizSubmitReviewController`
+
+Nguồn: [StaffQuizSubmitReviewController.java](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/quiz/controller/StaffQuizSubmitReviewController.java)
+
+| # | Hàm backend (đầy đủ chữ ký) | Endpoint | Tác dụng/chức năng phục vụ |
+|---:|---|---|---|
+| 1 | [`ResponseEntity<ApiResponse<QuizSubmitReviewResponse>> submitReview(@Valid @RequestBody QuizSubmitReviewRequest request, Authentication authentication)`](../../../apps/backend/src/main/java/com/jlpt/feature/staffcontent/quiz/controller/StaffQuizSubmitReviewController.java#L52) | `POST /submit-review` | Xử lý endpoint `POST /submit-review`; thực hiện nghiệp vụ `submit review`. |
+
+**Tổng cộng:** `43` hàm backend trong `12` file Java được tham chiếu.
+
+<!-- BACKEND-METHOD-INVENTORY:END -->
