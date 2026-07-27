@@ -305,24 +305,26 @@ Payload mẫu:
 | Review detail | Ghép Lesson + ordered questions | ContentSnapshot |
 | Approve/Reject | Cập nhật lesson status | `lessons` + audit |
 
-## 7. Bảng tra cứu tổng hợp
+## 7. Comment tác dụng của từng hàm trong luồng
 
-| Bước | File | Function | Kết nối tới | Dữ liệu | Ghi chú |
+> Mỗi dòng là một điểm gọi trong luồng Create Speaking. Comment nêu rõ trách nhiệm của hàm đối với Lesson cha, danh sách Speaking Question và state review.
+
+| Bước | File | Function | Kết nối tới | Dữ liệu | Tác dụng của hàm |
 |---:|---|---|---|---|---|
-| 1 | `ContentFormModal.jsx` | speaking form helpers | StaffContent | questions[] | Add/remove/update |
-| 2 | `ContentFormModal.jsx` | `submit` | StaffContent | form/status | Validate frontend |
-| 3 | `StaffContent.jsx` | `handleSave` | staffService | speakingPayload | Normalize fields |
-| 4 | `staffService.js` | `createStaffSpeakingLesson` | speaking controller | JSON | POST create |
-| 5 | Speaking controller | `create` | authoring service | DTO/email | HTTP 201 |
-| 6 | Authoring service | `create` | lesson/question repos | entities | Force Draft |
-| 7 | Authoring service | `saveQuestions` | question repo | ordered questions | Multi-row insert |
-| 8 | staffService | `submitAssessmentForReview` | common controller | speaking/ID | Submit review |
-| 9 | Common controller | `submitReview` | authoring service | lessonId/email | Route speaking |
-| 10 | Authoring service | `submitForReview` | lesson entity | status | → Pending |
-| 11 | Review service | `getReviewQueue` | speaking handler | filters | Manager only |
-| 12 | Speaking handler | `findPending` | lesson repo | type/status | Chỉ SPEAKING |
-| 13 | Speaking handler | `approve/transition` | lesson repo | ID/status | Conditional update |
-| 14 | Review audit | `log` | audit repo | action/feedback | Reject reason |
+| 1 | `ContentFormModal.jsx` | speaking form helpers | StaffContent | questions[] | Thêm, xóa hoặc cập nhật từng câu hỏi trong React state, đồng thời giữ cấu trúc mảng mà payload Speaking yêu cầu. |
+| 2 | `ContentFormModal.jsx` | `submit` | StaffContent | form/status | Validate metadata và từng câu hỏi, loại bỏ dữ liệu UI không cần thiết, gắn Draft/Pending intent rồi gọi callback của page. |
+| 3 | `StaffContent.jsx` | `handleSave` | staffService | speakingPayload | Chọn nhánh Speaking, chuẩn hóa tên field và `displayOrder`, gọi create; nếu cần gửi duyệt thì dùng lesson ID vừa nhận. |
+| 4 | `staffService.js` | `createStaffSpeakingLesson` | speaking controller | JSON | Gửi POST tạo Lesson Speaking và danh sách questions qua Axios client đã gắn JWT. |
+| 5 | Speaking controller | `create` | authoring service | DTO/email | Chạy Bean Validation, lấy Staff email từ Authentication, gọi authoring service và trả HTTP 201 với lesson ID. |
+| 6 | Authoring service | `create` | lesson/question repos | entities | Resolve Staff/level, tạo Lesson loại SPEAKING ở Draft, lưu Lesson cha trước rồi chuyển danh sách câu hỏi sang hàm lưu con. |
+| 7 | Authoring service | `saveQuestions` | question repo | ordered questions | Map từng DTO thành Speaking Question gắn với Lesson, chuẩn hóa thứ tự hiển thị và lưu toàn bộ danh sách con. |
+| 8 | staffService | `submitAssessmentForReview` | common controller | speaking/ID | Gửi `{contentType:'speaking', contentId:lessonId}` đến endpoint submit chung, tách rõ thao tác tạo và gửi duyệt. |
+| 9 | Common controller | `submitReview` | authoring service | lessonId/email | Nhận content type Speaking và route đúng sang authoring service thay vì các service Kanji/Vocabulary/Assessment. |
+| 10 | Authoring service | `submitForReview` | lesson entity | status | Kiểm tra owner, loại SPEAKING, trạng thái Draft/Rejected và danh sách câu hỏi hợp lệ rồi chuyển Lesson sang Pending Review. |
+| 11 | Review service | `getReviewQueue` | speaking handler | filters | Xác thực Staff Manager, resolve handler và chuyển các filter chung thành truy vấn queue Speaking. |
+| 12 | Speaking handler | `findPending` | lesson repo | type/status | Chỉ lấy Lesson có `lessonType=SPEAKING` và Pending Review, tránh trộn với lesson Reading/Listening khác. |
+| 13 | Speaking handler | `approve/transition` | lesson repo | ID/status | Thực hiện guarded transition từ Pending sang Published/Rejected và trả update count để phát hiện review đồng thời. |
+| 14 | Review audit | `log` | audit repo | action/feedback | Ghi quyết định, actor và feedback; đặc biệt giữ lý do reject bên ngoài entity Lesson. |
 
 ## 8. Các mục cần bổ sung context
 

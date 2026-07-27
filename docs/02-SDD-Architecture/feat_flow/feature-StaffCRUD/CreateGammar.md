@@ -517,7 +517,9 @@ Backend chuyển:
 - `contentId` → guarded JPQL update.
 - `feedback` → bắt buộc khi Reject và được chuyển vào `ReviewAuditService.log`.
 
-## 7. Bảng tra cứu tổng hợp
+## 7. Comment tác dụng của từng hàm trong luồng
+
+> Bảng giữ vai trò tra cứu nhanh. Phần diễn giải ngay sau bảng comment chi tiết trách nhiệm của từng hàm theo đúng thứ tự request đi qua.
 
 | Bước | File | Function | Kết nối tới | Dữ liệu | Ghi chú |
 |---:|---|---|---|---|---|
@@ -540,6 +542,28 @@ Backend chuyển:
 | 17 | [ContentReviewService.java](../../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/service/ContentReviewService.java) | `review` | Handler + audit | Manager/action | Self-review guard |
 | 18 | [GrammarContentHandler.java](../../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/handler/GrammarContentHandler.java) | `approve/transitionFromPending` | Repository | State transition | Grammar-specific |
 | 19 | [ReviewGrammarRepository.java](../../../../apps/backend/src/main/java/com/jlpt/feature/contentreview/repository/ReviewGrammarRepository.java) | `approve/transition` | Database | expected/target status | Chống xử lý đồng thời |
+
+### 7.1. Diễn giải tác dụng
+
+1. `handleSaveDraft/handleSaveSubmit`: hai event handler đọc cùng một form nhưng gắn ý định khác nhau — chỉ lưu Draft hoặc tạo xong rồi tiếp tục gửi Manager duyệt.
+2. `StaffContent.handleSave`: chọn nhánh Grammar, dispatch create trước; chỉ khi create thành công và UI chọn Pending Review mới lấy `grammarId` để dispatch submit.
+3. `createGrammarThunk`: bọc create API trong Redux async lifecycle, cập nhật pending/fulfilled/rejected và chuyển message lỗi backend về UI.
+4. `createStaffGrammar`: gửi POST body qua Axios client đã cấu hình base URL/JWT và trả response chuẩn cho thunk.
+5. `StaffGrammarController.createGrammar`: áp quyền route và `@Valid`, lấy Staff email từ Authentication, gọi service rồi trả HTTP 201.
+6. `StaffGrammarServiceImpl.createGrammar`: resolve Staff/level, validate nội dung, map DTO sang GrammarPoint, bỏ qua status từ client, ép Draft và gắn creator trước khi lưu.
+7. Nhánh submit trong `StaffContent.handleSave`: trích ID backend sinh; không gửi request thứ hai nếu create lỗi hoặc người dùng chỉ chọn lưu nháp.
+8. `StaffGrammarSubmitReviewController.submitReview`: nhận ID và identity tại endpoint riêng của Grammar, sau đó ủy quyền state transition cho service.
+9. `StaffGrammarServiceImpl.submitForReview`: kiểm tra ownership, trạng thái Draft/Rejected và dữ liệu bắt buộc rồi chuyển Grammar sang Pending Review trong transaction.
+10. `ManagerReviewQueue.fetchQueue`: ghép content type, level và pagination từ UI, dispatch tải queue và hỗ trợ refresh sau review.
+11. `managerService.getReviewQueue`: chuyển filter thành query parameters và gửi GET bằng API client đã xác thực.
+12. `ManagerReviewController.getReviewQueue`: nhận HTTP query/identity và chuyển kiểm tra quyền nghiệp vụ cùng phân trang xuống review service.
+13. `ContentReviewService.getReviewQueue`: xác minh `STAFF_MANAGER`, resolve `ContentType.GRAMMAR` sang Grammar handler và yêu cầu lấy các item Pending Review.
+14. `GrammarContentHandler.findPending`: chuyển filter chung thành repository query riêng cho GrammarPoint, rồi map entity thành ContentSnapshot dùng chung.
+15. `handleApprove/submitReject`: tạo review command; approve gửi action trực tiếp, còn reject lấy feedback bắt buộc từ modal.
+16. `ManagerReviewController.review`: validate Review DTO, lấy manager email và chuyển content/action/feedback sang service.
+17. `ContentReviewService.review`: chống tự duyệt, bắt feedback khi reject, gọi guarded update, kiểm tra update count và ghi audit.
+18. `GrammarContentHandler.approve/transitionFromPending`: chuyển quyết định generic thành trạng thái Published hoặc Rejected của Grammar và gọi đúng repository method.
+19. `ReviewGrammarRepository.approve/transition`: chỉ update khi trạng thái hiện tại vẫn là Pending Review, nhờ đó ngăn hai Manager cùng chốt một nội dung.
 
 ## 8. Các mục cần bổ sung context
 

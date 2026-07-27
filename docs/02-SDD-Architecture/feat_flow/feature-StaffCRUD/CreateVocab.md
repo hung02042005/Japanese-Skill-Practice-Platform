@@ -295,23 +295,25 @@ Payload mẫu:
 | Approve | Thêm approver/published time | status Published |
 | Reject | Lưu feedback trong audit | status Rejected |
 
-## 7. Bảng tra cứu tổng hợp
+## 7. Comment tác dụng của từng hàm trong luồng
 
-| Bước | File | Function | Kết nối tới | Dữ liệu | Ghi chú |
+> Bảng là walkthrough của cả nhánh topic tùy chọn, tạo Vocabulary Draft, submit-review và Manager review.
+
+| Bước | File | Function | Kết nối tới | Dữ liệu | Tác dụng của hàm |
 |---:|---|---|---|---|---|
-| 1 | `ContentFormModal.jsx` | topic effect | staffService | JLPT level | Tải topics |
-| 2 | `ContentFormModal.jsx` | `handleCreateTopic` | topic API | titleVi/titleJa | Nhánh tùy chọn |
-| 3 | `ContentFormModal.jsx` | `submit` | StaffContent | form/status | Bắt buộc topic |
-| 4 | `StaffContent.jsx` | `handleSave` | staffService | payload | Điều phối hai API |
-| 5 | `staffService.js` | `createStaffVocabulary` | learning controller | JSON | POST create |
-| 6 | `StaffLearningContentController` | `createVocabulary` | learning service | DTO/email | HTTP 201 |
-| 7 | `LearningContentServiceImpl` | `createVocabulary` | topic/vocab repos | entity | Force Draft |
-| 8 | `staffService.js` | `submitAssessmentForReview` | common controller | type/id | Vocabulary |
-| 9 | Common submit controller | `submitReview` | learning service | request/email | Route type |
-| 10 | Learning service | `submitVocabulary` | vocab repo | status | → Pending |
-| 11 | Review service | `getReviewQueue` | vocab handler | filters | Manager only |
-| 12 | Vocabulary handler | `approve/transition` | review repo | ID/status | Conditional update |
-| 13 | Review audit | `log` | audit repo | action/feedback | Reject reason |
+| 1 | `ContentFormModal.jsx` | topic effect | staffService | JLPT level | Theo dõi modal và JLPT level; tải lại catalog topic đúng level, đồng thời tránh giữ topic không còn hợp lệ khi level đổi. |
+| 2 | `ContentFormModal.jsx` | `handleCreateTopic` | topic API | titleVi/titleJa | Validate tên topic mới, gọi API tạo, thêm topic trả về vào options và tự chọn topic đó cho Vocabulary hiện tại. |
+| 3 | `ContentFormModal.jsx` | `submit` | StaffContent | form/status | Chặn submit nếu chưa có `topicId`, chuẩn hóa payload/status rồi gọi `onSave` để page tiếp tục luồng. |
+| 4 | `StaffContent.jsx` | `handleSave` | staffService | payload | Chọn nhánh Vocabulary, tạo Draft trước; nếu UI chọn gửi duyệt thì trích `vocabularyId` và thực hiện request submit thứ hai. |
+| 5 | `staffService.js` | `createStaffVocabulary` | learning controller | JSON | Gửi POST payload Vocabulary bằng Axios client dùng chung và trả response cho page lấy ID/backend error. |
+| 6 | `StaffLearningContentController` | `createVocabulary` | learning service | DTO/email | Validate request, lấy Staff email từ JWT, gọi learning service và trả HTTP 201 chứa `vocabularyId`. |
+| 7 | `LearningContentServiceImpl` | `createVocabulary` | topic/vocab repos | entity | Resolve Staff/level/topic, bảo đảm topic tồn tại và cùng level, trim dữ liệu, ép Draft, gắn creator rồi lưu Vocabulary. |
+| 8 | `staffService.js` | `submitAssessmentForReview` | common controller | type/id | Gửi `{contentType:'vocabulary', contentId}` đến endpoint submit chung; không gửi lại toàn bộ nội dung. |
+| 9 | Common submit controller | `submitReview` | learning service | request/email | Chọn nhánh Vocabulary theo content type, map request chung sang DTO learning content và gọi service bằng email Staff. |
+| 10 | Learning service | `submitVocabulary` | vocab repo | status | Tìm Vocabulary chưa xóa, kiểm tra owner, Draft/Rejected và field bắt buộc rồi đổi sang Pending Review. |
+| 11 | Review service | `getReviewQueue` | vocab handler | filters | Chặn người không phải Staff Manager, resolve Vocabulary handler và trả trang nội dung chờ duyệt. |
+| 12 | Vocabulary handler | `approve/transition` | review repo | ID/status | Adapter approve/reject sang guarded JPQL update; chỉ update khi status vẫn là Pending Review. |
+| 13 | Review audit | `log` | audit repo | action/feedback | Lưu action, Manager và feedback để có audit trail và lý do reject cho vòng chỉnh sửa tiếp theo. |
 
 ## 8. Các mục cần bổ sung context
 
