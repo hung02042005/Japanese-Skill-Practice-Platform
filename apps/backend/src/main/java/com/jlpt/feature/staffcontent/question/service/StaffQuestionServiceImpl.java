@@ -43,7 +43,7 @@ public class StaffQuestionServiceImpl implements StaffQuestionService {
     public QuestionResponse createQuestion(CreateQuestionRequest request, String staffEmail) {
         StaffUser staff = resolveStaff(staffEmail);
 
-        // Validate type-specific constraints (FR-24-06/07/08)
+        // Mỗi loại câu hỏi có bộ trường hợp lệ khác nhau; backend kiểm tra lại thay vì tin form frontend.
         validateQuestionFields(
                 request.getQuestionType(),
                 request.getOptionA(),
@@ -192,10 +192,10 @@ public class StaffQuestionServiceImpl implements StaffQuestionService {
 
         StaffContentQuestionEntity entity = findActive(questionId);
 
-        // Ownership check (FR-24-24)
+        // Chỉ tác giả mới được gửi duyệt; Manager chỉ tham gia sau khi câu hỏi đã pending_review.
         guardOwnership(entity.getCreatedBy(), staff);
 
-        // Status check: only draft or rejected can be submitted (FR-24-20/22)
+        // Không cho submit lặp hoặc sửa vòng đời của nội dung đã published/deleted.
         if (!"draft".equals(entity.getStatus()) && !"rejected".equals(entity.getStatus())) {
             throw StaffQuestionBusinessException.invalidStatusTransition();
         }

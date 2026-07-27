@@ -144,14 +144,16 @@ export default function StaffQuestions() {
   const handleSaveAndSubmit = async (formData) => {
     try {
       let response;
+      // Phải lưu trước vì endpoint submit-review chỉ nhận questionId, không nhận toàn bộ form.
       if (editQuestion) {
         response = await dispatch(updateQuestionThunk({ questionId: editQuestion.questionId, payload: formData })).unwrap();
       } else {
         response = await dispatch(createQuestionThunk(formData)).unwrap();
         if (currentPage !== 1) setPage(1);
       }
-      // response = ApiResponse { status, message, data: { questionId, ... } }
+      // unwrap() vẫn trả ApiResponse; ID nằm trong data của response backend.
       const questionId = response?.data?.questionId;
+      // Request thứ hai mới thực hiện chuyển draft/rejected -> pending_review.
       await dispatch(submitQuestionReviewThunk(questionId)).unwrap();
       addToast('success', 'Đã lưu và gửi câu hỏi #' + questionId + ' để duyệt');
       closeModal();

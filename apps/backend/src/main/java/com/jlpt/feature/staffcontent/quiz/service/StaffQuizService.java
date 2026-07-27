@@ -68,6 +68,7 @@ public class StaffQuizService {
     @Transactional
     public QuizDetailResponse createQuiz(CreateQuizRequest request, String staffEmail) {
         StaffUser staff = resolveStaff(staffEmail);
+        // Không tin status từ client: Staff không được tạo thẳng nội dung published.
         guardNoPublish(request.getStatus());
 
         validateLevel(request.getJlptLevel());
@@ -77,6 +78,7 @@ public class StaffQuizService {
             requireLesson(request.getLessonId());
         }
 
+        // Server tự gắn loại, trạng thái và người tạo để bảo vệ invariant của vòng đời duyệt.
         QuizAssessmentEntity quiz = QuizAssessmentEntity.builder()
                 .assessmentType(TYPE_QUIZ) // FR-26-07: force type
                 .title(request.getTitle().trim())

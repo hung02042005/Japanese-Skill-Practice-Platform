@@ -60,6 +60,9 @@ public class StaffQuizSubmitReviewController {
                             .message("contentType là bắt buộc")
                             .build());
         }
+        // Endpoint dùng chung chỉ điều phối theo contentType; từng service bên dưới mới chịu trách nhiệm
+        // kiểm tra owner, trạng thái hiện tại và độ đầy đủ của nội dung trước khi chuyển pending_review.
+        // Ở phía Staff, "assessment" là Quiz; Exam phải dùng "exam" dù Manager review cả hai như assessment.
         if ("assessment".equalsIgnoreCase(contentType)) {
             QuizSubmitReviewResponse data =
                     staffQuizService.submitForReview(request.getContentId(), authentication.getName());
@@ -98,6 +101,7 @@ public class StaffQuizSubmitReviewController {
         if ("lesson".equalsIgnoreCase(contentType)
                 || "vocabulary".equalsIgnoreCase(contentType)
                 || "kanji".equalsIgnoreCase(contentType)) {
+            // Chuẩn hóa request chung sang DTO của module Learning Content.
             SubmitReviewRequest lcRequest = new SubmitReviewRequest();
             lcRequest.setContentType(contentType.toLowerCase());
             lcRequest.setContentId(request.getContentId());

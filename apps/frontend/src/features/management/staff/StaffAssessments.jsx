@@ -121,7 +121,8 @@ export default function StaffAssessments() {
     setEditItem(null);
   }
 
-  // Lưu nháp (tạo mới hoặc cập nhật)
+  // Luồng Quiz/Exam dùng chung trang: activeTab quyết định thunk và endpoint tương ứng.
+  // Backend luôn kiểm tra lại quyền sở hữu, trạng thái và dữ liệu điểm; validate ở đây chỉ phục vụ UX.
   async function handleSave(payload) {
     try {
       if (editItem) {
@@ -142,7 +143,8 @@ export default function StaffAssessments() {
     }
   }
 
-  // Lưu và gửi duyệt
+  // "Lưu và gửi duyệt" gồm hai bước có thứ tự:
+  // (1) tạo/cập nhật bản nháp để có assessmentId, (2) dùng ID đó chuyển sang pending_review.
   async function handleSaveAndSubmit(payload) {
     try {
       let assessmentId;
@@ -156,6 +158,7 @@ export default function StaffAssessments() {
         assessmentId = res?.data?.assessmentId;
         if (currentPage !== 1) setPage(1);
       }
+      // Quiz gửi contentType="assessment", Exam gửi contentType="exam" để backend route đúng service.
       await dispatch(isQuiz ? submitQuizReviewThunk(assessmentId) : submitExamReviewThunk(assessmentId)).unwrap();
       addToast('success', `Đã gửi duyệt: ${payload.title}`);
       closeModal();

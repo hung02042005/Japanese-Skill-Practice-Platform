@@ -99,6 +99,7 @@ public class LearningContentServiceImpl implements LearningContentService {
         StaffUser staff = resolveStaff(staffEmail);
         JlptLevel level = parseLevel(request.getJlptLevel());
 
+        // Topic phải tồn tại và cùng JLPT level; tránh gắn từ vựng N5 vào catalog của level khác.
         VocabularyTopic topic = resolveTopic(request.getTopicId(), level);
 
         Vocabulary vocabulary = Vocabulary.builder()
@@ -111,6 +112,7 @@ public class LearningContentServiceImpl implements LearningContentService {
                 .audioUrl(trimToNull(request.getAudioUrl()))
                 .exampleSentenceJp(trimToNull(request.getExampleSentenceJp()))
                 .exampleSentenceVi(trimToNull(request.getExampleSentenceVi()))
+                // Create luôn sinh Draft; submitForReview là thao tác riêng để chuyển trạng thái.
                 .status(ContentStatus.DRAFT) // FR-27-01
                 .createdBy(staff) // FR-27-01
                 .build();
@@ -177,6 +179,7 @@ public class LearningContentServiceImpl implements LearningContentService {
         StaffUser staff = resolveStaff(staffEmail);
         JlptLevel level = parseLevel(request.getJlptLevel());
 
+        // Kanji phải có ít nhất một cách đọc; rule này vẫn được enforce khi client bị bypass.
         if (!StringUtils.hasText(request.getOnyomi()) && !StringUtils.hasText(request.getKunyomi())) {
             throw LearningContentException.missingField("onyomi hoặc kunyomi");
         }
@@ -252,6 +255,7 @@ public class LearningContentServiceImpl implements LearningContentService {
         String contentType = request.getContentType().toLowerCase();
         Long contentId = request.getContentId();
 
+        // Điều phối về hàm submit riêng để mỗi loại nội dung kiểm tra owner và trường bắt buộc của nó.
         return switch (contentType) {
             case "lesson" -> submitLesson(contentId, staff);
             case "vocabulary" -> submitVocabulary(contentId, staff);

@@ -85,6 +85,7 @@ public class SpeakingAuthoringService {
         StaffUser staff = resolveActiveStaff(staffEmail);
         Lesson lesson = findOwnedSpeakingLesson(lessonId, staff);
         guardEditable(lesson);
+        // Speaking hợp lệ khi có danh sách câu hỏi hoặc có contentText; bài rỗng không vào Review Queue.
         List<SpeakingQuestion> questions = questionRepository.findByLesson_IdOrderByDisplayOrderAsc(lessonId);
         if (questions.isEmpty() && !StringUtils.hasText(lesson.getContentText())) {
             throw SpeakingBusinessException.validationFailed();

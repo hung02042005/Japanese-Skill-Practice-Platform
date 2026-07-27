@@ -71,11 +71,13 @@ public class StaffExamService {
     @Transactional
     public ExamDetailResponse createExam(CreateExamRequest request, String staffEmail) {
         StaffUser staff = resolveStaff(staffEmail);
+        // Status do server quản lý; payload của Staff không thể tạo Exam ở trạng thái published.
         guardNoPublish(request.getStatus());
 
         validateLevel(request.getJlptLevel());
         validateScoreRange(request.getDurationMin(), request.getPassScore(), request.getTotalScore());
 
+        // Exam và Quiz cùng nằm trong assessments, nên assessmentType là discriminator bắt buộc.
         ExamAssessmentEntity exam = ExamAssessmentEntity.builder()
                 .assessmentType(TYPE_EXAM) // FR-28-05: force type
                 .title(request.getTitle().trim())

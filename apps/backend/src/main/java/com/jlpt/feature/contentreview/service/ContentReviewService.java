@@ -117,6 +117,7 @@ public class ContentReviewService {
         ReviewAction action = ReviewAction.fromValue(request.getAction());
 
         ReviewableContentHandler handler = resolver.resolve(type);
+        // Resolver che giấu khác biệt bảng dữ liệu; service review dùng một workflow chung cho mọi contentType.
         ContentSnapshot snapshot = handler.findActiveById(request.getContentId())
                 .orElseThrow(() -> new ContentNotFoundException(type.getValue(), request.getContentId()));
 
@@ -124,6 +125,7 @@ public class ContentReviewService {
 
         LocalDateTime now = LocalDateTime.now();
         if (action == ReviewAction.APPROVE) {
+            // Handler chỉ update bản ghi còn pending_review; rows=0 phát hiện review đồng thời/stale state.
             int rows = handler.approve(request.getContentId(), manager, now);
             ensureUpdated(rows);
             reviewAuditService.log(

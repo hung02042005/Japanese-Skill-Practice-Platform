@@ -190,6 +190,8 @@ export async function assignStaffExamQuestions(assessmentId, assignments) {
 // POST /api/staff/contents/submit-review with contentType 'assessment' | 'exam'.
 
 export async function submitAssessmentForReview(contentType, contentId) {
+  // Đây là endpoint chuyển trạng thái, không tạo nội dung. Bản ghi phải được create/update trước.
+  // contentType còn là khóa điều phối: assessment=Quiz, exam=Exam, hoặc learning-content tương ứng.
   const res = await api.post('/staff/contents/submit-review', { contentType, contentId });
   return res.data;
 }

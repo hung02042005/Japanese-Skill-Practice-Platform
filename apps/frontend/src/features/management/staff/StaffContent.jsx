@@ -304,6 +304,8 @@ export default function StaffContent() {
   const handleSave = async (formData) => {
     const ct = formData.contentType;
     try {
+      // Modal dùng status như "ý định" của người dùng. API create/update chỉ lưu nội dung;
+      // nếu ý định là pending_review, frontend gọi thêm submit-review sau khi đã có ID.
       if (ct === "grammar") {
         if (editItem) {
           const grammarId = editItem.grammarId || editItem.id;
@@ -367,6 +369,8 @@ export default function StaffContent() {
           }
         }
       } else if (ct === "speaking") {
+        // API Speaking có DTO riêng: chỉ gửi các trường tác giả bài nói chấp nhận,
+        // đồng thời chuẩn hóa displayOrder theo đúng thứ tự câu hỏi trên giao diện.
         const speakingPayload = {
           jlptLevel: formData.jlptLevel,
           title: formData.title,

@@ -37,6 +37,7 @@ public class StaffGrammarServiceImpl implements StaffGrammarService {
     public GrammarDetailResponse createGrammar(CreateGrammarRequest request, String staffEmail) {
         StaffUser staff = resolveStaff(staffEmail);
 
+        // Parse ở backend để bảo đảm chỉ N1..N5 được lưu, kể cả khi client bỏ qua validate.
         JlptLevel level;
         try {
             level = JlptLevel.valueOf(request.getJlptLevel());
@@ -180,6 +181,7 @@ public class StaffGrammarServiceImpl implements StaffGrammarService {
                 .findByIdAndStatusNot(grammarId, ContentStatus.DELETED)
                 .orElseThrow(() -> GrammarBusinessException.grammarNotFound(grammarId));
 
+        // Bảo vệ bản ghi khỏi việc Staff khác gửi duyệt; Manager được phép trong luồng quản trị.
         guardOwnershipOrManager(grammar, staff);
 
         if (grammar.getStatus() != ContentStatus.DRAFT && grammar.getStatus() != ContentStatus.REJECTED) {

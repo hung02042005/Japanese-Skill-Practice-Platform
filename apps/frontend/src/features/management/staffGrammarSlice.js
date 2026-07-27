@@ -32,7 +32,6 @@ export const createGrammarThunk = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const res = await staffService.createStaffGrammar(payload);
-      // res is the ApiResponse object: { status, message, data: {...} }
       return res.data ?? res;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Lỗi khi tạo ngữ pháp');
@@ -106,13 +105,13 @@ const staffGrammarSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload;
       })
-      
+
       // Create
       .addCase(createGrammarThunk.fulfilled, (_state, _action) => {
         // Optionally prepend to list or let caller refresh
         // For simplicity, we just rely on component re-fetching list after success.
       })
-      
+
       // Update
       .addCase(updateGrammarThunk.fulfilled, (state, action) => {
         const updatedItem = action.payload;
@@ -124,7 +123,7 @@ const staffGrammarSlice = createSlice({
           }
         }
       })
-      
+
       // Submit Review
       .addCase(submitGrammarReviewThunk.fulfilled, (state, action) => {
         const { grammarId, status } = action.payload;
