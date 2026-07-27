@@ -19,7 +19,8 @@ public interface ManagedGrammarRepository extends JpaRepository<GrammarPoint, Lo
     @Query("SELECT g FROM GrammarPoint g "
             + "WHERE g.status = :published AND (:level IS NULL OR g.jlptLevel = :level) "
             + "ORDER BY g.publishedAt DESC")
-    List<GrammarPoint> findPublished(@Param("published") ContentStatus published, @Param("level") JlptLevel level);
+    List<GrammarPoint> findPublished(
+            @Param("published") ContentStatus publishedStatus, @Param("level") JlptLevel jlptLevel);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE GrammarPoint g SET g.status = :to, g.updatedAt = :now WHERE g.id = :id AND g.status = :from")

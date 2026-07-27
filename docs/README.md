@@ -15,6 +15,7 @@ Tài liệu được tổ chức theo **vòng đời phát triển phần mềm 
 | [`06-Management/`](06-Management/) | Quản trị dự án | Hiến pháp dự án, kỹ năng, bảo vệ đồ án |
 
 > 📌 **Tài liệu gốc ở thư mục repo (ngoài `docs/`):** `CLAUDE.md` (bản đồ kiến trúc & ADR), `AGENTS.md` (domain rules), và **[Hiến pháp dự án →](06-Management/constitution.md)** (stack, security, chuẩn code).
+> 🗺️ **Tổng quan 1-file (Overview · System Context · Swimlane · Use Case · System Design · Screen Flow):** [`00-Tong-Quan-He-Thong.md`](00-Tong-Quan-He-Thong.md)
 
 ---
 

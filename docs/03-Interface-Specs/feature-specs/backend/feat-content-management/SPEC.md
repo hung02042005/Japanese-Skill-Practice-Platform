@@ -11,18 +11,18 @@
 
 ### 1.1 Bối cảnh
 
-Chất lượng và tính phong phú của nội dung bài học là yếu tố then chốt thu hút và giữ chân học viên ôn thi JLPT. Các Nhân viên soạn thảo nội dung (Staff) cần có các công cụ nghiệp vụ chuyên dụng để xây dựng hệ thống bài học (khóa học, bài giảng, Kanji, từ vựng, ngữ pháp) và thiết lập các bài đánh giá (Quiz trắc nghiệm, ngân hàng câu hỏi, đề thi thử JLPT).
+Chất lượng và tính phong phú của nội dung là yếu tố then chốt thu hút và giữ chân học viên ôn thi JLPT. Các Nhân viên soạn thảo nội dung (Staff) cần có các công cụ nghiệp vụ chuyên dụng để xây dựng kho Kanji, từ vựng, ngữ pháp và thiết lập các bài đánh giá (Quiz trắc nghiệm, ngân hàng câu hỏi, đề thi thử JLPT).
 
 ### 1.2 Mục tiêu
 
-- **Quản lý học liệu (UC-25, UC-27):** Cho phép Staff thêm mới, sửa đổi, ẩn/hiện các khóa học (`courses`), bài giảng (`lessons`), điểm ngữ pháp (`grammar_points`), từ vựng (`vocabulary`), và chữ Hán (`kanji`) ở trạng thái nháp (`draft`).
+- **Quản lý học liệu (UC-25, UC-27):** Cho phép Staff thêm mới, sửa đổi và gửi duyệt điểm ngữ pháp (`grammar_points`), từ vựng (`vocabulary`) và chữ Hán (`kanji`) ở trạng thái nháp (`draft`).
 - **Quản lý ngân hàng câu hỏi (UC-24):** Xây dựng kho câu hỏi trắc nghiệm (`questions`) được gắn nhãn theo kỹ năng và trình độ. Hỗ trợ khóa sửa đổi khi câu hỏi đã được làm bài (`is_locked`).
 - **Xây dựng đánh giá (UC-26, UC-28):** Cho phép gán các câu hỏi từ ngân hàng vào bài trắc nghiệm nhanh (`quiz`) hoặc cấu trúc đề thi thử JLPT phức tạp (`exam`) chia theo các phần thi cụ thể.
 - **Quy trình chất lượng:** Mọi nội dung do Staff tạo ra phải đi qua trạng thái chờ duyệt (`pending_review`) và chỉ hiển thị công khai cho học viên sau khi được Quản lý (StaffManager) xuất bản (`published`).
 
 ### 1.3 Tại sao cần?
 
-Nếu không quản lý tập trung và phân tách trạng thái kiểm duyệt $\rightarrow$ các bài học bị lỗi chính tả, sai kiến thức sư phạm hoặc đề thi không cân đối điểm số sẽ hiển thị trực tiếp đến học viên, làm giảm uy tín thương hiệu. Cơ chế khóa câu hỏi (`is_locked`) ngăn chặn việc thay đổi nội dung câu hỏi làm sai lệch dữ liệu lịch sử làm bài trước đây.
+Nếu không quản lý tập trung và phân tách trạng thái kiểm duyệt $\rightarrow$ nội dung sai kiến thức hoặc đề thi không cân đối điểm số sẽ hiển thị trực tiếp đến học viên, làm giảm uy tín thương hiệu. Cơ chế khóa câu hỏi (`is_locked`) ngăn chặn việc thay đổi nội dung câu hỏi làm sai lệch dữ liệu lịch sử làm bài trước đây.
 
 ---
 
@@ -30,7 +30,7 @@ Nếu không quản lý tập trung và phân tách trạng thái kiểm duyệt
 
 | Actor | Role | Điều kiện tiền quyết |
 |:---|:---|:---|
-| **Staff** | Soạn thảo câu hỏi, bài giảng, đề thi và gửi kiểm duyệt | Đã đăng nhập vai trò Staff, status = `active` |
+| **Staff** | Soạn thảo câu hỏi, học liệu, đề thi và gửi kiểm duyệt | Đã đăng nhập vai trò Staff, status = `active` |
 
 ---
 
@@ -40,7 +40,7 @@ Nếu không quản lý tập trung và phân tách trạng thái kiểm duyệt
 
 | ID | EARS Requirement |
 |:---|:---|
-| FR-CONTENT-01 | WHEN a Staff member creates or updates a content item (course, lesson, kanji, vocabulary, grammar, question), THE SYSTEM SHALL save the record with `status = 'draft'` and assign the editor's ID to `created_by`. |
+| FR-CONTENT-01 | WHEN a Staff member creates or updates a content item (kanji, vocabulary, grammar, question), THE SYSTEM SHALL save the record with `status = 'draft'` and assign the editor's ID to `created_by`. |
 | FR-CONTENT-02 | WHEN a Staff completes editing, THE SYSTEM SHALL allow changing `status = 'pending_review'` to place the content into the Review Queue. |
 | FR-CONTENT-03 | THE SYSTEM SHALL NOT allow Staff to modify any question that has been attempted by students (checked via existence in `attempt_answers`). Instead, the system shall force the creation of a new version. |
 | FR-CONTENT-04 | THE SYSTEM SHALL enforce that vocabularies, Kanji, and grammar points contain all mandatory fields and valid JLPT levels ('N5' to 'N1') before submitting for review. |
@@ -74,31 +74,10 @@ Nếu không quản lý tập trung và phân tách trạng thái kiểm duyệt
 > Nguồn: [`jlpt_database_v2.sql`](file:///d:/Japanese-Skill-Practice-Platform/3.src/infra/Database/jlpt_database_v2.sql)
 
 ```sql
--- Bảng 5: courses
-CREATE TABLE courses (
-    course_id        BIGINT IDENTITY(1,1) PRIMARY KEY,
-    title            NVARCHAR(255)   NOT NULL,
-    description      NVARCHAR(MAX)   NULL,
-    jlpt_level       NVARCHAR(5)     NOT NULL
-        CHECK (jlpt_level IN ('N5','N4','N3','N2','N1')),
-    thumbnail_url    NVARCHAR(500)   NULL,
-    is_vip_only      BIT             NOT NULL DEFAULT 0,
-    display_order    INT             NOT NULL DEFAULT 0,
-    status           NVARCHAR(20)    NOT NULL DEFAULT 'draft'
-        CHECK (status IN ('draft','pending_review','rejected','published','archived','deleted')),
-    created_by       BIGINT          NULL,
-    approved_by      BIGINT          NULL,
-    published_at     DATETIME2       NULL,
-    created_at       DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME(),
-    updated_at       DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME(),
-    CONSTRAINT FK_courses_creator  FOREIGN KEY (created_by)  REFERENCES staff_users(staff_id),
-    CONSTRAINT FK_courses_approver FOREIGN KEY (approved_by) REFERENCES staff_users(staff_id)
-);
-
--- Bảng 6: lessons
+-- Bảng lessons chỉ được tham chiếu bởi các chức năng liên kết hiện có;
+-- UC này không cung cấp API tạo/cập nhật lesson.
 CREATE TABLE lessons (
     lesson_id        BIGINT IDENTITY(1,1) PRIMARY KEY,
-    course_id        BIGINT          NULL,
     lesson_type      NVARCHAR(20)    NOT NULL DEFAULT 'lesson'
         CHECK (lesson_type IN ('lesson','reading','listening','speaking')),
     title            NVARCHAR(255)   NOT NULL,
@@ -117,7 +96,6 @@ CREATE TABLE lessons (
     published_at     DATETIME2       NULL,
     created_at       DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME(),
     updated_at       DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME(),
-    CONSTRAINT FK_lessons_course   FOREIGN KEY (course_id)   REFERENCES courses(course_id),
     CONSTRAINT FK_lessons_creator  FOREIGN KEY (created_by)  REFERENCES staff_users(staff_id),
     CONSTRAINT FK_lessons_approver FOREIGN KEY (approved_by) REFERENCES staff_users(staff_id)
 );
@@ -198,7 +176,6 @@ CREATE TABLE question_assignments (
 
 ```mermaid
 erDiagram
-    courses ||--o{ lessons : "contains"
     lessons ||--o{ question_assignments : "has questions"
     assessments ||--o{ question_assignments : "has questions"
     questions ||--o{ question_assignments : "assigned to"

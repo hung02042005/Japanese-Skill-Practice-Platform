@@ -19,7 +19,8 @@ public interface ManagedQuestionRepository extends JpaRepository<Question, Long>
     @Query("SELECT q FROM Question q "
             + "WHERE q.status = :published AND (:level IS NULL OR q.jlptLevel = :level) "
             + "ORDER BY q.publishedAt DESC")
-    List<Question> findPublished(@Param("published") ContentStatus published, @Param("level") JlptLevel level);
+    List<Question> findPublished(
+            @Param("published") ContentStatus publishedStatus, @Param("level") JlptLevel jlptLevel);
 
     /** Guarded soft-delete/restore: chỉ đổi cột {@code status} khi đang ở {@code from} (FR-34-10/17/22). */
     @Modifying(clearAutomatically = true, flushAutomatically = true)

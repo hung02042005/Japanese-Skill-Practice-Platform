@@ -1,8 +1,8 @@
 /* (c) JLPT E-Learning Platform */
 package com.jlpt.feature.contentreview.handler;
 
-import com.jlpt.feature.contentreview.ContentSnapshot;
-import com.jlpt.feature.contentreview.ContentType;
+import com.jlpt.feature.contentreview.model.ContentSnapshot;
+import com.jlpt.feature.contentreview.model.ContentType;
 import com.jlpt.feature.contentreview.repository.ReviewKanjiRepository;
 import com.jlpt.feature.learning.Kanji;
 import com.jlpt.feature.learning.Kanji.ContentStatus;
@@ -34,15 +34,15 @@ public class KanjiContentHandler implements ReviewableContentHandler {
 
     @Override
     public List<ContentSnapshot> findPending(JlptLevel level) {
-        List<Kanji> list = (level == null)
+        List<Kanji> kanjiEntries = (level == null)
                 ? repository.findPending(ContentStatus.PENDING_REVIEW)
                 : repository.findPending(ContentStatus.PENDING_REVIEW, level);
-        return list.stream().map(k -> toSnapshot(k, false)).toList();
+        return kanjiEntries.stream().map(kanji -> toSnapshot(kanji, false)).toList();
     }
 
     @Override
     public Optional<ContentSnapshot> findActiveById(Long contentId) {
-        return repository.findActiveById(contentId, ContentStatus.DELETED).map(k -> toSnapshot(k, true));
+        return repository.findActiveById(contentId, ContentStatus.DELETED).map(kanji -> toSnapshot(kanji, true));
     }
 
     @Override
@@ -52,32 +52,32 @@ public class KanjiContentHandler implements ReviewableContentHandler {
 
     @Override
     public int transitionFromPending(Long contentId, String targetStatus, LocalDateTime now) {
-        ContentStatus to = HandlerSupport.toEnum(ContentStatus.class, targetStatus);
-        return repository.transition(contentId, now, ContentStatus.PENDING_REVIEW, to);
+        ContentStatus targetContentStatus = HandlerSupport.toEnum(ContentStatus.class, targetStatus);
+        return repository.transition(contentId, now, ContentStatus.PENDING_REVIEW, targetContentStatus);
     }
 
-    private ContentSnapshot toSnapshot(Kanji k, boolean withDetail) {
+    private ContentSnapshot toSnapshot(Kanji kanji, boolean withDetail) {
         Map<String, Object> detail = null;
         if (withDetail) {
             detail = HandlerSupport.newDetail();
-            HandlerSupport.put(detail, "characterValue", k.getCharacterValue());
-            HandlerSupport.put(detail, "meaning", k.getMeaning());
-            HandlerSupport.put(detail, "onyomi", k.getOnyomi());
-            HandlerSupport.put(detail, "kunyomi", k.getKunyomi());
-            HandlerSupport.put(detail, "strokeCount", k.getStrokeCount());
-            HandlerSupport.put(detail, "exampleWord", k.getExampleWord());
-            HandlerSupport.put(detail, "exampleReading", k.getExampleReading());
-            HandlerSupport.put(detail, "exampleMeaning", k.getExampleMeaning());
+            HandlerSupport.put(detail, "characterValue", kanji.getCharacterValue());
+            HandlerSupport.put(detail, "meaning", kanji.getMeaning());
+            HandlerSupport.put(detail, "onyomi", kanji.getOnyomi());
+            HandlerSupport.put(detail, "kunyomi", kanji.getKunyomi());
+            HandlerSupport.put(detail, "strokeCount", kanji.getStrokeCount());
+            HandlerSupport.put(detail, "exampleWord", kanji.getExampleWord());
+            HandlerSupport.put(detail, "exampleReading", kanji.getExampleReading());
+            HandlerSupport.put(detail, "exampleMeaning", kanji.getExampleMeaning());
         }
         return ContentSnapshot.builder()
-                .contentId(k.getId())
+                .contentId(kanji.getId())
                 .contentType(ContentType.KANJI)
-                .titleOrText(k.getCharacterValue())
-                .jlptLevel(k.getJlptLevel() != null ? k.getJlptLevel().name() : null)
-                .status(k.getStatus() != null ? k.getStatus().getValue() : null)
-                .createdById(HandlerSupport.creatorId(k.getCreatedBy()))
-                .createdByName(HandlerSupport.creatorName(k.getCreatedBy()))
-                .submittedAt(k.getUpdatedAt())
+                .titleOrText(kanji.getCharacterValue())
+                .jlptLevel(kanji.getJlptLevel() != null ? kanji.getJlptLevel().name() : null)
+                .status(kanji.getStatus() != null ? kanji.getStatus().getValue() : null)
+                .createdById(HandlerSupport.creatorId(kanji.getCreatedBy()))
+                .createdByName(HandlerSupport.creatorName(kanji.getCreatedBy()))
+                .submittedAt(kanji.getUpdatedAt())
                 .detail(detail)
                 .build();
     }

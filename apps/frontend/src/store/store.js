@@ -1,13 +1,13 @@
-﻿import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './slices/authSlice';
-import studentReducer from './slices/studentSlice';
-import staffGrammarReducer from './slices/staffGrammarSlice';
-import staffQuestionReducer from './slices/staffQuestionSlice';
-import staffQuizReducer from './slices/staffQuizSlice';
-import staffExamReducer from './slices/staffExamSlice';
-import managerReviewReducer from './slices/managerReviewSlice';
-import staffLearningReducer from './slices/staffLearningSlice';
-import publishedContentReducer from './slices/publishedContentSlice';
+import { configureStore } from '@reduxjs/toolkit';
+import authReducer from '../features/auth/authSlice';
+import studentReducer from '../features/dashboard/studentSlice';
+import staffGrammarReducer from '../features/management/staffGrammarSlice';
+import staffQuestionReducer from '../features/management/staffQuestionSlice';
+import staffQuizReducer from '../features/management/staffQuizSlice';
+import staffExamReducer from '../features/management/staffExamSlice';
+import managerReviewReducer from '../features/management/managerReviewSlice';
+import staffLearningReducer from '../features/management/staffLearningSlice';
+import publishedContentReducer from '../features/management/publishedContentSlice';
 
 export const store = configureStore({
   reducer: {

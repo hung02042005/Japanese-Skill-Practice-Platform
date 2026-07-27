@@ -11,7 +11,7 @@
 
 Tuân `AGENTS.md §9.1` (spec không khớp → nêu rõ, không tự đoán):
 
-1. **Không tồn tại bảng `courses`** trong schema (`V1__init_schema.sql`). Nội dung ngữ pháp chỉ liên kết tới `lessons` qua `grammar_points.lesson_id`. "Course" được đưa vào *Out of Scope* (§9).
+1. **Liên kết nội dung:** Nội dung ngữ pháp chỉ liên kết tới `lessons` qua `grammar_points.lesson_id`.
 2. **Tên cột thực tế khác đề bài:** `structure` (≈ title/pattern), `usage_explanation` (≈ explanation), `example_sentence_jp/vi` (≈ example). Spec dùng đúng tên cột DB và ghi chú ánh xạ ở §5.
 
 ---
@@ -72,7 +72,6 @@ Cho phép Staff **tạo, xem, chỉnh sửa, liên kết và gửi duyệt** cá
 - **FR-07 (Conditional):** IF `lessonId` được cung cấp nhưng không tồn tại (hoặc `status='deleted'`), THEN THE SYSTEM SHALL từ chối với 404.
 - **FR-08 (Conditional):** IF `lessonId` tồn tại nhưng `lessons.jlpt_level` ≠ `grammar.jlpt_level`, THEN THE SYSTEM SHALL từ chối với 422 (chống lẫn lộn cấp độ — `AGENTS.md §5 #5`).
 
-> *Ghi chú:* Liên kết "course" theo đề bài **không khả thi** ở schema hiện tại (không có bảng `courses`); xem §9 Out of Scope.
 
 ### 3.3. Xem grammar (GET)
 
@@ -168,7 +167,6 @@ lessons (1) ── jlpt_level phải khớp ── grammar_points.jlpt_level  (e
 
 - `lessons` — kiểm tra tồn tại + khớp `jlpt_level` khi liên kết.
 - `staff_users` — nguồn `created_by`, kiểm tra `status='active'`.
-- ~~`courses`~~ — **không tồn tại** trong schema (xem §9).
 
 ---
 
@@ -290,10 +288,9 @@ Xử lý tập trung qua `@RestControllerAdvice` (`ADR-008`). Format lỗi: `{ s
 
 ## 9. Out of Scope
 
-1. **Liên kết với `courses`** — schema hiện tại **không có** bảng `courses`; chỉ hỗ trợ liên kết `lesson_id`. Nếu cần "course" → yêu cầu thay đổi schema qua migration (ngoài UC-25, cần `CONSTITUTION.md §7.3 vote`).
-2. **Duyệt / từ chối / publish** grammar (chuyển `pending_review → published/rejected`, set `approved_by`, `published_at`) — thuộc UC của **Staff Manager/Admin**.
-3. **Versioning nội dung** khi sửa bản `published` (tạo phiên bản mới) — chỉ nêu ràng buộc chặn (FR-14), cơ chế tạo version là UC riêng.
-4. **Soft delete grammar** (`status='deleted'`) — UC quản lý xóa nội dung riêng.
-5. **Hiển thị grammar cho Student** (đọc nội dung `published` theo cấp độ/subscription) — module Student.
-6. **Bulk import / export**, đính kèm media (audio/video) cho grammar.
-7. **Audit log của Admin** (`admin_audit_logs`) — UC-25 chỉ ghi application log (FR-22), không ghi bảng audit Admin.
+1. **Duyệt / từ chối / publish** grammar (chuyển `pending_review → published/rejected`, set `approved_by`, `published_at`) — thuộc UC của **Staff Manager/Admin**.
+2. **Versioning nội dung** khi sửa bản `published` (tạo phiên bản mới) — chỉ nêu ràng buộc chặn (FR-14), cơ chế tạo version là UC riêng.
+3. **Soft delete grammar** (`status='deleted'`) — UC quản lý xóa nội dung riêng.
+4. **Hiển thị grammar cho Student** (đọc nội dung `published` theo cấp độ/subscription) — module Student.
+5. **Bulk import / export**, đính kèm media (audio/video) cho grammar.
+6. **Audit log của Admin** (`admin_audit_logs`) — UC-25 chỉ ghi application log (FR-22), không ghi bảng audit Admin.

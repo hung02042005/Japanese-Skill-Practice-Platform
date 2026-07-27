@@ -2,6 +2,7 @@
 package com.jlpt.feature.speaking.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,6 +18,7 @@ public class SpeakingExerciseResponse {
     private String category;
     private String targetText;
     private String sampleAudioUrl;
+    private List<SpeakingQuestionDto> questions;
     private Integer bestScore; // điểm cao nhất của student (null nếu chưa luyện)
     private int attemptCount; // số lần đã luyện
 }

@@ -51,7 +51,7 @@ class MockExamControllerIntegrationTest {
 
     private Long examId;
     private Long languageQuestionId;
-    private Long readingQuestionId;
+    private Long vocabQuestionId;
     private String accessToken;
 
     @BeforeEach
@@ -91,10 +91,10 @@ class MockExamControllerIntegrationTest {
                 .build());
         languageQuestionId = languageQuestion.getId();
 
-        Question readingQuestion = questionRepository.save(Question.builder()
-                .questionText("読解の問題")
+        Question vocabQuestion = questionRepository.save(Question.builder()
+                .questionText("語彙の問題")
                 .questionType(Question.QuestionType.MULTIPLE_CHOICE)
-                .skill(Question.Skill.READING)
+                .skill(Question.Skill.VOCABULARY)
                 .jlptLevel(StudentUser.JlptLevel.N3)
                 .optionA("1")
                 .optionB("2")
@@ -103,7 +103,7 @@ class MockExamControllerIntegrationTest {
                 .correctOption("C")
                 .status(Question.ContentStatus.PUBLISHED)
                 .build());
-        readingQuestionId = readingQuestion.getId();
+        vocabQuestionId = vocabQuestion.getId();
 
         questionAssignmentRepository.save(QuestionAssignment.builder()
                 .parentType(QuestionAssignment.ParentType.ASSESSMENT)
@@ -116,8 +116,8 @@ class MockExamControllerIntegrationTest {
         questionAssignmentRepository.save(QuestionAssignment.builder()
                 .parentType(QuestionAssignment.ParentType.ASSESSMENT)
                 .parentId(examId)
-                .question(readingQuestion)
-                .sectionName("reading")
+                .question(vocabQuestion)
+                .sectionName("vocabulary")
                 .score(BigDecimal.valueOf(20))
                 .displayOrder(2)
                 .build());
@@ -163,7 +163,7 @@ class MockExamControllerIntegrationTest {
                 "{\"attemptId\":%d,\"isAutoSubmit\":false,\"answers\":["
                         + "{\"questionId\":%d,\"selectedOption\":\"B\"},"
                         + "{\"questionId\":%d,\"selectedOption\":\"A\"}]}",
-                attemptId, languageQuestionId, readingQuestionId);
+                attemptId, languageQuestionId, vocabQuestionId);
 
         mockMvc.perform(post("/api/assessments/" + examId + "/submit")
                         .header("Authorization", "Bearer " + accessToken)

@@ -34,7 +34,7 @@ final class HandlerSupport {
     static <E extends Enum<E>> E toEnum(Class<E> enumType, String targetStatus) {
         try {
             return Enum.valueOf(enumType, targetStatus.trim().toUpperCase());
-        } catch (IllegalArgumentException | NullPointerException e) {
+        } catch (IllegalArgumentException | NullPointerException invalidStatusError) {
             throw new BusinessException(400, "VALIDATION_FAILED", "Trạng thái đích không hợp lệ: " + targetStatus);
         }
     }

@@ -2,7 +2,7 @@ name: CI (Build & Test)
 
 on:
   push:
-    branches: [ "main", "develop", "branch_for_hung" ]
+    branches: [ "main", "develop", "branch_for_hung", "hung" ]
   pull_request:
     branches: [ "main", "develop" ]
   workflow_dispatch:
@@ -27,7 +27,7 @@ jobs:
         cache: maven
         
     - name: Build and Test with Maven
-      run: mvn -B clean verify
+      run: mvn -B -ntp clean verify
       env:
         # Provide fallback env vars so tests don't fail due to missing variables
         DATABASE_URL: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1

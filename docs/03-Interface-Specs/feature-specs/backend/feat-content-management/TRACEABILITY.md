@@ -83,24 +83,18 @@
 
 | AC | Mô tả ngắn | FR | Test Case |
 |:---|:---|:---|:---|
-| AC-27-01 | Tạo lesson nháp | FR-27-01/09/11 | TC-U-27-01, TC-A-27-01 |
-| AC-27-02 | Lesson thiếu lessonType | FR-27-09 | TC-U-27-02 |
-| AC-27-03 | Lesson không nội dung | FR-27-11 | TC-U-27-03 |
-| AC-27-04 | Listening thiếu audio | FR-27-12 | TC-U-27-04 |
 | AC-27-05 | Tạo vocabulary | FR-27-16 | TC-U-27-06 |
 | AC-27-06 | Vocabulary thiếu furigana | FR-27-16 | TC-U-27-07 |
 | AC-27-07 | Vocabulary lesson không tồn tại | FR-27-18 | TC-U-27-08 |
 | AC-27-08 | Tạo kanji | FR-27-20 | TC-U-27-09 |
 | AC-27-09 | Kanji trùng | FR-27-21 | TC-U-27-10, TC-I-27-02, TC-A-27-02 |
 | AC-27-10 | Kanji thiếu On/Kun | FR-27-20 | TC-U-27-11 |
-| AC-27-11 | Update khi pending | FR-27-04 | TC-U-27-12 |
-| AC-27-12 | Update khi rejected | FR-27-04 | TC-U-27-13 |
 | AC-27-13 | Gửi duyệt thành công | FR-27-25/26 | TC-U-27-14 |
 | AC-27-14 | Chặn Staff tự publish | FR-27-05 | TC-A-27-03 |
 | AC-27-15 | Không phải chủ sở hữu | FR-27-06 | TC-U-27-15 |
 | AC-27-16 | Media lưu URL | FR-27-03 | TC-I-27-01 |
 
-**→ 16/16 AC phủ.**
+**→ 10/10 AC còn lại được phủ.**
 
 ---
 
@@ -142,7 +136,7 @@
 | UC-24 | 13 | 13 | 100% |
 | UC-25 | 17 | 17 | 100% |
 | UC-26 | 16 | 16 | 100% |
-| UC-27 | 16 | 16 | 100% |
+| UC-27 | 10 | 10 | 100% |
 | UC-28 | 22 | 22 | 100% |
 | **Tổng** | **84** | **84** | **100%** |
 
