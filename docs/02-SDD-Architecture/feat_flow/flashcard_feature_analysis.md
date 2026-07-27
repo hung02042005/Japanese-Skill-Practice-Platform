@@ -34,6 +34,19 @@ Feature Flashcard dựng một **phiên học trộn** theo chủ đề (topic):
   - FE: [App.jsx](apps/frontend/src/App.jsx#L106-L110) — route `/vocabulary/flashcard`.
   - BE: [StudentFlashcardController.java](apps/backend/src/main/java/com/jlpt/feature/flashcard/controller/StudentFlashcardController.java) — `/api/flashcards/*` (**chỉ** phiên ôn SRS; CRUD Sổ tay đã tách sang `/api/notebook/*`).
 
+### 1.1 Chức năng tương ứng
+
+| Chức năng | Người dùng thao tác | API / hàm xử lý | Tác dụng chính |
+|---|---|---|---|
+| Mở phiên học theo chủ đề | Chọn chủ đề từ vựng rồi vào `/vocabulary/flashcard?topicId=...` | `POST /api/flashcards/session` → `FlashcardSrsService.getSession()` | Tạo/lấy deck theo topic, tạo thẻ mới nếu thiếu, dựng hàng đợi học `NEW` + ôn `REVIEW`. |
+| Học thẻ mới | Chạm thẻ để lật và bấm "Tiếp theo" | State FE trong `VocabFlashcardSession.jsx` | Cho học viên xem nghĩa, ví dụ, phát âm; không chấm điểm và không gọi API. |
+| Làm trắc nghiệm ôn tập | Chọn một đáp án ở thẻ `REVIEW` | `POST /api/flashcards/{id}/review` → `FlashcardSrsService.submitReview()` | Backend tự so `selectedOptionId` với `contentId`, quyết định đúng/sai và trả kết quả. |
+| Cập nhật lịch ôn SRS | Xảy ra sau mỗi lượt chấm | `applySm2()` trong `FlashcardSrsService` | Cập nhật `intervalDays`, `easeFactor`, `repetitionCount`, `nextReviewDate`, `lastRating`. |
+| Tổng kết phiên | Hoàn thành thẻ cuối | `submitReview(..., isLastCardInSession=true)` | Trả điểm `đúng/quizTotal`, danh sách từ sai và cờ `suggestAddToReviewDeck`. |
+| Thêm từ sai vào Sổ tay | Bấm "Thêm vào Từ cần ôn lại" ở màn tổng kết | `POST /api/notebook/words` → `NotebookService.addWrongWordsToReviewDeck()` | Chuyển/tạo các thẻ sai vào sổ ôn lại với `reason = wrong`; thao tác này thuộc Notebook. |
+| Học lại phiên | Bấm "Học lại" | Gọi lại `getVocabFlashcardSession()` | Dựng phiên mới với `sessionId` mới, dựa trên trạng thái SRS vừa cập nhật. |
+
+---
 ---
 
 ## 2. Bản đồ cấu trúc (các "mảnh" và vai trò)

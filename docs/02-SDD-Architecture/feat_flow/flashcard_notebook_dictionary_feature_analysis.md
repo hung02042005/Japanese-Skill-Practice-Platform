@@ -61,6 +61,20 @@ Cụm 3 tính năng phục vụ vòng đời "học – tra cứu – ghi nhớ"
     - [StudentNotebookController.java](apps/backend/src/main/java/com/jlpt/feature/flashcard/controller/StudentNotebookController.java) — `/api/notebook/*` (Sổ tay).
     - [StudentDictionaryController.java](apps/backend/src/main/java/com/jlpt/feature/dictionary/controller/StudentDictionaryController.java) — `/api/dictionary/*`.
 
+### 1.1 Chức năng tương ứng của cả cụm
+
+| Nhóm | Chức năng | Endpoint / xử lý chính | Tác dụng trong vòng đời học từ |
+|---|---|---|---|
+| Từ điển | Tra cứu tổng hợp 4 loại nội dung | `GET /api/dictionary/search` | Giúp học viên tìm nhanh Từ vựng, Kanji, Ngữ pháp, Bài học đã `PUBLISHED`. |
+| Từ điển | Lọc và xem thêm theo loại | `GET /api/dictionary/search/{type}` | Cho phép đi sâu vào một nhóm kết quả mà không tải lại toàn bộ 4 loại. |
+| Từ điển → Sổ tay | Lưu từ thủ công | `POST /api/notebook/words`, `reason = manual` | Đưa một từ vựng cần nhớ vào sổ "Từ cần ôn lại". |
+| Sổ tay | Xem, tìm, sắp xếp danh sách từ yếu | `GET /api/notebook/decks`, `GET /api/notebook/cards` | Giúp học viên quản lý kho từ cần chú ý, phản chiếu trạng thái SRS của từng thẻ. |
+| Sổ tay | Gỡ từ khỏi sổ | `DELETE /api/notebook/cards/{id}` hoặc `POST /api/notebook/cards/bulk-delete` | Soft-delete thẻ khỏi sổ, không xóa nội dung gốc và không hard delete. |
+| Flashcard | Dựng phiên học theo topic | `POST /api/flashcards/session` | Tạo hàng đợi học/ôn theo chủ đề, ưu tiên từ chưa học và từ đến hạn. |
+| Flashcard | Chấm lượt ôn và cập nhật SM-2 | `POST /api/flashcards/{id}/review` | Backend quyết định đúng/sai, cập nhật lịch ôn dài hạn trên dòng `flashcards`. |
+| Flashcard → Sổ tay | Gợi ý lưu từ sai cuối phiên | `wrongWords[]` → `POST /api/notebook/words`, `reason = wrong` | Chuyển các từ trả lời sai vào sổ khi học viên xác nhận. |
+
+---
 ---
 
 ## 2. Bản đồ cấu trúc (các "mảnh" và vai trò)

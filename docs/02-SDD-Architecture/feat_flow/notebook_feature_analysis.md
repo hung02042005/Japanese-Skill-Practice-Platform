@@ -40,6 +40,20 @@ Trang chỉ **liệt kê / tìm / sắp xếp / gỡ** từ — **không** tự 
   - FE: [App.jsx](apps/frontend/src/App.jsx#L106-L110) — route `/notebook`.
   - BE: [StudentNotebookController.java](apps/backend/src/main/java/com/jlpt/feature/flashcard/controller/StudentNotebookController.java) — `/api/notebook/*`.
 
+### 1.1 Chức năng tương ứng
+
+| Chức năng | Người dùng thao tác / nguồn phát sinh | API / hàm xử lý | Tác dụng chính |
+|---|---|---|---|
+| Xem danh sách sổ | Mở trang `/notebook` | `GET /api/notebook/decks` → `NotebookService.getDecks()` | Lấy các deck của học viên và xác định sổ `isReviewDeck = true` để hiển thị "Từ cần ôn lại". |
+| Xem danh sách từ trong sổ | Trang có `deckId` sau khi tải deck | `GET /api/notebook/cards` → `NotebookService.getCards()` | Trả `Page<FlashcardResponse>` gồm mặt thẻ đã resolve live từ `vocabulary`, kèm trạng thái SRS hiện tại. |
+| Tìm từ trong sổ | Nhập từ khóa `q` | `getCards(deckId, q, sortBy, pageable)` | Lọc server-side trên `frontText` sau khi resolve nội dung, tránh chỉ tìm trong trang đầu. |
+| Sắp xếp danh sách | Chọn `recent`, `alpha`, `level` | `normalizeSort()` + query/sort tương ứng | Đổi thứ tự hiển thị theo mới thêm, alphabet hoặc JLPT level; bắt buộc dùng param `sortBy`. |
+| Cuộn vô hạn | Kéo tới cuối danh sách | FE `IntersectionObserver` → `GET /api/notebook/cards?page=n` | Nạp trang kế tiếp và append vào danh sách hiện tại. |
+| Gỡ một từ | Bấm "Gỡ" trên một thẻ | `DELETE /api/notebook/cards/{id}` → `NotebookService.deleteCard()` | Soft-delete đúng thẻ thuộc học viên (`is_deleted = 1`), không hard delete. |
+| Gỡ nhiều từ | Chọn nhiều thẻ rồi gỡ hàng loạt | `POST /api/notebook/cards/bulk-delete` → `NotebookService.bulkDelete()` | Soft-delete nhiều thẻ trong một request, trả số thẻ đã gỡ. |
+| Thêm từ vào sổ | Từ sai cuối phiên Flashcard hoặc lưu thủ công từ Từ điển | `POST /api/notebook/words` → `NotebookService.addWrongWordsToReviewDeck()` | Tạo hoặc chuyển thẻ vào sổ "Từ cần ôn lại"; idempotent theo `(student, contentType, contentId)`. |
+
+---
 ---
 
 ## 2. Bản đồ cấu trúc (các "mảnh" và vai trò)

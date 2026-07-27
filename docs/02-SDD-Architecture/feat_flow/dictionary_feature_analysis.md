@@ -35,6 +35,18 @@ Từ Điển cho phép học viên **tra cứu nhanh** 4 loại nội dung đã 
   - FE: [App.jsx](apps/frontend/src/App.jsx#L106-L110) — route `/dictionary`.
   - BE: [StudentDictionaryController.java](apps/backend/src/main/java/com/jlpt/feature/dictionary/controller/StudentDictionaryController.java) — `/api/dictionary/*`.
 
+### 1.1 Chức năng tương ứng
+
+| Chức năng | Người dùng thao tác | API / hàm xử lý | Tác dụng chính |
+|---|---|---|---|
+| Tra cứu tổng hợp | Nhập từ khóa vào ô tìm kiếm | `GET /api/dictionary/search` → `DictionaryService.search()` | Tìm đồng thời Từ vựng, Kanji, Ngữ pháp và Bài học đã `PUBLISHED`; mỗi nhóm trả tối đa 10 kết quả overview. |
+| Lọc theo loại nội dung | Chọn chip `VOCABULARY`, `KANJI`, `GRAMMAR`, `LESSON` | `searchDictionary(q, jlptLevel, type)` | Giới hạn kết quả về đúng một loại nội dung để giảm nhiễu và giảm số query backend. |
+| Xem thêm kết quả | Bấm "Xem thêm" ở từng nhóm | `GET /api/dictionary/search/{type}` → `DictionaryService.searchByType()` | Phân trang riêng theo từng loại nội dung, nối thêm kết quả vào nhóm đang xem. |
+| Xem chi tiết mục tra cứu | Bấm vào một kết quả | `DictDetailPanel` / `DictGrammarPanel` | Mở panel chi tiết từ dữ liệu đã tải; không gọi API mới và không ghi DB. |
+| Lưu từ vào Sổ tay | Bấm "Lưu vào sổ" trên kết quả Từ vựng | `POST /api/notebook/words` → `NotebookService.addWrongWordsToReviewDeck()` | Tạo hoặc chuyển thẻ `VOCABULARY` vào sổ "Từ cần ôn lại" với `reason = manual`. |
+| Lịch sử tra cứu | Bấm lại từ khóa cũ hoặc xóa lịch sử | `localStorage['sakuji.dict.history']` | Lưu tối đa 8 từ khóa gần nhất trên client, giúp tra lại nhanh; không có lịch sử server-side. |
+
+---
 ---
 
 ## 2. Bản đồ cấu trúc (các "mảnh" và vai trò)
