@@ -1,0 +1,172 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1507" dy="736" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="p_mgr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="Staff Manager" vertex="1">
+          <mxGeometry height="30" width="150" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_mgr" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="95" y="70" as="sourcePoint" />
+            <mxPoint x="95" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_fe" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="Frontend" vertex="1">
+          <mxGeometry height="30" width="150" x="220" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_fe" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="295" y="70" as="sourcePoint" />
+            <mxPoint x="295" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_snc" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="StaffNotificationController" vertex="1">
+          <mxGeometry height="30" width="150" x="420" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_snc" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="495" y="70" as="sourcePoint" />
+            <mxPoint x="495" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_ns" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="NotificationService" vertex="1">
+          <mxGeometry height="30" width="150" x="680" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_ns" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="755" y="70" as="sourcePoint" />
+            <mxPoint x="755" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_nd" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="NotificationDispatcher" vertex="1">
+          <mxGeometry height="30" width="150" x="920" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_nd" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="995" y="70" as="sourcePoint" />
+            <mxPoint x="995" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_db" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="MySQL" vertex="1">
+          <mxGeometry height="30" width="150" x="1140" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_db" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1215" y="70" as="sourcePoint" />
+            <mxPoint x="1215" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_es" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="EmailService" vertex="1">
+          <mxGeometry height="30" width="150" x="1340" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_es" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1415" y="70" as="sourcePoint" />
+            <mxPoint x="1415" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="frame_0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=none;verticalAlign=top;" value="" vertex="1">
+          <mxGeometry height="265" width="1000" x="400" y="165" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_lbl_0" parent="1" style="text;html=1;align=left;verticalAlign=top;fontStyle=2;fontSize=10;fontColor=#B85450;" value="sync: HTTP request/response returns immediately with jobId" vertex="1">
+          <mxGeometry height="16" width="992" x="404" y="147" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=none;verticalAlign=top;" value="" vertex="1">
+          <mxGeometry height="190" width="520" x="900" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_lbl_1" parent="1" style="text;html=1;align=left;verticalAlign=top;fontStyle=2;fontSize=10;fontColor=#B85450;" value="async: @Scheduled(fixedDelay=60000) NotificationDispatcher.deliverPendingEmails()" vertex="1">
+          <mxGeometry height="16" width="512" x="904" y="432" as="geometry" />
+        </mxCell>
+        <mxCell id="msg_0" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="1: compose broadcast (title, content, target level)">
+          <mxGeometry relative="1" x="-0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="95" y="110" as="sourcePoint" />
+            <mxPoint x="295" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_1" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="2: POST /api/staff/notifications">
+          <mxGeometry relative="1" x="-0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="295" y="150" as="sourcePoint" />
+            <mxPoint x="495" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_2" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="3: broadcast(actorEmail, request)">
+          <mxGeometry relative="1" x="-0.1923" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="495" y="190" as="sourcePoint" />
+            <mxPoint x="755" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_3" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;rounded=0;" value="4: requireManager + resolveTargets(jlptLevel)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="815" y="230" />
+              <mxPoint x="815" y="256" />
+            </Array>
+            <mxPoint x="755" y="230" as="sourcePoint" />
+            <mxPoint x="755" y="256" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_4" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="5: broadcastAsync(targets, request, staff)  [@Async, non-blocking]">
+          <mxGeometry relative="1" x="-0.0417" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="755" y="290" as="sourcePoint" />
+            <mxPoint x="995" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_5" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="6: INSERT INTO admin_audit_logs (action=&#39;BROADCAST_SENT&#39;)">
+          <mxGeometry relative="1" x="-0.0652" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="755" y="330" as="sourcePoint" />
+            <mxPoint x="1215" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_6" edge="1" parent="1" style="html=1;endArrow=block;dashed=1;fontSize=11;" value="7: jobId">
+          <mxGeometry relative="1" x="0.0385" y="-20" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="755" y="370" as="sourcePoint" />
+            <mxPoint x="495" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_7" edge="1" parent="1" style="html=1;endArrow=block;dashed=1;fontSize=11;" value="8: 202 Accepted { jobId }">
+          <mxGeometry relative="1" x="0.15" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="495" y="410" as="sourcePoint" />
+            <mxPoint x="295" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_8" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="9 (async, per target): INSERT INTO notifications (channel, is_auto=false)">
+          <mxGeometry relative="1" x="-0.0455" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="995" y="470" as="sourcePoint" />
+            <mxPoint x="1215" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_9" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="10 (every 60s): SELECT * FROM notifications WHERE channel IN (&#39;EMAIL&#39;,&#39;BOTH&#39;) AND sent_at IS NULL AND scheduled_at&lt;=NOW()">
+          <mxGeometry relative="1" x="-0.0455" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="995" y="540" as="sourcePoint" />
+            <mxPoint x="1215" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_10" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="11: sendNotificationEmail(student.email, title, content)">
+          <mxGeometry relative="1" x="-0.0238" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="995" y="580" as="sourcePoint" />
+            <mxPoint x="1415" y="580" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_11" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="12: UPDATE notifications SET sent_at=NOW()  (best-effort, no infinite retry)">
+          <mxGeometry relative="1" x="0.0455" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="995" y="620" as="sourcePoint" />
+            <mxPoint x="1215" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

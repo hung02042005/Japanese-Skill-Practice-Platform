@@ -1,0 +1,94 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1507" dy="736" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1190" pageHeight="821" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c1" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#ffe6cc;" value="SupportController" vertex="1">
+          <mxGeometry height="128" width="340" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c1_m" parent="c1" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ createTicket(TicketRequest): ApiResponse~TicketResponse~&#xa;+ replyToTicket(id, TicketReplyRequest): ApiResponse~TicketReplyResponse~&#xa;+ closeTicket(id): ApiResponse~TicketResponse~" vertex="1">
+          <mxGeometry height="102" width="340" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" value="SupportTicketService" vertex="1">
+          <mxGeometry height="200" width="340" x="40" y="271" as="geometry" />
+        </mxCell>
+        <mxCell id="c3_m" parent="c3" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ createTicket(studentId, TicketRequest): TicketResponse&#xa;+ addStudentReply(id, studentId, req): TicketReplyResponse&#xa;+ addStaffReply(id, staffEmail, req): TicketReplyResponse&#xa;+ assignTicket(id, staffId, actorEmail, isAdmin): TicketResponse&#xa;+ closeTicket(id, actorEmail): TicketResponse" vertex="1">
+          <mxGeometry height="174" width="340" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" value="Ticket" vertex="1">
+          <mxGeometry height="146" width="340" x="40" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="c6_m" parent="c6" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ Long id&#xa;+ TicketStatus status  {OPEN|ASSIGNED|IN_PROGRESS|RESOLVED|CLOSED}&#xa;+ Priority priority&#xa;+ StaffUser assignedTo&#xa;+ StudentUser student" vertex="1">
+          <mxGeometry height="120" width="340" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#ffe6cc;" value="StaffSupportController" vertex="1">
+          <mxGeometry height="164" width="300" x="560" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="c2_m" parent="c2" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ getAllTickets(status,category,priority,q): ApiResponse~Map~&#xa;+ assignTicket(id, AssignTicketRequest): ApiResponse~TicketResponse~&#xa;+ replyToTicket(id, TicketReplyRequest): ApiResponse~TicketReplyResponse~&#xa;+ closeTicket(id): ApiResponse~TicketResponse~" vertex="1">
+          <mxGeometry height="138" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" value="NotificationService" vertex="1">
+          <mxGeometry height="74" width="300" x="860" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="c7_m" parent="c7" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ notifyStudent(student, title, content, type, key, staff): void" vertex="1">
+          <mxGeometry height="48" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" value="TicketRepository" vertex="1">
+          <mxGeometry height="74" width="300" x="880" y="374" as="geometry" />
+        </mxCell>
+        <mxCell id="c4_m" parent="c4" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ findByStudentId(id, Pageable): Page~Ticket~&#xa;+ findAllByFilters(...): Page~Ticket~" vertex="1">
+          <mxGeometry height="48" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" value="TicketReplyRepository" vertex="1">
+          <mxGeometry height="74" width="300" x="860" y="616" as="geometry" />
+        </mxCell>
+        <mxCell id="c5_m" parent="c5" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ findByTicketIdOrderByCreatedAtAsc(id): List~TicketReply~" vertex="1">
+          <mxGeometry height="48" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="e900" edge="1" parent="1" source="c1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.44;entryY=0;entryDx=0;entryDy=0;" target="c3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e901" edge="1" parent="1" source="c2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.56;entryDx=0;entryDy=0;" target="c3" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="470" y="117" />
+              <mxPoint x="470" y="310" />
+              <mxPoint x="380" y="310" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e902" edge="1" parent="1" source="c3_m" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;" target="c4_m" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="424" />
+            </Array>
+            <mxPoint x="360" y="430" as="sourcePoint" />
+            <mxPoint x="860" y="492.68000000000006" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e903" edge="1" parent="1" source="c3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=1;exitY=0.44;exitDx=0;exitDy=0;entryX=0;entryY=0.44;entryDx=0;entryDy=0;" target="c5" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="460" />
+              <mxPoint x="640" y="460" />
+              <mxPoint x="640" y="673" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e904" edge="1" parent="1" source="c3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=0.56;exitY=1;exitDx=0;exitDy=0;entryX=0.56;entryY=0;entryDx=0;entryDy=0;" target="c6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e905" edge="1" parent="1" source="c3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=1;exitY=0.6799999999999999;exitDx=0;exitDy=0;entryX=0;entryY=0.6799999999999999;entryDx=0;entryDy=0;" target="c7" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="340" />
+              <mxPoint x="620" y="340" />
+              <mxPoint x="620" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

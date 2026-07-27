@@ -1,0 +1,77 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1281" dy="626" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1150" pageHeight="689" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c1" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#ffe6cc;" value="AdminController" vertex="1">
+          <mxGeometry height="272" width="320" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c1_m" parent="c1" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ listUsers(type,q,status,...): ApiResponse~Map~&#xa;+ createStaff(CreateStaffRequest): ApiResponse~CreateStaffResponse~&#xa;+ suspendUser(type,id,SuspendUserRequest): ApiResponse~SuspendUserResponse~&#xa;+ activateUser(type,id): ApiResponse~ActivateUserResponse~&#xa;+ softDeleteUser(type,id): ApiResponse~SoftDeleteUserResponse~&#xa;+ restoreUser(type,id): ApiResponse~RestoreUserResponse~&#xa;+ changeStaffRole(staffId,ChangeStaffRoleRequest): ApiResponse~ChangeStaffRoleResponse~" vertex="1">
+          <mxGeometry height="246" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" value="AdminUserService" vertex="1">
+          <mxGeometry height="236" width="320" x="420" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c2_m" parent="c2" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ createStaff(adminEmail, request): CreateStaffResponse&#xa;+ suspendUser(adminEmail, type, id, request): SuspendUserResponse&#xa;+ softDeleteUser(adminEmail, type, id): SoftDeleteUserResponse&#xa;+ restoreUser(adminEmail, type, id): RestoreUserResponse&#xa;- checkSelfModification(actorId, type, targetId): void&#xa;- auditLog(actor, action, table, id, desc): void" vertex="1">
+          <mxGeometry height="210" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" value="AuthTokenRepository" vertex="1">
+          <mxGeometry height="74" width="320" x="80" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="c5_m" parent="c5" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ revokeAllActiveByStudentId(id, now): int&#xa;+ revokeAllActiveByStaffId(id, now): int" vertex="1">
+          <mxGeometry height="48" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" value="AdminAuditLogRepository" vertex="1">
+          <mxGeometry height="56" width="320" x="415" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="c6_m" parent="c6" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ save(AdminAuditLog): AdminAuditLog" vertex="1">
+          <mxGeometry height="30" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" value="StudentUserRepository" vertex="1">
+          <mxGeometry height="56" width="300" x="800" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c3_m" parent="c3" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ findById(id): Optional~StudentUser~" vertex="1">
+          <mxGeometry height="30" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" value="StaffUserRepository" vertex="1">
+          <mxGeometry height="56" width="300" x="800" y="161" as="geometry" />
+        </mxCell>
+        <mxCell id="c4_m" parent="c4" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="" vertex="1">
+          <mxGeometry height="30" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" value="AdminAuditLog" vertex="1">
+          <mxGeometry height="146" width="300" x="830" y="445" as="geometry" />
+        </mxCell>
+        <mxCell id="c7_m" parent="c7" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ Long id&#xa;+ AdminUser adminActor&#xa;+ String action&#xa;+ String targetTable&#xa;+ Long targetId&#xa;+ String description" vertex="1">
+          <mxGeometry height="120" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="e900" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="c2" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="360" y="160" />
+              <mxPoint x="390" y="160" />
+              <mxPoint x="390" y="158" />
+            </Array>
+            <mxPoint x="360" y="160" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e901" edge="1" parent="1" source="c2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=1;exitY=0.32;exitDx=0;exitDy=0;entryX=0;entryY=0.32;entryDx=0;entryDy=0;" target="c3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e902" edge="1" parent="1" source="c2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=1;exitY=0.44;exitDx=0;exitDy=0;entryX=0;entryY=0.44;entryDx=0;entryDy=0;" target="c4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e903" edge="1" parent="1" source="c2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=0.56;exitY=1;exitDx=0;exitDy=0;entryX=0.56;entryY=0;entryDx=0;entryDy=0;" target="c5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e904" edge="1" parent="1" source="c2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=0.6799999999999999;exitY=1;exitDx=0;exitDy=0;entryX=0.6799999999999999;entryY=0;entryDx=0;entryDy=0;" target="c6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e905" edge="1" parent="1" source="c6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="c7" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

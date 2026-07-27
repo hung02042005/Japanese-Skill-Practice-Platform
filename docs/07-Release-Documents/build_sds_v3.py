@@ -531,6 +531,141 @@ WHERE grammar_id = ? AND status = 'pending_review';
 INSERT INTO admin_audit_logs (staff_id, action, target_table, target_id, note, created_at)
 VALUES (?, ?, ?, ?, ?, GETDATE());""",
     },
+    {
+        "name": "3.7 Staff Content Authoring & Submit for Review",
+        "class_png": "class-staffcontent.png",
+        "seq_png": "seq-staffcontent.png",
+        "seq_name": "Staff Submit-for-Review Sequence",
+        "specs": [
+            ("StaffGrammarServiceImpl Class (representative — the same create-draft / submit-for-review pattern "
+             "is repeated per content type: StaffQuestionServiceImpl, StaffQuizService, StaffExamService, "
+             "LearningContentServiceImpl for kanji/vocab/lesson)", [
+                ("01", "createGrammar(CreateGrammarRequest, staffEmail)", "Input: grammar fields, the authoring Staff's email. Parses jlptLevel server-side so only N1..N5 can ever be stored (never trusts client-side validation alone), forces status=DRAFT and createdBy=the calling Staff regardless of what the request body contains."),
+                ("02", "updateGrammar(grammarId, UpdateGrammarRequest, staffEmail)", "Input: grammar id, partial fields to update. guardOwnershipOrManager blocks a Staff from editing another Staff's content (a Staff Manager may edit any). Editing is blocked once status=PUBLISHED, and only allowed from DRAFT/REJECTED otherwise (mirrors LESSON-005's intent: don't let content mutate while it's mid-workflow)."),
+                ("03", "submitForReview(grammarId, staffEmail)", "Input: grammar id + the calling Staff's email. Re-checks ownership, then guards every mandatory field (structure/meaning/usageExplanation/exampleSentenceJp/jlptLevel) server-side even though the FE form already validates them — the server never trusts that the FE ran its checks. Only DRAFT or REJECTED can be submitted; moves status to PENDING_REVIEW, which is exactly what ContentReviewService's review queue reads (§3.6)."),
+            ]),
+        ],
+        "sql": """-- createGrammar(): always starts as DRAFT, creator is whoever is authenticated (not client-supplied)
+INSERT INTO grammar_points (title, structure, meaning, jlpt_level, status, created_by, created_at)
+VALUES (?, ?, ?, ?, 'DRAFT', ?, GETDATE());
+
+-- submitForReview(): only DRAFT/REJECTED content can move to PENDING_REVIEW
+UPDATE grammar_points
+SET status = 'PENDING_REVIEW'
+WHERE grammar_id = ? AND status IN ('DRAFT', 'REJECTED');
+
+-- listGrammars(): a Staff only ever sees their own drafts/submissions (a Manager sees all via a separate query)
+SELECT * FROM grammar_points
+WHERE created_by = ? AND (jlpt_level = ? OR ? IS NULL) AND (status = ? OR ? IS NULL) AND status != 'DELETED';""",
+    },
+    {
+        "name": "3.8 Admin User Management",
+        "class_png": "class-admin-user.png",
+        "seq_png": "seq-admin-user.png",
+        "seq_name": "Suspend User Sequence",
+        "specs": [
+            ("AdminUserService Class", [
+                ("01", "createStaff(adminEmail, CreateStaffRequest)", "Input: email/name/staffRole. Rejects if the email already exists across all 3 account tables (student/staff/admin), creates a StaffUser with status=PENDING (cannot log in yet), issues a 24h EMAIL_VERIFICATION auth_tokens row, and emails an invitation link — the Staff sets their own password via setupStaffPassword (never issued in plaintext by the Admin)."),
+                ("02", "suspendUser(adminEmail, type, userId, SuspendUserRequest)", "checkSelfModification blocks an Admin from suspending their own account. Sets status=SUSPENDED + suspendReason, then revokes every currently-active refresh token for that user (LESSON-based defense-in-depth: a suspended account's existing sessions stop working immediately, not just future logins) via AuthTokenRepository.revokeAllActiveByStudentId/StaffId."),
+                ("03", "softDeleteUser(adminEmail, type, userId)", "Same self-modification + status guard as suspend, but sets status=DELETED (ADR-004: soft delete only — no DELETE FROM). Deleting an Admin account through this endpoint is explicitly rejected (BusinessRuleException) — Admin accounts can't be removed this way."),
+                ("04", "restoreUser(adminEmail, type, userId)", "Only valid from status=DELETED (else BusinessRuleException); flips back to ACTIVE. Every mutating call also writes an admin_audit_logs row via the private auditLog() helper (action, targetTable, targetId, description) so every account-management action is traceable."),
+            ]),
+        ],
+        "sql": """-- suspendUser(): change status and store the reason
+UPDATE student_users SET status = 'SUSPENDED', suspend_reason = ? WHERE id = ?;
+
+-- immediately invalidate that user's existing sessions (not just block future logins)
+UPDATE auth_tokens SET revoked_at = ? WHERE actor_id = ? AND actor_type = 'STUDENT' AND revoked_at IS NULL;
+
+-- every admin action is audited
+INSERT INTO admin_audit_logs (admin_id, action, target_table, target_id, description, created_at)
+VALUES (?, 'suspend_user', 'student_users', ?, ?, GETDATE());
+
+-- restoreUser(): only DELETED -> ACTIVE is allowed
+UPDATE student_users SET status = 'ACTIVE' WHERE id = ? AND status = 'DELETED';""",
+    },
+    {
+        "name": "3.9 Student Support Ticket",
+        "class_png": "class-support-ticket.png",
+        "seq_png": "seq-support-ticket.png",
+        "seq_name": "Ticket Lifecycle Sequence",
+        "specs": [
+            ("SupportTicketService Class", [
+                ("01", "createTicket(studentId, TicketRequest)", "Input: subject, content, category, optional priority (defaults NORMAL). Always creates status=OPEN — the Student cannot set an initial status."),
+                ("02", "addStaffReply(ticketId, staffEmail, TicketReplyRequest)", "Blocks replying on a closed ticket (checkTicketNotClosed). Authorization is neither 'any Staff' nor 'FE hides the button': only the assigned Staff or a STAFF_MANAGER may reply — enforced server-side (ForbiddenException otherwise). The first Staff reply on an OPEN/ASSIGNED ticket auto-advances it to IN_PROGRESS. Fires a notifyStudent() IN_APP notification so the Student learns about the reply without polling."),
+                ("03", "assignTicket(ticketId, assignToStaffId, actorEmail, isAdmin)", "Only a STAFF_MANAGER (or an Admin acting via a separate admin path, isAdmin=true) may assign a ticket. Rejects assigning to a non-ACTIVE staff member (422). Assigning an OPEN ticket moves it to ASSIGNED — this is the approval gate before a Staff can touch it."),
+                ("04", "closeTicket(ticketId, actorEmail)", "Staff/Manager-side close -> RESOLVED (vs. closeStudentTicket, the Student's own close -> CLOSED, which additionally checks ownership and that the ticket isn't already closed). Both paths set resolvedAt and, for the Staff path, notify the Student and write an admin_audit_logs row."),
+            ]),
+        ],
+        "sql": """-- createTicket(): every new ticket starts OPEN, owned by the creating student
+INSERT INTO tickets (student_id, subject, content, category, priority, status, created_at)
+VALUES (?, ?, ?, ?, ?, 'OPEN', GETDATE());
+
+-- assignTicket(): Staff Manager approves + hands off to a specific Staff
+UPDATE tickets SET assigned_to = ?, status = 'ASSIGNED' WHERE ticket_id = ? AND status = 'OPEN';
+
+-- addStaffReply(): only the assignee or a manager may write here (checked in Java, not SQL)
+INSERT INTO ticket_replies (ticket_id, staff_sender_id, message, created_at) VALUES (?, ?, ?, GETDATE());
+UPDATE tickets SET status = 'IN_PROGRESS', last_reply_at = GETDATE() WHERE ticket_id = ? AND status IN ('OPEN','ASSIGNED');
+
+-- closeTicket() (staff/manager path): terminal state RESOLVED
+UPDATE tickets SET status = 'RESOLVED', resolved_at = GETDATE() WHERE ticket_id = ?;""",
+    },
+    {
+        "name": "3.10 Staff Broadcast Notification",
+        "class_png": "class-notification.png",
+        "seq_png": "seq-notification.png",
+        "seq_name": "Broadcast + Scheduled Email Delivery Sequence",
+        "specs": [
+            ("NotificationService / NotificationDispatcher Classes", [
+                ("01", "broadcast(actorEmail, SendNotificationRequest)", "staffManagerGuard.requireManager blocks any non-STAFF_MANAGER from broadcasting system-wide (LESSON-003 pattern: role check, not UI hiding). resolveTargets(targetJlptLevel) resolves the audience — 'ALL'/blank = every ACTIVE student, otherwise students at one JLPT level. Returns a synthetic jobId immediately (job_notification_<epochMillis>) without waiting for the fan-out to finish."),
+                ("02", "NotificationDispatcher.broadcastAsync(targets, request, staff)", "Runs on a separate @Async bean specifically so @Async isn't bypassed by Spring's self-invocation proxy limitation (a same-class call would run synchronously). Writes one Notification row per target student on a background thread — the HTTP response already returned before this finishes (Async AI/Integration anti-pattern avoided: always returns a job id, never blocks the request thread, per ADR/anti-pattern table 'Sync AI Calls')."),
+                ("03", "NotificationDispatcher.deliverPendingEmails()", "@Scheduled(fixedDelay=60_000) — every 60s, batches up to 100 notifications whose channel is EMAIL/BOTH and sentAt IS NULL and scheduledAt has arrived, and emails each one. Best-effort: a failed send is logged but sentAt is still stamped, so a permanently-broken address can't loop-retry forever (documented trade-off, not silent failure — LESSON-006 partially applies: failures are logged, though there's no retry/backoff here since notifications are non-critical)."),
+            ]),
+            ("NotificationRuleService Class (Admin-side configuration, UC-40)", [
+                ("01", "createRule/updateRule(NotificationRuleRequest, adminId)", "Stores each rule as a JSON blob in system_settings (settingGroup='notification', settingKey=ruleKey) — enabled flag, trigger condition, channel, and message template. As of this build, this is configuration metadata only: no scheduled/event-driven consumer reads triggerCondition to fire notifications automatically yet; actual sends still go through the explicit broadcast()/notifyStudent() calls documented above."),
+            ]),
+        ],
+        "sql": """-- broadcastAsync(): one row per targeted student, written off the request thread
+INSERT INTO notifications (student_id, title, content, notification_type, channel, is_auto, staff_creator_id, created_at)
+VALUES (?, ?, ?, ?, ?, 0, ?, GETDATE());
+
+-- deliverPendingEmails(): due batch, channel EMAIL/BOTH, not yet sent
+SELECT * FROM notifications
+WHERE channel IN ('EMAIL','BOTH') AND sent_at IS NULL AND scheduled_at <= GETDATE()
+ORDER BY scheduled_at ASC LIMIT 100;
+
+UPDATE notifications SET sent_at = GETDATE() WHERE notification_id = ?;
+
+-- NotificationRuleService: rules live in the generic system_settings table, not a dedicated table
+INSERT INTO system_settings (setting_group, setting_key, setting_value, is_editable, updated_by)
+VALUES ('notification', ?, ?, 1, ?);""",
+    },
+    {
+        "name": "3.11 Published Content Lifecycle (Unpublish/Archive/Delete/Restore)",
+        "class_png": "class-publishedcontent.png",
+        "seq_png": "seq-publishedcontent.png",
+        "seq_name": "Change Status / Restore Sequence",
+        "specs": [
+            ("PublishedContentService Class", [
+                ("01", "changeStatus(managerEmail, contentId, ChangeStatusRequest)", "requireManager guards STAFF_MANAGER-only (enforced in the Service layer since the JWT only grants ROLE_STAFF to every staff account — the Controller's @PreAuthorize can't tell managers apart from regular Staff). Only operates on status=published content. findBlockingReferences runs in the SAME transaction right before the status flip (FR-34-14..17): e.g. a Question still assigned to a live Quiz can't be archived/deleted until that reference is removed — throws ResourceInUseException listing every blocker."),
+                ("02", "ManagedContentHandler.changeStatus(contentId, target, now)", "One handler implementation per content type (lesson/kanji/vocabulary/grammar/question/assessment), same resolver pattern as ContentReviewService in §3.6. The UPDATE is conditioned on status='published'; if 0 rows are affected the content left 'published' concurrently (another Manager acted first) and the service throws InvalidStateTransitionException instead of silently no-op'ing — the same optimistic-concurrency guard as ContentReviewService.ensureUpdated()."),
+                ("03", "restore(managerEmail, contentId, RestoreContentRequest)", "'deleted' is a terminal state — restoring a deleted item throws RestoreNotAllowedException (ADR-004: soft delete is one-way from the Manager's UI; a DBA could still reverse it directly, but the API never does). Only 'archived' -> 'published' is a valid restore; anything else is InvalidStateTransitionException."),
+            ]),
+        ],
+        "sql": """-- changeStatus(): guarded by both the current status AND absence of blocking references
+UPDATE questions SET status = ?, updated_at = ? WHERE question_id = ? AND status = 'published';
+
+-- findBlockingReferences() example: is this question still assigned to any assessment?
+SELECT * FROM question_assignments WHERE question_id = ? AND parent_type = 'ASSESSMENT';
+
+-- restore(): archived -> published only; deleted is terminal and can never be restored via this API
+UPDATE questions SET status = 'published', updated_at = ? WHERE question_id = ? AND status = 'archived';
+
+-- every lifecycle transition is audited (reuses ContentReview's audit table)
+INSERT INTO admin_audit_logs (staff_id, action, target_table, target_id, note, created_at)
+VALUES (?, ?, ?, ?, ?, GETDATE());""",
+    },
 ]
 
 STATE_DIAGRAMS = [
@@ -583,6 +718,7 @@ def make_docx():
         ("2026-07-22", "M", "AI Agent", "Corrected the Speaking Submission Grading flow to match current code (no AI auto-grading step, commit db0d1648); translated to English."),
         ("2026-07-24", "M", "AI Agent", "Rebuilt against the correct template (Guides Templates-20260721/Template2_SDS Document.docx): restructured into I/II + 1.High Level Design (1.1 new Architecture diagram, 1.2 Package Diagram, 1.3 Database Design rewritten as one sub-section per table with real PK/FK/UN/NN fields from V1__init_schema.sql) + 2.State Transition Diagrams (new — 3 real status columns) + 3.Detailed Design (6 features, kept Class Specifications/Database Queries as bonus content). Fixed every diagram where an arrow or line previously crossed through another box's text (class diagrams, package diagram, ER diagram)."),
         ("2026-07-24", "M", "AI Agent", "Fixed section 3's heading skeleton to match Template2 exactly (3.N.1 Class Diagram, 3.N.2 <named Sequence Diagram> — e.g. '3.1.2 User Login Sequence' — instead of a generic '3.N.3 Sequence Diagram(s)'/'3.N.4 Database Queries'); Class Specifications and Database Queries are now supporting content under those two headings, not separate numbered sections."),
+        ("2026-07-27", "A", "AI Agent", "Added 5 flows that were missing from section 3 (3.7 Staff Content Authoring & Submit for Review, 3.8 Admin User Management, 3.9 Student Support Ticket, 3.10 Staff Broadcast Notification, 3.11 Published Content Lifecycle), each read directly from source and covering a distinct backend module (staffcontent, admin, support, notification, publishedcontent) not previously documented."),
     ])
     add_p(doc, "*A - Added, M - Modified, D - Deleted")
 

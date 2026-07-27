@@ -1,0 +1,176 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1507" dy="736" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="p_student" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="Student" vertex="1">
+          <mxGeometry height="30" width="150" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_student" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="95" y="70" as="sourcePoint" />
+            <mxPoint x="95" y="770" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_sc" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="SupportController" vertex="1">
+          <mxGeometry height="30" width="150" x="220" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_sc" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="295" y="70" as="sourcePoint" />
+            <mxPoint x="295" y="770" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_svc" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="SupportTicketService" vertex="1">
+          <mxGeometry height="30" width="150" x="480" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_svc" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="555" y="70" as="sourcePoint" />
+            <mxPoint x="555" y="770" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_db" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="MySQL" vertex="1">
+          <mxGeometry height="30" width="150" x="720" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_db" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="795" y="70" as="sourcePoint" />
+            <mxPoint x="795" y="770" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_mgr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="Staff Manager" vertex="1">
+          <mxGeometry height="30" width="150" x="900" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_mgr" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="975" y="70" as="sourcePoint" />
+            <mxPoint x="975" y="770" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_ssc" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="StaffSupportController" vertex="1">
+          <mxGeometry height="30" width="150" x="1060" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_ssc" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1135" y="70" as="sourcePoint" />
+            <mxPoint x="1135" y="770" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_staff" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="Assigned Staff" vertex="1">
+          <mxGeometry height="30" width="150" x="1320" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_staff" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1395" y="70" as="sourcePoint" />
+            <mxPoint x="1395" y="770" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="frame_0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=none;verticalAlign=top;" value="" vertex="1">
+          <mxGeometry height="640" width="1220" x="180" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_lbl_0" parent="1" style="text;html=1;align=left;verticalAlign=top;fontStyle=2;fontSize=10;fontColor=#B85450;" value="OPEN (student) -&gt; ASSIGNED (manager) -&gt; IN_PROGRESS (assignee replies) -&gt; RESOLVED (assignee closes)" vertex="1">
+          <mxGeometry height="16" width="1212" x="184" y="72" as="geometry" />
+        </mxCell>
+        <mxCell id="msg_0" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="1: POST /api/support/tickets {subject,content}">
+          <mxGeometry relative="1" x="-0.15" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="95" y="110" as="sourcePoint" />
+            <mxPoint x="295" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_1" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="2: createTicket(studentId, request)">
+          <mxGeometry relative="1" x="-0.0385" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="295" y="150" as="sourcePoint" />
+            <mxPoint x="555" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_2" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="3: INSERT INTO tickets (status=&#39;OPEN&#39;)">
+          <mxGeometry relative="1" x="-0.0417" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="555" y="190" as="sourcePoint" />
+            <mxPoint x="795" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_3" edge="1" parent="1" style="html=1;endArrow=block;dashed=1;fontSize=11;" value="4: 201 Created">
+          <mxGeometry relative="1" x="0.0385" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="555" y="230" as="sourcePoint" />
+            <mxPoint x="295" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_4" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="5: POST /api/staff/tickets/{id}/assign {staffId}">
+          <mxGeometry relative="1" x="-0.0625" y="20" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="975" y="300" as="sourcePoint" />
+            <mxPoint x="1135" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_5" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="6: assignTicket(id, staffId, mgrEmail, false)">
+          <mxGeometry relative="1" x="0.0172" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1135" y="340" as="sourcePoint" />
+            <mxPoint x="555" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_6" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="7: UPDATE tickets SET assigned_to=?, status=&#39;ASSIGNED&#39;">
+          <mxGeometry relative="1" x="0.0417" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="555" y="380" as="sourcePoint" />
+            <mxPoint x="795" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_7" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="8: POST /api/staff/tickets/{id}/reply {message}">
+          <mxGeometry relative="1" x="0.0385" y="-20" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1395" y="450" as="sourcePoint" />
+            <mxPoint x="1135" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_8" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="9: addStaffReply(id, staffEmail, request)">
+          <mxGeometry relative="1" x="0.0517" y="-20" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1135" y="490" as="sourcePoint" />
+            <mxPoint x="555" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_9" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="10: INSERT INTO ticket_replies; UPDATE tickets SET status=&#39;IN_PROGRESS&#39;">
+          <mxGeometry relative="1" x="-0.0417" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="555" y="530" as="sourcePoint" />
+            <mxPoint x="795" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_10" edge="1" parent="1" style="html=1;endArrow=block;dashed=1;fontSize=11;" value="11: notifyStudent(&quot;Ticket has a new reply&quot;)">
+          <mxGeometry relative="1" x="0.0217" y="-20" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="555" y="570" as="sourcePoint" />
+            <mxPoint x="95" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_11" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="12: POST /api/staff/tickets/{id}/close">
+          <mxGeometry relative="1" x="-0.0385" y="-20" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1395" y="630" as="sourcePoint" />
+            <mxPoint x="1135" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_12" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="13: closeTicket(id, staffEmail)">
+          <mxGeometry relative="1" x="-0.0172" y="-20" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1135" y="670" as="sourcePoint" />
+            <mxPoint x="555" y="670" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_13" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="14: UPDATE tickets SET status=&#39;RESOLVED&#39;, resolved_at=NOW()">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="555" y="710" as="sourcePoint" />
+            <mxPoint x="795" y="710" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

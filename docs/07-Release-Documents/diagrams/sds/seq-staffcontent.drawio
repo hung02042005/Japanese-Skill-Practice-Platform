@@ -1,0 +1,161 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1348" dy="659" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1450" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="p_staff" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="Staff" vertex="1">
+          <mxGeometry height="30" width="150" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_staff" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="95" y="70" as="sourcePoint" />
+            <mxPoint x="95" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_fe" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="Frontend" vertex="1">
+          <mxGeometry height="30" width="150" x="220" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_fe" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="295" y="70" as="sourcePoint" />
+            <mxPoint x="295" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_sgc" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="StaffGrammarController" vertex="1">
+          <mxGeometry height="30" width="150" x="420" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_sgc" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="495" y="70" as="sourcePoint" />
+            <mxPoint x="495" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_src" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="StaffGrammarSubmitReviewController" vertex="1">
+          <mxGeometry height="30" width="150" x="680" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_src" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="755" y="70" as="sourcePoint" />
+            <mxPoint x="755" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_svc" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="StaffGrammarServiceImpl" vertex="1">
+          <mxGeometry height="30" width="150" x="960" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_svc" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1035" y="70" as="sourcePoint" />
+            <mxPoint x="1035" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_db" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="MySQL" vertex="1">
+          <mxGeometry height="30" width="150" x="1200" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_db" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1275" y="70" as="sourcePoint" />
+            <mxPoint x="1275" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="frame_0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=none;verticalAlign=top;" value="" vertex="1">
+          <mxGeometry height="155" width="550" x="700" y="445" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_lbl_0" parent="1" style="text;html=1;align=left;verticalAlign=top;fontStyle=2;fontSize=10;fontColor=#B85450;" value="alt not owner &amp; not manager-&gt;403 / status not DRAFT/REJECTED-&gt;409 / missing required field-&gt;400" vertex="1">
+          <mxGeometry height="16" width="542" x="704" y="427" as="geometry" />
+        </mxCell>
+        <mxCell id="msg_0" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="1: fill in grammar form, click Save">
+          <mxGeometry relative="1" x="-0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="95" y="110" as="sourcePoint" />
+            <mxPoint x="295" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_1" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="2: POST /api/staff/grammar">
+          <mxGeometry relative="1" x="-0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="295" y="150" as="sourcePoint" />
+            <mxPoint x="495" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_2" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="3: createGrammar(request, staffEmail)">
+          <mxGeometry relative="1" x="-0.0185" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="495" y="190" as="sourcePoint" />
+            <mxPoint x="1035" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_3" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="4: INSERT INTO grammar_points (status=&#39;DRAFT&#39;, created_by=?)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1035" y="230" as="sourcePoint" />
+            <mxPoint x="1275" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_4" edge="1" parent="1" style="html=1;endArrow=block;dashed=1;fontSize=11;" value="5: GrammarDetailResponse{status=draft}">
+          <mxGeometry relative="1" x="0.0185" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1035" y="270" as="sourcePoint" />
+            <mxPoint x="495" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_5" edge="1" parent="1" style="html=1;endArrow=block;dashed=1;fontSize=11;" value="6: 201 Created">
+          <mxGeometry relative="1" x="0.05" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="495" y="310" as="sourcePoint" />
+            <mxPoint x="295" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_6" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="7: click &quot;Submit for review&quot; once content is complete">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="95" y="380" as="sourcePoint" />
+            <mxPoint x="295" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_7" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="8: POST /api/staff/grammar/{id}/submit-review">
+          <mxGeometry relative="1" x="-0.0217" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="295" y="420" as="sourcePoint" />
+            <mxPoint x="755" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_8" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="9: submitForReview(grammarId, staffEmail)">
+          <mxGeometry relative="1" x="-0.0357" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="755" y="460" as="sourcePoint" />
+            <mxPoint x="1035" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_9" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;rounded=0;" value="10: guardOwnershipOrManager + check mandatory fields">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1095" y="500" />
+              <mxPoint x="1095" y="526" />
+            </Array>
+            <mxPoint x="1035" y="500" as="sourcePoint" />
+            <mxPoint x="1035" y="526" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_10" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="11: UPDATE grammar_points SET status=&#39;PENDING_REVIEW&#39;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1035" y="540" as="sourcePoint" />
+            <mxPoint x="1275" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_11" edge="1" parent="1" style="html=1;endArrow=block;dashed=1;fontSize=11;" value="12: GrammarSubmitReviewResponse">
+          <mxGeometry relative="1" x="-0.0357" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1035" y="580" as="sourcePoint" />
+            <mxPoint x="755" y="580" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_12" edge="1" parent="1" style="html=1;endArrow=block;dashed=1;fontSize=11;" value="13: 200 OK (now waits in Manager&#39;s review queue -&gt; §3.6)">
+          <mxGeometry relative="1" x="0.0217" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="755" y="620" as="sourcePoint" />
+            <mxPoint x="295" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
