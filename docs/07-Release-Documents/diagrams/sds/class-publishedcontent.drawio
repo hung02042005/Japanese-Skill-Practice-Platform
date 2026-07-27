@@ -1,0 +1,67 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1281" dy="626" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1150" pageHeight="436" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c1" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#ffe6cc;" value="PublishedContentController" vertex="1">
+          <mxGeometry height="146" width="320" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c1_m" parent="c1" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ getPublishedContents(type,level,page,size): ApiResponse~PublishedContentListResponse~&#xa;+ changeStatus(id, ChangeStatusRequest): ApiResponse~StatusChangeResultResponse~&#xa;+ restore(id, RestoreContentRequest): ApiResponse~StatusChangeResultResponse~" vertex="1">
+          <mxGeometry height="120" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#e1d5e7;" value="TargetStatus" vertex="1">
+          <mxGeometry height="74" width="320" x="40" y="293" as="geometry" />
+        </mxCell>
+        <mxCell id="c6_m" parent="c6" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="UNPUBLISH  -&gt;  archived&#xa;DELETE  -&gt;  deleted" vertex="1">
+          <mxGeometry height="48" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" value="PublishedContentService" vertex="1">
+          <mxGeometry height="128" width="320" x="420" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c2_m" parent="c2" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ changeStatus(managerEmail, id, request): StatusChangeResultResponse&#xa;+ restore(managerEmail, id, request): StatusChangeResultResponse&#xa;- requireManager(email): StaffUser" vertex="1">
+          <mxGeometry height="102" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" value="ReviewAuditService" vertex="1">
+          <mxGeometry height="74" width="320" x="420" y="249" as="geometry" />
+        </mxCell>
+        <mxCell id="c5_m" parent="c5" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ log(manager, action, type, table, id, reason): void" vertex="1">
+          <mxGeometry height="48" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" value="ManagedContentResolver" vertex="1">
+          <mxGeometry height="56" width="300" x="800" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c3_m" parent="c3" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ resolve(ContentType): ManagedContentHandler" vertex="1">
+          <mxGeometry height="30" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" value="&amp;lt;&amp;lt;interface&amp;gt;&amp;gt; ManagedContentHandler" vertex="1">
+          <mxGeometry height="146" width="300" x="800" y="183" as="geometry" />
+        </mxCell>
+        <mxCell id="c4_m" parent="c4" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ findById(id): Optional~ManagedContentSnapshot~&#xa;+ findBlockingReferences(id): List~ReferenceItemResponse~&#xa;+ changeStatus(id, target, now): int&#xa;+ restore(id, now): int" vertex="1">
+          <mxGeometry height="120" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="e900" edge="1" parent="1" source="c1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="c2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e901" edge="1" parent="1" source="c2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=1;exitY=0.38;exitDx=0;exitDy=0;entryX=0;entryY=0.38;entryDx=0;entryDy=0;" target="c3" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="740" y="90" />
+              <mxPoint x="770" y="90" />
+              <mxPoint x="770" y="61" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e902" edge="1" parent="1" source="c3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="c4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e903" edge="1" parent="1" source="c2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="c5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e904" edge="1" parent="1" source="c2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=0;exitY=0.62;exitDx=0;exitDy=0;entryX=1;entryY=0.62;entryDx=0;entryDy=0;" target="c6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

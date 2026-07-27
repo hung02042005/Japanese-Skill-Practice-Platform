@@ -1,0 +1,150 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1348" dy="659" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1350" pageHeight="620" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="p_admin" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="Admin" vertex="1">
+          <mxGeometry height="30" width="150" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_admin" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="95" y="70" as="sourcePoint" />
+            <mxPoint x="95" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_fe" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="Frontend" vertex="1">
+          <mxGeometry height="30" width="150" x="220" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_fe" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="295" y="70" as="sourcePoint" />
+            <mxPoint x="295" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_ac" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="AdminController" vertex="1">
+          <mxGeometry height="30" width="150" x="420" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_ac" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="495" y="70" as="sourcePoint" />
+            <mxPoint x="495" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_aus" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="AdminUserService" vertex="1">
+          <mxGeometry height="30" width="150" x="660" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_aus" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="735" y="70" as="sourcePoint" />
+            <mxPoint x="735" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_atr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="AuthTokenRepository" vertex="1">
+          <mxGeometry height="30" width="150" x="900" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_atr" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="975" y="70" as="sourcePoint" />
+            <mxPoint x="975" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_db" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="MySQL" vertex="1">
+          <mxGeometry height="30" width="150" x="1120" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_db" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1195" y="70" as="sourcePoint" />
+            <mxPoint x="1195" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="frame_0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=none;verticalAlign=top;" value="" vertex="1">
+          <mxGeometry height="295" width="770" x="400" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_lbl_0" parent="1" style="text;html=1;align=left;verticalAlign=top;fontStyle=2;fontSize=10;fontColor=#B85450;" value="alt admin targets own account-&gt;403 / already suspended/deleted-&gt;409 / valid-&gt;continue" vertex="1">
+          <mxGeometry height="16" width="762" x="404" y="247" as="geometry" />
+        </mxCell>
+        <mxCell id="msg_0" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="1: open user detail, click &quot;Suspend&quot;, enter reason">
+          <mxGeometry relative="1" x="-0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="95" y="110" as="sourcePoint" />
+            <mxPoint x="295" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_1" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="2: POST /api/admin/users/{type}/{id}/suspend">
+          <mxGeometry relative="1" x="-0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="295" y="150" as="sourcePoint" />
+            <mxPoint x="495" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_2" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="3: suspendUser(adminEmail, type, id, request)">
+          <mxGeometry relative="1" x="-0.0417" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="495" y="190" as="sourcePoint" />
+            <mxPoint x="735" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_3" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;rounded=0;" value="4: checkSelfModification(actorId, type, id)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="800" y="221" />
+              <mxPoint x="800" y="247" />
+            </Array>
+            <mxPoint x="740" y="221" as="sourcePoint" />
+            <mxPoint x="740" y="247" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_4" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="5: SELECT * FROM student_users WHERE id=?">
+          <mxGeometry relative="1" x="-0.0217" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="735" y="300" as="sourcePoint" />
+            <mxPoint x="1195" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_5" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="6: UPDATE student_users SET status=&#39;SUSPENDED&#39;, suspend_reason=?">
+          <mxGeometry relative="1" x="-0.0217" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="735" y="340" as="sourcePoint" />
+            <mxPoint x="1195" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_6" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="7: revokeAllActiveByStudentId(id, now)">
+          <mxGeometry relative="1" x="-0.0417" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="735" y="380" as="sourcePoint" />
+            <mxPoint x="975" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_7" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="8: UPDATE auth_tokens SET revoked_at=? WHERE actor_id=? AND revoked_at IS NULL">
+          <mxGeometry relative="1" x="-0.0455" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="975" y="420" as="sourcePoint" />
+            <mxPoint x="1195" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_8" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="9: INSERT INTO admin_audit_logs (action=&#39;suspend_user&#39;, ...)">
+          <mxGeometry relative="1" x="-0.0217" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="735" y="460" as="sourcePoint" />
+            <mxPoint x="1195" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_9" edge="1" parent="1" style="html=1;endArrow=block;dashed=1;fontSize=11;" value="10: SuspendUserResponse{status=suspended}">
+          <mxGeometry relative="1" x="0.0417" y="-20" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="735" y="500" as="sourcePoint" />
+            <mxPoint x="495" y="500" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_10" edge="1" parent="1" style="html=1;endArrow=block;dashed=1;fontSize=11;" value="11: 200 OK (student&#39;s active sessions are now revoked)">
+          <mxGeometry relative="1" x="0.05" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="495" y="540" as="sourcePoint" />
+            <mxPoint x="295" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

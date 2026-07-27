@@ -1,0 +1,50 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1220"
+        pageHeight="820" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="banner" value="[WIREFRAME MOCKUP — not a real screenshot] Quiz / Mock Test Attempt  (/mock-test/:id/attempt, role: Student)" style="text;html=1;align=left;verticalAlign=middle;fontColor=#B71C1C;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="1200" height="26" as="geometry" /></mxCell>
+        <mxCell id="frame" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#90A4AE;" vertex="1" parent="1"><mxGeometry x="0" y="34" width="1200" height="760" as="geometry" /></mxCell>
+        <mxCell id="topbar" value="SakuJi &#8212; Student area" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#37474F;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=14;align=left;spacingLeft=16;" vertex="1" parent="1"><mxGeometry x="0" y="34" width="1200" height="50" as="geometry" /></mxCell>
+        <mxCell id="user" value="Logged in: Student" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontColor=#ffffff;fontSize=11;align=right;spacingRight=16;" vertex="1" parent="1"><mxGeometry x="940" y="34" width="260" height="50" as="geometry" /></mxCell>
+        <mxCell id="sidebar" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#CFD8DC;" vertex="1" parent="1"><mxGeometry x="0" y="84" width="200" height="710" as="geometry" /></mxCell>
+        <mxCell id="nav0" value="Dashboard" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="98" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav1" value="Lessons" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="132" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav2" value="Kanji" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="166" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav3" value="Grammar" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="200" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav4" value="Vocabulary" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="234" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav5" value="Lesson Detail" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="268" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav6" value="Quiz" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="302" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav7" value="Mock Test" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="8" y="336" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav8" value="Speaking" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="370" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav9" value="Progress" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="404" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="timer" value="JLPT N4 Mock Test — Question 6 / 40    |    Time left: 12:34" style="text;html=1;align=left;verticalAlign=middle;fontStyle=1;fontSize=14;" vertex="1" parent="1"><mxGeometry x="220" y="100" width="740" height="30" as="geometry" /></mxCell>
+        <mxCell id="qbox" value="Q6. Kore wa ___ desu ka? (nan / dare / doko / itsu)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#E0E0E0;align=left;verticalAlign=top;spacing=10;fontSize=12;" vertex="1" parent="1"><mxGeometry x="220" y="140" width="740" height="70" as="geometry" /></mxCell>
+        <mxCell id="opt0" value="A. nan" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#B0BEC5;align=left;spacingLeft=10;fontSize=11;" vertex="1" parent="1"><mxGeometry x="220" y="224" width="740" height="40" as="geometry" /></mxCell>
+        <mxCell id="opt1" value="B. dare" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#B0BEC5;align=left;spacingLeft=10;fontSize=11;" vertex="1" parent="1"><mxGeometry x="220" y="274" width="740" height="40" as="geometry" /></mxCell>
+        <mxCell id="opt2" value="C. doko" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#B0BEC5;align=left;spacingLeft=10;fontSize=11;" vertex="1" parent="1"><mxGeometry x="220" y="324" width="740" height="40" as="geometry" /></mxCell>
+        <mxCell id="opt3" value="D. itsu" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#B0BEC5;align=left;spacingLeft=10;fontSize=11;" vertex="1" parent="1"><mxGeometry x="220" y="374" width="740" height="40" as="geometry" /></mxCell>
+        <mxCell id="next" value="Next Question &#8594;" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#F48FB1;strokeColor=none;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="790" y="444" width="170" height="34" as="geometry" /></mxCell>
+        <mxCell id="navgrid_title" value="Questions" style="text;html=1;align=left;fontStyle=1;fontSize=12;" vertex="1" parent="1"><mxGeometry x="980" y="100" width="200" height="24" as="geometry" /></mxCell>
+        <mxCell id="ng0" value="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="980" y="130" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng1" value="2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="1016" y="130" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng2" value="3" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="1052" y="130" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng3" value="4" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="1088" y="130" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng4" value="5" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="1124" y="130" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng5" value="6" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F48FB1;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="980" y="166" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng6" value="7" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="1016" y="166" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng7" value="8" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="1052" y="166" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng8" value="9" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="1088" y="166" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng9" value="10" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="1124" y="166" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng10" value="11" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="980" y="202" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng11" value="12" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="1016" y="202" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng12" value="13" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="1052" y="202" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng13" value="14" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="1088" y="202" width="32" height="32" as="geometry" /></mxCell>
+        <mxCell id="ng14" value="15" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#B0BEC5;fontSize=10;" vertex="1" parent="1"><mxGeometry x="1124" y="202" width="32" height="32" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

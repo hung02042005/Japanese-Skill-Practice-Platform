@@ -23,6 +23,10 @@ certbot-www/
 backend_logs.txt
 *_logs.txt
 
+# Draw.io temp/lock files
+*.drawio.bkp
+.$*.drawio
+
 # Generated output (graphify knowledge graph)
 graphify-out/
 

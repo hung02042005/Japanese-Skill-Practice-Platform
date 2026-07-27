@@ -1,0 +1,33 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1220"
+        pageHeight="820" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="banner" value="[WIREFRAME MOCKUP — not a real screenshot] Lesson Detail  (/lessons/:id, role: Student)" style="text;html=1;align=left;verticalAlign=middle;fontColor=#B71C1C;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="1200" height="26" as="geometry" /></mxCell>
+        <mxCell id="frame" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#90A4AE;" vertex="1" parent="1"><mxGeometry x="0" y="34" width="1200" height="760" as="geometry" /></mxCell>
+        <mxCell id="topbar" value="SakuJi &#8212; Student area" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#37474F;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=14;align=left;spacingLeft=16;" vertex="1" parent="1"><mxGeometry x="0" y="34" width="1200" height="50" as="geometry" /></mxCell>
+        <mxCell id="user" value="Logged in: Student" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontColor=#ffffff;fontSize=11;align=right;spacingRight=16;" vertex="1" parent="1"><mxGeometry x="940" y="34" width="260" height="50" as="geometry" /></mxCell>
+        <mxCell id="sidebar" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#CFD8DC;" vertex="1" parent="1"><mxGeometry x="0" y="84" width="200" height="710" as="geometry" /></mxCell>
+        <mxCell id="nav0" value="Dashboard" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="98" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav1" value="Lessons" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="132" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav2" value="Kanji" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="166" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav3" value="Grammar" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="200" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav4" value="Vocabulary" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="234" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav5" value="Lesson Detail" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="8" y="268" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav6" value="Quiz" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="302" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav7" value="Mock Test" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="336" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav8" value="Speaking" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="370" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="nav9" value="Progress" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontSize=11;align=left;spacingLeft=14;fontStyle=0;" vertex="1" parent="1"><mxGeometry x="8" y="404" width="184" height="30" as="geometry" /></mxCell>
+        <mxCell id="pt" value="Bai 12: Ngu phap ~temo ii  (JLPT N4)" style="text;html=1;align=left;verticalAlign=middle;fontStyle=1;fontSize=16;" vertex="1" parent="1"><mxGeometry x="220" y="100" width="740" height="30" as="geometry" /></mxCell>
+        <mxCell id="bd0" value="AVAILABLE" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FB8C00;fontSize=10;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="980" y="102" width="90" height="26" as="geometry" /></mxCell>
+        <mxCell id="bd1" value="N4" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FB8C00;fontSize=10;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1080" y="102" width="90" height="26" as="geometry" /></mxCell>
+        <mxCell id="body" value="Ngu phap: Vte + mo ii (duoc phep lam...)&#10;&#10;Vi du: Koko de shashin wo totte mo ii desu ka?&#10;  (Toi chup anh o day duoc khong?)&#10;&#10;[Audio player placeholder]&#10;[Example image placeholder]&#10;&#10;Cau hoi lien quan: 5 cau (link toi Quiz)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#E0E0E0;align=left;verticalAlign=top;spacing=10;fontSize=11;" vertex="1" parent="1"><mxGeometry x="220" y="146" width="960" height="420" as="geometry" /></mxCell>
+        <mxCell id="act0" value="Mark as Complete" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#F48FB1;strokeColor=none;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="220" y="580" width="170" height="34" as="geometry" /></mxCell>
+        <mxCell id="act1" value="Bookmark" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#B0BEC5;fontStyle=1;fontSize=11;" vertex="1" parent="1"><mxGeometry x="410" y="580" width="170" height="34" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

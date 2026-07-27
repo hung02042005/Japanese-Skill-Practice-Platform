@@ -1,0 +1,81 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1411" dy="626" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="750" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c1" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#ffe6cc;" value="SpeakingController" vertex="1">
+          <mxGeometry height="146" width="300" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c1_m" parent="c1" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ listExercises(level, userDetails): ApiResponse~List~SpeakingExerciseResponse~~&#xa;+ submit(exerciseId, audio, userDetails): ApiResponse~SpeakingSubmitResponse~&#xa;+ getResult(jobId, userDetails): ApiResponse~SpeakingResultResponse~" vertex="1">
+          <mxGeometry height="120" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" value="SpeakingService" vertex="1">
+          <mxGeometry height="182" width="320" x="400" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c2_m" parent="c2" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ getExercises(level, studentId): List~SpeakingExerciseResponse~&#xa;+ submit(exerciseId, audio, student): SpeakingSubmitResponse&#xa;+ getResult(jobId, studentId): SpeakingResultResponse&#xa;- toGradedResponse(StudentSubmission): SpeakingResultResponse" vertex="1">
+          <mxGeometry height="156" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" value="SpeakingAudioStorageService" vertex="1">
+          <mxGeometry height="56" width="320" x="780" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c3_m" parent="c3" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ store(MultipartFile, studentId): StoredAudio" vertex="1">
+          <mxGeometry height="30" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#ffe6cc;" value="StaffGradingController" vertex="1">
+          <mxGeometry height="164" width="300" x="40" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="c4_m" parent="c4" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ listSubmissions(type, status, page, size): ApiResponse~Map~&#xa;+ getSubmission(submissionId): ApiResponse~SubmissionResponse~&#xa;+ gradeSubmission(Authentication, submissionId, ManualGradeRequest): ApiResponse~GradeResponse~" vertex="1">
+          <mxGeometry height="138" width="300" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" value="SupportTicketService" vertex="1">
+          <mxGeometry height="146" width="320" x="400" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="c5_m" parent="c5" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ getAllSubmissions(type, status, page, size): Page~SubmissionResponse~&#xa;+ getSubmissionDetail(submissionId): SubmissionResponse&#xa;+ manualGrade(submissionId, actorEmail, ManualGradeRequest): GradeResponse" vertex="1">
+          <mxGeometry height="120" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;" value="StudentSubmissionRepository" vertex="1">
+          <mxGeometry height="146" width="320" x="870" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="c6_m" parent="c6" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ findAllByTypeAndFilters(type, status, Pageable): Page~StudentSubmission~&#xa;+ findByIdAndStudent_Id(jobId, studentId): Optional~StudentSubmission~&#xa;+ findSpeakingStats(studentId, type, ids): List~Object[]~" vertex="1">
+          <mxGeometry height="120" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=0;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;" value="StudentSubmission" vertex="1">
+          <mxGeometry height="164" width="320" x="400" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="c7_m" parent="c7" style="text;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;spacingTop=4;overflow=hidden;whiteSpace=wrap;fontSize=11;" value="+ Long id&#xa;+ SubmissionType submissionType&#xa;+ SubmissionStatus status&#xa;+ String recordingUrl&#xa;+ BigDecimal manualScore&#xa;+ String manualFeedback&#xa;+ StaffUser gradedBy" vertex="1">
+          <mxGeometry height="138" width="320" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="e900" edge="1" parent="1" source="c1_m" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="c2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e901" edge="1" parent="1" source="c2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=1;exitY=0.38;exitDx=0;exitDy=0;entryX=0;entryY=0.38;entryDx=0;entryDy=0;" target="c3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e902" edge="1" parent="1" source="c2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.44;entryDx=0;entryDy=0;" target="c6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e903" edge="1" parent="1" source="c4_m" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=0.999;exitY=0.322;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitPerimeter=0;" target="c5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e904" edge="1" parent="1" source="c5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=1;exitY=0.44;exitDx=0;exitDy=0;entryX=0;entryY=0.56;entryDx=0;entryDy=0;" target="c6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e905" edge="1" parent="1" source="c2_m" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=0.994;exitY=0.844;exitDx=0;exitDy=0;exitPerimeter=0;" target="c7_m" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="718" y="195" />
+              <mxPoint x="770" y="195" />
+              <mxPoint x="770" y="509" />
+            </Array>
+            <mxPoint x="760" y="194.70000000000005" as="sourcePoint" />
+            <mxPoint x="760" y="509.20000000000005" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e906" edge="1" parent="1" source="c5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;fontSize=10;labelBackgroundColor=#ffffff;rounded=0;exitX=0.56;exitY=1;exitDx=0;exitDy=0;entryX=0.56;entryY=0;entryDx=0;entryDy=0;" target="c7" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

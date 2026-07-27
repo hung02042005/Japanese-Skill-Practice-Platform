@@ -1,0 +1,95 @@
+<mxfile host="Electron" version="24.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1600" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400"
+        pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="sysBoundary" value="Japanese Skill Practice Platform" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="20" width="900" height="1520" as="geometry" />
+        </mxCell>
+
+        <mxCell id="actorStudent" value="Student" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="300" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actorStaff" value="Staff" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="820" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actorManager" value="StaffManager" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="1050" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actorAdmin" value="Admin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="1300" width="30" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Student clusters (UC-01..20) -->
+        <mxCell id="uc_auth" value="Auth &amp; Profile&#10;(UC-01..05, 18)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="320" y="60" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_corelearn" value="Core Learning&#10;(UC-06..09)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="600" y="60" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_assess" value="Assessment&#10;(UC-10, 11, 12)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="880" y="60" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_ai" value="AI Skills&#10;(UC-13 Speaking, UC-20 Handwriting)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="320" y="180" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_rl" value="Reading &amp; Listening&#10;(UC-14, 15)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="600" y="180" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_util" value="Dictionary, Bookmark, Progress&#10;(UC-16, 17, 19)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="880" y="180" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Staff clusters (UC-21..32) -->
+        <mxCell id="uc_staff_student" value="I. Quản lý Học viên&#10;(UC-21..23)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="320" y="580" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_staff_content" value="II. Quản lý Nội dung&#10;(UC-24..28)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="600" y="580" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_staff_support" value="III. Hỗ trợ &amp; Chấm bài&#10;(UC-29..31)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="880" y="580" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_staff_analytics" value="IV. Phân tích&#10;(UC-32)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="320" y="700" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- StaffManager cluster (UC-33..34) -->
+        <mxCell id="uc_review" value="V. Duyệt Nội Dung&#10;(UC-33..34)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;" vertex="1" parent="1">
+          <mxGeometry x="880" y="1080" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Admin cluster (UC-35..40) -->
+        <mxCell id="uc_admin" value="Quản Trị Hệ Thống&#10;(UC-35..40)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="880" y="1330" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Student associations -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="actorStudent" target="uc_auth"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="actorStudent" target="uc_corelearn"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="actorStudent" target="uc_assess"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="actorStudent" target="uc_ai"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="actorStudent" target="uc_rl"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="actorStudent" target="uc_util"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- Staff associations -->
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="actorStaff" target="uc_staff_student"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="actorStaff" target="uc_staff_content"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="actorStaff" target="uc_staff_support"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="actorStaff" target="uc_staff_analytics"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- StaffManager extends Staff + reviews content -->
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=block;endFill=0;" edge="1" parent="1" source="actorManager" target="actorStaff"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="actorManager" target="uc_review"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e13" value="&lt;&lt;duyệt nội dung từ&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=open;elbow=vertical;fontSize=10;" edge="1" parent="1" source="uc_review" target="uc_staff_content"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- Admin associations -->
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="actorAdmin" target="uc_admin"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

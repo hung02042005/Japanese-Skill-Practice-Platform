@@ -1,0 +1,170 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1507" dy="736" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1550" pageHeight="730" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="p_mgr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="Staff Manager" vertex="1">
+          <mxGeometry height="30" width="150" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_mgr" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="95" y="70" as="sourcePoint" />
+            <mxPoint x="95" y="710" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_fe" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="Frontend" vertex="1">
+          <mxGeometry height="30" width="150" x="220" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_fe" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="295" y="70" as="sourcePoint" />
+            <mxPoint x="295" y="710" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_pcc" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="PublishedContentController" vertex="1">
+          <mxGeometry height="30" width="150" x="420" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_pcc" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="495" y="70" as="sourcePoint" />
+            <mxPoint x="495" y="710" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_pcs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="PublishedContentService" vertex="1">
+          <mxGeometry height="30" width="150" x="680" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_pcs" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="755" y="70" as="sourcePoint" />
+            <mxPoint x="755" y="710" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_hdl" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="ManagedContentHandler" vertex="1">
+          <mxGeometry height="30" width="150" x="920" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_hdl" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="995" y="70" as="sourcePoint" />
+            <mxPoint x="995" y="710" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_ras" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="ReviewAuditService" vertex="1">
+          <mxGeometry height="30" width="150" x="1140" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_ras" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1215" y="70" as="sourcePoint" />
+            <mxPoint x="1215" y="710" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_db" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontStyle=1;" value="MySQL" vertex="1">
+          <mxGeometry height="30" width="150" x="1340" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_db" edge="1" parent="1" style="html=1;endArrow=none;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1415" y="70" as="sourcePoint" />
+            <mxPoint x="1415" y="710" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="frame_0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=none;verticalAlign=top;" value="" vertex="1">
+          <mxGeometry height="405" width="970" x="400" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="frame_lbl_0" parent="1" style="text;html=1;align=left;verticalAlign=top;fontStyle=2;fontSize=10;fontColor=#B85450;" value="alt blocking references exist-&gt;409 ResourceInUse / concurrent change (rows=0)-&gt;409 / valid-&gt;continue" vertex="1">
+          <mxGeometry height="16" width="962" x="404" y="247" as="geometry" />
+        </mxCell>
+        <mxCell id="msg_0" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="1: select published item -&gt; Archive/Delete, enter reason">
+          <mxGeometry relative="1" x="-0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="95" y="110" as="sourcePoint" />
+            <mxPoint x="295" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_1" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="2: PUT /api/manager/published-contents/{id}/status">
+          <mxGeometry relative="1" x="-0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="295" y="150" as="sourcePoint" />
+            <mxPoint x="495" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_2" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="3: changeStatus(managerEmail, id, request)">
+          <mxGeometry relative="1" x="-0.0385" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="495" y="190" as="sourcePoint" />
+            <mxPoint x="755" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_3" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="4: findById(id) -&gt; check status==&#39;published&#39;">
+          <mxGeometry relative="1" x="0.0417" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="755" y="230" as="sourcePoint" />
+            <mxPoint x="995" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_4" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="5: SELECT * FROM &lt;content table&gt; WHERE id=?">
+          <mxGeometry relative="1" x="-0.0238" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="995" y="270" as="sourcePoint" />
+            <mxPoint x="1415" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_5" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="6: findBlockingReferences(id)">
+          <mxGeometry relative="1" x="-0.0417" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="755" y="340" as="sourcePoint" />
+            <mxPoint x="995" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_6" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="7: SELECT ... referencing rows (e.g. quiz using this question)">
+          <mxGeometry relative="1" x="-0.0238" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="995" y="380" as="sourcePoint" />
+            <mxPoint x="1415" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_7" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="8: changeStatus(id, target, now)">
+          <mxGeometry relative="1" x="0.0417" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="755" y="450" as="sourcePoint" />
+            <mxPoint x="995" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_8" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="9: UPDATE &lt;content table&gt; SET status=? WHERE id=? AND status=&#39;published&#39;">
+          <mxGeometry relative="1" x="0.0238" y="20" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="995" y="490" as="sourcePoint" />
+            <mxPoint x="1415" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_9" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="10: log(manager, action, type, table, id, reason)">
+          <mxGeometry relative="1" x="-0.0652" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="755" y="530" as="sourcePoint" />
+            <mxPoint x="1215" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_10" edge="1" parent="1" style="html=1;endArrow=block;fontSize=11;" value="11: INSERT INTO admin_audit_logs(...)">
+          <mxGeometry relative="1" x="-0.05" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="1215" y="570" as="sourcePoint" />
+            <mxPoint x="1415" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_11" edge="1" parent="1" style="html=1;endArrow=block;dashed=1;fontSize=11;" value="12: StatusChangeResultResponse{status}">
+          <mxGeometry relative="1" x="0.0385" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="755" y="610" as="sourcePoint" />
+            <mxPoint x="495" y="610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_12" edge="1" parent="1" style="html=1;endArrow=block;dashed=1;fontSize=11;" value="13: 200 OK">
+          <mxGeometry relative="1" x="0.05" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="495" y="650" as="sourcePoint" />
+            <mxPoint x="295" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
