@@ -13,16 +13,16 @@
 
 ### Domain
 
-- **E-learning luyện thi JLPT** tích hợp AI (N5 → N1)
+- **E-learning luyện thi JLPT** (N5 → N1)
 - **3 Roles**: Student, Staff, Admin
-- **AI Modules**: OCR (Kanji) + Speech Recognition (Shadowing)
+- **Core Modules**: Thu âm Luyện nói tiếng Nhật + Chấm điểm Thi thử Server-side
 - **Subscription**: VIP subscription management
 
 ### Key Rules
 
 - ✅ DTO Pattern bắt buộc
 - ✅ Soft Delete toàn hệ thống
-- ✅ AI async + fallback
+- ✅ Async file upload + fallback
 - ❌ KHÔNG Entity ra API
 - ❌ KHÔNG Hard Delete
 - ❌ KHÔNG bypass JWT/Security

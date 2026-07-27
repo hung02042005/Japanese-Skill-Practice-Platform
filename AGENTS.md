@@ -12,7 +12,7 @@
 > **Tech Stack**: Java 21 + Spring Boot 3.x (Backend) | React 18 (Frontend) | MySQL 8
 > Xem chi tiết: `CONSTITUTION.md § ĐIỀU 1`
 
-**Mục tiêu chính**: Xây dựng hệ thống học tiếng Nhật hỗ trợ lộ trình từ N5 đến N1 với các tính năng chuyên sâu: Kanji, Kana, Ngữ pháp, Từ vựng, và luyện tập AI (OCR & Speech Recognition); đảm bảo lộ trình học, tính điểm, phân quyền, và trải nghiệm người dùng được thực thi chính xác và có audit trail đầy đủ.
+**Mục tiêu chính**: Xây dựng hệ thống học tiếng Nhật hỗ trợ lộ trình từ N5 đến N1 với các tính năng chuyên sâu: Kanji, Kana, Ngữ pháp, Từ vựng, Chấm thi Server-side & Thu âm Luyện nói; đảm bảo lộ trình học, tính điểm, phân quyền, và trải nghiệm người dùng được thực thi chính xác và có audit trail đầy đủ.
 
 **Đọc theo thứ tự**:
 
@@ -512,13 +512,14 @@ Trước khi báo cáo hoàn thành task, tự kiểm tra:
 
 ## graphify
 
-This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+Dự án này có một đồ thị tri thức (knowledge graph) tại thư mục `graphify-out/` chứa các điểm nút trung tâm (god nodes), cấu trúc phân khu (community) và mối liên kết giữa các file.
 
-When the user types `/graphify`, use the installed graphify skill or instructions before doing anything else.
+Khi người dùng gõ `/graphify`, hãy sử dụng skill graphify hoặc các hướng dẫn dưới đây trước khi thực hiện bất kỳ thao tác nào khác.
 
-Rules:
-- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
-- Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
-- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
-- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+Quy tắc:
+- Đối với các câu hỏi về codebase, trước tiên hãy chạy `graphify query "<câu hỏi>"` khi file `graphify-out/graph.json` tồn tại. Sử dụng `graphify path "<A>" "<B>"` để tìm đường đi ngắn nhất giữa 2 thành phần và `graphify explain "<khái niệm>"` cho các khái niệm cụ thể. Các lệnh này trả về đồ thị con tối ưu, tiết kiệm token hơn nhiều so với việc đọc toàn bộ `GRAPH_REPORT.md` hoặc dùng grep thô.
+- Việc các file trong `graphify-out/` thay đổi sau khi cập nhật là bình thường. Chỉ bỏ qua graphify nếu người dùng yêu cầu rõ ràng hoặc đồ thị bị lỗi.
+- Nếu file `graphify-out/wiki/index.md` tồn tại, hãy sử dụng nó để điều hướng tổng quan và khám phá từng phân khu kiến trúc thay vì duyệt từng file nguồn.
+- Đọc `graphify-out/GRAPH_REPORT.md` khi cần đánh giá kiến trúc tổng thể, xem danh sách God Nodes và các liên kết bất ngờ (Surprising Connections).
+- Sau khi chỉnh sửa code, hãy chạy `graphify update .` để giữ cho đồ thị luôn cập nhật (chỉ phân tích AST cục bộ, hoàn toàn miễn phí).
+- Chạy kiểm tra chẩn đoán đồ thị qua `graphify diagnostics` nếu nghi ngờ đồ thị bị thiếu liên kết hoặc có lỗi sụp đổ cạnh.

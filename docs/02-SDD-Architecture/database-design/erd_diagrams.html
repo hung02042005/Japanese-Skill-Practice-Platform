@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JLPT Database ERD Explorer - DataGrip & DBeaver Style</title>
+  
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          },
+          colors: {
+            databg: '#0f172a',
+            panelbg: '#1e293b',
+            cardbg: '#0f172a',
+            bordercolor: '#334155',
+            accent: '#38bdf8',
+            accenthover: '#0284c7',
+            pkcolor: '#f59e0b',
+            fkcolor: '#a855f7',
+            ukcolor: '#10b981',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    /* Canvas workspace grid background */
+    #canvas-container {
+      background-color: #0b0f19;
+      background-image: 
+        radial-gradient(rgba(51, 65, 85, 0.4) 1px, transparent 1px),
+        radial-gradient(rgba(51, 65, 85, 0.15) 1px, transparent 1px);
+      background-size: 24px 24px, 12px 12px;
+      background-position: 0 0, 6px 6px;
+      user-select: none;
+    }
+
+    /* SVG relation paths */
+    .relation-path {
+      fill: none;
+      stroke: #475569;
+      stroke-width: 1.8;
+      transition: stroke 0.2s, stroke-width 0.2s, opacity 0.2s;
+    }
+    .relation-path.highlighted {
+      stroke: #38bdf8;
+      stroke-width: 3;
+      filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6));
+      z-index: 40;
+    }
+    .relation-path.dimmed {
+      opacity: 0.15;
+    }
+
+    /* Table Node styling */
+    .table-card {
+      position: absolute;
+      width: 290px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+      transition: border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+      cursor: grab;
+      z-index: 10;
+    }
+    .table-card.dragging {
+      cursor: grabbing;
+      box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.7), 0 0 15px rgba(56, 189, 248, 0.3);
+      z-index: 50;
+    }
+    .table-card.selected {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.4), 0 12px 30px rgba(0, 0, 0, 0.6);
+      z-index: 30;
+    }
+    .table-card.dimmed {
+      opacity: 0.25;
+    }
+    .table-card.highlight-neighbor {
+      border-color: #a855f7;
+      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.3);
+      z-index: 20;
+    }
+
+    /* Table Header Category Colors */
+    .cat-users { border-top: 4px solid #ef4444; }
+    .cat-content { border-top: 4px solid #3b82f6; }
+    .cat-quiz { border-top: 4px solid #f59e0b; }
+    .cat-attempt { border-top: 4px solid #10b981; }
+    .cat-progress { border-top: 4px solid #8b5cf6; }
+    .cat-support { border-top: 4px solid #ec4899; }
+    .cat-system { border-top: 4px solid #64748b; }
+
+    .cat-bg-users { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+    .cat-bg-content { background: rgba(59, 130, 246, 0.15); color: #93c5fd; }
+    .cat-bg-quiz { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+    .cat-bg-attempt { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+    .cat-bg-progress { background: rgba(139, 92, 246, 0.15); color: #c4b5fd; }
+    .cat-bg-support { background: rgba(236, 72, 153, 0.15); color: #fbcfe8; }
+    .cat-bg-system { background: rgba(100, 116, 139, 0.15); color: #cbd5e1; }
+
+    /* Badge Pills */
+    .badge-pk { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .badge-fk { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+    .badge-uk { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .badge-nn { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    /* Glassmorphic Panel */
+    .glass-panel {
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(51, 65, 85, 0.7);
+    }
+  </style>
+</head>
+<body class="bg-databg text-slate-200 font-sans h-screen w-screen overflow-hidden flex flex-col">
+
+  <!-- TOP TOOLBAR & NAVBAR -->
+  <header class="h-14 bg-panelbg border-b border-bordercolor flex items-center justify-between px-4 z-30 shrink-0">
+    <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/20">
+          <i class="fa-solid fa-diagram-project text-sm"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-sm tracking-wide text-white flex items-center gap-2">
+            JLPT Database Schema
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/30">MySQL 8.0</span>
+          </h1>
+          <p class="text-[11px] text-slate-400">Interactive Entity Relationship Diagram (26 Tables)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="relative w-80">
+      <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-400"></i>
+      <input type="text" id="search-input" placeholder="Tìm bảng, cột (vd: student_id, email)..." 
+        class="w-full bg-slate-900/80 border border-slate-700 text-xs text-slate-200 rounded-lg pl-8 pr-8 py-1.5 focus:outline-none focus:border-sky-500 transition-colors">
+      <button id="clear-search" class="hidden absolute right-2.5 top-2 text-xs text-slate-500 hover:text-slate-300">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Toolbar Action Buttons -->
+    <div class="flex items-center space-x-2">
+      <!-- Layout Modes Dropdown / Buttons -->
+      <div class="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5 space-x-0.5">
+        <button id="btn-layout-grid" title="Sắp xếp kiểu Ma trận Cân Bằng (Rộng 16:9 vừa màn hình)" 
+          class="px-2 py-1 bg-sky-600 text-white rounded text-xs font-medium flex items-center space-x-1 transition">
+          <i class="fa-solid fa-table-cells text-white"></i>
+          <span>Ma Trận 16:9</span>
+        </button>
+        <button id="btn-layout-columns" title="Sắp xếp theo Cột Phân khu Dọc" 
+          class="px-2 py-1 hover:bg-slate-700 text-slate-300 rounded text-xs font-medium flex items-center space-x-1 transition">
+          <i class="fa-solid fa-table-columns text-slate-400"></i>
+          <span>Cột Phân Khu</span>
+        </button>
+      </div>
+
+      <button id="btn-fit-screen" title="Tự động căn chỉnh zoom & vị trí vừa khít toàn màn hình" 
+        class="px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-lg text-xs font-medium flex items-center space-x-1.5 transition">
+        <i class="fa-solid fa-expand text-emerald-400"></i>
+        <span>Fit Screen</span>
+      </button>
+
+      <!-- Fullscreen F11 Toggle -->
+      <button id="btn-fullscreen-toggle" title="Bật/Tắt Toàn màn hình (F11)" 
+        class="px-2.5 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 rounded-lg text-xs font-medium flex items-center space-x-1.5 transition">
+        <i class="fa-solid fa-maximize text-indigo-400" id="fullscreen-icon"></i>
+        <span id="fullscreen-text">Toàn Màn Hình (F11)</span>
+      </button>
+
+      <button id="btn-curve-toggle" title="Đổi kiểu đường nối (Cong / Vuông)" 
+        class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium flex items-center space-x-1.5 transition">
+        <i class="fa-solid fa-bezier-curve text-indigo-400"></i>
+        <span id="curve-label">Đường Cong</span>
+      </button>
+
+      <div class="h-4 w-px bg-slate-700 mx-1"></div>
+
+      <!-- Zoom Controls -->
+      <div class="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
+        <button id="btn-zoom-out" class="w-7 h-7 flex items-center justify-center text-slate-300 hover:bg-slate-700 rounded text-xs" title="Thu nhỏ (-)">
+          <i class="fa-solid fa-minus"></i>
+        </button>
+        <span id="zoom-text" class="px-2 text-xs font-mono font-semibold text-sky-400 w-12 text-center">100%</span>
+        <button id="btn-zoom-in" class="w-7 h-7 flex items-center justify-center text-slate-300 hover:bg-slate-700 rounded text-xs" title="Phóng to (+)">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <button id="btn-zoom-reset" class="w-7 h-7 flex items-center justify-center text-slate-300 hover:bg-slate-700 rounded text-xs border-l border-slate-700 ml-0.5" title="Reset tỷ lệ (100%)">
+          <i class="fa-solid fa-compress"></i>
+        </button>
+      </div>
+
+      <div class="h-4 w-px bg-slate-700 mx-1"></div>
+
+      <!-- Toggle Panel & Export -->
+      <button id="btn-toggle-inspector" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium flex items-center space-x-1.5 transition" title="Ẩn/Hiện Panel Chi tiết bên phải">
+        <i class="fa-solid fa-sidebar text-purple-400"></i>
+        <span id="inspector-toggle-label">Ẩn Panel</span>
+      </button>
+
+      <button id="btn-export-svg" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-medium flex items-center space-x-1.5 transition" title="Tải xuống sơ đồ dưới dạng SVG">
+        <i class="fa-solid fa-file-export text-emerald-400"></i>
+        <span>SVG</span>
+      </button>
+      <button id="btn-export-sql" class="px-2.5 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-medium flex items-center space-x-1.5 shadow-md shadow-sky-600/30 transition">
+        <i class="fa-solid fa-database"></i>
+        <span>Xem SQL</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- CATEGORY FILTER BAR -->
+  <div class="h-9 bg-slate-900/90 border-b border-bordercolor flex items-center px-4 overflow-x-auto space-x-2 shrink-0 text-xs">
+    <span class="text-slate-400 text-[11px] font-semibold tracking-wider uppercase mr-1">Phân khu:</span>
+    <button class="cat-filter active px-2.5 py-0.5 rounded-full bg-sky-500 text-white font-medium transition" data-cat="all">Tất cả (26)</button>
+    <button class="cat-filter px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-cat="users">
+      <span class="w-2 h-2 rounded-full inline-block bg-red-500 mr-1"></span>Người Dùng & Auth (5)
+    </button>
+    <button class="cat-filter px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-cat="content">
+      <span class="w-2 h-2 rounded-full inline-block bg-blue-500 mr-1"></span>Nội Dung Học Tập (7)
+    </button>
+    <button class="cat-filter px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-cat="quiz">
+      <span class="w-2 h-2 rounded-full inline-block bg-amber-500 mr-1"></span>Ngân Hàng Câu Hỏi & Quiz (3)
+    </button>
+    <button class="cat-filter px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-cat="attempt">
+      <span class="w-2 h-2 rounded-full inline-block bg-emerald-500 mr-1"></span>Bài Làm & Thu Âm (3)
+    </button>
+    <button class="cat-filter px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-cat="progress">
+      <span class="w-2 h-2 rounded-full inline-block bg-purple-500 mr-1"></span>Tiến Độ & Flashcard (3)
+    </button>
+    <button class="cat-filter px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-cat="support">
+      <span class="w-2 h-2 rounded-full inline-block bg-pink-500 mr-1"></span>Hỗ Trợ & Thông Báo (3)
+    </button>
+    <button class="cat-filter px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 hover:bg-slate-700 transition" data-cat="system">
+      <span class="w-2 h-2 rounded-full inline-block bg-slate-400 mr-1"></span>Cấu Hình & Log (2)
+    </button>
+  </div>
+
+  <!-- MAIN CANVAS & WORKSPACE AREA -->
+  <main class="flex-1 relative overflow-hidden flex">
+    
+    <!-- CANVAS VIEWPORT -->
+    <div id="canvas-container" class="w-full h-full relative cursor-grab active:cursor-grabbing overflow-hidden">
+      
+      <!-- SVG LINES LAYER -->
+      <svg id="relations-svg" class="absolute inset-0 w-full h-full pointer-events-none z-0" style="overflow: visible;">
+        <defs>
+          <!-- Arrow Markers for foreign keys -->
+          <marker id="arrow-end" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569" />
+          </marker>
+          <marker id="arrow-end-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
+          </marker>
+          <!-- Crow's foot circle marker -->
+          <marker id="circle-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6">
+            <circle cx="5" cy="5" r="3" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+          </marker>
+        </defs>
+        <g id="svg-paths-group"></g>
+      </svg>
+
+      <!-- TRANSFORMABLE CANVAS CONTENT CONTAINER -->
+      <div id="canvas-viewport" class="absolute left-0 top-0 w-full h-full origin-top-left">
+        <!-- Table Node DOM Cards rendered dynamically here -->
+      </div>
+
+      <!-- INSTRUCTION HELPER BADGE -->
+      <div id="helper-badge" class="absolute bottom-4 left-4 z-20 glass-panel rounded-lg p-2.5 px-3.5 text-xs text-slate-300 flex items-center space-x-3.5 shadow-xl border border-slate-700/60">
+        <div class="flex items-center space-x-1.5">
+          <i class="fa-solid fa-hand-pointer text-sky-400"></i>
+          <span>Kéo nền di chuyển</span>
+        </div>
+        <div class="h-3 w-px bg-slate-700"></div>
+        <div class="flex items-center space-x-1.5">
+          <i class="fa-solid fa-arrows-up-down-left-right text-indigo-400"></i>
+          <span>Kéo đầu bảng sắp xếp</span>
+        </div>
+        <div class="h-3 w-px bg-slate-700"></div>
+        <div class="flex items-center space-x-1.5">
+          <i class="fa-solid fa-mouse text-emerald-400"></i>
+          <span>Cuộn chuột Phóng to/Thu nhỏ</span>
+        </div>
+        <div class="h-3 w-px bg-slate-700"></div>
+        <button id="btn-close-helper" title="Tắt hướng dẫn này" class="text-slate-400 hover:text-white transition px-1">
+          <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- SIDE INSPECTOR PANEL -->
+    <aside id="inspector-panel" class="w-96 bg-panelbg border-l border-bordercolor flex flex-col z-30 shadow-2xl transition-all duration-300 transform translate-x-0">
+      
+      <!-- Panel Header -->
+      <div class="p-3.5 border-b border-bordercolor flex items-center justify-between bg-slate-900/80">
+        <div class="flex items-center space-x-2">
+          <i class="fa-solid fa-circle-info text-sky-400"></i>
+          <h2 class="font-bold text-sm text-white" id="panel-title">Chi Tiết Bảng</h2>
+          <span id="panel-cat-badge" class="text-[10px] px-2 py-0.5 rounded-md font-medium uppercase tracking-wider bg-slate-800 text-slate-400">SELECT A TABLE</span>
+        </div>
+        <button id="btn-close-inspector" title="Đóng Panel Chi Tiết" class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Panel Body -->
+      <div class="flex-1 overflow-y-auto p-4 space-x-0 space-y-4 text-xs">
+        
+        <!-- Empty State -->
+        <div id="inspector-empty" class="h-64 flex flex-col items-center justify-center text-slate-500 text-center">
+          <i class="fa-solid fa-table-list text-4xl mb-3 text-slate-600"></i>
+          <p class="font-medium text-slate-400">Chưa chọn bảng nào</p>
+          <p class="text-[11px] mt-1 max-w-[200px]">Bấm vào một bảng trên sơ đồ để xem chi tiết cột, khoá chính, khoá ngoại và các ràng buộc.</p>
+        </div>
+
+        <!-- Table Details Wrapper (hidden by default) -->
+        <div id="inspector-content" class="hidden space-y-4">
+          
+          <!-- Summary Box -->
+          <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+            <div class="flex justify-between text-[11px] text-slate-400 mb-1">
+              <span>Tên Bảng (MySQL):</span>
+              <span id="insp-table-engine" class="font-mono text-slate-400">Engine: InnoDB</span>
+            </div>
+            <div class="text-sm font-mono font-bold text-sky-300 break-all" id="insp-table-name">student_users</div>
+            <p class="text-[11px] text-slate-400 mt-1 italic" id="insp-table-desc">Quản lý tài khoản học viên, điểm thưởng streak và cấp độ JLPT hiện tại.</p>
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-slate-900/50 p-2 rounded border border-slate-800 text-center">
+              <div class="text-slate-400 text-[10px]">Tổng Cột</div>
+              <div class="text-sm font-bold text-slate-200" id="stat-columns-count">0</div>
+            </div>
+            <div class="bg-slate-900/50 p-2 rounded border border-slate-800 text-center">
+              <div class="text-amber-400 text-[10px]">Khoá Chính</div>
+              <div class="text-sm font-bold text-amber-300" id="stat-pk-count">1</div>
+            </div>
+            <div class="bg-slate-900/50 p-2 rounded border border-slate-800 text-center">
+              <div class="text-purple-400 text-[10px]">Khoá Ngoại</div>
+              <div class="text-sm font-bold text-purple-300" id="stat-fk-count">0</div>
+            </div>
+          </div>
+
+          <!-- Relationships Section -->
+          <div>
+            <h3 class="font-bold text-slate-300 mb-2 flex items-center justify-between text-[11px] uppercase tracking-wider">
+              <span>Mối quan hệ liên kết</span>
+              <span id="rel-count-tag" class="text-sky-400">0 FK</span>
+            </h3>
+            <div id="insp-relationships-list" class="space-y-1.5">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Column List Section -->
+          <div>
+            <h3 class="font-bold text-slate-300 mb-2 text-[11px] uppercase tracking-wider flex justify-between items-center">
+              <span>Danh sách Cột</span>
+              <span class="text-[10px] text-slate-500 font-mono">26 columns</span>
+            </h3>
+            <div class="border border-slate-800 rounded-lg overflow-hidden divide-y divide-slate-800 bg-slate-900/60" id="insp-columns-list">
+              <!-- Column items inserted here -->
+            </div>
+          </div>
+
+          <!-- Index & Constraints Section -->
+          <div>
+            <h3 class="font-bold text-slate-300 mb-2 text-[11px] uppercase tracking-wider">Index & Constraint</h3>
+            <div class="space-y-1 font-mono text-[11px]" id="insp-indexes-list">
+              <!-- Indexes list -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- DDL MODAL DIALOG -->
+  <div id="sql-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="bg-panelbg border border-bordercolor rounded-xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="px-5 py-3 border-b border-bordercolor flex items-center justify-between bg-slate-900">
+        <div class="flex items-center space-x-2">
+          <i class="fa-solid fa-code text-sky-400"></i>
+          <h3 class="font-bold text-sm text-white">V1__init_schema.sql - MySQL DDL Source</h3>
+        </div>
+        <button id="close-sql-modal" class="text-slate-400 hover:text-white text-base">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="p-4 flex-1 overflow-y-auto bg-slate-950 font-mono text-xs text-sky-200 leading-relaxed selection:bg-sky-500 selection:text-white">
+        <pre id="sql-ddl-code" class="whitespace-pre-wrap"></pre>
+      </div>
+      <div class="px-5 py-3 border-t border-bordercolor bg-slate-900 flex justify-end">
+        <button id="btn-copy-sql" class="px-4 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-2 transition">
+          <i class="fa-regular fa-copy"></i>
+          <span>Sao chép DDL SQL</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION SCRIPT LOGIC -->
+  <script>
+    /* ============================================================================
+       COMPLETE SCHEMA DEFINITION DATA (Parsed directly from V1__init_schema.sql)
+       ============================================================================ */
+    const SCHEMA_DATA = {
+      tables: [
+        // 1. admin_users
+        {
+          id: "admin_users",
+          name: "admin_users",
+          category: "users",
+          categoryName: "Người Dùng & Auth",
+          desc: "Quản trị viên hệ thống có toàn quyền quản lý hệ thống.",
+          x: 40, y: 40,
+          columns: [
+            { name: "admin_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "email", type: "VARCHAR(255)", pk: false, fk: false, uk: true, nullable: false },
+            { name: "password_hash", type: "VARCHAR(255)", pk: false, fk: false, nullable: true },
+            { name: "full_name", type: "VARCHAR(150)", pk: false, fk: false, nullable: false },
+            { name: "status", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, def: "'active'", check: "active,suspended,pending,deleted" },
+            { name: "suspend_reason", type: "VARCHAR(500)", pk: false, fk: false, nullable: true },
+            { name: "login_attempts", type: "INT", pk: false, fk: false, nullable: false, def: "0" },
+            { name: "locked_until", type: "DATETIME(6)", pk: false, fk: false, nullable: true },
+            { name: "last_login_at", type: "DATETIME(6)", pk: false, fk: false, nullable: true },
+            { name: "created_at", type: "DATETIME(6)", pk: false, fk: false, nullable: false, def: "CURRENT_TIMESTAMP(6)" },
+            { name: "updated_at", type: "DATETIME(6)", pk: false, fk: false, nullable: false, def: "CURRENT_TIMESTAMP(6)" }
+          ],
+          indexes: ["PRIMARY KEY (admin_id)", "UNIQUE INDEX (email)", "INDEX IX_admins_status (status)"]
+        },
+
+        // 2. staff_users
+        {
+          id: "staff_users",
+          name: "staff_users",
+          category: "users",
+          categoryName: "Người Dùng & Auth",
+          desc: "Tài khoản Giáo viên / Nhân viên biên soạn nội dung và chấm thi.",
+          x: 40, y: 440,
+          columns: [
+            { name: "staff_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "email", type: "VARCHAR(255)", pk: false, fk: false, uk: true, nullable: false },
+            { name: "password_hash", type: "VARCHAR(255)", pk: false, fk: false, nullable: true },
+            { name: "full_name", type: "VARCHAR(150)", pk: false, fk: false, nullable: false },
+            { name: "staff_role", type: "VARCHAR(30)", pk: false, fk: false, nullable: false, def: "'staff'", check: "staff,staff_manager" },
+            { name: "status", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, def: "'active'" },
+            { name: "suspend_reason", type: "VARCHAR(500)", pk: false, fk: false, nullable: true },
+            { name: "login_attempts", type: "INT", pk: false, fk: false, nullable: false, def: "0" },
+            { name: "locked_until", type: "DATETIME(6)", pk: false, fk: false, nullable: true },
+            { name: "last_login_at", type: "DATETIME(6)", pk: false, fk: false, nullable: true },
+            { name: "must_change_password", type: "BOOLEAN", pk: false, fk: false, nullable: false, def: "0" },
+            { name: "created_at", type: "DATETIME(6)", pk: false, fk: false, nullable: false },
+            { name: "updated_at", type: "DATETIME(6)", pk: false, fk: false, nullable: false }
+          ],
+          indexes: ["PRIMARY KEY (staff_id)", "UNIQUE (email)", "INDEX IX_staffs_status", "INDEX IX_staffs_role_status"]
+        },
+
+        // 3. staff_password_reset_requests
+        {
+          id: "staff_password_reset_requests",
+          name: "staff_password_reset_requests",
+          category: "users",
+          categoryName: "Người Dùng & Auth",
+          desc: "Yêu cầu đặt lại mật khẩu cho Staff do Admin duyệt.",
+          x: 400, y: 40,
+          columns: [
+            { name: "request_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "staff_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "staff_users", refCol: "staff_id" },
+            { name: "status", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, def: "'pending'" },
+            { name: "requested_at", type: "DATETIME(6)", pk: false, fk: false, nullable: false },
+            { name: "expires_at", type: "DATETIME(6)", pk: false, fk: false, nullable: false },
+            { name: "completed_at", type: "DATETIME(6)", pk: false, fk: false, nullable: true },
+            { name: "completed_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "admin_users", refCol: "admin_id" },
+            { name: "request_ip", type: "VARCHAR(45)", pk: false, fk: false, nullable: true }
+          ],
+          indexes: ["PRIMARY KEY (request_id)", "FK_reset_req_staff -> staff_users", "FK_reset_req_admin -> admin_users"]
+        },
+
+        // 4. student_users
+        {
+          id: "student_users",
+          name: "student_users",
+          category: "users",
+          categoryName: "Người Dùng & Auth",
+          desc: "Học viên học tiếng Nhật N5-N1, tích lũy streak và làm bài.",
+          x: 400, y: 380,
+          columns: [
+            { name: "student_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "email", type: "VARCHAR(255)", pk: false, fk: false, uk: true, nullable: false },
+            { name: "password_hash", type: "VARCHAR(255)", pk: false, fk: false, nullable: true },
+            { name: "full_name", type: "VARCHAR(150)", pk: false, fk: false, nullable: false },
+            { name: "status", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, def: "'active'" },
+            { name: "suspend_reason", type: "VARCHAR(500)", pk: false, fk: false, nullable: true },
+            { name: "email_verified_at", type: "DATETIME(6)", pk: false, fk: false, nullable: true },
+            { name: "avatar_url", type: "VARCHAR(500)", pk: false, fk: false, nullable: true },
+            { name: "phone", type: "VARCHAR(20)", pk: false, fk: false, nullable: true },
+            { name: "oauth_provider", type: "VARCHAR(30)", pk: false, fk: false, nullable: true },
+            { name: "oauth_provider_id", type: "VARCHAR(255)", pk: false, fk: false, nullable: true },
+            { name: "current_jlpt_level", type: "VARCHAR(5)", pk: false, fk: false, nullable: true, check: "N5..N1" },
+            { name: "target_jlpt_level", type: "VARCHAR(5)", pk: false, fk: false, nullable: true, check: "N5..N1" },
+            { name: "current_streak", type: "INT", pk: false, fk: false, nullable: false, def: "0" },
+            { name: "longest_streak", type: "INT", pk: false, fk: false, nullable: false, def: "0" },
+            { name: "last_activity_date", type: "DATE", pk: false, fk: false, nullable: true },
+            { name: "created_at", type: "DATETIME(6)", pk: false, fk: false, nullable: false }
+          ],
+          indexes: ["PRIMARY KEY (student_id)", "UNIQUE INDEX (email)", "UNIQUE INDEX UX_students_oauth (oauth_provider, oauth_provider_id)"]
+        },
+
+        // 5. auth_tokens
+        {
+          id: "auth_tokens",
+          name: "auth_tokens",
+          category: "users",
+          categoryName: "Người Dùng & Auth",
+          desc: "Token xác thực dùng chung cho Admin, Staff và Student.",
+          x: 760, y: 40,
+          columns: [
+            { name: "token_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "actor_type", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, check: "admin,staff,student" },
+            { name: "admin_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "admin_users", refCol: "admin_id" },
+            { name: "staff_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" },
+            { name: "student_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "student_users", refCol: "student_id" },
+            { name: "token_type", type: "VARCHAR(30)", pk: false, fk: false, nullable: false },
+            { name: "token_value", type: "VARCHAR(500)", pk: false, fk: false, nullable: false },
+            { name: "expires_at", type: "DATETIME(6)", pk: false, fk: false, nullable: false },
+            { name: "revoked_at", type: "DATETIME(6)", pk: false, fk: false, nullable: true }
+          ],
+          indexes: ["PRIMARY KEY (token_id)", "FK_auth_tokens_admin", "FK_auth_tokens_staff", "FK_auth_tokens_student"]
+        },
+
+        // 6. lessons
+        {
+          id: "lessons",
+          name: "lessons",
+          category: "content",
+          categoryName: "Nội Dung Học Tập",
+          desc: "Các bài học lý thuyết, đọc hiểu, nghe và nói JLPT.",
+          x: 760, y: 420,
+          columns: [
+            { name: "lesson_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "lesson_type", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, check: "lesson,reading,listening,speaking" },
+            { name: "title", type: "VARCHAR(255)", pk: false, fk: false, nullable: false },
+            { name: "jlpt_level", type: "VARCHAR(5)", pk: false, fk: false, nullable: false, check: "N5..N1" },
+            { name: "video_url", type: "VARCHAR(500)", pk: false, fk: false, nullable: true },
+            { name: "audio_url", type: "VARCHAR(500)", pk: false, fk: false, nullable: true },
+            { name: "display_order", type: "INT", pk: false, fk: false, nullable: false, def: "0" },
+            { name: "status", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, def: "'draft'" },
+            { name: "created_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" },
+            { name: "approved_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" },
+            { name: "created_at", type: "DATETIME(6)", pk: false, fk: false, nullable: false }
+          ],
+          indexes: ["PRIMARY KEY (lesson_id)", "FK_lessons_creator", "FK_lessons_approver", "INDEX IX_lessons_public_list"]
+        },
+
+        // 7. kana_characters
+        {
+          id: "kana_characters",
+          name: "kana_characters",
+          category: "content",
+          categoryName: "Nội Dung Học Tập",
+          desc: "Bảng chữ cái Hiragana & Katakana cơ bản.",
+          x: 1120, y: 40,
+          columns: [
+            { name: "kana_id", type: "INT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "character_value", type: "VARCHAR(5)", pk: false, fk: false, nullable: false },
+            { name: "romaji", type: "VARCHAR(10)", pk: false, fk: false, nullable: false },
+            { name: "kana_type", type: "VARCHAR(15)", pk: false, fk: false, nullable: false, check: "hiragana,katakana" },
+            { name: "audio_url", type: "VARCHAR(500)", pk: false, fk: false, nullable: true },
+            { name: "stroke_order_url", type: "VARCHAR(500)", pk: false, fk: false, nullable: true },
+            { name: "display_order", type: "INT", pk: false, fk: false, nullable: false, def: "0" }
+          ],
+          indexes: ["PRIMARY KEY (kana_id)"]
+        },
+
+        // 8. kanji
+        {
+          id: "kanji",
+          name: "kanji",
+          category: "content",
+          categoryName: "Nội Dung Học Tập",
+          desc: "Kho Hán tự Kanji từ N5 đến N1 kèm Onyomi, Kunyomi.",
+          x: 1120, y: 340,
+          columns: [
+            { name: "kanji_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "character_value", type: "VARCHAR(5)", pk: false, fk: false, uk: true, nullable: false },
+            { name: "meaning", type: "VARCHAR(500)", pk: false, fk: false, nullable: false },
+            { name: "onyomi", type: "VARCHAR(200)", pk: false, fk: false, nullable: true },
+            { name: "kunyomi", type: "VARCHAR(200)", pk: false, fk: false, nullable: true },
+            { name: "stroke_count", type: "INT", pk: false, fk: false, nullable: true },
+            { name: "jlpt_level", type: "VARCHAR(5)", pk: false, fk: false, nullable: false, check: "N5..N1" },
+            { name: "status", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, def: "'draft'" },
+            { name: "created_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" },
+            { name: "approved_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" }
+          ],
+          indexes: ["PRIMARY KEY (kanji_id)", "UNIQUE (character_value)", "FK_kanji_creator", "FK_kanji_approver"]
+        },
+
+        // 9. kanji_writing_attempts
+        {
+          id: "kanji_writing_attempts",
+          name: "kanji_writing_attempts",
+          category: "content",
+          categoryName: "Nội Dung Học Tập",
+          desc: "Lịch sử luyện tập viết Kanji của học viên (chấm nét qua DTW).",
+          x: 1480, y: 340,
+          columns: [
+            { name: "attempt_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "student_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "student_users", refCol: "student_id" },
+            { name: "kanji_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "kanji", refCol: "kanji_id" },
+            { name: "character_value", type: "VARCHAR(5)", pk: false, fk: false, nullable: false },
+            { name: "total_strokes", type: "INT", pk: false, fk: false, nullable: false },
+            { name: "avg_dtw_score", type: "FLOAT", pk: false, fk: false, nullable: true },
+            { name: "final_quality", type: "VARCHAR(20)", pk: false, fk: false, nullable: true, check: "perfect,good,ok,bad" },
+            { name: "created_at", type: "DATETIME(6)", pk: false, fk: false, nullable: false }
+          ],
+          indexes: ["PRIMARY KEY (attempt_id)", "FK_kwa_student -> student_users", "INDEX IX_kwa_kanji_id"]
+        },
+
+        // 10. vocabulary_topics
+        {
+          id: "vocabulary_topics",
+          name: "vocabulary_topics",
+          category: "content",
+          categoryName: "Nội Dung Học Tập",
+          desc: "Chủ đề phân loại từ vựng (ví dụ: Gia đình, Giao thông).",
+          x: 1120, y: 740,
+          columns: [
+            { name: "topic_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "jlpt_level", type: "VARCHAR(5)", pk: false, fk: false, nullable: false },
+            { name: "slug", type: "VARCHAR(80)", pk: false, fk: false, nullable: false },
+            { name: "title_ja", type: "VARCHAR(100)", pk: false, fk: false, nullable: false },
+            { name: "title_vi", type: "VARCHAR(100)", pk: false, fk: false, nullable: false },
+            { name: "display_order", type: "INT", pk: false, fk: false, nullable: false },
+            { name: "created_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" }
+          ],
+          indexes: ["PRIMARY KEY (topic_id)", "UNIQUE UQ_vocab_topics_level_slug", "FK_vocab_topics_creator"]
+        },
+
+        // 11. vocabulary
+        {
+          id: "vocabulary",
+          name: "vocabulary",
+          category: "content",
+          categoryName: "Nội Dung Học Tập",
+          desc: "Kho từ vựng tiếng Nhật kèm Furigana & Ví dụ.",
+          x: 1480, y: 740,
+          columns: [
+            { name: "vocabulary_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "word", type: "VARCHAR(100)", pk: false, fk: false, nullable: false },
+            { name: "furigana", type: "VARCHAR(200)", pk: false, fk: false, nullable: true },
+            { name: "meaning", type: "VARCHAR(500)", pk: false, fk: false, nullable: false },
+            { name: "topic_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "vocabulary_topics", refCol: "topic_id" },
+            { name: "lesson_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "lessons", refCol: "lesson_id" },
+            { name: "created_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" },
+            { name: "approved_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" }
+          ],
+          indexes: ["PRIMARY KEY (vocabulary_id)", "FK_vocab_topic", "FK_vocab_lesson", "FK_vocab_creator"]
+        },
+
+        // 12. grammar_points
+        {
+          id: "grammar_points",
+          name: "grammar_points",
+          category: "content",
+          categoryName: "Nội Dung Học Tập",
+          desc: "Các điểm cấu trúc ngữ pháp tiếng Nhật N5-N1.",
+          x: 760, y: 840,
+          columns: [
+            { name: "grammar_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "structure", type: "VARCHAR(255)", pk: false, fk: false, nullable: false },
+            { name: "meaning", type: "VARCHAR(500)", pk: false, fk: false, nullable: false },
+            { name: "jlpt_level", type: "VARCHAR(5)", pk: false, fk: false, nullable: false },
+            { name: "lesson_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "lessons", refCol: "lesson_id" },
+            { name: "created_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" },
+            { name: "approved_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" }
+          ],
+          indexes: ["PRIMARY KEY (grammar_id)", "FK_grammar_lesson", "FK_grammar_creator", "FK_grammar_approver"]
+        },
+
+        // 13. questions
+        {
+          id: "questions",
+          name: "questions",
+          category: "quiz",
+          categoryName: "Ngân Hàng Câu Hỏi",
+          desc: "Ngân hàng câu hỏi trắc nghiệm, điền từ.",
+          x: 1860, y: 40,
+          columns: [
+            { name: "question_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "question_text", type: "LONGTEXT", pk: false, fk: false, nullable: false },
+            { name: "question_type", type: "VARCHAR(30)", pk: false, fk: false, nullable: false, check: "multiple_choice,fill_blank,true_false" },
+            { name: "skill", type: "VARCHAR(30)", pk: false, fk: false, nullable: false, check: "vocab,grammar,kanji,reading,listening,mixed" },
+            { name: "jlpt_level", type: "VARCHAR(5)", pk: false, fk: false, nullable: false },
+            { name: "correct_option", type: "CHAR(1)", pk: false, fk: false, nullable: true, check: "A,B,C,D" },
+            { name: "created_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" },
+            { name: "approved_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" }
+          ],
+          indexes: ["PRIMARY KEY (question_id)", "FK_questions_creator", "FK_questions_approver"]
+        },
+
+        // 14. assessments
+        {
+          id: "assessments",
+          name: "assessments",
+          category: "quiz",
+          categoryName: "Ngân Hàng Câu Hỏi",
+          desc: "Đề thi thử JLPT hoặc bài kiểm tra Quiz sau bài học.",
+          x: 1860, y: 420,
+          columns: [
+            { name: "assessment_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "assessment_type", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, check: "quiz,exam" },
+            { name: "title", type: "VARCHAR(255)", pk: false, fk: false, nullable: false },
+            { name: "lesson_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "lessons", refCol: "lesson_id" },
+            { name: "jlpt_level", type: "VARCHAR(5)", pk: false, fk: false, nullable: true },
+            { name: "duration_min", type: "INT", pk: false, fk: false, nullable: true },
+            { name: "pass_score", type: "INT", pk: false, fk: false, nullable: true },
+            { name: "created_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" }
+          ],
+          indexes: ["PRIMARY KEY (assessment_id)", "FK_assessments_lesson", "FK_assessments_creator"]
+        },
+
+        // 15. question_assignments
+        {
+          id: "question_assignments",
+          name: "question_assignments",
+          category: "quiz",
+          categoryName: "Ngân Hàng Câu Hỏi",
+          desc: "Liên kết gán câu hỏi vào Đề thi hoặc Bài học.",
+          x: 2220, y: 220,
+          columns: [
+            { name: "assignment_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "parent_type", type: "VARCHAR(30)", pk: false, fk: false, nullable: false, check: "assessment,lesson" },
+            { name: "parent_id", type: "BIGINT", pk: false, fk: false, nullable: false },
+            { name: "question_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "questions", refCol: "question_id" },
+            { name: "score", type: "DECIMAL(6,2)", pk: false, fk: false, nullable: false, def: "1" },
+            { name: "display_order", type: "INT", pk: false, fk: false, nullable: false, def: "0" }
+          ],
+          indexes: ["PRIMARY KEY (assignment_id)", "FK_assign_question -> questions", "UNIQUE (parent_type, parent_id, question_id)"]
+        },
+
+        // 16. test_attempts
+        {
+          id: "test_attempts",
+          name: "test_attempts",
+          category: "attempt",
+          categoryName: "Bài Làm & Thu Âm",
+          desc: "Lần làm bài thi / bài kiểm tra của học viên.",
+          x: 1860, y: 780,
+          columns: [
+            { name: "attempt_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "student_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "student_users", refCol: "student_id" },
+            { name: "attempt_type", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, check: "exam,quiz,practice,reading,listening" },
+            { name: "parent_type", type: "VARCHAR(30)", pk: false, fk: false, nullable: false },
+            { name: "parent_id", type: "BIGINT", pk: false, fk: false, nullable: true },
+            { name: "total_score", type: "DECIMAL(8,2)", pk: false, fk: false, nullable: true },
+            { name: "is_passed", type: "BOOLEAN", pk: false, fk: false, nullable: true },
+            { name: "status", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, def: "'in_progress'" }
+          ],
+          indexes: ["PRIMARY KEY (attempt_id)", "FK_attempt_student -> student_users", "INDEX IX_attempt_student_type"]
+        },
+
+        // 17. attempt_answers
+        {
+          id: "attempt_answers",
+          name: "attempt_answers",
+          category: "attempt",
+          categoryName: "Bài Làm & Thu Âm",
+          desc: "Đáp án chi tiết từng câu trong bài thi của học viên.",
+          x: 2220, y: 780,
+          columns: [
+            { name: "answer_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "attempt_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "test_attempts", refCol: "attempt_id" },
+            { name: "question_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "questions", refCol: "question_id" },
+            { name: "selected_option", type: "CHAR(1)", pk: false, fk: false, nullable: true },
+            { name: "is_correct", type: "BOOLEAN", pk: false, fk: false, nullable: true },
+            { name: "score", type: "DECIMAL(6,2)", pk: false, fk: false, nullable: true }
+          ],
+          indexes: ["PRIMARY KEY (answer_id)", "FK_ans_attempt -> test_attempts", "FK_ans_question -> questions"]
+        },
+
+        // 18. student_submissions
+        {
+          id: "student_submissions",
+          name: "student_submissions",
+          category: "attempt",
+          categoryName: "Bài Làm & Thu Âm",
+          desc: "Bài nộp thu âm nói (Speaking) hoặc viết tay (OCR/Handwriting).",
+          x: 1480, y: 1100,
+          columns: [
+            { name: "submission_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "student_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "student_users", refCol: "student_id" },
+            { name: "submission_type", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, check: "speaking,handwriting" },
+            { name: "status", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, def: "'pending'" },
+            { name: "exercise_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "lessons", refCol: "lesson_id" },
+            { name: "kanji_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "kanji", refCol: "kanji_id" },
+            { name: "kana_id", type: "INT", pk: false, fk: true, nullable: true, refTable: "kana_characters", refCol: "kana_id" },
+            { name: "graded_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" }
+          ],
+          indexes: ["PRIMARY KEY (submission_id)", "FK_sub_student", "FK_sub_exercise", "FK_sub_kanji", "FK_sub_kana", "FK_sub_grader"]
+        },
+
+        // 19. student_content_progress
+        {
+          id: "student_content_progress",
+          name: "student_content_progress",
+          category: "progress",
+          categoryName: "Tiến Độ & Flashcard",
+          desc: "Tiến độ hoàn thành bài học, từ vựng, kanji và bookmark.",
+          x: 400, y: 840,
+          columns: [
+            { name: "progress_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "student_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "student_users", refCol: "student_id" },
+            { name: "content_type", type: "VARCHAR(30)", pk: false, fk: false, nullable: false, check: "lesson,vocabulary,kanji,kana,grammar" },
+            { name: "content_id", type: "BIGINT", pk: false, fk: false, nullable: false },
+            { name: "status", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, def: "'learning'" },
+            { name: "progress_percent", type: "DECIMAL(5,2)", pk: false, fk: false, nullable: false, def: "0" },
+            { name: "is_bookmarked", type: "BOOLEAN", pk: false, fk: false, nullable: false, def: "0" }
+          ],
+          indexes: ["PRIMARY KEY (progress_id)", "FK_progress_student -> student_users", "UNIQUE UQ_progress (student_id, content_type, content_id)"]
+        },
+
+        // 20. flashcard_decks
+        {
+          id: "flashcard_decks",
+          name: "flashcard_decks",
+          category: "progress",
+          categoryName: "Tiến Độ & Flashcard",
+          desc: "Sổ tay Flashcard ghi nhớ từ vựng/kanji của học viên.",
+          x: 400, y: 1160,
+          columns: [
+            { name: "deck_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "student_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "student_users", refCol: "student_id" },
+            { name: "name", type: "VARCHAR(255)", pk: false, fk: false, nullable: false },
+            { name: "jlpt_level", type: "VARCHAR(5)", pk: false, fk: false, nullable: true },
+            { name: "is_system", type: "BOOLEAN", pk: false, fk: false, nullable: false, def: "0" },
+            { name: "is_review_deck", type: "BOOLEAN", pk: false, fk: false, nullable: false, def: "0" }
+          ],
+          indexes: ["PRIMARY KEY (deck_id)", "FK_deck_student -> student_users", "UNIQUE UQ_deck_student_name"]
+        },
+
+        // 21. flashcards
+        {
+          id: "flashcards",
+          name: "flashcards",
+          category: "progress",
+          categoryName: "Tiến Độ & Flashcard",
+          desc: "Các thẻ ghi nhớ Flashcard chạy thuật toán lặp lại ngắt quãng (SRS).",
+          x: 760, y: 1160,
+          columns: [
+            { name: "flashcard_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "student_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "student_users", refCol: "student_id" },
+            { name: "deck_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "flashcard_decks", refCol: "deck_id" },
+            { name: "content_type", type: "VARCHAR(20)", pk: false, fk: false, nullable: false },
+            { name: "interval_days", type: "INT", pk: false, fk: false, nullable: false, def: "1" },
+            { name: "ease_factor", type: "DECIMAL(5,2)", pk: false, fk: false, nullable: false, def: "2.50" },
+            { name: "next_review_date", type: "DATE", pk: false, fk: false, nullable: true }
+          ],
+          indexes: ["PRIMARY KEY (flashcard_id)", "FK_flashcard_student", "FK_flashcard_deck"]
+        },
+
+        // 22. tickets
+        {
+          id: "tickets",
+          name: "tickets",
+          category: "support",
+          categoryName: "Hỗ Trợ & Thông Báo",
+          desc: "Ticket yêu cầu hỗ trợ hoặc báo lỗi từ học viên gửi Staff.",
+          x: 40, y: 840,
+          columns: [
+            { name: "ticket_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "student_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "student_users", refCol: "student_id" },
+            { name: "subject", type: "VARCHAR(255)", pk: false, fk: false, nullable: false },
+            { name: "priority", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, def: "'normal'" },
+            { name: "status", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, def: "'open'" },
+            { name: "assigned_to", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" }
+          ],
+          indexes: ["PRIMARY KEY (ticket_id)", "FK_tk_student -> student_users", "FK_tk_assignee -> staff_users"]
+        },
+
+        // 23. ticket_replies
+        {
+          id: "ticket_replies",
+          name: "ticket_replies",
+          category: "support",
+          categoryName: "Hỗ Trợ & Thông Báo",
+          desc: "Các phản hồi trao đổi trong ticket giữa học viên và Staff.",
+          x: 40, y: 1160,
+          columns: [
+            { name: "reply_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "ticket_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "tickets", refCol: "ticket_id" },
+            { name: "student_sender_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "student_users", refCol: "student_id" },
+            { name: "staff_sender_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" },
+            { name: "message", type: "LONGTEXT", pk: false, fk: false, nullable: false }
+          ],
+          indexes: ["PRIMARY KEY (reply_id)", "FK_rep_ticket", "FK_rep_student_sender", "FK_rep_staff_sender"]
+        },
+
+        // 24. notifications
+        {
+          id: "notifications",
+          name: "notifications",
+          category: "support",
+          categoryName: "Hỗ Trợ & Thông Báo",
+          desc: "Thông báo In-app và Email gửi cho học viên.",
+          x: 1120, y: 1100,
+          columns: [
+            { name: "notification_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "student_id", type: "BIGINT", pk: false, fk: true, nullable: false, refTable: "student_users", refCol: "student_id" },
+            { name: "title", type: "VARCHAR(255)", pk: false, fk: false, nullable: false },
+            { name: "notification_type", type: "VARCHAR(30)", pk: false, fk: false, nullable: false },
+            { name: "is_read", type: "BOOLEAN", pk: false, fk: false, nullable: false, def: "0" },
+            { name: "admin_creator_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "admin_users", refCol: "admin_id" },
+            { name: "staff_creator_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" }
+          ],
+          indexes: ["PRIMARY KEY (notification_id)", "FK_noti_student", "FK_noti_admin_creator", "FK_noti_staff_creator"]
+        },
+
+        // 25. system_settings
+        {
+          id: "system_settings",
+          name: "system_settings",
+          category: "system",
+          categoryName: "Cấu Hình & Log",
+          desc: "Cấu hình tham số động hệ thống dạng key-value.",
+          x: 2220, y: 1100,
+          columns: [
+            { name: "setting_id", type: "INT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "setting_group", type: "VARCHAR(50)", pk: false, fk: false, nullable: false },
+            { name: "setting_key", type: "VARCHAR(100)", pk: false, fk: false, nullable: false },
+            { name: "setting_value", type: "LONGTEXT", pk: false, fk: false, nullable: true },
+            { name: "value_type", type: "VARCHAR(20)", pk: false, fk: false, nullable: false, def: "'string'" },
+            { name: "updated_by", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "admin_users", refCol: "admin_id" }
+          ],
+          indexes: ["PRIMARY KEY (setting_id)", "UNIQUE UQ_setting (setting_group, setting_key)", "FK_setting_admin"]
+        },
+
+        // 26. admin_audit_logs
+        {
+          id: "admin_audit_logs",
+          name: "admin_audit_logs",
+          category: "system",
+          categoryName: "Cấu Hình & Log",
+          desc: "Nhật ký kiểm vết (Audit trail) mọi thao tác quan trọng.",
+          x: 2220, y: 1400,
+          columns: [
+            { name: "audit_id", type: "BIGINT", pk: true, fk: false, nullable: false, autoInc: true },
+            { name: "admin_actor_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "admin_users", refCol: "admin_id" },
+            { name: "staff_actor_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "staff_users", refCol: "staff_id" },
+            { name: "student_actor_id", type: "BIGINT", pk: false, fk: true, nullable: true, refTable: "student_users", refCol: "student_id" },
+            { name: "action", type: "VARCHAR(100)", pk: false, fk: false, nullable: false },
+            { name: "created_at", type: "DATETIME(6)", pk: false, fk: false, nullable: false }
+          ],
+          indexes: ["PRIMARY KEY (audit_id)", "FK_audit_admin", "FK_audit_staff", "FK_audit_student"]
+        }
+      ]
+    };
+
+    /* Extract Foreign Keys Array for rendering lines */
+    function buildRelationsList() {
+      const relations = [];
+      SCHEMA_DATA.tables.forEach(sourceTable => {
+        sourceTable.columns.forEach(col => {
+          if (col.fk && col.refTable && col.refCol) {
+            relations.push({
+              id: `${sourceTable.id}_${col.name}__${col.refTable}_${col.refCol}`,
+              fromTable: sourceTable.id,
+              fromCol: col.name,
+              toTable: col.refTable,
+              toCol: col.refCol
+            });
+          }
+        });
+      });
+      return relations;
+    }
+
+    const RELATIONS = buildRelationsList();
+
+    /* ============================================================================
+       CANVAS & STATE MANAGEMENT
+       ============================================================================ */
+    const state = {
+      zoom: 0.8,
+      panX: 40,
+      panY: 30,
+      isPanning: false,
+      startX: 0,
+      startY: 0,
+      draggedTable: null,
+      tableOffsetX: 0,
+      tableOffsetY: 0,
+      selectedTableId: null,
+      activeCategory: 'all',
+      curveStyle: 'bezier', // 'bezier' or 'orthogonal'
+      searchTerm: ''
+    };
+
+    // DOM Elements
+    const container = document.getElementById('canvas-container');
+    const viewport = document.getElementById('canvas-viewport');
+    const svgGroup = document.getElementById('svg-paths-group');
+    const zoomText = document.getElementById('zoom-text');
+    const searchInput = document.getElementById('search-input');
+    const clearSearchBtn = document.getElementById('clear-search');
+
+    /* ============================================================================
+       INITIALIZATION & RENDERING
+       ============================================================================ */
+    function init() {
+      renderTables();
+      layoutGrid();
+      setupEventListeners();
+    }
+
+    function getCategoryColorClass(cat) {
+      switch(cat) {
+        case 'users': return { border: 'cat-users', bg: 'cat-bg-users' };
+        case 'content': return { border: 'cat-content', bg: 'cat-bg-content' };
+        case 'quiz': return { border: 'cat-quiz', bg: 'cat-bg-quiz' };
+        case 'attempt': return { border: 'cat-attempt', bg: 'cat-bg-attempt' };
+        case 'progress': return { border: 'cat-progress', bg: 'cat-bg-progress' };
+        case 'support': return { border: 'cat-support', bg: 'cat-bg-support' };
+        case 'system': return { border: 'cat-system', bg: 'cat-bg-system' };
+        default: return { border: 'cat-system', bg: 'cat-bg-system' };
+      }
+    }
+
+    function renderTables() {
+      viewport.innerHTML = '';
+      
+      SCHEMA_DATA.tables.forEach(table => {
+        const colors = getCategoryColorClass(table.category);
+        const card = document.createElement('div');
+        card.className = `table-card ${colors.border}`;
+        card.id = `node-${table.id}`;
+        card.style.left = `${table.x}px`;
+        card.style.top = `${table.y}px`;
+        card.setAttribute('data-id', table.id);
+
+        let colsHtml = table.columns.map(col => {
+          let badge = '';
+          if (col.pk) badge += `<span class="badge-pk text-[9px] px-1 py-0.2 rounded font-mono font-semibold">PK</span> `;
+          if (col.fk) badge += `<span class="badge-fk text-[9px] px-1 py-0.2 rounded font-mono font-semibold">FK</span> `;
+          if (col.uk) badge += `<span class="badge-uk text-[9px] px-1 py-0.2 rounded font-mono font-semibold">UK</span> `;
+          if (!col.nullable && !col.pk) badge += `<span class="badge-nn text-[9px] px-0.5 rounded font-mono">NN</span> `;
+
+          return `
+            <div class="px-3 py-1.5 flex items-center justify-between hover:bg-slate-800/80 transition-colors text-[11px] font-mono group" data-col="${col.name}">
+              <div class="flex items-center space-x-1.5 overflow-hidden pr-1">
+                ${col.pk ? '<i class="fa-solid fa-key text-amber-400 text-[10px]"></i>' : (col.fk ? '<i class="fa-solid fa-link text-purple-400 text-[10px]"></i>' : '<i class="fa-regular fa-circle text-slate-600 text-[8px]"></i>')}
+                <span class="font-medium text-slate-200 group-hover:text-sky-300 transition-colors truncate">${col.name}</span>
+              </div>
+              <div class="flex items-center space-x-1.5 shrink-0">
+                ${badge}
+                <span class="text-slate-400 text-[10px]">${col.type.toLowerCase()}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        card.innerHTML = `
+          <div class="table-header p-2.5 bg-slate-900/90 rounded-t-md border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-2 overflow-hidden">
+              <span class="text-[9px] px-1.5 py-0.5 rounded font-semibold uppercase ${colors.bg}">${table.category}</span>
+              <h3 class="font-mono font-bold text-xs text-sky-200 truncate" title="${table.name}">${table.name}</h3>
+            </div>
+            <button class="btn-toggle-table text-slate-500 hover:text-slate-300 text-xs px-1">
+              <i class="fa-solid fa-chevron-up"></i>
+            </button>
+          </div>
+          <div class="table-columns divide-y divide-slate-800/50">
+            ${colsHtml}
+          </div>
+        `;
+
+        // Card Event Listeners
+        card.addEventListener('mousedown', (e) => onTableMouseDown(e, table));
+        card.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectTable(table.id);
+        });
+
+        viewport.appendChild(card);
+      });
+    }
+
+    /* ============================================================================
+       SVG RELATIONS DRAWING ENGINE
+       ============================================================================ */
+    function renderRelations() {
+      svgGroup.innerHTML = '';
+
+      RELATIONS.forEach(rel => {
+        const fromCard = document.getElementById(`node-${rel.fromTable}`);
+        const toCard = document.getElementById(`node-${rel.toTable}`);
+
+        if (!fromCard || !toCard) return;
+
+        // Calculate card positions relative to viewport
+        const fromX = parseFloat(fromCard.style.left);
+        const fromY = parseFloat(fromCard.style.top);
+        const fromW = fromCard.offsetWidth || 290;
+        const fromH = fromCard.offsetHeight || 200;
+
+        const toX = parseFloat(toCard.style.left);
+        const toY = parseFloat(toCard.style.top);
+        const toW = toCard.offsetWidth || 290;
+        const toH = toCard.offsetHeight || 200;
+
+        // Determine best connection anchor edges (left/right)
+        let startX, startY, endX, endY;
+
+        if (fromX + fromW < toX) {
+          // Source on left of target
+          startX = fromX + fromW;
+          startY = fromY + fromH / 2;
+          endX = toX;
+          endY = toY + toH / 2;
+        } else if (toX + toW < fromX) {
+          // Source on right of target
+          startX = fromX;
+          startY = fromY + fromH / 2;
+          endX = toX + toW;
+          endY = toY + toH / 2;
+        } else {
+          // Overlapping vertical layout
+          if (fromY < toY) {
+            startX = fromX + fromW / 2;
+            startY = fromY + fromH;
+            endX = toX + toW / 2;
+            endY = toY;
+          } else {
+            startX = fromX + fromW / 2;
+            startY = fromY;
+            endX = toX + toW / 2;
+            endY = toY + toH;
+          }
+        }
+
+        let d = '';
+        if (state.curveStyle === 'bezier') {
+          const dx = Math.abs(endX - startX) * 0.5;
+          d = `M ${startX} ${startY} C ${startX + dx} ${startY}, ${endX - dx} ${endY}, ${endX} ${endY}`;
+        } else {
+          // Orthogonal path
+          const midX = (startX + endX) / 2;
+          d = `M ${startX} ${startY} L ${midX} ${startY} L ${midX} ${endY} L ${endX} ${endY}`;
+        }
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('class', 'relation-path');
+        path.setAttribute('id', `path-${rel.id}`);
+        path.setAttribute('marker-end', 'url(#arrow-end)');
+        path.setAttribute('data-from', rel.fromTable);
+        path.setAttribute('data-to', rel.toTable);
+
+        svgGroup.appendChild(path);
+      });
+    }
+
+    /* ============================================================================
+       DRAG, PAN & ZOOM HANDLERS
+       ============================================================================ */
+    function updateViewportTransform() {
+      viewport.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
+      svgGroup.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
+      zoomText.textContent = `${Math.round(state.zoom * 100)}%`;
+    }
+
+    // Pan canvas with Mouse Drag
+    container.addEventListener('mousedown', (e) => {
+      if (e.target === container || e.target.id === 'relations-svg' || e.target.id === 'canvas-viewport') {
+        state.isPanning = true;
+        state.startX = e.clientX - state.panX;
+        state.startY = e.clientY - state.panY;
+        container.style.cursor = 'grabbing';
+      }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (state.isPanning) {
+        state.panX = e.clientX - state.startX;
+        state.panY = e.clientY - state.startY;
+        updateViewportTransform();
+      } else if (state.draggedTable) {
+        const table = SCHEMA_DATA.tables.find(t => t.id === state.draggedTable.id);
+        if (table) {
+          table.x = (e.clientX - state.startX) / state.zoom;
+          table.y = (e.clientY - state.startY) / state.zoom;
+          state.draggedTable.card.style.left = `${table.x}px`;
+          state.draggedTable.card.style.top = `${table.y}px`;
+          renderRelations();
+        }
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (state.isPanning) {
+        state.isPanning = false;
+        container.style.cursor = 'grab';
+      }
+      if (state.draggedTable) {
+        state.draggedTable.card.classList.remove('dragging');
+        state.draggedTable = null;
+      }
+    });
+
+    // Zoom with Mouse Wheel
+    container.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+      const newZoom = Math.min(Math.max(state.zoom * zoomFactor, 0.2), 2.5);
+      
+      // Zoom towards mouse pointer
+      const rect = container.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      state.panX = mouseX - (mouseX - state.panX) * (newZoom / state.zoom);
+      state.panY = mouseY - (mouseY - state.panY) * (newZoom / state.zoom);
+      state.zoom = newZoom;
+
+      updateViewportTransform();
+    }, { passive: false });
+
+    // Table Node Mouse Down for Dragging
+    function onTableMouseDown(e, tableData) {
+      if (e.button !== 0) return; // Left click only
+      e.stopPropagation();
+
+      const card = document.getElementById(`node-${tableData.id}`);
+      state.draggedTable = { id: tableData.id, card: card };
+      card.classList.add('dragging');
+
+      state.startX = e.clientX - tableData.x * state.zoom;
+      state.startY = e.clientY - tableData.y * state.zoom;
+    }
+
+    /* ============================================================================
+       TABLE SELECTION & INSPECTOR PANEL
+       ============================================================================ */
+    function selectTable(tableId) {
+      state.selectedTableId = tableId;
+      const table = SCHEMA_DATA.tables.find(t => t.id === tableId);
+      if (!table) return;
+
+      // Update Card Visual Selection Highlights
+      document.querySelectorAll('.table-card').forEach(c => {
+        c.classList.remove('selected', 'dimmed', 'highlight-neighbor');
+      });
+      document.querySelectorAll('.relation-path').forEach(p => {
+        p.classList.remove('highlighted', 'dimmed');
+      });
+
+      const selectedCard = document.getElementById(`node-${tableId}`);
+      if (selectedCard) selectedCard.classList.add('selected');
+
+      // Find Neighbor Tables connected by Foreign Keys
+      const neighborIds = new Set();
+      RELATIONS.forEach(rel => {
+        const pathElem = document.getElementById(`path-${rel.id}`);
+        if (rel.fromTable === tableId) {
+          neighborIds.add(rel.toTable);
+          if (pathElem) {
+            pathElem.classList.add('highlighted');
+            pathElem.setAttribute('marker-end', 'url(#arrow-end-active)');
+          }
+        } else if (rel.toTable === tableId) {
+          neighborIds.add(rel.fromTable);
+          if (pathElem) {
+            pathElem.classList.add('highlighted');
+            pathElem.setAttribute('marker-end', 'url(#arrow-end-active)');
+          }
+        } else {
+          if (pathElem) pathElem.classList.add('dimmed');
+        }
+      });
+
+      // Highlight neighbors and dim non-related cards
+      SCHEMA_DATA.tables.forEach(t => {
+        if (t.id !== tableId) {
+          const card = document.getElementById(`node-${t.id}`);
+          if (neighborIds.has(t.id)) {
+            card.classList.add('highlight-neighbor');
+          } else {
+            card.classList.add('dimmed');
+          }
+        }
+      });
+
+      // Render Inspector Drawer Details
+      renderInspector(table);
+    }
+
+    function renderInspector(table) {
+      const emptyState = document.getElementById('inspector-empty');
+      const contentState = document.getElementById('inspector-content');
+
+      emptyState.classList.add('hidden');
+      contentState.classList.remove('hidden');
+
+      document.getElementById('insp-table-name').textContent = table.name;
+      document.getElementById('insp-table-desc').textContent = table.desc;
+      document.getElementById('stat-columns-count').textContent = table.columns.length;
+      
+      const pkCount = table.columns.filter(c => c.pk).length;
+      const fkCount = table.columns.filter(c => c.fk).length;
+      document.getElementById('stat-pk-count').textContent = pkCount;
+      document.getElementById('stat-fk-count').textContent = fkCount;
+
+      const badgeElem = document.getElementById('panel-cat-badge');
+      badgeElem.textContent = table.categoryName;
+      const colors = getCategoryColorClass(table.category);
+      badgeElem.className = `text-[10px] px-2 py-0.5 rounded-md font-medium uppercase tracking-wider ${colors.bg}`;
+
+      // Render Relationships List
+      const relsList = document.getElementById('insp-relationships-list');
+      const relatedFks = RELATIONS.filter(r => r.fromTable === table.id || r.toTable === table.id);
+      document.getElementById('rel-count-tag').textContent = `${relatedFks.length} Mối quan hệ`;
+
+      if (relatedFks.length === 0) {
+        relsList.innerHTML = `<div class="text-slate-500 italic text-[11px] p-2 bg-slate-900/40 rounded">Không có khoá ngoại liên kết trực tiếp.</div>`;
+      } else {
+        relsList.innerHTML = relatedFks.map(r => {
+          const isOutgoing = r.fromTable === table.id;
+          const targetTable = isOutgoing ? r.toTable : r.fromTable;
+          return `
+            <div class="p-2 bg-slate-900/70 rounded border border-slate-800 flex items-center justify-between text-[11px] hover:border-sky-500/50 cursor-pointer transition" onclick="selectTable('${targetTable}')">
+              <div class="flex items-center space-x-1.5 font-mono">
+                <i class="${isOutgoing ? 'fa-solid fa-arrow-right text-sky-400' : 'fa-solid fa-arrow-left text-purple-400'} text-[10px]"></i>
+                <span class="text-slate-300 font-semibold">${isOutgoing ? r.fromCol : r.toCol}</span>
+                <span class="text-slate-500">➔</span>
+                <span class="text-sky-300 font-bold">${targetTable}</span>
+              </div>
+              <span class="text-[10px] text-slate-400">${isOutgoing ? 'FK' : 'Referenced by'}</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Render Columns List
+      const colsList = document.getElementById('insp-columns-list');
+      colsList.innerHTML = table.columns.map(col => `
+        <div class="p-2 flex flex-col space-y-1 hover:bg-slate-800/50">
+          <div class="flex items-center justify-between font-mono">
+            <div class="flex items-center space-x-1.5">
+              ${col.pk ? '<span class="badge-pk text-[9px] px-1 rounded font-bold">PK</span>' : ''}
+              ${col.fk ? '<span class="badge-fk text-[9px] px-1 rounded font-bold">FK</span>' : ''}
+              ${col.uk ? '<span class="badge-uk text-[9px] px-1 rounded font-bold">UK</span>' : ''}
+              <span class="text-slate-200 font-bold">${col.name}</span>
+            </div>
+            <span class="text-sky-400 text-[10px] font-mono">${col.type}</span>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+            <span>${col.nullable ? 'NULL' : 'NOT NULL'} ${col.autoInc ? 'AUTO_INCREMENT' : ''}</span>
+            ${col.def ? `<span class="text-slate-400">DEFAULT ${col.def}</span>` : ''}
+          </div>
+          ${col.check ? `<div class="text-[10px] text-amber-400/90 font-mono">CHECK (${col.check})</div>` : ''}
+        </div>
+      `).join('');
+
+      // Render Indexes List
+      const idxList = document.getElementById('insp-indexes-list');
+      idxList.innerHTML = table.indexes.map(idx => `
+        <div class="p-1.5 bg-slate-900/60 border border-slate-800 rounded text-slate-400 text-[10px]">
+          <i class="fa-solid fa-database text-slate-500 mr-1"></i> ${idx}
+        </div>
+      `).join('');
+    }
+
+    /* ============================================================================
+       SMART LAYOUT ALGORITHMS & FIT SCREEN
+       ============================================================================ */
+    // 1. Ma trận 16:9 Cân Bằng (Widescreen 6-7 Column Tight Vertical Packing Layout)
+    function layoutGrid() {
+      const containerW = container.clientWidth || window.innerWidth;
+      const COLS = containerW >= 1500 ? 7 : 6;
+      const colWidth = 305;
+      const startX = 40;
+      const startY = 40;
+      const colHeights = new Array(COLS).fill(startY);
+
+      SCHEMA_DATA.tables.forEach((table, index) => {
+        const colIndex = index % COLS;
+
+        table.x = startX + colIndex * colWidth;
+        table.y = colHeights[colIndex];
+
+        const card = document.getElementById(`node-${table.id}`);
+        if (card) {
+          card.style.left = `${table.x}px`;
+          card.style.top = `${table.y}px`;
+          const h = card.offsetHeight || 220;
+          colHeights[colIndex] += h + 25; // Xếp đè sát theo chiều dọc
+        }
+      });
+
+      renderRelations();
+      fitScreen();
+    }
+
+    // 2. Bố cục Cột Phân Khu (Vertical Category Columns)
+    function layoutColumns() {
+      const categories = ['users', 'content', 'quiz', 'attempt', 'progress', 'support', 'system'];
+      let currentX = 50;
+      const startY = 50;
+
+      categories.forEach(cat => {
+        const catTables = SCHEMA_DATA.tables.filter(t => t.category === cat);
+        let rowY = startY;
+
+        catTables.forEach(table => {
+          table.x = currentX;
+          table.y = rowY;
+          
+          const card = document.getElementById(`node-${table.id}`);
+          if (card) {
+            card.style.left = `${table.x}px`;
+            card.style.top = `${table.y}px`;
+          }
+          rowY += 340;
+        });
+
+        if (catTables.length > 0) {
+          currentX += 330;
+        }
+      });
+
+      renderRelations();
+      fitScreen();
+    }
+
+    // 3. Tự động Căn vừa Màn hình (Fit Screen - Center & Scale)
+    function fitScreen() {
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      
+      const visibleTables = SCHEMA_DATA.tables.filter(t => {
+        const card = document.getElementById(`node-${table.id}`);
+        return card && card.style.display !== 'none';
+      });
+
+      if (visibleTables.length === 0) return;
+
+      visibleTables.forEach(t => {
+        const card = document.getElementById(`node-${t.id}`);
+        const w = card.offsetWidth || 290;
+        const h = card.offsetHeight || 220;
+        if (t.x < minX) minX = t.x;
+        if (t.y < minY) minY = t.y;
+        if (t.x + w > maxX) maxX = t.x + w;
+        if (t.y + h > maxY) maxY = t.y + h;
+      });
+
+      const containerW = container.clientWidth;
+      const containerH = container.clientHeight;
+
+      const contentW = maxX - minX + 60;
+      const contentH = maxY - minY + 60;
+
+      const scaleX = containerW / contentW;
+      const scaleY = containerH / contentH;
+      const optimalZoom = Math.min(scaleX, scaleY);
+
+      // Clamp zoom for optimal legibility
+      state.zoom = Math.min(Math.max(optimalZoom, 0.35), 1.15);
+
+      // Center the viewport bounding box
+      state.panX = (containerW - (maxX + minX) * state.zoom) / 2;
+      state.panY = (containerH - (maxY + minY) * state.zoom) / 2;
+
+      updateViewportTransform();
+    }
+
+    /* ============================================================================
+       SEARCH & FILTERING
+       ============================================================================ */
+    searchInput.addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase().trim();
+      state.searchTerm = term;
+      clearSearchBtn.classList.toggle('hidden', term === '');
+
+      SCHEMA_DATA.tables.forEach(table => {
+        const card = document.getElementById(`node-${table.id}`);
+        const matchesName = table.name.toLowerCase().includes(term);
+        const matchesCol = table.columns.some(c => c.name.toLowerCase().includes(term));
+
+        if (term === '') {
+          card.classList.remove('dimmed');
+        } else if (matchesName || matchesCol) {
+          card.classList.remove('dimmed');
+          card.classList.add('highlight-neighbor');
+        } else {
+          card.classList.add('dimmed');
+          card.classList.remove('highlight-neighbor');
+        }
+      });
+    });
+
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      searchInput.dispatchEvent(new Event('input'));
+    });
+
+    // Category Filter Buttons
+    document.querySelectorAll('.cat-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.cat-filter').forEach(b => {
+          b.classList.remove('active', 'bg-sky-500', 'text-white');
+          b.classList.add('bg-slate-800', 'text-slate-300');
+        });
+        btn.classList.add('active', 'bg-sky-500', 'text-white');
+        btn.classList.remove('bg-slate-800', 'text-slate-300');
+
+        const cat = btn.getAttribute('data-cat');
+        SCHEMA_DATA.tables.forEach(table => {
+          const card = document.getElementById(`node-${table.id}`);
+          if (cat === 'all' || table.category === cat) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+        renderRelations();
+        fitScreen();
+      });
+    });
+
+    /* ============================================================================
+       TOOLBAR ACTIONS & EVENT LISTENERS
+       ============================================================================ */
+    const btnGrid = document.getElementById('btn-layout-grid');
+    const btnCols = document.getElementById('btn-layout-columns');
+
+    btnGrid.addEventListener('click', () => {
+      btnGrid.className = 'px-2 py-1 bg-sky-600 text-white rounded text-xs font-medium flex items-center space-x-1 transition';
+      btnCols.className = 'px-2 py-1 hover:bg-slate-700 text-slate-300 rounded text-xs font-medium flex items-center space-x-1 transition';
+      layoutGrid();
+    });
+
+    btnCols.addEventListener('click', () => {
+      btnCols.className = 'px-2 py-1 bg-sky-600 text-white rounded text-xs font-medium flex items-center space-x-1 transition';
+      btnGrid.className = 'px-2 py-1 hover:bg-slate-700 text-slate-300 rounded text-xs font-medium flex items-center space-x-1 transition';
+      layoutColumns();
+    });
+
+    document.getElementById('btn-fit-screen').addEventListener('click', fitScreen);
+
+    // Fullscreen F11 & Window Resize Listeners
+    window.addEventListener('resize', () => {
+      setTimeout(fitScreen, 100);
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      const isFS = !!document.fullscreenElement;
+      const icon = document.getElementById('fullscreen-icon');
+      const text = document.getElementById('fullscreen-text');
+      if (isFS) {
+        if (icon) icon.className = 'fa-solid fa-compress text-indigo-400';
+        if (text) text.textContent = 'Thoát Fullscreen';
+      } else {
+        if (icon) icon.className = 'fa-solid fa-maximize text-indigo-400';
+        if (text) text.textContent = 'Toàn Màn Hình (F11)';
+      }
+      setTimeout(fitScreen, 150);
+    });
+
+    document.getElementById('btn-fullscreen-toggle').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+      } else {
+        document.exitFullscreen().catch(err => console.log(err));
+      }
+    });
+
+    // Toggle & Close Inspector Side Panel
+    let isInspectorVisible = true;
+    
+    function setInspectorVisibility(visible) {
+      const panel = document.getElementById('inspector-panel');
+      const label = document.getElementById('inspector-toggle-label');
+      isInspectorVisible = visible;
+
+      if (isInspectorVisible) {
+        panel.classList.remove('hidden');
+        if (label) label.textContent = 'Ẩn Panel';
+      } else {
+        panel.classList.add('hidden');
+        if (label) label.textContent = 'Hiện Panel';
+      }
+      setTimeout(fitScreen, 150);
+    }
+
+    document.getElementById('btn-toggle-inspector').addEventListener('click', () => {
+      setInspectorVisibility(!isInspectorVisible);
+    });
+
+    document.getElementById('btn-close-inspector').addEventListener('click', () => {
+      setInspectorVisibility(false);
+    });
+
+    document.getElementById('btn-close-helper').addEventListener('click', () => {
+      const badge = document.getElementById('helper-badge');
+      if (badge) badge.classList.add('hidden');
+    });
+
+    document.getElementById('btn-curve-toggle').addEventListener('click', () => {
+      state.curveStyle = state.curveStyle === 'bezier' ? 'orthogonal' : 'bezier';
+      document.getElementById('curve-label').textContent = state.curveStyle === 'bezier' ? 'Đường Cong' : 'Đường Vuông';
+      renderRelations();
+    });
+
+    document.getElementById('btn-zoom-in').addEventListener('click', () => {
+      state.zoom = Math.min(state.zoom + 0.15, 2.5);
+      updateViewportTransform();
+    });
+
+    document.getElementById('btn-zoom-out').addEventListener('click', () => {
+      state.zoom = Math.max(state.zoom - 0.15, 0.2);
+      updateViewportTransform();
+    });
+
+    document.getElementById('btn-zoom-reset').addEventListener('click', () => {
+      state.zoom = 0.8;
+      state.panX = 40;
+      state.panY = 30;
+      updateViewportTransform();
+    });
+
+    // Export SVG
+    document.getElementById('btn-export-svg').addEventListener('click', () => {
+      const svgElem = document.getElementById('relations-svg');
+      const svgData = new XMLSerializer().serializeToString(svgElem);
+      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+      const svgUrl = URL.createObjectURL(svgBlob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = svgUrl;
+      downloadLink.download = 'jlpt_database_erd.svg';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    });
+
+    // SQL Modal
+    const sqlModal = document.getElementById('sql-modal');
+    document.getElementById('btn-export-sql').addEventListener('click', () => {
+      sqlModal.classList.remove('hidden');
+      document.getElementById('sql-ddl-code').textContent = `-- DDL SQL (Xem chi tiết đầy đủ tại file V1__init_schema.sql)\n` + 
+        SCHEMA_DATA.tables.map(t => `-- Table: ${t.name}\nCREATE TABLE ${t.name} (\n` + 
+          t.columns.map(c => `  ${c.name.padEnd(20)} ${c.type.padEnd(15)} ${c.nullable ? 'NULL' : 'NOT NULL'}${c.pk ? ' PRIMARY KEY' : ''}`).join(',\n') +
+          `\n);`
+        ).join('\n\n');
+    });
+
+    document.getElementById('close-sql-modal').addEventListener('click', () => {
+      sqlModal.classList.add('hidden');
+    });
+
+    document.getElementById('btn-copy-sql').addEventListener('click', () => {
+      const code = document.getElementById('sql-ddl-code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        alert('Đã sao chép toàn bộ DDL SQL vào clipboard!');
+      });
+    });
+
+    // Click outside canvas to deselect table
+    container.addEventListener('click', (e) => {
+      if (e.target === container || e.target.id === 'relations-svg' || e.target.id === 'canvas-viewport') {
+        state.selectedTableId = null;
+        document.querySelectorAll('.table-card').forEach(c => c.classList.remove('selected', 'dimmed', 'highlight-neighbor'));
+        document.querySelectorAll('.relation-path').forEach(p => p.classList.remove('highlighted', 'dimmed'));
+        document.getElementById('inspector-content').classList.add('hidden');
+        document.getElementById('inspector-empty').classList.remove('hidden');
+        document.getElementById('panel-cat-badge').textContent = 'SELECT A TABLE';
+        document.getElementById('panel-cat-badge').className = 'text-[10px] px-2 py-0.5 rounded-md font-medium uppercase tracking-wider bg-slate-800 text-slate-400';
+      }
+    });
+
+    function setupEventListeners() {
+      // Keyboard shortcuts
+      window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+          e.preventDefault();
+          searchInput.focus();
+        }
+      });
+    }
+
+    // Launch Application
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
