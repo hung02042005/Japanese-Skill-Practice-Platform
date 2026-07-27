@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import TopNav from '@/shared/components/layout/TopNav';
 import { JlptBadge } from '@/shared/components/common/Badges';
 import { ToastContainer, useToast } from '@/shared/components/common/Toast';
@@ -11,7 +11,11 @@ import './KanjiPractice.css';
 export default function KanjiPractice() {
   const { id }   = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toasts, addToast, removeToast } = useToast();
+
+  // Cờ mở thẳng chế độ luyện viết (khi bị khóa & chuyển sang kanji kế tiếp)
+  const startInWrite = location.state?.startInWrite === true;
 
   const [kanji,      setKanji]     = useState(null);
   const [isLoading,  setLoading]   = useState(true);
@@ -25,7 +29,7 @@ export default function KanjiPractice() {
     (async () => {
       setLoading(true);
       setError('');
-      setMode('learn');
+      setMode(startInWrite ? 'write' : 'learn');
       setCurrentStroke(0);
       markedRef.current = false;
       try {
@@ -40,9 +44,17 @@ export default function KanjiPractice() {
       }
     })();
     return () => { cancelled = true; };
-  }, [id, navigate]);
+  }, [id, navigate, startInWrite]);
 
   const handleStrokeChange = useCallback(n => setCurrentStroke(n), []);
+
+  // ── Bị khóa do sai quá số lần → sang kanji kế tiếp (mở thẳng chế độ viết) ──
+  const handleWritingLocked = useCallback(() => {
+    if (kanji?.nextKanjiId) {
+      navigate(`/kanji/${kanji.nextKanjiId}`, { state: { startInWrite: true } });
+    }
+    // Không còn kanji kế tiếp → canvas tự hiện màn khóa, ở lại
+  }, [kanji, navigate]);
 
   const handleWritingComplete = useCallback(async () => {
     if (markedRef.current) return;
@@ -90,6 +102,8 @@ export default function KanjiPractice() {
           strokeCount={kanji.strokeCount}
           onBack={() => setMode('learn')}
           onComplete={handleWritingComplete}
+          onLocked={handleWritingLocked}
+          hasNext={!!kanji.nextKanjiId}
         />
         <ToastContainer toasts={toasts} onRemove={removeToast} />
       </div>

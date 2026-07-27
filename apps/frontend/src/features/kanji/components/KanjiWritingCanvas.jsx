@@ -39,6 +39,12 @@ function FinalScore({ apiResult }) {
   return <span className="kpw-done-stars">⭐ Cần luyện thêm</span>;
 }
 
+/* Số lần vẽ sai tối đa (cộng dồn cả chữ) trước khi khóa kanji hiện tại */
+const LOCK_THRESHOLD = 3;
+
+/* Thời gian hiển thị màn khóa trước khi tự chuyển sang kanji tiếp theo (ms) */
+const LOCK_ADVANCE_DELAY = 1400;
+
 /* ═══════════════════════════════════════════════════════════════════════
    KanjiWritingCanvas
    Kiến trúc 3 layer:
@@ -47,7 +53,15 @@ function FinalScore({ apiResult }) {
      Layer 3 — API result       : quality badge + final score từ backend
    Business logic (DTW scoring, chất lượng, lưu DB) = BACKEND ONLY
    ═══════════════════════════════════════════════════════════════════════ */
-export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, onBack, onComplete }) {
+export default function KanjiWritingCanvas({
+  kanjiId,
+  character,
+  strokeCount,
+  onBack,
+  onComplete,
+  onLocked,
+  hasNext = false,
+}) {
   const wrapRef   = useRef(null);  // kpw-canvas-box — đọc kích thước thực
   const hwRef     = useRef(null);  // div HanziWriter render vào
   const writerRef = useRef(null);
@@ -59,6 +73,8 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
   const [done,         setDone]         = useState(false);
   const [status,       setStatus]       = useState('loading');
   const [strokeQuality, setStrokeQuality] = useState(null); // từ API
+  const [mistakes,     setMistakes]     = useState(0);      // số lần sai cả chữ
+  const [locked,       setLocked]       = useState(false);  // khóa sau LOCK_THRESHOLD lần sai
 
   /* ── HanziWriter sizing ────────────────────────────────────────── */
   const [hwSize,    setHwSize]    = useState(400);
@@ -75,6 +91,8 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
   const hwSizeRef    = useRef(400);
   const kanjiIdRef   = useRef(kanjiId);
   const strokeResRef = useRef([]);  // [{strokeIndex, dtwScore, quality, direction}]
+  const mistakeCountRef = useRef(0); // đếm sai — dùng trong callback HanziWriter
+  const lockedRef       = useRef(false);
 
   useEffect(() => { charDataRef.current = charData; },  [charData]);
   useEffect(() => { hwSizeRef.current   = hwSize; },    [hwSize]);
@@ -137,6 +155,10 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
   /* ── startQuiz ─────────────────────────────────────────────────── */
   const startQuiz = useCallback((writer) => {
     strokeResRef.current = new Array(total).fill(null);
+    mistakeCountRef.current = 0;
+    lockedRef.current = false;
+    setMistakes(0);
+    setLocked(false);
 
     writer.quiz({
       showHintAfterMisses:     3,
@@ -146,6 +168,22 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
         // Feedback UX tức thì — không liên quan đến scoring
         setFeedback('bad');
         setTimeout(() => setFeedback(null), 750);
+
+        if (lockedRef.current) return;
+        mistakeCountRef.current += 1;
+        setMistakes(mistakeCountRef.current);
+
+        // Đủ ngưỡng sai → khóa kanji hiện tại
+        if (mistakeCountRef.current >= LOCK_THRESHOLD) {
+          lockedRef.current = true;
+          setLocked(true);
+          try { writer.cancelQuiz(); } catch { /* HanziWriter đã dừng */ }
+
+          // Có kanji kế tiếp → tự chuyển sau khi hiện màn khóa
+          if (hasNext && onLocked) {
+            setTimeout(() => onLocked(), LOCK_ADVANCE_DELAY);
+          }
+        }
       },
 
       onCorrectStroke: (strokeData) => {
@@ -198,7 +236,7 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
           });
       },
     });
-  }, [total, character, onComplete]);
+  }, [total, character, onComplete, hasNext, onLocked]);
 
   /* ── Tạo HanziWriter khi character thay đổi ─────────────────────── */
   useEffect(() => {
@@ -220,7 +258,11 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
     setStrokeQuality(null);
     setCharData(null);
     setFinalScore(null);
+    setMistakes(0);
+    setLocked(false);
     strokeResRef.current = [];
+    mistakeCountRef.current = 0;
+    lockedRef.current = false;
 
     const writer = HanziWriter.create(hwRef.current, character, {
       width:   size,
@@ -254,7 +296,11 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
     setHint(false);
     setStrokeQuality(null);
     setFinalScore(null);
+    setMistakes(0);
+    setLocked(false);
     strokeResRef.current = [];
+    mistakeCountRef.current = 0;
+    lockedRef.current = false;
     startQuiz(writerRef.current);
   }, [status, startQuiz]);
 
@@ -269,9 +315,9 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
 
   /* ── Bỏ qua nét ─────────────────────────────────────────────────── */
   const handleSkip = useCallback(() => {
-    if (done || !writerRef.current) return;
+    if (done || locked || !writerRef.current) return;
     writerRef.current.skipQuizStroke();
-  }, [done]);
+  }, [done, locked]);
 
   const progress = (count / total) * 100;
 
@@ -345,12 +391,17 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
         </div>
 
         {/* Hướng nét tiếp theo — gợi ý UX, tính từ charData.medians */}
-        {!done && status === 'ready' && (
+        {!done && !locked && status === 'ready' && (
           <div className="kpw-stroke-info">
             <span className="kpw-step-num">Nét <strong>{count + 1}</strong> / {total}</span>
             {nextStrokeDirLabel && (
               <span className="kpw-dir-label">
                 <DirectionIcon /> {nextStrokeDirLabel}
+              </span>
+            )}
+            {mistakes > 0 && (
+              <span className="kpw-dir-label" aria-live="polite">
+                ✖ Sai {mistakes}/{LOCK_THRESHOLD}
               </span>
             )}
           </div>
@@ -372,12 +423,36 @@ export default function KanjiWritingCanvas({ kanjiId, character, strokeCount, on
         <button
           className="kpw-ctrl"
           onClick={handleSkip}
-          disabled={done || status !== 'ready'}
+          disabled={done || locked || status !== 'ready'}
           title="Bỏ qua nét này"
         >
           <SkipIcon /><span>Bỏ qua</span>
         </button>
       </div>
+
+      {/* ── Overlay khóa — sai quá LOCK_THRESHOLD lần ───────────── */}
+      {locked && !done && (
+        <div className="kpw-done-veil">
+          <div className="kpw-done-box">
+            <div className="kpw-done-k" lang="ja">{character}</div>
+            <h3 className="kpw-done-h">Đã khóa chữ này 🔒</h3>
+            <p className="kpw-done-p">
+              Bạn đã viết sai {LOCK_THRESHOLD} lần chữ 「{character}」.
+              {hasNext
+                ? ' Đang chuyển sang Kanji tiếp theo…'
+                : ' Đây là Kanji cuối cùng trong danh sách.'}
+            </p>
+            {hasNext ? (
+              <div className="kpw-spinner-sm" />
+            ) : (
+              <>
+                <button className="kpw-btn-retry" onClick={handleReset}>↻ Luyện lại</button>
+                <button className="kpw-btn-back"  onClick={onBack}>← Quay lại</button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── Overlay hoàn thành — điểm từ API saveAttempt ─────────── */}
       {done && (
