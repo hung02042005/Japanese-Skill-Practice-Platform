@@ -309,24 +309,26 @@ Assignments mẫu:
 | Approve | Validate count/score; thêm approver/time | status `published` |
 | Reject | Feedback bắt buộc | status `rejected` + audit |
 
-## 7. Bảng tra cứu tổng hợp
+## 7. Comment tác dụng của từng hàm trong luồng
 
-| Bước | File | Function | Kết nối tới | Dữ liệu | Ghi chú |
+> Đọc bảng theo thứ tự từ trên xuống. Cột **Tác dụng của hàm** nêu rõ hàm nhận gì, xử lý gì và chuyển kết quả sang đâu trong luồng Create Quiz.
+
+| Bước | File | Function | Kết nối tới | Dữ liệu | Tác dụng của hàm |
 |---:|---|---|---|---|---|
-| 1 | `AssessmentFormModal.jsx` | `buildData` | Staff page | Metadata | Validate frontend |
-| 2 | `StaffAssessments.jsx` | `handleSave` | Quiz thunk | payload | Lưu draft |
-| 3 | `staffQuizSlice.js` | `createQuizThunk` | staffService | payload | Async/error |
-| 4 | `StaffQuizController.java` | `createQuiz` | Quiz service | DTO + email | HTTP 201 |
-| 5 | `StaffQuizService.java` | `createQuiz` | assessment repo | Entity | Force quiz/draft |
-| 6 | `StaffAssessments.jsx` | `handleAssignSubmit` | assign thunk | assignments | Replace list |
-| 7 | `StaffQuizService.java` | `assignQuestions` | question/assignment repos | IDs/scores | Chỉ published |
-| 8 | `staffQuizSlice.js` | `submitQuizReviewThunk` | common submit API | assessmentId | Type=assessment |
-| 9 | `StaffQuizSubmitReviewController.java` | `submitReview` | Quiz service | type + ID | Route branch |
-| 10 | `StaffQuizService.java` | `submitForReview` | assessment repo | ID/status | → pending_review |
-| 11 | `ContentReviewService.java` | `getReviewQueue` | assessment handler | filters | Manager only |
-| 12 | `AssessmentContentHandler.java` | `approve` | review repo | ID/manager/time | Guard count/score |
-| 13 | `ReviewAssessmentRepository.java` | `approve/transition` | DB | status | Conditional update |
-| 14 | `ReviewAuditService.java` | `log` | audit repository | action/feedback | Lưu lý do |
+| 1 | `AssessmentFormModal.jsx` | `buildData` | Staff page | Metadata | Validate form, trim chuỗi và chuyển duration/passScore/totalScore sang số để tạo payload Quiz nhất quán. |
+| 2 | `StaffAssessments.jsx` | `handleSave` | Quiz thunk | payload | Nhận dữ liệu modal, xác định tab Quiz và dispatch create thunk; cập nhật danh sách/đóng modal sau khi lưu thành công. |
+| 3 | `staffQuizSlice.js` | `createQuizThunk` | staffService | payload | Điều phối lời gọi API bất đồng bộ, tạo lifecycle pending/fulfilled/rejected và chuyển lỗi backend thành lỗi Redux có thể hiển thị. |
+| 4 | `StaffQuizController.java` | `createQuiz` | Quiz service | DTO + email | Validate request, lấy danh tính Staff từ Authentication, gọi service và trả response 201 chứa ID assessment mới. |
+| 5 | `StaffQuizService.java` | `createQuiz` | assessment repo | Entity | Kiểm tra Staff và metadata, cố định loại `quiz` cùng trạng thái `draft`, gắn creator rồi lưu vào `assessments`. |
+| 6 | `StaffAssessments.jsx` | `handleAssignSubmit` | assign thunk | assignments | Nhận danh sách câu hỏi và điểm từ modal, gắn assessment ID rồi dispatch thao tác thay danh sách câu hỏi của Quiz. |
+| 7 | `StaffQuizService.java` | `assignQuestions` | question/assignment repos | IDs/scores | Kiểm tra owner/status, ID không trùng, câu hỏi tồn tại, cùng level và đã Published; xóa assignment cũ rồi lưu danh sách mới theo thứ tự. |
+| 8 | `staffQuizSlice.js` | `submitQuizReviewThunk` | common submit API | assessmentId | Gọi endpoint submit chung với `contentType=assessment`, quản lý trạng thái gửi duyệt và lỗi ở Redux. |
+| 9 | `StaffQuizSubmitReviewController.java` | `submitReview` | Quiz service | type + ID | Chọn nhánh `assessment` của endpoint chung và chuyển content ID/email Staff sang `StaffQuizService`. |
+| 10 | `StaffQuizService.java` | `submitForReview` | assessment repo | ID/status | Đảm bảo Quiz thuộc Staff, đang Draft/Rejected và có câu hỏi trước khi đổi sang `pending_review`. |
+| 11 | `ContentReviewService.java` | `getReviewQueue` | assessment handler | filters | Chặn người không phải Staff Manager, resolve handler theo content type và trả trang assessment đang chờ duyệt. |
+| 12 | `AssessmentContentHandler.java` | `approve` | review repo | ID/manager/time | Kiểm tra số câu hỏi và tổng assignment score khớp `totalScore`, rồi yêu cầu publish với manager và timestamp. |
+| 13 | `ReviewAssessmentRepository.java` | `approve/transition` | DB | status | Cập nhật trạng thái theo điều kiện expected status để chống hai Manager xử lý cùng một Quiz; approve còn ghi approver và thời điểm publish. |
+| 14 | `ReviewAuditService.java` | `log` | audit repository | action/feedback | Lưu action, actor và feedback của quyết định review phục vụ audit và hiển thị lý do reject. |
 
 ## 8. Các mục cần bổ sung context
 

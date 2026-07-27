@@ -1,6 +1,6 @@
 japanese-elearning-project/
 │
-├── .sdd/                              # ✅ [ĐỔI] Bỏ prefix "1." → tự ẩn trên Linux/Mac
+├── .sdd/                              # [ĐỔI] Bỏ prefix "1." → tự ẩn trên Linux/Mac
 │   ├── constitution.md                # "Hiến pháp" dự án (Hard rules, bảo mật, kiến trúc)
 │   ├── shared_context.md             # Ngữ cảnh dùng chung để đồng bộ giữa các AI Agent
 │   │
@@ -18,25 +18,25 @@ japanese-elearning-project/
 │   │   ├── feat-mock-test/            # Tính năng Thi thử JLPT Mock Test
 │   │   └── feat-flashcard/            # Tính năng Quản lý Flashcard
 │   │
-│   ├── skills/                        # ✅ [GIỮ] Thư viện kỹ năng chuyên sâu cho Agent
+│   ├── skills/                        #  [GIỮ] Thư viện kỹ năng chuyên sâu cho Agent
 │   │   └── sql-performance.md         # Kỹ năng tối ưu truy vấn Database
 │   │
 │   ├── rfcs/                          # Lưu trữ các quyết định kiến trúc (ADR)
-│   └── reviews/                       # ✅ [GIỮ] Kết quả AI review Spec để phát hiện lỗi
+│   └── reviews/                       #  [GIỮ] Kết quả AI review Spec để phát hiện lỗi
 │
-├── .agents/                           # ✅ [ĐỔI] Bỏ prefix "2." → tự ẩn
+├── .agents/                           #  [ĐỔI] Bỏ prefix "2." → tự ẩn
 │   ├── AGENTS.md                      # Persona, công nghệ, giới hạn của Agent
 │   ├── CLAUDE.md                      # Project DNA, bài học kinh nghiệm, ngữ cảnh
 │   └── .agentignore                   # File cấm AI đọc để tránh nhiễu ngữ cảnh
 │
-├── .github/                           # ✅ [ĐỔI] Bỏ prefix "6." → dùng tên chuẩn GitHub
+├── .github/                           # [ĐỔI] Bỏ prefix "6." → dùng tên chuẩn GitHub
 │   ├── workflows/
 │   │   ├── constitution-check.yml     # Validation gate chặn commit vi phạm quy tắc
 │   │   └── consistency-gate.yml       # Kiểm tra độ đồng nhất giữa Code và Spec
 │   └── PULL_REQUEST_TEMPLATE/
 │       └── prompt_change.md           # Template bắt buộc điền khi sửa AGENTS.md
 │
-├── apps/                              # 🌟 [THAY ĐỔI LỚN] Monorepo — mã nguồn chính
+├── apps/                              #  [THAY ĐỔI LỚN] Monorepo — mã nguồn chính
 │   │
 │   ├── backend/                       # Toàn bộ code Java / Spring Boot
 │   │   ├── src/
@@ -70,7 +70,7 @@ japanese-elearning-project/
 │       ├── cypress/                   # E2E Testing
 │       └── package.json
 │
-├── database/                          # 🌟 [THÊM MỚI] Quản lý Database tập trung
+├── database/                          #  [THÊM MỚI] Quản lý Database tập trung
 │   ├── init.sql                       # Script tạo DB ban đầu (PostgreSQL / SQL Server)
 │   ├── seeds/                         # Dữ liệu mẫu
 │   │   ├── kanji_seed.sql             # Dữ liệu Kanji N5–N1
@@ -78,13 +78,13 @@ japanese-elearning-project/
 │   │   └── users_seed.sql             # Tài khoản test (Admin, Student, Staff)
 │   └── erd-diagram.png                # Sơ đồ thiết kế Database
 │
-├── docs/                              # ✅ [ĐỔI] Bỏ prefix "5."
+├── docs/                              #  [ĐỔI] Bỏ prefix "5."
 │   ├── api/                           # API Contract (Swagger / OpenAPI JSON)
 │   ├── architecture/                  # Sơ đồ luồng hệ thống
-│   └── deployment/                    # 🌟 [THÊM MỚI] Hướng dẫn deploy lên server
+│   └── deployment/                    #  [THÊM MỚI] Hướng dẫn deploy lên server
 │
 ├── plan.md                            # Master Plan — quản lý Task hiện tại
-├── docker-compose.yml                 # 🌟 [THÊM MỚI] Môi trường Dev (PostgreSQL, Redis...)
-├── .env.example                       # 🌟 [THÊM MỚI] Template biến môi trường
+├── docker-compose.yml                 #  [THÊM MỚI] Môi trường Dev (PostgreSQL, Redis...)
+├── .env.example                       #  [THÊM MỚI] Template biến môi trường
 ├── AGENTS.md                          # Symlink → .agents/AGENTS.md
 └── CLAUDE.md                          # Symlink → .agents/CLAUDE.md

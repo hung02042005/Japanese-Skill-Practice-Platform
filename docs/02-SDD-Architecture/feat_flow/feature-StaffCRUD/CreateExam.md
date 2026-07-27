@@ -367,24 +367,26 @@ Assignments mẫu:
 | Approve | guard count và tổng điểm | `published` + approver/time |
 | Reject | feedback bắt buộc | `rejected` + audit |
 
-## 7. Bảng tra cứu tổng hợp
+## 7. Comment tác dụng của từng hàm trong luồng
 
-| Bước | File | Function | Kết nối tới | Dữ liệu | Ghi chú |
+> Đọc bảng theo thứ tự từ trên xuống. Cột **Tác dụng của hàm** giải thích trách nhiệm của hàm tại đúng chặng mà request đi qua; các validation ở frontend chỉ hỗ trợ UX, backend vẫn là nơi chốt luật nghiệp vụ.
+
+| Bước | File | Function | Kết nối tới | Dữ liệu | Tác dụng của hàm |
 |---:|---|---|---|---|---|
-| 1 | `AssessmentFormModal.jsx` | `buildData` | Staff page | metadata | Validate UI |
-| 2 | `StaffAssessments.jsx` | `handleSave` | Exam thunk | payload | Lưu draft |
-| 3 | `staffExamSlice.js` | `createExamThunk` | staffService | payload | Async thunk |
-| 4 | `StaffExamController.java` | `createExam` | Exam service | DTO + email | HTTP 201 |
-| 5 | `StaffExamService.java` | `createExam` | assessment repo | Entity | Force exam/draft |
-| 6 | `StaffAssessments.jsx` | `handleAssignSubmit` | assign thunk | assignments | Mode Exam |
-| 7 | `StaffExamService.java` | `assignQuestions` | repositories | IDs/section/score | Replace semantics |
-| 8 | `staffExamSlice.js` | `submitExamReviewThunk` | common API | ID | contentType exam |
-| 9 | Submit controller | `submitReview` | Exam service | type + ID | Nhánh exam |
-| 10 | `StaffExamService.java` | `submitForReview` | assessment repo | ID/status | → pending_review |
-| 11 | `ContentReviewService.java` | `getReviewQueue` | assessment handler | filters | Manager only |
-| 12 | `AssessmentContentHandler.java` | `approve` | review repo | ID/score | contentType assessment |
-| 13 | `ReviewAssessmentRepository.java` | `approve/transition` | DB | status | Conditional JPQL |
-| 14 | `ReviewAuditService.java` | `log` | audit repo | feedback | Lưu lý do |
+| 1 | `AssessmentFormModal.jsx` | `buildData` | Staff page | metadata | Kiểm tra các trường chung của form, trim chuỗi và ép các trường thời lượng/điểm sang kiểu số trước khi trả payload Exam cho page. |
+| 2 | `StaffAssessments.jsx` | `handleSave` | Exam thunk | payload | Nhận payload từ modal, chọn nhánh theo tab `exam`, dispatch thao tác tạo và đóng/làm mới UI khi tạo Draft thành công. |
+| 3 | `staffExamSlice.js` | `createExamThunk` | staffService | payload | Bao lời gọi API tạo Exam trong Redux async thunk để chuẩn hóa trạng thái pending/fulfilled/rejected và chuyển lỗi về UI. |
+| 4 | `StaffExamController.java` | `createExam` | Exam service | DTO + email | Nhận HTTP POST, chạy Bean Validation, lấy email Staff từ JWT rồi ủy quyền nghiệp vụ cho service; trả HTTP 201 cùng `assessmentId`. |
+| 5 | `StaffExamService.java` | `createExam` | assessment repo | Entity | Resolve Staff, kiểm tra level và khoảng điểm, bỏ qua mọi ý định publish từ client, cố định `assessmentType=exam`, `status=draft`, creator rồi lưu assessment. |
+| 6 | `StaffAssessments.jsx` | `handleAssignSubmit` | assign thunk | assignments | Gom danh sách câu hỏi/section/thứ tự/điểm từ modal và dispatch đúng thunk gán câu hỏi của Exam đang được chọn. |
+| 7 | `StaffExamService.java` | `assignQuestions` | repositories | IDs/section/score | Kiểm tra owner và trạng thái sửa được, chống trùng câu hỏi, xác thực section/cùng level/câu hỏi Published; sau đó thay toàn bộ assignment cũ bằng danh sách mới và tính thống kê điểm. |
+| 8 | `staffExamSlice.js` | `submitExamReviewThunk` | common API | ID | Đóng gói thao tác gửi duyệt, truyền `contentType=exam` cùng assessment ID và phản ánh kết quả chuyển trạng thái vào Redux. |
+| 9 | Submit controller | `submitReview` | Exam service | type + ID | Đọc `contentType`; riêng giá trị `exam` được route sang `StaffExamService` để tránh nhầm với nhánh Quiz dùng `assessment`. |
+| 10 | `StaffExamService.java` | `submitForReview` | assessment repo | ID/status | Tìm Exam thuộc Staff, yêu cầu trạng thái Draft/Rejected và đã có câu hỏi, rồi chuyển duy nhất sang `pending_review`. |
+| 11 | `ContentReviewService.java` | `getReviewQueue` | assessment handler | filters | Xác thực người gọi có quyền Staff Manager, chuẩn hóa bộ lọc và nhờ handler Assessment lấy các Quiz/Exam đang chờ duyệt. |
+| 12 | `AssessmentContentHandler.java` | `approve` | review repo | ID/score | Kiểm tra Exam có assignment và tổng điểm câu hỏi bằng `totalScore`, sau đó yêu cầu repository publish bằng guarded update. |
+| 13 | `ReviewAssessmentRepository.java` | `approve/transition` | DB | status | Thực hiện JPQL update có điều kiện `status=pending_review`; chỉ một quyết định đồng thời được thắng và ghi approver/thời điểm khi approve. |
+| 14 | `ReviewAuditService.java` | `log` | audit repo | feedback | Ghi dấu vết quyết định của Manager, action và feedback để truy vết approve/reject độc lập với bản ghi Exam. |
 
 ## 8. Các mục cần bổ sung context
 

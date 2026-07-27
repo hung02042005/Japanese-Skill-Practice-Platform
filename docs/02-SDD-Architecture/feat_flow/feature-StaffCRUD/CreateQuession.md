@@ -302,23 +302,25 @@ Ví dụ câu hỏi trắc nghiệm:
 
 Lưu ý: nhánh `multiple_choice` dùng `optionA-D` và `correctOption`; nhánh `fill_blank`/`true_false` dùng `correctAnswerText`.
 
-## 7. Bảng tra cứu tổng hợp
+## 7. Comment tác dụng của từng hàm trong luồng
 
-| Bước | File | Function | Kết nối tới | Dữ liệu | Ghi chú |
+> Bảng dưới là call walkthrough từ form Staff đến Manager review. Comment tập trung vào trách nhiệm của từng hàm, không coi validation frontend là thay thế cho backend.
+
+| Bước | File | Function | Kết nối tới | Dữ liệu | Tác dụng của hàm |
 |---:|---|---|---|---|---|
-| 1 | `QuestionFormModal.jsx` | `buildRequestBody` | `StaffQuestions` | Form → payload | Validate frontend |
-| 2 | `StaffQuestions.jsx` | `handleSaveAndSubmit` | Redux thunk | Payload | Điều phối hai request |
-| 3 | `staffQuestionSlice.js` | `createQuestionThunk` | `staffService` | Payload | Xử lý async/error |
-| 4 | `staffService.js` | `createStaffQuestion` | Staff controller | JSON | POST tạo draft |
-| 5 | `StaffQuestionController.java` | `createQuestion` | Staff service | DTO + email | HTTP 201 |
-| 6 | `StaffQuestionServiceImpl.java` | `createQuestion` | Staff repository | Entity | Gán draft/owner |
-| 7 | `StaffQuestions.jsx` | `handleSaveAndSubmit` | Submit thunk | `questionId` | Lấy từ `response.data` |
-| 8 | `StaffQuestionServiceImpl.java` | `submitForReview` | Staff repository | ID/status | Gán pending_review |
-| 9 | `ManagerReviewQueue.jsx` | `fetchQueue` | Manager thunk | type/level/page | Tải hàng chờ |
-| 10 | `ContentReviewService.java` | `getReviewQueue` | Question handler | `ContentType.QUESTION` | Chỉ Manager |
-| 11 | `QuestionContentHandler.java` | `findPending` | Review repository | status/level | Đọc questions |
-| 12 | `ContentReviewService.java` | `review` | Handler/audit | action/feedback | Guard self/concurrent |
-| 13 | `QuestionContentHandler.java` | `approve`/`transitionFromPending` | Review repository | ID/status | Cập nhật DB |
+| 1 | `QuestionFormModal.jsx` | `buildRequestBody` | `StaffQuestions` | Form → payload | Kiểm tra dữ liệu theo loại câu hỏi, chuẩn hóa option/đáp án/level và tạo request body mà page có thể gửi backend. |
+| 2 | `StaffQuestions.jsx` | `handleSaveAndSubmit` | Redux thunk | Payload | Điều phối create trước; nếu người dùng chọn gửi duyệt thì tiếp tục lấy ID từ kết quả create để chạy request submit thứ hai. |
+| 3 | `staffQuestionSlice.js` | `createQuestionThunk` | `staffService` | Payload | Bọc API create trong Redux Toolkit thunk, quản lý loading/success/error và giữ thông báo lỗi backend. |
+| 4 | `staffService.js` | `createStaffQuestion` | Staff controller | JSON | Gửi POST với payload câu hỏi qua Axios client đã cấu hình base URL/JWT và trả response chuẩn cho thunk. |
+| 5 | `StaffQuestionController.java` | `createQuestion` | Staff service | DTO + email | Chạy `@Valid`, lấy email từ Authentication, gọi service tạo câu hỏi và trả HTTP 201 cùng `questionId`. |
+| 6 | `StaffQuestionServiceImpl.java` | `createQuestion` | Staff repository | Entity | Resolve Staff, kiểm tra cấu trúc câu hỏi/đáp án, map DTO sang entity, ép `draft`, gắn owner và lưu database. |
+| 7 | `StaffQuestions.jsx` | `handleSaveAndSubmit` | Submit thunk | `questionId` | Đọc chính xác ID backend sinh từ `response.data`; chỉ dispatch submit khi create thành công và có ID hợp lệ. |
+| 8 | `StaffQuestionServiceImpl.java` | `submitForReview` | Staff repository | ID/status | Tìm câu hỏi không bị xóa, kiểm tra ownership và Draft/Rejected, validate lại nội dung bắt buộc rồi đổi sang `pending_review`. |
+| 9 | `ManagerReviewQueue.jsx` | `fetchQueue` | Manager thunk | type/level/page | Ghép bộ lọc content type, JLPT level và pagination rồi dispatch tải trang câu hỏi đang chờ duyệt. |
+| 10 | `ContentReviewService.java` | `getReviewQueue` | Question handler | `ContentType.QUESTION` | Kiểm tra role Staff Manager, resolve Question handler và ủy quyền truy vấn queue theo bộ lọc. |
+| 11 | `QuestionContentHandler.java` | `findPending` | Review repository | status/level | Chuyển filter chung thành truy vấn riêng bảng questions và map các bản ghi Pending Review thành snapshot cho UI. |
+| 12 | `ContentReviewService.java` | `review` | Handler/audit | action/feedback | Chống tự duyệt, bắt buộc feedback khi reject, gọi guarded transition và ghi audit; update count sai được coi là xung đột. |
+| 13 | `QuestionContentHandler.java` | `approve`/`transitionFromPending` | Review repository | ID/status | Adapter quyết định target status: approve sang Published hoặc reject sang Rejected, luôn yêu cầu trạng thái hiện tại vẫn là Pending Review. |
 
 ## 8. Các mục cần bổ sung context
 

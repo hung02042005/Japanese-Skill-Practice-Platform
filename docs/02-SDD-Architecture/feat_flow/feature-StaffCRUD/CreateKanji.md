@@ -312,23 +312,25 @@ Payload mẫu:
 | Approve | approver/published time | Published |
 | Reject | feedback audit | Rejected |
 
-## 7. Bảng tra cứu tổng hợp
+## 7. Comment tác dụng của từng hàm trong luồng
 
-| Bước | File | Function | Kết nối tới | Dữ liệu | Ghi chú |
+> Bảng dưới giải thích từng hàm theo đúng thứ tự request Create Kanji đi qua, gồm cả nhánh tra cứu nét, submit review và Manager review.
+
+| Bước | File | Function | Kết nối tới | Dữ liệu | Tác dụng của hàm |
 |---:|---|---|---|---|---|
-| 1 | `ContentFormModal.jsx` | `handleKanjiQuery` | lookup util | reading | Gợi ý Kanji |
-| 2 | `ContentFormModal.jsx` | `applyKanji` | char info | character | Tự điền On/Kun |
-| 3 | `ContentFormModal.jsx` | stroke effect | Hanzi Writer | character | Đồng bộ strokeCount |
-| 4 | `ContentFormModal.jsx` | `submit` | StaffContent | payload/status | Guard stroke khi submit |
-| 5 | `StaffContent.jsx` | `handleSave` | staffService | payload | Điều phối hai API |
-| 6 | `staffService.js` | `createStaffKanji` | learning controller | JSON | POST create |
-| 7 | Learning controller | `createKanji` | learning service | DTO/email | HTTP 201 |
-| 8 | Learning service | `createKanji` | Kanji repo | entity | Force Draft |
-| 9 | staffService | `submitAssessmentForReview` | common controller | kanji/ID | Submit review |
-| 10 | Learning service | `submitKanji` | Kanji repo | status | → Pending |
-| 11 | Review service | `getReviewQueue` | Kanji handler | filters | Manager only |
-| 12 | Kanji handler | `approve/transition` | review repo | ID/status | Conditional update |
-| 13 | Review audit | `log` | audit repo | feedback | Reject reason |
+| 1 | `ContentFormModal.jsx` | `handleKanjiQuery` | lookup util | reading | Nhận chuỗi Staff nhập, gọi tiện ích tra cứu và cập nhật danh sách ký tự gợi ý; không lưu dữ liệu xuống backend. |
+| 2 | `ContentFormModal.jsx` | `applyKanji` | char info | character | Áp ký tự được chọn vào form và tự điền các cách đọc On/Kun từ kết quả tra cứu để giảm nhập tay. |
+| 3 | `ContentFormModal.jsx` | stroke effect | Hanzi Writer | character | Chạy lại khi ký tự đổi, tải dữ liệu nét từ Hanzi Writer và đồng bộ `strokeCount`/stroke data vào state của form. |
+| 4 | `ContentFormModal.jsx` | `submit` | StaffContent | payload/status | Kiểm tra dữ liệu nét bắt buộc, tạo payload kèm trạng thái UI rồi gọi `onSave`; dừng sớm nếu Kanji chưa đủ dữ liệu. |
+| 5 | `StaffContent.jsx` | `handleSave` | staffService | payload | Chọn nhánh Kanji, gọi create trước và nếu status UI là Pending Review thì dùng ID vừa tạo để gọi submit-review. |
+| 6 | `staffService.js` | `createStaffKanji` | learning controller | JSON | Gửi POST tạo Kanji qua Axios client có JWT và trả nguyên response chuẩn cho page xử lý. |
+| 7 | Learning controller | `createKanji` | learning service | DTO/email | Validate DTO, lấy email Staff từ Authentication, gọi service và trả HTTP 201 cùng `kanjiId`. |
+| 8 | Learning service | `createKanji` | Kanji repo | entity | Resolve Staff/level, kiểm tra trùng ký tự và dữ liệu bắt buộc, map request sang entity, ép Draft và lưu với creator. |
+| 9 | staffService | `submitAssessmentForReview` | common controller | kanji/ID | Gửi request tối giản `{contentType:'kanji', contentId}` đến endpoint submit chung để tách create khỏi state transition. |
+| 10 | Learning service | `submitKanji` | Kanji repo | status | Xác minh owner, trạng thái Draft/Rejected và tính đầy đủ của Kanji, sau đó đổi sang Pending Review và lưu. |
+| 11 | Review service | `getReviewQueue` | Kanji handler | filters | Kiểm tra quyền Staff Manager, resolve Kanji handler và lấy trang nội dung đang Pending Review theo level/filter. |
+| 12 | Kanji handler | `approve/transition` | review repo | ID/status | Chuyển quyết định chung thành guarded update riêng của Kanji: Pending → Published khi approve hoặc Pending → Rejected khi reject. |
+| 13 | Review audit | `log` | audit repo | feedback | Lưu Manager, action, content ID và feedback để Staff có thể truy vết lý do nội dung bị từ chối. |
 
 ## 8. Các mục cần bổ sung context
 
