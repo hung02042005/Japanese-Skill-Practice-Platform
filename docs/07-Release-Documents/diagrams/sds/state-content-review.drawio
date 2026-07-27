@@ -1,0 +1,94 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="1411" dy="660" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1550" pageHeight="580" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="i1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#000000;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="24" width="24" x="40" y="258" as="geometry" />
+        </mxCell>
+        <mxCell id="s_draft" parent="1" style="rounded=1;arcSize=30;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#333333;fontStyle=1;fontSize=12;" value="draft" vertex="1">
+          <mxGeometry height="60" width="200" x="160" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="s_pending" parent="1" style="rounded=1;arcSize=30;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#333333;fontStyle=1;fontSize=12;" value="pending_review" vertex="1">
+          <mxGeometry height="60" width="220" x="460" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="s_published" parent="1" style="rounded=1;arcSize=30;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#333333;fontStyle=1;fontSize=12;" value="published" vertex="1">
+          <mxGeometry height="60" width="200" x="900" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="s_rejected" parent="1" style="rounded=1;arcSize=30;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#333333;fontStyle=1;fontSize=12;" value="rejected" vertex="1">
+          <mxGeometry height="60" width="200" x="900" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="s_archived" parent="1" style="rounded=1;arcSize=30;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#333333;fontStyle=1;fontSize=12;" value="archived" vertex="1">
+          <mxGeometry height="60" width="190" x="1220" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="f1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#000000;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="1306" y="461" as="geometry" />
+        </mxCell>
+        <mxCell id="f1_ring" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;" value="" vertex="1">
+          <mxGeometry height="26" width="26" x="1302" y="457" as="geometry" />
+        </mxCell>
+        <mxCell id="t1" edge="1" parent="1" source="i1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#333333;fontColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_draft" value="Staff creates content">
+          <mxGeometry relative="1" x="-0.0417" y="20" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="t2" edge="1" parent="1" source="s_draft" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#333333;fontColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_pending" value="Staff submits for review">
+          <mxGeometry relative="1" y="-40" as="geometry">
+            <mxPoint x="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="t3" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#333333;fontColor=#333333;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s_published" value="StaffManager approves (ContentReviewService.approve)">
+          <mxGeometry relative="1" x="0.1815" y="10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="630" y="70" />
+            </Array>
+            <mxPoint x="630" y="240" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="t5" edge="1" parent="1" source="s_pending" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#333333;fontColor=#333333;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="s_draft" value="StaffManager requests changes (feedback required)">
+          <mxGeometry relative="1" x="0.0226" y="-20" as="geometry">
+            <mxPoint x="1" as="offset" />
+            <Array as="points">
+              <mxPoint x="570" y="170" />
+              <mxPoint x="260" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="t6" edge="1" parent="1" source="s_rejected" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#333333;fontColor=#333333;dashed=1;exitX=0;exitY=0.7;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="s_draft" value="Staff revises and resubmits">
+          <mxGeometry relative="1" x="-0.0024" y="18" as="geometry">
+            <mxPoint x="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="t7" edge="1" parent="1" source="s_published" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#333333;fontColor=#333333;exitX=1;exitY=0.35;exitDx=0;exitDy=0;entryX=0;entryY=0.35;entryDx=0;entryDy=0;" target="s_archived" value="StaffManager archives">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="t8" edge="1" parent="1" source="s_archived" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#333333;fontColor=#333333;dashed=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="s_published" value="StaffManager restores">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="t9" edge="1" parent="1" source="s_archived" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;rounded=0;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#333333;fontColor=#333333;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="f1" value="soft delete (is_deleted / status=deleted)">
+          <mxGeometry relative="1" x="0.1137" y="-107" as="geometry">
+            <mxPoint x="8" y="-40" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jnsokWDkAis1gGFF7FCg-1" edge="1" parent="1" source="s_pending" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="1000" y="270" />
+            </Array>
+            <mxPoint x="720" y="180" as="sourcePoint" />
+            <mxPoint x="1000" y="437" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jnsokWDkAis1gGFF7FCg-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;color: rgb(51, 51, 51); font-size: 10px; text-wrap-mode: nowrap; background-color: rgb(255, 255, 255);&quot;&gt;StaffManager rejects (feedback required)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="810" y="240" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

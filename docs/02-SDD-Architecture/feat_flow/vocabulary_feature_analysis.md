@@ -15,9 +15,9 @@ Feature trải dài trên 3 tầng:
 
 | Tầng | Mô tả |
 |---|---|
-| **Frontend (React)** | [VocabularyRoute.jsx](/apps/frontend/src/pages/vocabulary/VocabularyRoute.jsx) (dispatcher) → [VocabHome.jsx](/apps/frontend/src/pages/vocabulary/VocabHome.jsx) hoặc [VocabularyList.jsx](/apps/frontend/src/pages/vocabulary/VocabularyList.jsx), gọi API qua [studentService.js](/apps/frontend/src/api/studentService.js) |
-| **Backend (Spring Boot)** | [StudentVocabularyController.java](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyController.java) → [StudentVocabularyService.java](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java) → [VocabularyRepository](/apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyRepository.java)/[VocabularyTopicRepository](/apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopicRepository.java) |
-| **Database** | Bảng `vocabulary`, `vocabulary_topics` (entity [Vocabulary.java](/apps/backend/src/main/java/com/jlpt/feature/learning/Vocabulary.java), [VocabularyTopic.java](/apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopic.java)) |
+| **Frontend (React)** | [VocabularyRoute.jsx](../../../apps/frontend/src/pages/vocabulary/VocabularyRoute.jsx) (dispatcher) → [VocabHome.jsx](../../../apps/frontend/src/pages/vocabulary/VocabHome.jsx) hoặc [VocabularyList.jsx](../../../apps/frontend/src/pages/vocabulary/VocabularyList.jsx), gọi API qua [studentService.js](../../../apps/frontend/src/api/studentService.js) |
+| **Backend (Spring Boot)** | [StudentVocabularyController.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyController.java) → [StudentVocabularyService.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java) → [VocabularyRepository](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyRepository.java)/[VocabularyTopicRepository](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopicRepository.java) |
+| **Database** | Bảng `vocabulary`, `vocabulary_topics` (entity [Vocabulary.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Vocabulary.java), [VocabularyTopic.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopic.java)) |
 
 **Entry point**: route `/vocabulary` (App.jsx:111, bọc `PrivateRoute`) → `VocabularyRoute` tự phân luồng nội bộ theo query string, không có route riêng cho từng chế độ hiển thị.
 
@@ -31,29 +31,29 @@ Feature trải dài trên 3 tầng:
 
 | File | Vai trò | Loại |
 |---|---|---|
-| [VocabularyRoute.jsx](/apps/frontend/src/pages/vocabulary/VocabularyRoute.jsx) | Dispatcher route `/vocabulary`: `?view=list` → `VocabularyList`, mặc định → `VocabHome` | Page (router) |
-| [VocabHome.jsx](/apps/frontend/src/pages/vocabulary/VocabHome.jsx) | Trang gamified: streak, danh sách bài học theo lesson-path, điều hướng sang flashcard | Page Component |
-| [VocabLessonList.jsx](/apps/frontend/src/pages/vocabulary/VocabLessonList.jsx) | Render danh sách `VocabLessonCard` theo thứ tự | Component |
-| [VocabLessonCard.jsx](/apps/frontend/src/pages/vocabulary/VocabLessonCard.jsx) | Card 1 bài học, hiển thị tiến độ `learnedCount/totalWords` | Component |
-| [VocabularyList.jsx](/apps/frontend/src/pages/vocabulary/VocabularyList.jsx) | Trang danh sách từ vựng dạng list: filter level/topic/search, đánh dấu hoàn thành, phân trang | Page Component |
-| [VocabCard.jsx](/apps/frontend/src/components/student/VocabCard.jsx) | Card hiển thị 1 từ (audio, nghĩa, ví dụ, nút đánh dấu đã học) | Component |
-| [VocabResetButton.jsx](/apps/frontend/src/components/student/VocabResetButton.jsx) | Nút reset toàn bộ tiến độ học Từ vựng | Component |
-| [LessonVocabCard.jsx](/apps/frontend/src/components/student/LessonVocabCard.jsx) | Card từ vựng — không tìm thấy nơi sử dụng trong nhóm file Vocabulary đã đọc (xem Mục 8) | Component (chưa xác định nơi dùng) |
-| [studentService.js](/apps/frontend/src/api/studentService.js) | Tầng gọi API: `getVocabHome`, `getVocabularyList`, `getVocabTopics`, `markVocabComplete`, `markProgress`, `resetProgress` | API Service |
+| [VocabularyRoute.jsx](../../../apps/frontend/src/pages/vocabulary/VocabularyRoute.jsx) | Dispatcher route `/vocabulary`: `?view=list` → `VocabularyList`, mặc định → `VocabHome` | Page (router) |
+| [VocabHome.jsx](../../../apps/frontend/src/pages/vocabulary/VocabHome.jsx) | Trang gamified: streak, danh sách bài học theo lesson-path, điều hướng sang flashcard | Page Component |
+| [VocabLessonList.jsx](../../../apps/frontend/src/pages/vocabulary/VocabLessonList.jsx) | Render danh sách `VocabLessonCard` theo thứ tự | Component |
+| [VocabLessonCard.jsx](../../../apps/frontend/src/pages/vocabulary/VocabLessonCard.jsx) | Card 1 bài học, hiển thị tiến độ `learnedCount/totalWords` | Component |
+| [VocabularyList.jsx](../../../apps/frontend/src/pages/vocabulary/VocabularyList.jsx) | Trang danh sách từ vựng dạng list: filter level/topic/search, đánh dấu hoàn thành, phân trang | Page Component |
+| [VocabCard.jsx](../../../apps/frontend/src/components/student/VocabCard.jsx) | Card hiển thị 1 từ (audio, nghĩa, ví dụ, nút đánh dấu đã học) | Component |
+| [VocabResetButton.jsx](../../../apps/frontend/src/components/student/VocabResetButton.jsx) | Nút reset toàn bộ tiến độ học Từ vựng | Component |
+| [LessonVocabCard.jsx](../../../apps/frontend/src/components/student/LessonVocabCard.jsx) | Card từ vựng — không tìm thấy nơi sử dụng trong nhóm file Vocabulary đã đọc (xem Mục 8) | Component (chưa xác định nơi dùng) |
+| [studentService.js](../../../apps/frontend/src/api/studentService.js) | Tầng gọi API: `getVocabHome`, `getVocabularyList`, `getVocabTopics`, `markVocabComplete`, `markProgress`, `resetProgress` | API Service |
 
 ### 2.2 Backend
 
 | File | Vai trò | Loại |
 |---|---|---|
-| [StudentVocabularyController.java](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyController.java) | REST Controller `@PreAuthorize("hasRole('STUDENT')")`: `GET /api/vocabulary/topics`, `GET /api/vocabulary` | Controller |
-| [StudentVocabularyService.java](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java) | Business logic: lấy topic theo level, lấy danh sách từ vựng kèm trạng thái hoàn thành | Service |
-| [Vocabulary.java](/apps/backend/src/main/java/com/jlpt/feature/learning/Vocabulary.java) | Entity JPA bảng `vocabulary` (word, furigana, meaning, jlptLevel, topicRef, audioUrl, ví dụ) | Entity |
-| [VocabularyTopic.java](/apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopic.java) | Entity JPA bảng `vocabulary_topics` (slug, titleJa, titleVi, displayOrder, status) | Entity |
-| [VocabularyRepository.java](/apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyRepository.java) | Query từ vựng published theo level/topic/search | Repository |
-| [VocabularyTopicRepository.java](/apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopicRepository.java) | Query topic published theo level, sắp theo `displayOrder` | Repository |
-| [VocabTopicResponse.java](/apps/backend/src/main/java/com/jlpt/feature/learning/dto/VocabTopicResponse.java) | DTO 1 chủ đề (dùng chung Student + Staff) | DTO Response |
-| [VocabularyListItemResponse.java](/apps/backend/src/main/java/com/jlpt/feature/learning/dto/VocabularyListItemResponse.java) | DTO 1 mục từ vựng, kèm `isCompleted` | DTO Response |
-| [VocabularyListResponse.java](/apps/backend/src/main/java/com/jlpt/feature/learning/dto/VocabularyListResponse.java) | DTO trang danh sách (content + phân trang + `completedCount`) | DTO Response |
+| [StudentVocabularyController.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyController.java) | REST Controller `@PreAuthorize("hasRole('STUDENT')")`: `GET /api/vocabulary/topics`, `GET /api/vocabulary` | Controller |
+| [StudentVocabularyService.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java) | Business logic: lấy topic theo level, lấy danh sách từ vựng kèm trạng thái hoàn thành | Service |
+| [Vocabulary.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Vocabulary.java) | Entity JPA bảng `vocabulary` (word, furigana, meaning, jlptLevel, topicRef, audioUrl, ví dụ) | Entity |
+| [VocabularyTopic.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopic.java) | Entity JPA bảng `vocabulary_topics` (slug, titleJa, titleVi, displayOrder, status) | Entity |
+| [VocabularyRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyRepository.java) | Query từ vựng published theo level/topic/search | Repository |
+| [VocabularyTopicRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyTopicRepository.java) | Query topic published theo level, sắp theo `displayOrder` | Repository |
+| [VocabTopicResponse.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/dto/VocabTopicResponse.java) | DTO 1 chủ đề (dùng chung Student + Staff) | DTO Response |
+| [VocabularyListItemResponse.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/dto/VocabularyListItemResponse.java) | DTO 1 mục từ vựng, kèm `isCompleted` | DTO Response |
+| [VocabularyListResponse.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/dto/VocabularyListResponse.java) | DTO trang danh sách (content + phân trang + `completedCount`) | DTO Response |
 
 ---
 
@@ -104,13 +104,13 @@ graph TD
 Luồng **"Student chuyển sang chế độ danh sách, lọc theo level/topic, và đánh dấu 1 từ đã học"** (luồng có validate + business rule rõ nhất):
 
 1. Student vào `/vocabulary?view=list` → `VocabularyRoute.jsx:14` render `VocabularyList`.
-2. Khi `level` đổi, `VocabularyList.jsx:51-54` gọi `getVocabTopics(level)` ([studentService.js:138-141](/apps/frontend/src/api/studentService.js#L138-L141)) → `GET /vocabulary/topics?level=...`.
-3. `StudentVocabularyController.getTopics` ([StudentVocabularyController.java:36-39](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyController.java#L36-L39)) ủy quyền cho `StudentVocabularyService.getTopics` ([StudentVocabularyService.java:37-42](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java#L37-L42)): parse level **bắt buộc**, tìm topic `PUBLISHED` theo level.
-4. `VocabularyList.jsx:56-78` (`fetchWords`) gọi `getVocabularyList({level, topicId, search, page, size})` ([studentService.js:128-135](/apps/frontend/src/api/studentService.js#L128-L135)) → `GET /vocabulary`.
-5. `StudentVocabularyController.getVocabularyList` ([StudentVocabularyController.java:43-56](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyController.java#L43-L56)) validate `page≥0`, `1≤size≤100` bằng annotation, lấy `studentId` từ JWT.
-6. `StudentVocabularyService.getVocabularyList` ([StudentVocabularyService.java:48-99](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java#L48-L99)): **tự giới hạn lại `size` tối đa 50** (dòng 52, khác giới hạn 100 ở Controller), gọi `VocabularyRepository.findPublished` rồi tra tiến độ hoàn thành qua `StudentContentProgressRepository`, map sang `VocabularyListItemResponse` kèm `isCompleted`.
-7. Kết quả render qua `VocabCard` ([VocabCard.jsx:3-51](/apps/frontend/src/components/student/VocabCard.jsx#L3-L51)) cho từng từ.
-8. Student bấm nút đánh dấu đã học → `VocabularyList.jsx:80-90` (`handleComplete`) gọi `markVocabComplete(vocabId)` ([studentService.js:143-145](/apps/frontend/src/api/studentService.js#L143-L145)) → nội bộ gọi `markProgress('vocabulary', vocabId)` (dòng 65-68 → `POST /learning-progress`), cập nhật state cục bộ `isCompleted: true` ngay không cần load lại.
+2. Khi `level` đổi, `VocabularyList.jsx:51-54` gọi `getVocabTopics(level)` ([studentService.js:138-141](../../../apps/frontend/src/api/studentService.js#L138-L141)) → `GET /vocabulary/topics?level=...`.
+3. `StudentVocabularyController.getTopics` ([StudentVocabularyController.java:36-39](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyController.java#L36-L39)) ủy quyền cho `StudentVocabularyService.getTopics` ([StudentVocabularyService.java:37-42](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java#L37-L42)): parse level **bắt buộc**, tìm topic `PUBLISHED` theo level.
+4. `VocabularyList.jsx:56-78` (`fetchWords`) gọi `getVocabularyList({level, topicId, search, page, size})` ([studentService.js:128-135](../../../apps/frontend/src/api/studentService.js#L128-L135)) → `GET /vocabulary`.
+5. `StudentVocabularyController.getVocabularyList` ([StudentVocabularyController.java:43-56](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyController.java#L43-L56)) validate `page≥0`, `1≤size≤100` bằng annotation, lấy `studentId` từ JWT.
+6. `StudentVocabularyService.getVocabularyList` ([StudentVocabularyService.java:48-99](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java#L48-L99)): **tự giới hạn lại `size` tối đa 50** (dòng 52, khác giới hạn 100 ở Controller), gọi `VocabularyRepository.findPublished` rồi tra tiến độ hoàn thành qua `StudentContentProgressRepository`, map sang `VocabularyListItemResponse` kèm `isCompleted`.
+7. Kết quả render qua `VocabCard` ([VocabCard.jsx:3-51](../../../apps/frontend/src/components/student/VocabCard.jsx#L3-L51)) cho từng từ.
+8. Student bấm nút đánh dấu đã học → `VocabularyList.jsx:80-90` (`handleComplete`) gọi `markVocabComplete(vocabId)` ([studentService.js:143-145](../../../apps/frontend/src/api/studentService.js#L143-L145)) → nội bộ gọi `markProgress('vocabulary', vocabId)` (dòng 65-68 → `POST /learning-progress`), cập nhật state cục bộ `isCompleted: true` ngay không cần load lại.
 
 ### 4.1 Sequence Diagram
 
@@ -158,7 +158,7 @@ sequenceDiagram
 
 ### 5.1 Giới hạn `size` phân trang bị siết lại ở Service (khác giới hạn ở Controller)
 
-File: [StudentVocabularyService.java:52](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java#L52)
+File: [StudentVocabularyService.java:52](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java#L52)
 
 ```java
 int safeSize = Math.min(Math.max(size, 1), 50);
@@ -169,7 +169,7 @@ Giải thích: đây là 1 rule không tường minh — client tưởng có th�
 
 ### 5.2 Tính `completedCount` khác nhau tùy có lọc level hay không
 
-File: [StudentVocabularyService.java:86-89](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java#L86-L89)
+File: [StudentVocabularyService.java:86-89](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java#L86-L89)
 
 ```java
 long completedCount = jlptLevel == null
@@ -183,7 +183,7 @@ Giải thích: rẽ nhánh này quyết định con số hiển thị ở progre
 
 ### 5.3 Query JPQL lọc published + level/topic/search đều optional
 
-File: [VocabularyRepository.java:32-48](/apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyRepository.java#L32-L48)
+File: [VocabularyRepository.java:32-48](../../../apps/backend/src/main/java/com/jlpt/feature/learning/VocabularyRepository.java#L32-L48)
 
 ```java
 @Query("""
@@ -202,7 +202,7 @@ Giải thích: cho phép FE gọi API với bất kỳ tổ hợp filter nào (c
 
 ### 5.4 Nút "Đánh dấu đã học" — chặn double-submit, không cho un-complete
 
-File: [VocabCard.jsx:39-46](/apps/frontend/src/components/student/VocabCard.jsx#L39-L46)
+File: [VocabCard.jsx:39-46](../../../apps/frontend/src/components/student/VocabCard.jsx#L39-L46)
 
 ```jsx
 <button
@@ -221,7 +221,7 @@ Giải thích: hành động là **một chiều** — không có nút "bỏ đ�
 Theo dõi dữ liệu **"trạng thái hoàn thành 1 từ vựng" (`isCompleted`)** xuyên suốt hệ thống:
 
 1. **Nguồn dữ liệu gốc**: bảng tiến độ học (`StudentContentProgress` — repository không nằm trong phạm vi đọc trực tiếp của phân tích này, chỉ xác nhận qua call site), lưu theo cặp `(studentId, contentType='VOCABULARY', contentId)`.
-2. **Đọc lúc load danh sách**: `StudentVocabularyService.getVocabularyList` ([dòng 57-68](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java#L57-L68)) lấy toàn bộ id vocabulary trong trang hiện tại, gọi 1 lần `findByStudentIdAndContentTypeAndContentIdIn` để có tập `completedIds`, rồi gắn cờ `isCompleted` khi map từng `Vocabulary` sang `VocabularyListItemResponse` — tránh N+1 query.
+2. **Đọc lúc load danh sách**: `StudentVocabularyService.getVocabularyList` ([dòng 57-68](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java#L57-L68)) lấy toàn bộ id vocabulary trong trang hiện tại, gọi 1 lần `findByStudentIdAndContentTypeAndContentIdIn` để có tập `completedIds`, rồi gắn cờ `isCompleted` khi map từng `Vocabulary` sang `VocabularyListItemResponse` — tránh N+1 query.
 3. **Trả về Frontend**: field JSON `isCompleted` (boolean) giữ nguyên tên qua toàn bộ tầng — không đổi tên.
 4. **Hiển thị**: `VocabCard.jsx` dùng trực tiếp `word.isCompleted` để quyết định class CSS (`voc-btn-done--active`) và `disabled` của nút.
 5. **Cập nhật khi Student đánh dấu**: `VocabularyList.jsx` KHÔNG gọi lại API load danh sách — chỉ tự cập nhật state cục bộ React (`setState` đổi `isCompleted: true` cho đúng 1 item) sau khi `markVocabComplete` trả về thành công, đồng thời tăng biến đếm `stats.completed` cục bộ — nghĩa là con số `completedCount` hiển thị ngay lúc đó là **suy diễn ở FE**, không phải giá trị mới nhất truy vấn lại từ server.
@@ -233,16 +233,16 @@ Theo dõi dữ liệu **"trạng thái hoàn thành 1 từ vựng" (`isCompleted
 
 | Bước | File | Function | Kết nối tới | Dữ liệu | Ghi chú |
 |---|---|---|---|---|---|
-| 1 | [VocabularyRoute.jsx](/apps/frontend/src/pages/vocabulary/VocabularyRoute.jsx) | Component chính (dòng 12-16) | `VocabHome` / `VocabularyList` | `?view=` query param | Không có route path riêng cho 2 chế độ |
-| 2 | [VocabularyList.jsx](/apps/frontend/src/pages/vocabulary/VocabularyList.jsx) | `useEffect` (dòng 51-54) | `studentService.getVocabTopics` | `level` | Chạy lại mỗi khi đổi level |
-| 3 | [studentService.js](/apps/frontend/src/api/studentService.js) | `getVocabTopics()` (dòng 138-141) | `GET /vocabulary/topics` | `level` | — |
-| 4 | [StudentVocabularyController.java](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyController.java) | `getTopics()` (dòng 36-39) | `StudentVocabularyService.getTopics` | `level` | `@PreAuthorize("hasRole('STUDENT')")` ở class-level |
-| 5 | [StudentVocabularyService.java](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java) | `getTopics()` (dòng 37-42) | `VocabularyTopicRepository.findPublishedByLevel` | `JlptLevel` đã parse | Level **bắt buộc** (khác `getVocabularyList`) |
-| 6 | [VocabularyList.jsx](/apps/frontend/src/pages/vocabulary/VocabularyList.jsx) | `fetchWords()` (dòng 56-78) | `studentService.getVocabularyList` | `{level, topicId, search, page, size}` | — |
-| 7 | [StudentVocabularyService.java](/apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java) | `getVocabularyList()` (dòng 48-99) | `VocabularyRepository.findPublished` + progress repo | `safeSize≤50`, `completedIds` | Xem mục 5.1, 5.2 |
-| 8 | [VocabCard.jsx](/apps/frontend/src/components/student/VocabCard.jsx) | Nút đánh dấu (dòng 39-46) | `VocabularyList.handleComplete` (prop callback) | `word.id` | Chặn double-submit bằng `isCompl` |
-| 9 | [studentService.js](/apps/frontend/src/api/studentService.js) | `markVocabComplete()` (dòng 143-145) | `markProgress('vocabulary', vocabId)` | `vocabId` | Nội bộ gọi `POST /learning-progress` |
-| 10 | [VocabResetButton.jsx](/apps/frontend/src/components/student/VocabResetButton.jsx) | Nút reset (dòng 10-29) | `studentService.resetProgress` | `contentType='vocabulary'` | Gọi lại `fetchWords` sau khi reset |
+| 1 | [VocabularyRoute.jsx](../../../apps/frontend/src/pages/vocabulary/VocabularyRoute.jsx) | Component chính (dòng 12-16) | `VocabHome` / `VocabularyList` | `?view=` query param | Không có route path riêng cho 2 chế độ |
+| 2 | [VocabularyList.jsx](../../../apps/frontend/src/pages/vocabulary/VocabularyList.jsx) | `useEffect` (dòng 51-54) | `studentService.getVocabTopics` | `level` | Chạy lại mỗi khi đổi level |
+| 3 | [studentService.js](../../../apps/frontend/src/api/studentService.js) | `getVocabTopics()` (dòng 138-141) | `GET /vocabulary/topics` | `level` | — |
+| 4 | [StudentVocabularyController.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyController.java) | `getTopics()` (dòng 36-39) | `StudentVocabularyService.getTopics` | `level` | `@PreAuthorize("hasRole('STUDENT')")` ở class-level |
+| 5 | [StudentVocabularyService.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java) | `getTopics()` (dòng 37-42) | `VocabularyTopicRepository.findPublishedByLevel` | `JlptLevel` đã parse | Level **bắt buộc** (khác `getVocabularyList`) |
+| 6 | [VocabularyList.jsx](../../../apps/frontend/src/pages/vocabulary/VocabularyList.jsx) | `fetchWords()` (dòng 56-78) | `studentService.getVocabularyList` | `{level, topicId, search, page, size}` | — |
+| 7 | [StudentVocabularyService.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/StudentVocabularyService.java) | `getVocabularyList()` (dòng 48-99) | `VocabularyRepository.findPublished` + progress repo | `safeSize≤50`, `completedIds` | Xem mục 5.1, 5.2 |
+| 8 | [VocabCard.jsx](../../../apps/frontend/src/components/student/VocabCard.jsx) | Nút đánh dấu (dòng 39-46) | `VocabularyList.handleComplete` (prop callback) | `word.id` | Chặn double-submit bằng `isCompl` |
+| 9 | [studentService.js](../../../apps/frontend/src/api/studentService.js) | `markVocabComplete()` (dòng 143-145) | `markProgress('vocabulary', vocabId)` | `vocabId` | Nội bộ gọi `POST /learning-progress` |
+| 10 | [VocabResetButton.jsx](../../../apps/frontend/src/components/student/VocabResetButton.jsx) | Nút reset (dòng 10-29) | `studentService.resetProgress` | `contentType='vocabulary'` | Gọi lại `fetchWords` sau khi reset |
 
 ---
 

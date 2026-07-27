@@ -32,31 +32,31 @@ Use case được cover:
 
 | File | Vai trò | Loại |
 |------|---------|------|
-| [AdminSettings.jsx](/apps/frontend/src/pages/admin/AdminSettings.jsx) | Trang khung: quản lý tab đang active qua query string `?tab=`, render đúng 1 trong 4 tab con | Page Component |
-| [SystemTab.jsx](/apps/frontend/src/components/admin/settings/SystemTab.jsx) | Tab "Hệ thống": load giá trị `maintenance_mode` hiện tại, hiển thị toggle switch, xác nhận trước khi bật/tắt | Component |
-| [adminService.js](/apps/frontend/src/api/adminService.js) | Tầng giao tiếp HTTP: `getSettings(group)`, `updateSetting(group, key, value)`, `updateSettings(group, settings)`, `testSmtp(payload)` | API Service |
-| [authService.js](/apps/frontend/src/api/authService.js) | Axios instance (đính Bearer token, auto-refresh 401) — được `adminService.js` import (đã phân tích chi tiết ở `feat-student-management_feature_analysis.md`) | Axios Config / Auth |
-| [App.jsx](/apps/frontend/src/App.jsx) | Khai báo route `/admin/settings` → `AdminSettings.jsx`, bọc trong `AdminRoute` (guard role ADMIN phía client) | Router Config |
-| [AdminTopNav.jsx](/apps/frontend/src/components/layout/AdminTopNav.jsx) | Thanh điều hướng admin, có mục "Cài đặt" trỏ route `/admin/settings` | Component (Nav) |
-| [DashboardQuickActions.jsx](/apps/frontend/src/components/admin/DashboardQuickActions.jsx) | Các nút truy cập nhanh trên Dashboard, có nút trỏ thẳng `/admin/settings?tab=system` | Component |
+| [AdminSettings.jsx](../../../apps/frontend/src/pages/admin/AdminSettings.jsx) | Trang khung: quản lý tab đang active qua query string `?tab=`, render đúng 1 trong 4 tab con | Page Component |
+| [SystemTab.jsx](../../../apps/frontend/src/components/admin/settings/SystemTab.jsx) | Tab "Hệ thống": load giá trị `maintenance_mode` hiện tại, hiển thị toggle switch, xác nhận trước khi bật/tắt | Component |
+| [adminService.js](../../../apps/frontend/src/api/adminService.js) | Tầng giao tiếp HTTP: `getSettings(group)`, `updateSetting(group, key, value)`, `updateSettings(group, settings)`, `testSmtp(payload)` | API Service |
+| [authService.js](../../../apps/frontend/src/api/authService.js) | Axios instance (đính Bearer token, auto-refresh 401) — được `adminService.js` import (đã phân tích chi tiết ở `feat-student-management_feature_analysis.md`) | Axios Config / Auth |
+| [App.jsx](../../../apps/frontend/src/App.jsx) | Khai báo route `/admin/settings` → `AdminSettings.jsx`, bọc trong `AdminRoute` (guard role ADMIN phía client) | Router Config |
+| [AdminTopNav.jsx](../../../apps/frontend/src/components/layout/AdminTopNav.jsx) | Thanh điều hướng admin, có mục "Cài đặt" trỏ route `/admin/settings` | Component (Nav) |
+| [DashboardQuickActions.jsx](../../../apps/frontend/src/components/admin/DashboardQuickActions.jsx) | Các nút truy cập nhanh trên Dashboard, có nút trỏ thẳng `/admin/settings?tab=system` | Component |
 
 ### 2.2 Backend
 
 | File | Vai trò | Loại |
 |------|---------|------|
-| [AdminSettingsController.java](/apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsController.java) | Nhận HTTP request (`GET/PUT /api/admin/settings/**`, `POST /smtp/test`), ủy quyền cho Service | Controller |
-| [AdminSettingsService.java](/apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java) | Business logic: validate `group` hợp lệ, upsert setting, ẩn giá trị password, test kết nối SMTP, tự áp SMTP settings vào `JavaMailSenderImpl` khi khởi động (`@PostConstruct`) | Service |
-| [SystemSetting.java](/apps/backend/src/main/java/com/jlpt/feature/admin/SystemSetting.java) | Entity JPA bảng `system_settings` — cặp `(settingGroup, settingKey) → settingValue`, kèm `valueType`, `isEditable`, `updatedBy`, `updatedAt` | Entity |
-| [SystemSettingRepository.java](/apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java) | Truy vấn DB: `findBySettingGroup`, `findBySettingGroupAndSettingKey`, `existsBySettingGroupAndSettingKey` | Repository |
-| [ValueTypeConverter.java](/apps/backend/src/main/java/com/jlpt/feature/admin/ValueTypeConverter.java) | JPA `AttributeConverter` chuyển đổi enum `ValueType` (STRING/INTEGER/BOOLEAN/TIME) ↔ chuỗi lưu DB | Converter |
-| [MaintenanceModeService.java](/apps/backend/src/main/java/com/jlpt/feature/admin/MaintenanceModeService.java) | Đọc cờ `system.maintenance_mode` từ DB, expose `isEnabled()` cho các feature khác dùng | Service (đọc-only, dùng xuyên feature) |
-| [UpdateSettingRequest.java](/apps/backend/src/main/java/com/jlpt/feature/admin/dto/request/UpdateSettingRequest.java) | DTO nhận giá trị 1 setting (`settingValue`, `@NotNull`, `@Size(max=20000)`) | DTO Request |
-| [UpdateSettingsBatchRequest.java](/apps/backend/src/main/java/com/jlpt/feature/admin/dto/request/UpdateSettingsBatchRequest.java) | DTO nhận nhiều setting cùng nhóm trong 1 request (atomic) — dùng cho tab Email/Security | DTO Request |
-| [SmtpTestRequest.java](/apps/backend/src/main/java/com/jlpt/feature/admin/dto/request/SmtpTestRequest.java) | DTO nhận cấu hình SMTP tạm thời để test (host/port/username/password/secure) | DTO Request |
-| [SettingResponse.java](/apps/backend/src/main/java/com/jlpt/feature/admin/dto/response/SettingResponse.java) | DTO trả về `(settingKey, settingValue, valueType)` | DTO Response |
-| [AuthenticationService.java](/apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java) | **Bên tiêu thụ** cờ bảo trì: chặn `handleStudentLogin()` và `loginWithGoogle()` nếu đang bảo trì | Service (feature khác) |
-| [RegistrationService.java](/apps/backend/src/main/java/com/jlpt/feature/auth/RegistrationService.java) | **Bên tiêu thụ** cờ bảo trì: chặn `register()` nếu đang bảo trì | Service (feature khác) |
-| [AdminDashboardService.java](/apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java) | **Bên tiêu thụ** cờ bảo trì: hiển thị `systemStatus = "MAINTENANCE"/"OK"` trên dashboard | Service (feature khác) |
+| [AdminSettingsController.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsController.java) | Nhận HTTP request (`GET/PUT /api/admin/settings/**`, `POST /smtp/test`), ủy quyền cho Service | Controller |
+| [AdminSettingsService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java) | Business logic: validate `group` hợp lệ, upsert setting, ẩn giá trị password, test kết nối SMTP, tự áp SMTP settings vào `JavaMailSenderImpl` khi khởi động (`@PostConstruct`) | Service |
+| [SystemSetting.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSetting.java) | Entity JPA bảng `system_settings` — cặp `(settingGroup, settingKey) → settingValue`, kèm `valueType`, `isEditable`, `updatedBy`, `updatedAt` | Entity |
+| [SystemSettingRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/SystemSettingRepository.java) | Truy vấn DB: `findBySettingGroup`, `findBySettingGroupAndSettingKey`, `existsBySettingGroupAndSettingKey` | Repository |
+| [ValueTypeConverter.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/ValueTypeConverter.java) | JPA `AttributeConverter` chuyển đổi enum `ValueType` (STRING/INTEGER/BOOLEAN/TIME) ↔ chuỗi lưu DB | Converter |
+| [MaintenanceModeService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/MaintenanceModeService.java) | Đọc cờ `system.maintenance_mode` từ DB, expose `isEnabled()` cho các feature khác dùng | Service (đọc-only, dùng xuyên feature) |
+| [UpdateSettingRequest.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/dto/request/UpdateSettingRequest.java) | DTO nhận giá trị 1 setting (`settingValue`, `@NotNull`, `@Size(max=20000)`) | DTO Request |
+| [UpdateSettingsBatchRequest.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/dto/request/UpdateSettingsBatchRequest.java) | DTO nhận nhiều setting cùng nhóm trong 1 request (atomic) — dùng cho tab Email/Security | DTO Request |
+| [SmtpTestRequest.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/dto/request/SmtpTestRequest.java) | DTO nhận cấu hình SMTP tạm thời để test (host/port/username/password/secure) | DTO Request |
+| [SettingResponse.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/dto/response/SettingResponse.java) | DTO trả về `(settingKey, settingValue, valueType)` | DTO Response |
+| [AuthenticationService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java) | **Bên tiêu thụ** cờ bảo trì: chặn `handleStudentLogin()` và `loginWithGoogle()` nếu đang bảo trì | Service (feature khác) |
+| [RegistrationService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/RegistrationService.java) | **Bên tiêu thụ** cờ bảo trì: chặn `register()` nếu đang bảo trì | Service (feature khác) |
+| [AdminDashboardService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminDashboardService.java) | **Bên tiêu thụ** cờ bảo trì: hiển thị `systemStatus = "MAINTENANCE"/"OK"` trên dashboard | Service (feature khác) |
 
 ---
 
@@ -212,7 +212,7 @@ sequenceDiagram
 
 ### 5.1 `AdminSettingsController.java` — Entry Point + Security Guard
 
-**File:** [AdminSettingsController.java](/apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsController.java) | Dòng 22–43
+**File:** [AdminSettingsController.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsController.java) | Dòng 22–43
 
 ```java
 @RestController
@@ -247,7 +247,7 @@ public class AdminSettingsController {
 
 ### 5.2 `AdminSettingsService.java` — Validate Group + Upsert (Cơ Chế Cốt Lõi)
 
-**File:** [AdminSettingsService.java](/apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java) | Dòng 22–23, 77–108
+**File:** [AdminSettingsService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/AdminSettingsService.java) | Dòng 22–23, 77–108
 
 ```java
 // Whitelist cứng — chặn Admin gửi group tùy ý (path variable tự do, không enum ở tầng HTTP)
@@ -286,7 +286,7 @@ private SettingResponse upsert(String group, String key, String value) {
 
 ### 5.3 `MaintenanceModeService.java` — Điểm Tích Hợp Xuyên Feature
 
-**File:** [MaintenanceModeService.java](/apps/backend/src/main/java/com/jlpt/feature/admin/MaintenanceModeService.java) | Dòng 8–26
+**File:** [MaintenanceModeService.java](../../../apps/backend/src/main/java/com/jlpt/feature/admin/MaintenanceModeService.java) | Dòng 8–26
 
 ```java
 /** Đọc cờ bảo trì hệ thống (settings group=system, key=maintenance_mode). */
@@ -317,7 +317,7 @@ public class MaintenanceModeService {
 
 ### 5.4 `AuthenticationService.java` — Nơi Cờ Bảo Trì Chặn Đăng Nhập Student
 
-**File:** [AuthenticationService.java](/apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java) | Dòng 215–221
+**File:** [AuthenticationService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java) | Dòng 215–221
 
 ```java
 private LoginApiResponse handleStudentLogin(StudentUser user, String rawPassword, String ip) {
@@ -337,7 +337,7 @@ private LoginApiResponse handleStudentLogin(StudentUser user, String rawPassword
 
 ### 5.5 `SystemTab.jsx` — Toggle Với Xác Nhận Trước Khi Ghi
 
-**File:** [SystemTab.jsx](/apps/frontend/src/components/admin/settings/SystemTab.jsx) | Dòng 22–38
+**File:** [SystemTab.jsx](../../../apps/frontend/src/components/admin/settings/SystemTab.jsx) | Dòng 22–38
 
 ```jsx
 async function handleToggle() {

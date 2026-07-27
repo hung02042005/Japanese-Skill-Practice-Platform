@@ -15,11 +15,11 @@ Feature trải dài trên **3 tầng**:
 
 | Tầng | Mô tả |
 |---|---|
-| **Frontend (React)** | [Onboarding.jsx](/apps/frontend/src/pages/onboarding/Onboarding.jsx) (khảo sát 3 bước) + [Profile.jsx](/apps/frontend/src/pages/profile/Profile.jsx) (xem/sửa hồ sơ + avatar) + [ChangePassword.jsx](/apps/frontend/src/pages/settings/ChangePassword.jsx) + [ChangeEmail.jsx](/apps/frontend/src/pages/settings/ChangeEmail.jsx), tất cả gọi API qua [studentService.js](/apps/frontend/src/api/studentService.js) |
-| **Backend (Spring Boot)** | [StudentController.java](/apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java) nhận request tại `/api/students/**` → ủy quyền cho [StudentProfileService.java](/apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java) (profile/onboarding/avatar/đổi email) hoặc [PasswordResetService.java](/apps/backend/src/main/java/com/jlpt/feature/auth/PasswordResetService.java) (đổi mật khẩu) → [StudentUserRepository](/apps/backend/src/main/java/com/jlpt/feature/student/StudentUserRepository.java) đọc/ghi DB |
-| **Database (MySQL)** | Bảng `student_users` (entity [StudentUser.java](/apps/backend/src/main/java/com/jlpt/feature/student/StudentUser.java)) |
+| **Frontend (React)** | [Onboarding.jsx](../../../apps/frontend/src/pages/onboarding/Onboarding.jsx) (khảo sát 3 bước) + [Profile.jsx](../../../apps/frontend/src/pages/profile/Profile.jsx) (xem/sửa hồ sơ + avatar) + [ChangePassword.jsx](../../../apps/frontend/src/pages/settings/ChangePassword.jsx) + [ChangeEmail.jsx](../../../apps/frontend/src/pages/settings/ChangeEmail.jsx), tất cả gọi API qua [studentService.js](../../../apps/frontend/src/api/studentService.js) |
+| **Backend (Spring Boot)** | [StudentController.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java) nhận request tại `/api/students/**` → ủy quyền cho [StudentProfileService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java) (profile/onboarding/avatar/đổi email) hoặc [PasswordResetService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/PasswordResetService.java) (đổi mật khẩu) → [StudentUserRepository](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUserRepository.java) đọc/ghi DB |
+| **Database (MySQL)** | Bảng `student_users` (entity [StudentUser.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUser.java)) |
 
-**Entry point**: 4 route đều bọc `PrivateRoute` (đã xác nhận trong [App.jsx:95-98](/apps/frontend/src/App.jsx#L95-L98)):
+**Entry point**: 4 route đều bọc `PrivateRoute` (đã xác nhận trong [App.jsx:95-98](../../../apps/frontend/src/App.jsx#L95-L98)):
 - `/onboarding` → `Onboarding.jsx`
 - `/profile` → `Profile.jsx`
 - `/settings/change-password` → `ChangePassword.jsx`
@@ -41,33 +41,33 @@ Các luồng được cover:
 
 | File | Vai trò | Loại |
 |---|---|---|
-| [Onboarding.jsx](/apps/frontend/src/pages/onboarding/Onboarding.jsx) | Khảo sát 3 bước (level JLPT, thời gian học/ngày, kỹ năng ưu tiên) ngay sau lần đăng nhập đầu | Page Component |
-| [Profile.jsx](/apps/frontend/src/pages/profile/Profile.jsx) | Trang hồ sơ: sửa họ tên/SĐT, đổi avatar (preview trước khi lưu), link sang đổi email/mật khẩu | Page Component |
-| [ChangePassword.jsx](/apps/frontend/src/pages/settings/ChangePassword.jsx) | Form đổi mật khẩu: validate độ mạnh client-side, tự đăng xuất sau khi đổi thành công | Page Component |
-| [ChangeEmail.jsx](/apps/frontend/src/pages/settings/ChangeEmail.jsx) | Form đổi email 2 bước (request OTP → confirm OTP), có cooldown gửi lại | Page Component |
-| [studentService.js](/apps/frontend/src/api/studentService.js) | Tầng gọi API: `submitOnboarding`, `updateProfile`, `uploadAvatar`, `changePassword`, `requestEmailChange`, `confirmEmailChange` | API Service |
-| [authSlice.js](/apps/frontend/src/store/slices/authSlice.js) | Redux slice: action `setUser` (đồng bộ lại `user` sau khi profile/onboarding đổi), thunk `logoutThunk` (dùng sau khi đổi mật khẩu/email) | State (Redux) |
-| [Login.jsx](/apps/frontend/src/pages/login/Login.jsx) | Không thuộc feature này nhưng là nơi **quyết định điều hướng** `/onboarding` vs `/dashboard` ngay sau khi đăng nhập | Page Component (điểm kết nối) |
-| [App.jsx](/apps/frontend/src/App.jsx) | Khai báo 4 route của feature, đều bọc `PrivateRoute` | Router Config |
+| [Onboarding.jsx](../../../apps/frontend/src/pages/onboarding/Onboarding.jsx) | Khảo sát 3 bước (level JLPT, thời gian học/ngày, kỹ năng ưu tiên) ngay sau lần đăng nhập đầu | Page Component |
+| [Profile.jsx](../../../apps/frontend/src/pages/profile/Profile.jsx) | Trang hồ sơ: sửa họ tên/SĐT, đổi avatar (preview trước khi lưu), link sang đổi email/mật khẩu | Page Component |
+| [ChangePassword.jsx](../../../apps/frontend/src/pages/settings/ChangePassword.jsx) | Form đổi mật khẩu: validate độ mạnh client-side, tự đăng xuất sau khi đổi thành công | Page Component |
+| [ChangeEmail.jsx](../../../apps/frontend/src/pages/settings/ChangeEmail.jsx) | Form đổi email 2 bước (request OTP → confirm OTP), có cooldown gửi lại | Page Component |
+| [studentService.js](../../../apps/frontend/src/api/studentService.js) | Tầng gọi API: `submitOnboarding`, `updateProfile`, `uploadAvatar`, `changePassword`, `requestEmailChange`, `confirmEmailChange` | API Service |
+| [authSlice.js](../../../apps/frontend/src/store/slices/authSlice.js) | Redux slice: action `setUser` (đồng bộ lại `user` sau khi profile/onboarding đổi), thunk `logoutThunk` (dùng sau khi đổi mật khẩu/email) | State (Redux) |
+| [Login.jsx](../../../apps/frontend/src/pages/login/Login.jsx) | Không thuộc feature này nhưng là nơi **quyết định điều hướng** `/onboarding` vs `/dashboard` ngay sau khi đăng nhập | Page Component (điểm kết nối) |
+| [App.jsx](../../../apps/frontend/src/App.jsx) | Khai báo 4 route của feature, đều bọc `PrivateRoute` | Router Config |
 
 ### 2.2 Backend
 
 | File | Vai trò | Loại |
 |---|---|---|
-| [StudentController.java](/apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java) | Entry point HTTP `/api/students/**`, ép role STUDENT (`@PreAuthorize` class-level), lấy `studentId` từ JWT principal | Controller |
-| [StudentProfileService.java](/apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java) | Business logic: xem/sửa hồ sơ, onboarding, cập nhật avatar, đổi email (gửi OTP + xác nhận) | Service |
-| [PasswordResetService.java](/apps/backend/src/main/java/com/jlpt/feature/auth/PasswordResetService.java) | Business logic đổi mật khẩu (`changePassword`) — cùng file còn có quên/đặt lại mật khẩu (ngoài phạm vi feature này) | Service |
-| [AvatarStorageService.java](/apps/backend/src/main/java/com/jlpt/feature/student/AvatarStorageService.java) | Validate + lưu file ảnh đại diện ra thư mục `uploads/avatars` (không lưu BLOB — ADR-006/LESSON-002), trả về URL public | Service |
-| [OtpVerificationService.java](/apps/backend/src/main/java/com/jlpt/shared/security/OtpVerificationService.java) | Sinh mã OTP 6 số, lưu in-memory kèm cooldown 60s + hết hạn 5 phút, gửi qua `EmailService` | Service (shared) |
-| [StudentResponseMapper.java](/apps/backend/src/main/java/com/jlpt/feature/auth/StudentResponseMapper.java) | Map `StudentUser` (Entity) → `StudentResponse` (DTO), tính `onboardingCompleted` suy diễn từ `targetJlptLevel != null` | Mapper (dùng chung) |
-| [StudentUser.java](/apps/backend/src/main/java/com/jlpt/feature/student/StudentUser.java) | Entity JPA bảng `student_users` — `fullName`, `phone`, `avatarUrl`, `currentJlptLevel`, `targetJlptLevel`, `email`, `passwordHash`, `status` (`@SQLRestriction` ẩn DELETED) | Entity |
-| [StudentUserRepository.java](/apps/backend/src/main/java/com/jlpt/feature/student/StudentUserRepository.java) | Truy vấn DB: `findById`, `save`, `existsByEmail` (check trùng khi đổi email) | Repository |
-| [OnboardingRequest.java](/apps/backend/src/main/java/com/jlpt/feature/student/dto/request/OnboardingRequest.java) | DTO nhận `jlptGoal` (bắt buộc), `dailyMinutes`/`focusSkills` (nhận nhưng chưa lưu) | DTO Request |
-| [UpdateProfileRequest.java](/apps/backend/src/main/java/com/jlpt/feature/student/dto/request/UpdateProfileRequest.java) | DTO nhận `fullName`, `phone`, `targetJlptLevel`, `avatarUrl` — đều optional, validate độ dài/format | DTO Request |
-| [ChangePasswordRequest.java](/apps/backend/src/main/java/com/jlpt/feature/auth/dto/request/ChangePasswordRequest.java) | DTO nhận `currentPassword`/`newPassword`/`confirmPassword`, validate độ mạnh mật khẩu mới bằng regex | DTO Request |
-| [RequestEmailChangeRequest.java](/apps/backend/src/main/java/com/jlpt/feature/auth/dto/request/RequestEmailChangeRequest.java) | DTO nhận `newEmail` + `currentPassword` (bước 1 đổi email) | DTO Request |
-| [ConfirmEmailChangeRequest.java](/apps/backend/src/main/java/com/jlpt/feature/auth/dto/request/ConfirmEmailChangeRequest.java) | DTO nhận `newEmail` + `otpCode` (bước 2 đổi email) | DTO Request |
-| [StudentResponse.java](/apps/backend/src/main/java/com/jlpt/feature/student/dto/response/StudentResponse.java) | DTO trả về hồ sơ đầy đủ, kèm cờ `onboardingCompleted` | DTO Response |
+| [StudentController.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java) | Entry point HTTP `/api/students/**`, ép role STUDENT (`@PreAuthorize` class-level), lấy `studentId` từ JWT principal | Controller |
+| [StudentProfileService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java) | Business logic: xem/sửa hồ sơ, onboarding, cập nhật avatar, đổi email (gửi OTP + xác nhận) | Service |
+| [PasswordResetService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/PasswordResetService.java) | Business logic đổi mật khẩu (`changePassword`) — cùng file còn có quên/đặt lại mật khẩu (ngoài phạm vi feature này) | Service |
+| [AvatarStorageService.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/AvatarStorageService.java) | Validate + lưu file ảnh đại diện ra thư mục `uploads/avatars` (không lưu BLOB — ADR-006/LESSON-002), trả về URL public | Service |
+| [OtpVerificationService.java](../../../apps/backend/src/main/java/com/jlpt/shared/security/OtpVerificationService.java) | Sinh mã OTP 6 số, lưu in-memory kèm cooldown 60s + hết hạn 5 phút, gửi qua `EmailService` | Service (shared) |
+| [StudentResponseMapper.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentResponseMapper.java) | Map `StudentUser` (Entity) → `StudentResponse` (DTO), tính `onboardingCompleted` suy diễn từ `targetJlptLevel != null` | Mapper (dùng chung) |
+| [StudentUser.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUser.java) | Entity JPA bảng `student_users` — `fullName`, `phone`, `avatarUrl`, `currentJlptLevel`, `targetJlptLevel`, `email`, `passwordHash`, `status` (`@SQLRestriction` ẩn DELETED) | Entity |
+| [StudentUserRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentUserRepository.java) | Truy vấn DB: `findById`, `save`, `existsByEmail` (check trùng khi đổi email) | Repository |
+| [OnboardingRequest.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/dto/request/OnboardingRequest.java) | DTO nhận `jlptGoal` (bắt buộc), `dailyMinutes`/`focusSkills` (nhận nhưng chưa lưu) | DTO Request |
+| [UpdateProfileRequest.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/dto/request/UpdateProfileRequest.java) | DTO nhận `fullName`, `phone`, `targetJlptLevel`, `avatarUrl` — đều optional, validate độ dài/format | DTO Request |
+| [ChangePasswordRequest.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/dto/request/ChangePasswordRequest.java) | DTO nhận `currentPassword`/`newPassword`/`confirmPassword`, validate độ mạnh mật khẩu mới bằng regex | DTO Request |
+| [RequestEmailChangeRequest.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/dto/request/RequestEmailChangeRequest.java) | DTO nhận `newEmail` + `currentPassword` (bước 1 đổi email) | DTO Request |
+| [ConfirmEmailChangeRequest.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/dto/request/ConfirmEmailChangeRequest.java) | DTO nhận `newEmail` + `otpCode` (bước 2 đổi email) | DTO Request |
+| [StudentResponse.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/dto/response/StudentResponse.java) | DTO trả về hồ sơ đầy đủ, kèm cờ `onboardingCompleted` | DTO Response |
 
 ---
 
@@ -132,25 +132,25 @@ graph TD
 
 ### 4.1 Luồng Onboarding (lần đầu đăng nhập)
 
-1. Student đăng nhập thành công → `Login.jsx` kiểm tra `res.user?.onboardingCompleted === false` ([Login.jsx:63](/apps/frontend/src/pages/login/Login.jsx#L63), tương tự cho Google login ở [dòng 73](/apps/frontend/src/pages/login/Login.jsx#L73)) → `navigate('/onboarding')`.
+1. Student đăng nhập thành công → `Login.jsx` kiểm tra `res.user?.onboardingCompleted === false` ([Login.jsx:63](../../../apps/frontend/src/pages/login/Login.jsx#L63), tương tự cho Google login ở [dòng 73](../../../apps/frontend/src/pages/login/Login.jsx#L73)) → `navigate('/onboarding')`.
 2. `Onboarding.jsx` hiển thị 3 bước: chọn level JLPT (`step===1`), thời gian học/ngày (`step===2`), kỹ năng ưu tiên (`step===3`) — toàn bộ state cục bộ React, không gọi API cho tới bước cuối.
-3. Student bấm "Bắt đầu học!" → `handleFinish()` ([Onboarding.jsx:47-60](/apps/frontend/src/pages/onboarding/Onboarding.jsx#L47-L60)) gọi `submitOnboarding({jlptGoal, dailyMinutes, focusSkills})`.
-4. `studentService.submitOnboarding` ([studentService.js:22-25](/apps/frontend/src/api/studentService.js#L22-L25)) gửi `POST /api/students/onboarding`.
-5. `StudentController.submitOnboarding` ([StudentController.java:64-70](/apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L64-L70)) lấy `studentId` từ JWT, gọi `studentProfileService.submitOnboarding(studentId, request)`.
-6. `StudentProfileService.submitOnboarding` ([StudentProfileService.java:68-80](/apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L68-L80)): parse `jlptGoal`, set **cả** `targetJlptLevel` **và** `currentJlptLevel` bằng level vừa chọn, lưu qua `studentUserRepository.save()`. `dailyMinutes`/`focusSkills` bị bỏ qua (chưa có cột DB).
+3. Student bấm "Bắt đầu học!" → `handleFinish()` ([Onboarding.jsx:47-60](../../../apps/frontend/src/pages/onboarding/Onboarding.jsx#L47-L60)) gọi `submitOnboarding({jlptGoal, dailyMinutes, focusSkills})`.
+4. `studentService.submitOnboarding` ([studentService.js:22-25](../../../apps/frontend/src/api/studentService.js#L22-L25)) gửi `POST /api/students/onboarding`.
+5. `StudentController.submitOnboarding` ([StudentController.java:64-70](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L64-L70)) lấy `studentId` từ JWT, gọi `studentProfileService.submitOnboarding(studentId, request)`.
+6. `StudentProfileService.submitOnboarding` ([StudentProfileService.java:68-80](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L68-L80)): parse `jlptGoal`, set **cả** `targetJlptLevel` **và** `currentJlptLevel` bằng level vừa chọn, lưu qua `studentUserRepository.save()`. `dailyMinutes`/`focusSkills` bị bỏ qua (chưa có cột DB).
 7. Backend trả `StudentResponse` với `onboardingCompleted=true` (vì `targetJlptLevel` giờ khác null).
 8. Frontend `dispatch(setUser(updated))` rồi `navigate('/dashboard', {replace:true})`.
 
 ### 4.2 Luồng Đổi Email (2 bước, xác thực OTP)
 
 1. Từ `Profile.jsx`, Student bấm "Đổi email" → điều hướng `/settings/change-email` → `ChangeEmail.jsx` render step `'request'`.
-2. Student nhập email mới + mật khẩu hiện tại, submit → `handleRequestOtp()` ([ChangeEmail.jsx:28-42](/apps/frontend/src/pages/settings/ChangeEmail.jsx#L28-L42)) gọi `requestEmailChange({newEmail, currentPassword})`.
-3. `studentService.requestEmailChange` ([studentService.js:49-52](/apps/frontend/src/api/studentService.js#L49-L52)) gửi `POST /api/students/me/email/otp`.
-4. `StudentController.requestEmailChange` ([StudentController.java:120-126](/apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L120-L126)) → `StudentProfileService.requestEmailChange` ([StudentProfileService.java:94-116](/apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L94-L116)): xác thực `currentPassword` khớp `passwordHash` hiện tại, kiểm tra email mới khác email cũ và **chưa tồn tại ở cả 3 bảng** (`student_users`/`staff_users`/`admin_users`), rồi gọi `otpVerificationService.generateAndSend(newEmail)`.
-5. `OtpVerificationService.generateAndSend` ([OtpVerificationService.java:36-50](/apps/backend/src/main/java/com/jlpt/shared/security/OtpVerificationService.java#L36-L50)): chặn resend nếu chưa qua cooldown 60s, sinh mã 6 số, lưu in-memory kèm hạn 5 phút, gửi email qua `EmailService`.
+2. Student nhập email mới + mật khẩu hiện tại, submit → `handleRequestOtp()` ([ChangeEmail.jsx:28-42](../../../apps/frontend/src/pages/settings/ChangeEmail.jsx#L28-L42)) gọi `requestEmailChange({newEmail, currentPassword})`.
+3. `studentService.requestEmailChange` ([studentService.js:49-52](../../../apps/frontend/src/api/studentService.js#L49-L52)) gửi `POST /api/students/me/email/otp`.
+4. `StudentController.requestEmailChange` ([StudentController.java:120-126](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L120-L126)) → `StudentProfileService.requestEmailChange` ([StudentProfileService.java:94-116](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L94-L116)): xác thực `currentPassword` khớp `passwordHash` hiện tại, kiểm tra email mới khác email cũ và **chưa tồn tại ở cả 3 bảng** (`student_users`/`staff_users`/`admin_users`), rồi gọi `otpVerificationService.generateAndSend(newEmail)`.
+5. `OtpVerificationService.generateAndSend` ([OtpVerificationService.java:36-50](../../../apps/backend/src/main/java/com/jlpt/shared/security/OtpVerificationService.java#L36-L50)): chặn resend nếu chưa qua cooldown 60s, sinh mã 6 số, lưu in-memory kèm hạn 5 phút, gửi email qua `EmailService`.
 6. Frontend chuyển `step='confirm'`, hiện form nhập OTP + đếm ngược 60s trước khi cho gửi lại.
-7. Student nhập mã OTP, submit → `handleConfirm()` ([ChangeEmail.jsx:58-75](/apps/frontend/src/pages/settings/ChangeEmail.jsx#L58-L75)) gọi `confirmEmailChange({newEmail, otpCode})`.
-8. `StudentController.confirmEmailChange` ([StudentController.java:128-135](/apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L128-L135)) → `StudentProfileService.confirmEmailChange` ([StudentProfileService.java:119-138](/apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L119-L138)): gọi `otpVerificationService.verify()`, kiểm tra lại `existsByEmail` (chống race condition), set `user.setEmail(newEmail)`, lưu DB.
+7. Student nhập mã OTP, submit → `handleConfirm()` ([ChangeEmail.jsx:58-75](../../../apps/frontend/src/pages/settings/ChangeEmail.jsx#L58-L75)) gọi `confirmEmailChange({newEmail, otpCode})`.
+8. `StudentController.confirmEmailChange` ([StudentController.java:128-135](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L128-L135)) → `StudentProfileService.confirmEmailChange` ([StudentProfileService.java:119-138](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L119-L138)): gọi `otpVerificationService.verify()`, kiểm tra lại `existsByEmail` (chống race condition), set `user.setEmail(newEmail)`, lưu DB.
 9. Frontend nhận thành công → toast → `setTimeout` 1.5s → `dispatch(logoutThunk())` → `navigate('/login')` (bắt buộc đăng nhập lại bằng email mới).
 
 ### 4.3 Sequence Diagram Tổng Hợp (Onboarding + Đổi Email)
@@ -209,7 +209,7 @@ sequenceDiagram
 
 ### 5.1 `StudentProfileService.java` — Guard Không Ghi Đè Avatar Khi Update Profile
 
-**File:** [StudentProfileService.java:42-62](/apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L42-L62)
+**File:** [StudentProfileService.java:42-62](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L42-L62)
 
 ```java
 @Transactional
@@ -235,11 +235,11 @@ public StudentResponse updateProfile(Long studentId, UpdateProfileRequest reques
 }
 ```
 
-> **Giải thích:** Đây là điểm dễ gây bug nhất nếu code sai — `Profile.jsx` gọi 2 API tuần tự (`uploadAvatar` rồi `updateProfile`), và request thứ 2 (`UpdateProfileRequest`) **không kèm** `avatarUrl` (form chỉ gửi `fullName`/`phone`, xem [studentService.js:28-31](/apps/frontend/src/api/studentService.js#L28-L31)). Nếu `updateProfile` set thẳng `user.setAvatarUrl(request.getAvatarUrl())` mà không check null, avatar vừa upload xong sẽ bị ghi đè thành `null` ngay lập tức. Check `if (request.getAvatarUrl() != null)` chính là guard chống lại việc đó.
+> **Giải thích:** Đây là điểm dễ gây bug nhất nếu code sai — `Profile.jsx` gọi 2 API tuần tự (`uploadAvatar` rồi `updateProfile`), và request thứ 2 (`UpdateProfileRequest`) **không kèm** `avatarUrl` (form chỉ gửi `fullName`/`phone`, xem [studentService.js:28-31](../../../apps/frontend/src/api/studentService.js#L28-L31)). Nếu `updateProfile` set thẳng `user.setAvatarUrl(request.getAvatarUrl())` mà không check null, avatar vừa upload xong sẽ bị ghi đè thành `null` ngay lập tức. Check `if (request.getAvatarUrl() != null)` chính là guard chống lại việc đó.
 
 ### 5.2 `StudentController.java` — Thứ Tự Gọi 2 Service Khi Upload Avatar
 
-**File:** [StudentController.java:72-79](/apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L72-L79)
+**File:** [StudentController.java:72-79](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L72-L79)
 
 ```java
 @PostMapping("/me/avatar")
@@ -256,7 +256,7 @@ public ResponseEntity<ApiResponse<StudentResponse>> uploadAvatar(
 
 ### 5.3 `AvatarStorageService.java` — Validate Trước Khi Ghi File (Không BLOB Trong DB)
 
-**File:** [AvatarStorageService.java:28-56](/apps/backend/src/main/java/com/jlpt/feature/student/AvatarStorageService.java#L28-L56)
+**File:** [AvatarStorageService.java:28-56](../../../apps/backend/src/main/java/com/jlpt/feature/student/AvatarStorageService.java#L28-L56)
 
 ```java
 public String store(MultipartFile file, Long studentId) {
@@ -279,7 +279,7 @@ public String store(MultipartFile file, Long studentId) {
 
 ### 5.4 `StudentProfileService.java` — Đổi Email: Chặn Trùng Ở Cả 3 Bảng User
 
-**File:** [StudentProfileService.java:94-116](/apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L94-L116)
+**File:** [StudentProfileService.java:94-116](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L94-L116)
 
 ```java
 @Transactional(readOnly = true)
@@ -310,7 +310,7 @@ public void requestEmailChange(Long studentId, RequestEmailChangeRequest request
 
 ### 5.5 `ChangePassword.jsx` — Validate Độ Mạnh Mật Khẩu Client-Side
 
-**File:** [ChangePassword.jsx:12-24](/apps/frontend/src/pages/settings/ChangePassword.jsx#L12-L24)
+**File:** [ChangePassword.jsx:12-24](../../../apps/frontend/src/pages/settings/ChangePassword.jsx#L12-L24)
 
 ```jsx
 function validate(form) {
@@ -328,7 +328,7 @@ function validate(form) {
 }
 ```
 
-> **Giải thích:** Validate client-side chi tiết hơn cả regex ở backend ([ChangePasswordRequest.java](/apps/backend/src/main/java/com/jlpt/feature/auth/dto/request/ChangePasswordRequest.java) chỉ yêu cầu `.{8,}` + 1 hoa + 1 số qua 1 regex duy nhất, không tách lỗi từng tiêu chí) — mục đích là UX (thông báo lỗi cụ thể theo từng tiêu chí thiếu), backend vẫn là nơi validate thật sự đáng tin (không tin client dù đã qua bước này).
+> **Giải thích:** Validate client-side chi tiết hơn cả regex ở backend ([ChangePasswordRequest.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/dto/request/ChangePasswordRequest.java) chỉ yêu cầu `.{8,}` + 1 hoa + 1 số qua 1 regex duy nhất, không tách lỗi từng tiêu chí) — mục đích là UX (thông báo lỗi cụ thể theo từng tiêu chí thiếu), backend vẫn là nơi validate thật sự đáng tin (không tin client dù đã qua bước này).
 
 ---
 
@@ -396,24 +396,24 @@ Theo dõi dữ liệu **"mục tiêu JLPT" (`jlptGoal`/`targetJlptLevel`)** xuy�
 
 | Luồng | Bước | File | Function/Method | Kết nối tới | Dữ liệu | Ghi chú |
 |---|---|---|---|---|---|---|
-| Onboarding | 1 | [Login.jsx:63](/apps/frontend/src/pages/login/Login.jsx#L63) | điều kiện trong `handleSubmit` | `navigate('/onboarding')` | `user.onboardingCompleted` | Cũng áp dụng cho Google login (dòng 73) |
-| Onboarding | 2 | [Onboarding.jsx](/apps/frontend/src/pages/onboarding/Onboarding.jsx) | `handleFinish()` (dòng 47-60) | `studentService.submitOnboarding` | `{jlptGoal, dailyMinutes, focusSkills}` | Chỉ `jlptGoal` được BE dùng |
-| Onboarding | 3 | [StudentController.java:64-70](/apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L64-L70) | `submitOnboarding()` | `StudentProfileService` | `studentId`, `OnboardingRequest` | `@PreAuthorize STUDENT` ở class-level |
-| Onboarding | 4 | [StudentProfileService.java:68-80](/apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L68-L80) | `submitOnboarding()` | `StudentUserRepository.save` | set cả `target`+`current` JlptLevel | `@Transactional` |
-| Profile | 1 | [Profile.jsx](/apps/frontend/src/pages/profile/Profile.jsx) | `handleSave()` (dòng 59-77) | `uploadAvatar` rồi `updateProfile` | `File`, `{fullName, phone}` | Gọi tuần tự, không song song |
-| Profile | 2 | [StudentController.java:72-79](/apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L72-L79) | `uploadAvatar()` | `AvatarStorageService` + `StudentProfileService` | `MultipartFile` | Điều phối 2 service (mục 5.2) |
-| Profile | 3 | [AvatarStorageService.java:28-56](/apps/backend/src/main/java/com/jlpt/feature/student/AvatarStorageService.java#L28-L56) | `store()` | Ghi file `uploads/avatars/` | trả `String avatarUrl` | Max 5MB, chỉ PNG/JPG/WEBP |
-| Profile | 4 | [StudentProfileService.java:42-62](/apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L42-L62) | `updateProfile()` | `StudentUserRepository.save` | `fullName`, `phone`, `avatarUrl?` | Guard không ghi đè avatar (mục 5.1) |
-| Password | 1 | [ChangePassword.jsx](/apps/frontend/src/pages/settings/ChangePassword.jsx) | `handleSubmit()` (dòng 43-66) | `studentService.changePassword` | 3 field password | Validate độ mạnh client-side (mục 5.5) |
-| Password | 2 | [StudentController.java:113-118](/apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L113-L118) | `changePassword()` | `PasswordResetService` | `ChangePasswordRequest` | — |
-| Password | 3 | [PasswordResetService.java:93-108](/apps/backend/src/main/java/com/jlpt/feature/auth/PasswordResetService.java#L93-L108) | `changePassword()` | `StudentUserRepository.save` | So khớp `currentPassword`, encode `newPassword` | `@Transactional` |
-| Password | 4 | [ChangePassword.jsx:56-60](/apps/frontend/src/pages/settings/ChangePassword.jsx#L56-L60) | callback `then` | `authSlice.logoutThunk` | — | Đăng xuất sau 1.5s, `navigate('/login')` |
-| Email | 1 | [ChangeEmail.jsx:28-42](/apps/frontend/src/pages/settings/ChangeEmail.jsx#L28-L42) | `handleRequestOtp()` | `studentService.requestEmailChange` | `{newEmail, currentPassword}` | Chuyển step sang `'confirm'` |
-| Email | 2 | [StudentProfileService.java:94-116](/apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L94-L116) | `requestEmailChange()` | `OtpVerificationService.generateAndSend` | Check trùng cả 3 bảng user (mục 5.4) | — |
-| Email | 3 | [OtpVerificationService.java:36-50](/apps/backend/src/main/java/com/jlpt/shared/security/OtpVerificationService.java#L36-L50) | `generateAndSend()` | `EmailService.sendOtpEmail` | Mã 6 số, hạn 5 phút | Cooldown 60s giữa 2 lần gửi |
-| Email | 4 | [ChangeEmail.jsx:58-75](/apps/frontend/src/pages/settings/ChangeEmail.jsx#L58-L75) | `handleConfirm()` | `studentService.confirmEmailChange` | `{newEmail, otpCode}` | — |
-| Email | 5 | [StudentProfileService.java:119-138](/apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L119-L138) | `confirmEmailChange()` | `OtpVerificationService.verify` + `StudentUserRepository.save` | Set `user.email` | Check lại `existsByEmail` chống race condition |
-| Email | 6 | [ChangeEmail.jsx:65-69](/apps/frontend/src/pages/settings/ChangeEmail.jsx#L65-L69) | callback `then` | `authSlice.logoutThunk` | — | Đăng xuất, bắt đăng nhập lại bằng email mới |
+| Onboarding | 1 | [Login.jsx:63](../../../apps/frontend/src/pages/login/Login.jsx#L63) | điều kiện trong `handleSubmit` | `navigate('/onboarding')` | `user.onboardingCompleted` | Cũng áp dụng cho Google login (dòng 73) |
+| Onboarding | 2 | [Onboarding.jsx](../../../apps/frontend/src/pages/onboarding/Onboarding.jsx) | `handleFinish()` (dòng 47-60) | `studentService.submitOnboarding` | `{jlptGoal, dailyMinutes, focusSkills}` | Chỉ `jlptGoal` được BE dùng |
+| Onboarding | 3 | [StudentController.java:64-70](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L64-L70) | `submitOnboarding()` | `StudentProfileService` | `studentId`, `OnboardingRequest` | `@PreAuthorize STUDENT` ở class-level |
+| Onboarding | 4 | [StudentProfileService.java:68-80](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L68-L80) | `submitOnboarding()` | `StudentUserRepository.save` | set cả `target`+`current` JlptLevel | `@Transactional` |
+| Profile | 1 | [Profile.jsx](../../../apps/frontend/src/pages/profile/Profile.jsx) | `handleSave()` (dòng 59-77) | `uploadAvatar` rồi `updateProfile` | `File`, `{fullName, phone}` | Gọi tuần tự, không song song |
+| Profile | 2 | [StudentController.java:72-79](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L72-L79) | `uploadAvatar()` | `AvatarStorageService` + `StudentProfileService` | `MultipartFile` | Điều phối 2 service (mục 5.2) |
+| Profile | 3 | [AvatarStorageService.java:28-56](../../../apps/backend/src/main/java/com/jlpt/feature/student/AvatarStorageService.java#L28-L56) | `store()` | Ghi file `uploads/avatars/` | trả `String avatarUrl` | Max 5MB, chỉ PNG/JPG/WEBP |
+| Profile | 4 | [StudentProfileService.java:42-62](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L42-L62) | `updateProfile()` | `StudentUserRepository.save` | `fullName`, `phone`, `avatarUrl?` | Guard không ghi đè avatar (mục 5.1) |
+| Password | 1 | [ChangePassword.jsx](../../../apps/frontend/src/pages/settings/ChangePassword.jsx) | `handleSubmit()` (dòng 43-66) | `studentService.changePassword` | 3 field password | Validate độ mạnh client-side (mục 5.5) |
+| Password | 2 | [StudentController.java:113-118](../../../apps/backend/src/main/java/com/jlpt/feature/student/StudentController.java#L113-L118) | `changePassword()` | `PasswordResetService` | `ChangePasswordRequest` | — |
+| Password | 3 | [PasswordResetService.java:93-108](../../../apps/backend/src/main/java/com/jlpt/feature/auth/PasswordResetService.java#L93-L108) | `changePassword()` | `StudentUserRepository.save` | So khớp `currentPassword`, encode `newPassword` | `@Transactional` |
+| Password | 4 | [ChangePassword.jsx:56-60](../../../apps/frontend/src/pages/settings/ChangePassword.jsx#L56-L60) | callback `then` | `authSlice.logoutThunk` | — | Đăng xuất sau 1.5s, `navigate('/login')` |
+| Email | 1 | [ChangeEmail.jsx:28-42](../../../apps/frontend/src/pages/settings/ChangeEmail.jsx#L28-L42) | `handleRequestOtp()` | `studentService.requestEmailChange` | `{newEmail, currentPassword}` | Chuyển step sang `'confirm'` |
+| Email | 2 | [StudentProfileService.java:94-116](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L94-L116) | `requestEmailChange()` | `OtpVerificationService.generateAndSend` | Check trùng cả 3 bảng user (mục 5.4) | — |
+| Email | 3 | [OtpVerificationService.java:36-50](../../../apps/backend/src/main/java/com/jlpt/shared/security/OtpVerificationService.java#L36-L50) | `generateAndSend()` | `EmailService.sendOtpEmail` | Mã 6 số, hạn 5 phút | Cooldown 60s giữa 2 lần gửi |
+| Email | 4 | [ChangeEmail.jsx:58-75](../../../apps/frontend/src/pages/settings/ChangeEmail.jsx#L58-L75) | `handleConfirm()` | `studentService.confirmEmailChange` | `{newEmail, otpCode}` | — |
+| Email | 5 | [StudentProfileService.java:119-138](../../../apps/backend/src/main/java/com/jlpt/feature/auth/StudentProfileService.java#L119-L138) | `confirmEmailChange()` | `OtpVerificationService.verify` + `StudentUserRepository.save` | Set `user.email` | Check lại `existsByEmail` chống race condition |
+| Email | 6 | [ChangeEmail.jsx:65-69](../../../apps/frontend/src/pages/settings/ChangeEmail.jsx#L65-L69) | callback `then` | `authSlice.logoutThunk` | — | Đăng xuất, bắt đăng nhập lại bằng email mới |
 
 ---
 

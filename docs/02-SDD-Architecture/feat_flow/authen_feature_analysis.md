@@ -12,14 +12,14 @@ Feature Authentication (Xác thực) quản lý toàn bộ vòng đời phiên l
 
 | File | Vai trò | Loại |
 |------|----------|------|
-| [authSlice.js](apps/frontend/src/store/slices/authSlice.js) | Quản lý trạng thái đăng nhập, user profile và xử lý các hành động bất đồng bộ (Thunk) liên quan đến Auth ở Frontend. | Redux Slice |
-| [authService.js](apps/frontend/src/api/authService.js) | Thực hiện các lệnh gọi API qua HTTP, cấu hình Axios Interceptors để tự đính kèm JWT và tự động gọi API Refresh Token khi có lỗi 401. | API Service |
-| [AuthController.java](apps/backend/src/main/java/com/jlpt/feature/auth/AuthController.java) | Tiếp nhận tất cả các HTTP request từ client (`/api/auth/*`) như login, register, refresh token. | Controller |
-| [AuthenticationService.java](apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java) | Trái tim của nghiệp vụ xác thực. Kiểm tra thông tin đăng nhập, phân loại user (Admin/Staff/Student), tạo/gia hạn JWT token. | Service |
-| [RegistrationService.java](apps/backend/src/main/java/com/jlpt/feature/auth/RegistrationService.java) | Quản lý nghiệp vụ đăng ký tài khoản Student và xác minh email (gửi OTP). | Service |
-| [PasswordResetService.java](apps/backend/src/main/java/com/jlpt/feature/auth/PasswordResetService.java) | Quản lý quy trình quên mật khẩu và đặt lại mật khẩu mới. | Service |
-| [AuthToken.java](apps/backend/src/main/java/com/jlpt/feature/auth/AuthToken.java) / [AuthTokenRepository.java](apps/backend/src/main/java/com/jlpt/feature/auth/AuthTokenRepository.java) | Định nghĩa và thao tác lưu trữ các Refresh Token / Session Token (đối với Staff) vào trong cơ sở dữ liệu. | Entity / Repository |
-| [JwtProvider.java](apps/backend/src/main/java/com/jlpt/shared/security/JwtProvider.java) | Chịu trách nhiệm khởi tạo token bằng thuật toán mã hóa (không xem trực tiếp nhưng được gọi liên tục bởi `AuthenticationService`). | Security Component |
+| [authSlice.js](../../../apps/frontend/src/store/slices/authSlice.js) | Quản lý trạng thái đăng nhập, user profile và xử lý các hành động bất đồng bộ (Thunk) liên quan đến Auth ở Frontend. | Redux Slice |
+| [authService.js](../../../apps/frontend/src/api/authService.js) | Thực hiện các lệnh gọi API qua HTTP, cấu hình Axios Interceptors để tự đính kèm JWT và tự động gọi API Refresh Token khi có lỗi 401. | API Service |
+| [AuthController.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthController.java) | Tiếp nhận tất cả các HTTP request từ client (`/api/auth/*`) như login, register, refresh token. | Controller |
+| [AuthenticationService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java) | Trái tim của nghiệp vụ xác thực. Kiểm tra thông tin đăng nhập, phân loại user (Admin/Staff/Student), tạo/gia hạn JWT token. | Service |
+| [RegistrationService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/RegistrationService.java) | Quản lý nghiệp vụ đăng ký tài khoản Student và xác minh email (gửi OTP). | Service |
+| [PasswordResetService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/PasswordResetService.java) | Quản lý quy trình quên mật khẩu và đặt lại mật khẩu mới. | Service |
+| [AuthToken.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthToken.java) / [AuthTokenRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthTokenRepository.java) | Định nghĩa và thao tác lưu trữ các Refresh Token / Session Token (đối với Staff) vào trong cơ sở dữ liệu. | Entity / Repository |
+| [JwtProvider.java](../../../apps/backend/src/main/java/com/jlpt/shared/security/JwtProvider.java) | Chịu trách nhiệm khởi tạo token bằng thuật toán mã hóa (không xem trực tiếp nhưng được gọi liên tục bởi `AuthenticationService`). | Security Component |
 
 ---
 
@@ -97,7 +97,7 @@ sequenceDiagram
 ## 5. Vai trò từng đoạn code quan trọng
 
 ### 1. Tự động Refresh Token khi gặp lỗi 401 (Frontend)
-**File**: [authService.js](apps/frontend/src/api/authService.js) (dòng 35-77)
+**File**: [authService.js](../../../apps/frontend/src/api/authService.js) (dòng 35-77)
 ```javascript
 api.interceptors.response.use(
   // Xử lý response thành công (không can thiệp)
@@ -141,7 +141,7 @@ api.interceptors.response.use(
 **Giải thích**: Cơ chế này là "silent refresh". Bất cứ API nào trả về lỗi `401 Unauthorized` (do access token hết hạn), Axios sẽ tạm chặn luồng lại, gọi API refresh token ở chế độ nền. Khi nhận được token mới, nó tự động gửi lại API đang lỗi. Sử dụng `refreshPromise` để đảm bảo nếu có nhiều API lỗi cùng lúc, chỉ 1 lệnh refresh token được gửi đi.
 
 ### 2. Định tuyến logic đăng nhập cho mọi Role (Backend)
-**File**: [AuthenticationService.java](apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java) (dòng 126-144)
+**File**: [AuthenticationService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java) (dòng 126-144)
 ```java
 @Transactional
 public LoginApiResponse login(LoginRequest request, String ip) {
@@ -181,11 +181,11 @@ public LoginApiResponse login(LoginRequest request, String ip) {
 
 | Bước | File | Function | Kết nối tới | Dữ liệu | Ghi chú |
 |---|---|---|---|---|---|
-| Đăng nhập (FE) | [authSlice.js](apps/frontend/src/store/slices/authSlice.js) | `loginThunk(credentials)` | [authService.js](apps/frontend/src/api/authService.js) | `credentials` object | Xử lý trạng thái UI loading/error |
-| Đăng nhập (API) | [authService.js](apps/frontend/src/api/authService.js) | `login()` | `AuthController` | `{email, pass}` | Giao tiếp mạng |
-| Đăng nhập (BE) | [AuthController.java](apps/backend/src/main/java/com/jlpt/feature/auth/AuthController.java)| `login()` | `AuthenticationService` | `LoginRequest` | Validator đầu vào |
-| Auth Xử lý | [AuthenticationService.java](apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java)| `login()` | DB, `JwtProvider` | `LoginApiResponse` | Xác thực pass, phân loại Role, ghi token |
-| Token Refresh (FE) | [authService.js](apps/frontend/src/api/authService.js) | Axios interceptor | `POST /auth/refresh` | `refreshToken` | Xử lý tự động lỗi 401 |
+| Đăng nhập (FE) | [authSlice.js](../../../apps/frontend/src/store/slices/authSlice.js) | `loginThunk(credentials)` | [authService.js](../../../apps/frontend/src/api/authService.js) | `credentials` object | Xử lý trạng thái UI loading/error |
+| Đăng nhập (API) | [authService.js](../../../apps/frontend/src/api/authService.js) | `login()` | `AuthController` | `{email, pass}` | Giao tiếp mạng |
+| Đăng nhập (BE) | [AuthController.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthController.java)| `login()` | `AuthenticationService` | `LoginRequest` | Validator đầu vào |
+| Auth Xử lý | [AuthenticationService.java](../../../apps/backend/src/main/java/com/jlpt/feature/auth/AuthenticationService.java)| `login()` | DB, `JwtProvider` | `LoginApiResponse` | Xác thực pass, phân loại Role, ghi token |
+| Token Refresh (FE) | [authService.js](../../../apps/frontend/src/api/authService.js) | Axios interceptor | `POST /auth/refresh` | `refreshToken` | Xử lý tự động lỗi 401 |
 
 ---
 

@@ -107,7 +107,7 @@ Manage users, settings, subscriptions, reports, and notification rules.
 | UC-10 | Take JLPT Mock Test | Assessment | Làm đề thi thử có thời gian; backend chấm điểm và lưu attempt mới. |
 | UC-11 | Practice & Quiz | Assessment | Làm quiz theo chủ đề/bài học; backend tính điểm và trả kết quả. |
 | UC-12 | Flashcard Learning | SRS Review | Ôn tập flashcard theo thuật toán spaced repetition và cập nhật lịch ôn. |
-| UC-13 | Speaking Practice & AI Grading | AI Skills | Nộp audio luyện nói, nhận job_id, AI chấm gợi ý và Staff có thể override. |
+| UC-13 | Speaking Practice | AI Skills | Nộp audio luyện nói, nhận submission id, và nhận điểm/nhận xét sau khi Staff chấm. |
 | UC-14 | Reading Practice | Skills Practice | Luyện đọc hiểu theo cấp độ và lưu kết quả luyện tập. |
 | UC-15 | Listening Practice | Skills Practice | Luyện nghe hiểu với audio và câu hỏi liên quan. |
 | UC-16 | Dictionary & Search | Learning Tools | Tra cứu từ vựng/ngữ pháp/Kanji và lọc theo cấp độ. |
@@ -305,15 +305,15 @@ Manage users, settings, subscriptions, reports, and notification rules.
 
 ### 2.4 AI Skills
 
-#### 2.4.1 UC-13 Speaking Practice & AI Grading
+#### 2.4.1 UC-13 Speaking Practice
 
-| Primary Actors | Student | Secondary Actors | AI Speech Service, Staff |
+| Primary Actors | Student | Secondary Actors | Staff |
 | --- | --- | --- | --- |
-| Description | Student ghi âm hoặc tải lên một file audio trả lời cho bài luyện nói. Hệ thống gửi audio cho dịch vụ AI xử lý ở chế độ nền, sau đó hiện điểm AI gợi ý. Một Staff có thể xem lại và xác nhận điểm cuối cùng. |  |  |
+| Description | Student ghi âm hoặc tải lên một file audio trả lời cho bài luyện nói và nộp để chờ chấm điểm. Một Staff nghe audio và cho điểm cuối cùng kèm nhận xét — không có bước AI tự động chấm. |  |  |
 | Preconditions | File audio hợp lệ (đúng định dạng/kích thước). Bài luyện nói đã được publish. |  |  |
-| Postconditions | Một bản ghi submission được lưu. Trạng thái AI luôn rõ ràng (PENDING, PROCESSING, DONE, hoặc FAILED) để Student luôn biết chuyện gì đang xảy ra. |  |  |
-| Normal Sequence/Flow | 1. Student ghi âm hoặc tải lên file audio cho bài luyện nói.<br>2. Student bấm Nộp bài.<br>3. Hệ thống lưu file audio và tạo một job với trạng thái PENDING.<br>4. Hệ thống trả lời ngay cho Student kèm job_id (không bắt Student chờ).<br>5. Ở chế độ nền, hệ thống gửi audio cho dịch vụ AI chấm giọng nói.<br>6. Dịch vụ AI trả về điểm gợi ý.<br>7. Hệ thống cập nhật trạng thái job thành DONE và lưu điểm AI gợi ý.<br>8. Student kiểm tra kết quả bằng cách tải lại trang (polling).<br>9. Một Staff có thể mở bài nộp, nghe audio, rồi xác nhận hoặc sửa điểm cuối cùng. |  |  |
-| Alternative Sequences/Flows | Nhánh 1 - Dịch vụ AI chậm hoặc lỗi: Hệ thống chờ tới một mốc thời gian (timeout) rồi thử lại (tối đa 3 lần). Nếu vẫn lỗi, trạng thái job chuyển thành FAILED và Student thấy thông báo rõ ràng, không phải màn hình trắng.<br>Nhánh 2 - Sai định dạng file: Hệ thống từ chối file trước khi upload và giải thích các định dạng được phép.<br>Nhánh 3 - Staff sửa điểm AI: Staff có thể ghi đè điểm AI gợi ý bằng điểm cuối cùng của mình kèm nhận xét. |  |  |
+| Postconditions | Một bản ghi submission được lưu với trạng thái PENDING. Sau khi Staff chấm, trạng thái chuyển thành GRADED (hoặc REJECTED nếu bài nộp không hợp lệ), để Student luôn biết chuyện gì đang xảy ra. |  |  |
+| Normal Sequence/Flow | 1. Student ghi âm hoặc tải lên file audio cho bài luyện nói.<br>2. Student bấm Nộp bài.<br>3. Hệ thống kiểm tra file, lưu file audio, và tạo một submission với trạng thái PENDING.<br>4. Hệ thống trả lời ngay cho Student kèm submission id (không bắt Student chờ được chấm điểm).<br>5. Student kiểm tra tiến độ bằng cách tải lại trang (polling); trạng thái vẫn là PENDING cho tới khi Staff xem xét.<br>6. Một Staff mở bài nộp, nghe audio, rồi nhập điểm và nhận xét.<br>7. Hệ thống lưu điểm và nhận xét, chuyển trạng thái thành GRADED, và thông báo cho Student.<br>8. Student xem điểm và nhận xét cuối cùng. |  |  |
+| Alternative Sequences/Flows | Nhánh 1 - Sai định dạng file: Hệ thống từ chối file trước khi upload và giải thích các định dạng được phép.<br>Nhánh 2 - Bài nộp không thể chấm: Staff từ chối bài nộp (ví dụ audio im lặng hoặc không nghe rõ); trạng thái chuyển thành REJECTED và Student thấy lý do rõ ràng thay vì màn hình trắng.<br>Nhánh 3 - Staff sửa lại điểm: Staff có thể sửa lại điểm hoặc nhận xét đã nhập trước đó; hệ thống lưu lại ai chấm và chấm lúc nào. |  |  |
 
 #### 2.4.2 UC-20 AI Handwriting Practice
 

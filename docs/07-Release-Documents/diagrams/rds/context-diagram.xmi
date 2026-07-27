@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schemas.omg.org/spec/XMI/2.1"
+    xmlns:uml="http://www.omg.org/spec/UML/20090901">
+  <uml:Model xmi:type="uml:Model" xmi:id="_08cc493164ed4334946b3f5570977ad0" name="ContextDiagram">
+    <packagedElement xmi:type="uml:Component" xmi:id="_2e026574cf24433284df5c979b18f3e9" name="Japanese Skill Practice Platform" />
+    <packagedElement xmi:type="uml:Component" xmi:id="_eceb51fc86f84232a6ff50564926ffc7" name="Student" />
+    <packagedElement xmi:type="uml:Component" xmi:id="_49f7a12eb56f4b1caccfdba566052ed0" name="Staff" />
+    <packagedElement xmi:type="uml:Component" xmi:id="_33771be21a8c49a88b8b728a79fde1eb" name="StaffManager" />
+    <packagedElement xmi:type="uml:Component" xmi:id="_0c43c382f2cb405f8b477f7b5336ec38" name="Admin" />
+    <packagedElement xmi:type="uml:Component" xmi:id="_606a805a939a413ea5900458ff304c23" name="External AI Service" />
+    <packagedElement xmi:type="uml:Component" xmi:id="_d90f642acb7f4525863a143ef44ff0b3" name="SMTP Server" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_91d599b1babe4caf89f47c17c163c0d6" name="register, login, quiz answers, AI submissions" client="_eceb51fc86f84232a6ff50564926ffc7" supplier="_2e026574cf24433284df5c979b18f3e9" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_1dfd84c7c51d45b79c4da7424f0c1008" name="JWT token, learning content, results, AI feedback" client="_2e026574cf24433284df5c979b18f3e9" supplier="_eceb51fc86f84232a6ff50564926ffc7" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_7609722a57014a14bc748e4b0cf663bf" name="manage content, grade submissions" client="_49f7a12eb56f4b1caccfdba566052ed0" supplier="_2e026574cf24433284df5c979b18f3e9" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_6eddcb26a7614afaa3901ff6ad683e56" name="content data, review queue, student list" client="_2e026574cf24433284df5c979b18f3e9" supplier="_49f7a12eb56f4b1caccfdba566052ed0" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_6fe128fdd0de4d50a14b375893a5cec3" name="approve / reject / publish decisions" client="_33771be21a8c49a88b8b728a79fde1eb" supplier="_2e026574cf24433284df5c979b18f3e9" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_463b192a32864aa08cd9d2600d937560" name="pending review queue" client="_2e026574cf24433284df5c979b18f3e9" supplier="_33771be21a8c49a88b8b728a79fde1eb" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_5c077c2582924ee0b81998faee0f0c3e" name="manage users, settings, notification rules" client="_0c43c382f2cb405f8b477f7b5336ec38" supplier="_2e026574cf24433284df5c979b18f3e9" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_4e3904258eb94573a41ffedbdffcc649" name="reports, audit logs, dashboard stats" client="_2e026574cf24433284df5c979b18f3e9" supplier="_0c43c382f2cb405f8b477f7b5336ec38" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_bf41a2f7c6bf40bea0ce9c1625d3342d" name="OCR / speech job request" client="_2e026574cf24433284df5c979b18f3e9" supplier="_606a805a939a413ea5900458ff304c23" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_06bbdcbcf96e418d8bef8637df16912f" name="similarity %, speech score" client="_606a805a939a413ea5900458ff304c23" supplier="_2e026574cf24433284df5c979b18f3e9" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_cf0c035a7d3b479e9b51486bfa9c56ba" name="verification / reset / notification email" client="_2e026574cf24433284df5c979b18f3e9" supplier="_d90f642acb7f4525863a143ef44ff0b3" />
+  </uml:Model>
+</xmi:XMI>

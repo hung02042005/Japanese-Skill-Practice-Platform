@@ -85,10 +85,14 @@
             <mxPoint x="795" y="190" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="msg_3" value="4: normalize + downsample + computeDtw" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+        <mxCell id="msg_3" value="4: normalize + downsample + computeDtw" style="html=1;endArrow=block;fontSize=11;rounded=0;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="795" y="230" as="sourcePoint" />
-            <mxPoint x="795" y="230" as="targetPoint" />
+            <mxPoint x="795" y="256" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="855" y="230" />
+              <mxPoint x="855" y="256" />
+            </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="msg_4" value="5: EvaluateResponse{dtwScore,quality}" style="html=1;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1">
@@ -121,10 +125,14 @@
             <mxPoint x="795" y="460" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="msg_9" value="10: avgDtwScore=average(strokes.dtwScore)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">
+        <mxCell id="msg_9" value="10: avgDtwScore=average(strokes.dtwScore)" style="html=1;endArrow=block;fontSize=11;rounded=0;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="795" y="500" as="sourcePoint" />
-            <mxPoint x="795" y="500" as="targetPoint" />
+            <mxPoint x="795" y="526" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="855" y="500" />
+              <mxPoint x="855" y="526" />
+            </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="msg_10" value="11: save(KanjiWritingAttempt)" style="html=1;endArrow=block;fontSize=11;" edge="1" parent="1">

@@ -15,9 +15,9 @@ Feature trải dài trên 3 tầng:
 
 | Tầng | Mô tả |
 |---|---|
-| **Frontend (React)** | [KanjiList.jsx](apps/frontend/src/pages/kanji/KanjiList.jsx) (danh sách) → [KanjiPractice.jsx](apps/frontend/src/pages/kanji/KanjiPractice.jsx) (chi tiết, 2 mode `learn`/`write`) dùng [KanjiWritingCanvas.jsx](apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx) để bắt nét vẽ, gọi API qua [studentService.js](apps/frontend/src/api/studentService.js) |
-| **Backend (Spring Boot)** | [StudentKanjiController.java](apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java) → [StudentKanjiServiceImpl](apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiServiceImpl.java) (danh sách/chi tiết) + [KanjiWritingServiceImpl](apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java) (thuật toán DTW) |
-| **Database** | Bảng `kanji` ([Kanji.java](apps/backend/src/main/java/com/jlpt/feature/learning/Kanji.java)), `kanji_writing_attempts` ([KanjiWritingAttempt.java](apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingAttempt.java)) |
+| **Frontend (React)** | [KanjiList.jsx](../../../apps/frontend/src/pages/kanji/KanjiList.jsx) (danh sách) → [KanjiPractice.jsx](../../../apps/frontend/src/pages/kanji/KanjiPractice.jsx) (chi tiết, 2 mode `learn`/`write`) dùng [KanjiWritingCanvas.jsx](../../../apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx) để bắt nét vẽ, gọi API qua [studentService.js](../../../apps/frontend/src/api/studentService.js) |
+| **Backend (Spring Boot)** | [StudentKanjiController.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java) → [StudentKanjiServiceImpl](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiServiceImpl.java) (danh sách/chi tiết) + [KanjiWritingServiceImpl](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java) (thuật toán DTW) |
+| **Database** | Bảng `kanji` ([Kanji.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Kanji.java)), `kanji_writing_attempts` ([KanjiWritingAttempt.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingAttempt.java)) |
 
 **Entry point**: route `/kanji` (danh sách) và `/kanji/:id` (chi tiết/luyện viết), cả 2 đăng ký tại `App.jsx:104-105`, bọc `PrivateRoute`.
 
@@ -31,27 +31,27 @@ Feature trải dài trên 3 tầng:
 
 | File | Vai trò | Loại |
 |---|---|---|
-| [KanjiList.jsx](apps/frontend/src/pages/kanji/KanjiList.jsx) | Trang danh sách Kanji theo level, modal xem nhanh chi tiết, nút reset tiến độ | Page Component |
-| [KanjiPractice.jsx](apps/frontend/src/pages/kanji/KanjiPractice.jsx) | Trang chi tiết 1 Kanji: mode `learn` (xem animation + thông tin) và mode `write` (luyện viết) | Page Component |
-| [KanjiGridPlayer.jsx](apps/frontend/src/components/kanji/KanjiGridPlayer.jsx) | Component demo animation viết chữ (Play/Pause/Replay), không chấm điểm | Component |
-| [KanjiStrokeLayer.jsx](apps/frontend/src/components/kanji/KanjiStrokeLayer.jsx) | SVG overlay: nét tương lai (ghost), nét hiện tại (guide), gợi ý hướng, animation đầu bút | Component |
-| [KanjiWritingCanvas.jsx](apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx) | Component chính luyện viết: dùng `hanzi-writer` chế độ quiz, bắt pointer path, gọi API evaluate-stroke/saveAttempt | Component |
-| [kanjiLookup.js](apps/frontend/src/utils/kanjiLookup.js) | Tiện ích tra cứu Kanji theo âm đọc + custom loader dữ liệu chữ Nhật cho `hanzi-writer` | Util |
-| [studentService.js](apps/frontend/src/api/studentService.js) | Tầng gọi API: `getKanjiList`, `getKanjiDetail`, `evaluateKanjiStroke`, `saveKanjiWritingAttempt` | API Service |
+| [KanjiList.jsx](../../../apps/frontend/src/pages/kanji/KanjiList.jsx) | Trang danh sách Kanji theo level, modal xem nhanh chi tiết, nút reset tiến độ | Page Component |
+| [KanjiPractice.jsx](../../../apps/frontend/src/pages/kanji/KanjiPractice.jsx) | Trang chi tiết 1 Kanji: mode `learn` (xem animation + thông tin) và mode `write` (luyện viết) | Page Component |
+| [KanjiGridPlayer.jsx](../../../apps/frontend/src/components/kanji/KanjiGridPlayer.jsx) | Component demo animation viết chữ (Play/Pause/Replay), không chấm điểm | Component |
+| [KanjiStrokeLayer.jsx](../../../apps/frontend/src/components/kanji/KanjiStrokeLayer.jsx) | SVG overlay: nét tương lai (ghost), nét hiện tại (guide), gợi ý hướng, animation đầu bút | Component |
+| [KanjiWritingCanvas.jsx](../../../apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx) | Component chính luyện viết: dùng `hanzi-writer` chế độ quiz, bắt pointer path, gọi API evaluate-stroke/saveAttempt | Component |
+| [kanjiLookup.js](../../../apps/frontend/src/utils/kanjiLookup.js) | Tiện ích tra cứu Kanji theo âm đọc + custom loader dữ liệu chữ Nhật cho `hanzi-writer` | Util |
+| [studentService.js](../../../apps/frontend/src/api/studentService.js) | Tầng gọi API: `getKanjiList`, `getKanjiDetail`, `evaluateKanjiStroke`, `saveKanjiWritingAttempt` | API Service |
 
 ### 2.2 Backend
 
 | File | Vai trò | Loại |
 |---|---|---|
-| [Kanji.java](apps/backend/src/main/java/com/jlpt/feature/learning/Kanji.java) | Entity JPA bảng `kanji` (nghĩa, âm on/kun, số nét, trạng thái duyệt) | Entity |
-| [StudentKanjiController.java](apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java) | REST Controller `/api/kanji`, `@PreAuthorize("hasRole('STUDENT')")`: list, detail, evaluate-stroke, attempt | Controller |
-| [StudentKanjiService.java](apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiService.java) | Interface: `getKanjiList`, `getKanjiDetail` | Service Interface |
-| [StudentKanjiServiceImpl.java](apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiServiceImpl.java) | Impl: danh sách phân trang kèm tiến độ, chi tiết kèm prev/next id | Service Impl |
-| [StudentKanjiRepository.java](apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiRepository.java) | Query theo level/status, tìm id kanji trước/sau cùng level | Repository |
-| [KanjiWritingService.java](apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingService.java) | Interface: `evaluateStroke` (stateless), `saveAttempt` (lưu DB) | Service Interface |
-| [KanjiWritingServiceImpl.java](apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java) | Impl thuật toán DTW: chấm chất lượng từng nét + lưu kết quả tổng hợp 1 lượt luyện | Service Impl |
-| [KanjiWritingAttempt.java](apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingAttempt.java) | Entity JPA bảng `kanji_writing_attempts` — 1 lượt luyện viết hoàn chỉnh | Entity |
-| [KanjiWritingAttemptRepository.java](apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingAttemptRepository.java) | Repository JPA thuần (không có custom query) | Repository |
+| [Kanji.java](../../../apps/backend/src/main/java/com/jlpt/feature/learning/Kanji.java) | Entity JPA bảng `kanji` (nghĩa, âm on/kun, số nét, trạng thái duyệt) | Entity |
+| [StudentKanjiController.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java) | REST Controller `/api/kanji`, `@PreAuthorize("hasRole('STUDENT')")`: list, detail, evaluate-stroke, attempt | Controller |
+| [StudentKanjiService.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiService.java) | Interface: `getKanjiList`, `getKanjiDetail` | Service Interface |
+| [StudentKanjiServiceImpl.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiServiceImpl.java) | Impl: danh sách phân trang kèm tiến độ, chi tiết kèm prev/next id | Service Impl |
+| [StudentKanjiRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiRepository.java) | Query theo level/status, tìm id kanji trước/sau cùng level | Repository |
+| [KanjiWritingService.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingService.java) | Interface: `evaluateStroke` (stateless), `saveAttempt` (lưu DB) | Service Interface |
+| [KanjiWritingServiceImpl.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java) | Impl thuật toán DTW: chấm chất lượng từng nét + lưu kết quả tổng hợp 1 lượt luyện | Service Impl |
+| [KanjiWritingAttempt.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingAttempt.java) | Entity JPA bảng `kanji_writing_attempts` — 1 lượt luyện viết hoàn chỉnh | Entity |
+| [KanjiWritingAttemptRepository.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingAttemptRepository.java) | Repository JPA thuần (không có custom query) | Repository |
 | dto/KanjiListResponse, KanjiItemResponse, KanjiDetailResponse | DTO danh sách/chi tiết Kanji (kèm `isCompleted`, prev/next) | DTO Response |
 | dto/KanjiWritingEvaluateRequest/Response | DTO request/response cho 1 nét vẽ (userPath, referencePath → dtwScore, quality, direction) | DTO Request/Response |
 | dto/KanjiWritingAttemptRequest/Response | DTO request/response cho 1 lượt luyện hoàn chỉnh (list stroke → finalQuality, avgDtwScore) | DTO Request/Response |
@@ -104,18 +104,18 @@ graph TD
 
 Luồng **"Student luyện viết 1 chữ Kanji từ đầu đến khi hoàn thành"** — luồng giá trị nhất vì thể hiện rõ thuật toán DTW:
 
-1. `KanjiList.jsx` fetch danh sách ([KanjiList.jsx:42-55](apps/frontend/src/pages/kanji/KanjiList.jsx#L42-L55)) → `getKanjiList` → `StudentKanjiController.getKanjiList` ([dòng 33-48](apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java#L33-L48)) → `StudentKanjiServiceImpl.getKanjiList` ([dòng 37-86](apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiServiceImpl.java#L37-L86)).
-2. Student bấm 1 thẻ Kanji → mở modal xem nhanh ([KanjiList.jsx:65-77](apps/frontend/src/pages/kanji/KanjiList.jsx#L65-L77)) gọi `getKanjiDetail` → `StudentKanjiServiceImpl.getKanjiDetail` ([dòng 89-137](apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiServiceImpl.java#L89-L137)).
-3. Bấm "Luyện tập" trong modal ([KanjiList.jsx:257-259](apps/frontend/src/pages/kanji/KanjiList.jsx#L257-L259)) → `navigate('/kanji/{id}')` → route `App.jsx:105` render `KanjiPractice`.
-4. `KanjiPractice` mount ở mode `learn` ([KanjiPractice.jsx:23-43](apps/frontend/src/pages/kanji/KanjiPractice.jsx#L23-L43)), gọi lại `getKanjiDetail(id)`, hiển thị `KanjiGridPlayer` (demo animation).
-5. Student bấm "Bắt đầu luyện viết" ([KanjiPractice.jsx:182-190](apps/frontend/src/pages/kanji/KanjiPractice.jsx#L182-L190)) → `setMode('write')` → render `KanjiWritingCanvas`.
+1. `KanjiList.jsx` fetch danh sách ([KanjiList.jsx:42-55](../../../apps/frontend/src/pages/kanji/KanjiList.jsx#L42-L55)) → `getKanjiList` → `StudentKanjiController.getKanjiList` ([dòng 33-48](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java#L33-L48)) → `StudentKanjiServiceImpl.getKanjiList` ([dòng 37-86](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiServiceImpl.java#L37-L86)).
+2. Student bấm 1 thẻ Kanji → mở modal xem nhanh ([KanjiList.jsx:65-77](../../../apps/frontend/src/pages/kanji/KanjiList.jsx#L65-L77)) gọi `getKanjiDetail` → `StudentKanjiServiceImpl.getKanjiDetail` ([dòng 89-137](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiServiceImpl.java#L89-L137)).
+3. Bấm "Luyện tập" trong modal ([KanjiList.jsx:257-259](../../../apps/frontend/src/pages/kanji/KanjiList.jsx#L257-L259)) → `navigate('/kanji/{id}')` → route `App.jsx:105` render `KanjiPractice`.
+4. `KanjiPractice` mount ở mode `learn` ([KanjiPractice.jsx:23-43](../../../apps/frontend/src/pages/kanji/KanjiPractice.jsx#L23-L43)), gọi lại `getKanjiDetail(id)`, hiển thị `KanjiGridPlayer` (demo animation).
+5. Student bấm "Bắt đầu luyện viết" ([KanjiPractice.jsx:182-190](../../../apps/frontend/src/pages/kanji/KanjiPractice.jsx#L182-L190)) → `setMode('write')` → render `KanjiWritingCanvas`.
 6. Student vẽ 1 nét: `KanjiWritingCanvas.jsx:87-117` bắt `pointerdown/move/up`, lưu `currentUserPathRef` (đã flip trục Y để khớp hệ tọa độ `hanzi-writer`).
-7. Thư viện `hanzi-writer` (bên thứ 3) tự xác định nét vừa vẽ đúng hay sai theo outline nội bộ → nếu đúng, callback `onCorrectStroke` ([KanjiWritingCanvas.jsx:151-174](apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx#L151-L174)) chạy: lấy `userPath` vừa vẽ + `referencePath` = median chuẩn tại nét đó → gọi `evaluateKanjiStroke`.
-8. `StudentKanjiController.evaluateStroke` ([dòng 63-69](apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java#L63-L69)) → `KanjiWritingServiceImpl.evaluateStroke` ([dòng 39-73](apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L39-L73)): downsample + normalize 2 path → `computeDtw` → `qualityFromDtw` → trả `quality` (perfect/good/ok/bad) hiển thị badge tức thời.
+7. Thư viện `hanzi-writer` (bên thứ 3) tự xác định nét vừa vẽ đúng hay sai theo outline nội bộ → nếu đúng, callback `onCorrectStroke` ([KanjiWritingCanvas.jsx:151-174](../../../apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx#L151-L174)) chạy: lấy `userPath` vừa vẽ + `referencePath` = median chuẩn tại nét đó → gọi `evaluateKanjiStroke`.
+8. `StudentKanjiController.evaluateStroke` ([dòng 63-69](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java#L63-L69)) → `KanjiWritingServiceImpl.evaluateStroke` ([dòng 39-73](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L39-L73)): downsample + normalize 2 path → `computeDtw` → `qualityFromDtw` → trả `quality` (perfect/good/ok/bad) hiển thị badge tức thời.
 9. Lặp lại bước 6-8 cho từng nét, kết quả tích lũy vào `strokeResRef.current[]` phía frontend.
-10. Khi đủ số nét, `hanzi-writer` gọi `onComplete` ([KanjiWritingCanvas.jsx:176-199](apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx#L176-L199)) → gộp toàn bộ `strokes[]` → gọi `saveKanjiWritingAttempt`.
-11. `StudentKanjiController.saveWritingAttempt` ([dòng 74-82](apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java#L74-L82)) → `KanjiWritingServiceImpl.saveAttempt` ([dòng 79-122](apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L79-L122)): tính `avgDtw` trung bình toàn bộ nét, `finalQuality`, lưu entity `KanjiWritingAttempt`.
-12. Kết quả trả về → `KanjiPractice.handleWritingComplete` ([dòng 47-56](apps/frontend/src/pages/kanji/KanjiPractice.jsx#L47-L56)) gọi `markProgress('kanji', kanjiId, 'completed', 100)` để đánh dấu tiến độ học.
+10. Khi đủ số nét, `hanzi-writer` gọi `onComplete` ([KanjiWritingCanvas.jsx:176-199](../../../apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx#L176-L199)) → gộp toàn bộ `strokes[]` → gọi `saveKanjiWritingAttempt`.
+11. `StudentKanjiController.saveWritingAttempt` ([dòng 74-82](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiController.java#L74-L82)) → `KanjiWritingServiceImpl.saveAttempt` ([dòng 79-122](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L79-L122)): tính `avgDtw` trung bình toàn bộ nét, `finalQuality`, lưu entity `KanjiWritingAttempt`.
+12. Kết quả trả về → `KanjiPractice.handleWritingComplete` ([dòng 47-56](../../../apps/frontend/src/pages/kanji/KanjiPractice.jsx#L47-L56)) gọi `markProgress('kanji', kanjiId, 'completed', 100)` để đánh dấu tiến độ học.
 
 ### 4.1 Sequence Diagram
 
@@ -162,7 +162,7 @@ sequenceDiagram
 
 ### 5.1 Thuật toán DTW cốt lõi (so khớp 2 đường nét)
 
-File: [KanjiWritingServiceImpl.java:128-144](apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L128-L144)
+File: [KanjiWritingServiceImpl.java:128-144](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L128-L144)
 
 ```java
 private double computeDtw(List<double[]> s1, List<double[]> s2) {
@@ -188,7 +188,7 @@ Giải thích: DTW cho phép so khớp 2 đường nét dù chúng có số đi�
 
 ### 5.2 Quy đổi điểm DTW sang mức chất lượng (ngưỡng cố định)
 
-File: [KanjiWritingServiceImpl.java:26-29, 191-196](apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L191-L196)
+File: [KanjiWritingServiceImpl.java:26-29, 191-196](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L191-L196)
 
 ```java
 private static final double THRESHOLD_PERFECT = 300.0;
@@ -206,7 +206,7 @@ Giải thích: dùng chung cho cả chấm từng nét (`evaluateStroke`) lẫn 
 
 ### 5.3 Frontend: gọi API ngay khi thư viện xác nhận 1 nét đúng
 
-File: [KanjiWritingCanvas.jsx:151-174](apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx#L151-L174)
+File: [KanjiWritingCanvas.jsx:151-174](../../../apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx#L151-L174)
 
 ```jsx
 onCorrectStroke: (strokeData) => {
@@ -228,7 +228,7 @@ Giải thích: **`hanzi-writer` quyết định đúng/sai nét** (đây là log
 
 ### 5.4 Backend: tính điểm trung bình toàn bộ nét khi lưu kết quả cuối
 
-File: [KanjiWritingServiceImpl.java:86-93](apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L86-L93) (theo mô tả agent khảo sát, dòng 86-93 nằm trong method `saveAttempt` 79-122)
+File: [KanjiWritingServiceImpl.java:86-93](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java#L86-L93) (theo mô tả agent khảo sát, dòng 86-93 nằm trong method `saveAttempt` 79-122)
 
 ```java
 double avgDtw = strokes.isEmpty()
@@ -264,16 +264,16 @@ Theo dõi dữ liệu **"đường nét Student vừa vẽ" (`userPath`)** xuyê
 
 | Bước | File | Function | Kết nối tới | Dữ liệu | Ghi chú |
 |---|---|---|---|---|---|
-| 1 | [KanjiList.jsx](apps/frontend/src/pages/kanji/KanjiList.jsx) | `fetchKanji()` (dòng 42-55) | `studentService.getKanjiList` | `{level, page, size}` | — |
-| 2 | [StudentKanjiServiceImpl.java](apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiServiceImpl.java) | `getKanjiList()` (dòng 37-86) | `StudentKanjiRepository` | `PageRequest`, progress map | `completedCount` đếm riêng toàn level, không chỉ trang hiện tại |
-| 3 | [KanjiList.jsx](apps/frontend/src/pages/kanji/KanjiList.jsx) | `openKanji()` (dòng 65-77) | `studentService.getKanjiDetail` | `kanjiId` | Mở modal xem nhanh |
-| 4 | [KanjiPractice.jsx](apps/frontend/src/pages/kanji/KanjiPractice.jsx) | mount (dòng 23-43) | `studentService.getKanjiDetail` | `id` (URL param) | Load lại chi tiết khi vào trang luyện tập |
-| 5 | [KanjiWritingCanvas.jsx](apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx) | `onDown/onMove/onUp` (dòng 87-117) | Nội bộ (ref) | Toạ độ pointer | Flip trục Y |
-| 6 | [KanjiWritingCanvas.jsx](apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx) | `onCorrectStroke` (dòng 151-174) | `studentService.evaluateKanjiStroke` | `{strokeIndex, userPath, referencePath}` | Gọi ngay sau khi `hanzi-writer` xác nhận đúng nét |
-| 7 | [KanjiWritingServiceImpl.java](apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java) | `evaluateStroke()` (dòng 39-73) | `computeDtw`, `qualityFromDtw` | `dtwScore`, `quality` | Stateless — không ghi DB |
-| 8 | [KanjiWritingCanvas.jsx](apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx) | `onComplete` (dòng 176-199) | `studentService.saveKanjiWritingAttempt` | `strokes[]` tích lũy | Đủ số nét mới gọi |
-| 9 | [KanjiWritingServiceImpl.java](apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java) | `saveAttempt()` (dòng 79-122) | `KanjiWritingAttemptRepository.save` | `avgDtw`, `finalQuality`, `strokeDetails` JSON | Ghi `kanji_writing_attempts` |
-| 10 | [KanjiPractice.jsx](apps/frontend/src/pages/kanji/KanjiPractice.jsx) | `handleWritingComplete()` (dòng 47-56) | `markProgress('kanji', ...)` (ngoài phạm vi 2 service Kanji) | `kanjiId` | Đánh dấu tiến độ học |
+| 1 | [KanjiList.jsx](../../../apps/frontend/src/pages/kanji/KanjiList.jsx) | `fetchKanji()` (dòng 42-55) | `studentService.getKanjiList` | `{level, page, size}` | — |
+| 2 | [StudentKanjiServiceImpl.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/StudentKanjiServiceImpl.java) | `getKanjiList()` (dòng 37-86) | `StudentKanjiRepository` | `PageRequest`, progress map | `completedCount` đếm riêng toàn level, không chỉ trang hiện tại |
+| 3 | [KanjiList.jsx](../../../apps/frontend/src/pages/kanji/KanjiList.jsx) | `openKanji()` (dòng 65-77) | `studentService.getKanjiDetail` | `kanjiId` | Mở modal xem nhanh |
+| 4 | [KanjiPractice.jsx](../../../apps/frontend/src/pages/kanji/KanjiPractice.jsx) | mount (dòng 23-43) | `studentService.getKanjiDetail` | `id` (URL param) | Load lại chi tiết khi vào trang luyện tập |
+| 5 | [KanjiWritingCanvas.jsx](../../../apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx) | `onDown/onMove/onUp` (dòng 87-117) | Nội bộ (ref) | Toạ độ pointer | Flip trục Y |
+| 6 | [KanjiWritingCanvas.jsx](../../../apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx) | `onCorrectStroke` (dòng 151-174) | `studentService.evaluateKanjiStroke` | `{strokeIndex, userPath, referencePath}` | Gọi ngay sau khi `hanzi-writer` xác nhận đúng nét |
+| 7 | [KanjiWritingServiceImpl.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java) | `evaluateStroke()` (dòng 39-73) | `computeDtw`, `qualityFromDtw` | `dtwScore`, `quality` | Stateless — không ghi DB |
+| 8 | [KanjiWritingCanvas.jsx](../../../apps/frontend/src/components/kanji/KanjiWritingCanvas.jsx) | `onComplete` (dòng 176-199) | `studentService.saveKanjiWritingAttempt` | `strokes[]` tích lũy | Đủ số nét mới gọi |
+| 9 | [KanjiWritingServiceImpl.java](../../../apps/backend/src/main/java/com/jlpt/feature/student/kanji/KanjiWritingServiceImpl.java) | `saveAttempt()` (dòng 79-122) | `KanjiWritingAttemptRepository.save` | `avgDtw`, `finalQuality`, `strokeDetails` JSON | Ghi `kanji_writing_attempts` |
+| 10 | [KanjiPractice.jsx](../../../apps/frontend/src/pages/kanji/KanjiPractice.jsx) | `handleWritingComplete()` (dòng 47-56) | `markProgress('kanji', ...)` (ngoài phạm vi 2 service Kanji) | `kanjiId` | Đánh dấu tiến độ học |
 
 ---
 

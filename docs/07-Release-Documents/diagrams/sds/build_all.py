@@ -48,19 +48,19 @@ build_class_diagram(
             "+ generateRefreshToken(actorType, actorId): String",
             "+ validateToken(token): boolean",
         ]},
-        {"id": "c6", "name": "AuthTokenRepository", "x": 40, "y": 300, "w": 300, "header_color": "#d5e8d4", "methods": [
+        {"id": "c6", "name": "AuthTokenRepository", "x": 1100, "y": 40, "w": 280, "header_color": "#d5e8d4", "methods": [
             "+ findByTokenHashAndTokenType(hash, type): Optional~AuthToken~",
         ]},
-        {"id": "c7", "name": "StudentUserRepository", "x": 40, "y": 420, "w": 300, "header_color": "#d5e8d4", "methods": []},
-        {"id": "c8", "name": "StaffUserRepository", "x": 40, "y": 520, "w": 300, "header_color": "#d5e8d4", "methods": []},
-        {"id": "c9", "name": "AdminUserRepository", "x": 40, "y": 620, "w": 300, "header_color": "#d5e8d4", "methods": []},
+        {"id": "c7", "name": "StudentUserRepository", "x": 1100, "y": 160, "w": 280, "header_color": "#d5e8d4", "methods": []},
+        {"id": "c8", "name": "StaffUserRepository", "x": 1100, "y": 280, "w": 280, "header_color": "#d5e8d4", "methods": []},
+        {"id": "c9", "name": "AdminUserRepository", "x": 1100, "y": 400, "w": 280, "header_color": "#d5e8d4", "methods": []},
     ],
     edges=[
         {"src": "c1", "tgt": "c2"}, {"src": "c1", "tgt": "c3"}, {"src": "c1", "tgt": "c4"},
         {"src": "c2", "tgt": "c5"}, {"src": "c2", "tgt": "c6"}, {"src": "c2", "tgt": "c7"},
         {"src": "c2", "tgt": "c8"}, {"src": "c2", "tgt": "c9"}, {"src": "c3", "tgt": "c7"},
     ],
-    page_w=1200, page_h=800,
+    page_w=1450, page_h=800,
 )
 
 build_sequence_diagram(
@@ -330,7 +330,11 @@ build_class_diagram(
     ],
     edges=[
         {"src": "c1", "tgt": "c2"}, {"src": "c2", "tgt": "c3"}, {"src": "c2", "tgt": "c6"},
-        {"src": "c4", "tgt": "c5"}, {"src": "c5", "tgt": "c6"}, {"src": "c2", "tgt": "c7"}, {"src": "c5", "tgt": "c7"},
+        {"src": "c4", "tgt": "c5"}, {"src": "c5", "tgt": "c6"},
+        # c5 (SupportTicketService) sits directly between c2 and c7 in the same column;
+        # route c2->c7 around the right side of c5 instead of straight through it.
+        {"src": "c2", "tgt": "c7", "exit": (1, 0.85), "entry": (1, 0.3)},
+        {"src": "c5", "tgt": "c7"},
     ],
     page_w=1300, page_h=750,
 )

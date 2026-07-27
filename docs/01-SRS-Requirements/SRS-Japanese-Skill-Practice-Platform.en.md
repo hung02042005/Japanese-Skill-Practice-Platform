@@ -107,7 +107,7 @@ Manage users, settings, subscriptions, reports, and notification rules.
 | UC-10 | Take JLPT Mock Test | Assessment | Take timed mock exams; backend grades and stores a new attempt. |
 | UC-11 | Practice & Quiz | Assessment | Take lesson/topic quizzes; backend calculates score and returns results. |
 | UC-12 | Flashcard Learning | SRS Review | Review flashcards using spaced repetition and update the next review schedule. |
-| UC-13 | Speaking Practice & AI Grading | AI Skills | Submit speaking audio, receive a job_id, get AI suggestions, and allow Staff override. |
+| UC-13 | Speaking Practice | AI Skills | Submit speaking audio, receive a submission id, and get the score and feedback once Staff grades it. |
 | UC-14 | Reading Practice | Skills Practice | Practice reading comprehension by level and store results. |
 | UC-15 | Listening Practice | Skills Practice | Practice listening comprehension with audio and linked questions. |
 | UC-16 | Dictionary & Search | Learning Tools | Search vocabulary, grammar, and Kanji with level filters. |
@@ -305,15 +305,15 @@ Manage users, settings, subscriptions, reports, and notification rules.
 
 ### 2.4 AI Skills
 
-#### 2.4.1 UC-13 Speaking Practice & AI Grading
+#### 2.4.1 UC-13 Speaking Practice
 
-| Primary Actors | Student | Secondary Actors | AI Speech Service, Staff |
+| Primary Actors | Student | Secondary Actors | Staff |
 | --- | --- | --- | --- |
-| Description | A Student records or uploads an audio answer for a speaking exercise. The system sends the audio to an AI service in the background and later shows an AI suggested score. A Staff member can review and confirm the final score. |  |  |
+| Description | A Student records or uploads an audio answer for a speaking exercise and submits it for grading. A Staff member listens to the audio and gives the final score and feedback — there is no automatic AI grading. |  |  |
 | Preconditions | The audio file is valid (right format and size). The speaking lesson is published. |  |  |
-| Postconditions | A submission record is saved. Its AI status is always clear (PENDING, PROCESSING, DONE, or FAILED), so the Student always knows what is happening. |  |  |
-| Normal Sequence/Flow | 1. The Student records or uploads an audio file for the speaking task.<br>2. The Student clicks Submit.<br>3. The system saves the audio file and creates a job with status PENDING.<br>4. The system replies to the Student right away with the job_id, without making the Student wait.<br>5. In the background, the system sends the audio to the AI speech service.<br>6. The AI service returns a suggested score.<br>7. The system updates the job status to DONE and saves the AI suggested score.<br>8. The Student checks the result by refreshing the page (polling).<br>9. A Staff member can open the submission, listen to the audio, and confirm or change the final score. |  |  |
-| Alternative Sequences/Flows | Alt 1 - The AI service is slow or fails: The system waits up to a timeout, then tries again (up to 3 times). If it still fails, the job status becomes FAILED and the Student sees a clear message, not a blank screen.<br>Alt 2 - Wrong file type: The system rejects the file before upload and explains which formats are allowed.<br>Alt 3 - Staff changes the AI score: The Staff member can override the AI suggested score with their own final score and a comment. |  |  |
+| Postconditions | A submission record is saved with status PENDING. Once a Staff member grades it, the status becomes GRADED (or REJECTED if the submission is invalid), so the Student always knows what is happening. |  |  |
+| Normal Sequence/Flow | 1. The Student records or uploads an audio file for the speaking task.<br>2. The Student clicks Submit.<br>3. The system validates the file, saves the audio, and creates a submission with status PENDING.<br>4. The system replies to the Student right away with the submission id, without making the Student wait for grading.<br>5. The Student checks progress by refreshing the page (polling); the status stays PENDING until a Staff member reviews it.<br>6. A Staff member opens the submission, listens to the audio, and enters a score and feedback.<br>7. The system saves the score and feedback, sets the status to GRADED, and notifies the Student.<br>8. The Student views the final score and feedback. |  |  |
+| Alternative Sequences/Flows | Alt 1 - Wrong file type: The system rejects the file before upload and explains which formats are allowed.<br>Alt 2 - Submission cannot be graded: The Staff member rejects the submission (for example, silent or inaudible audio); the status becomes REJECTED and the Student sees a clear reason instead of a blank screen.<br>Alt 3 - Staff updates a score: A Staff member can correct a previously entered score or feedback; the system keeps a record of who graded it and when. |  |  |
 
 #### 2.4.2 UC-20 AI Handwriting Practice
 
