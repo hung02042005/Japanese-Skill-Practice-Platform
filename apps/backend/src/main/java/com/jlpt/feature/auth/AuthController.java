@@ -35,8 +35,8 @@ public class AuthController {
     @PostMapping("/check-account-type")
     public ResponseEntity<ApiResponse<AccountTypeResponse>> checkAccountType(
             @Valid @RequestBody CheckAccountTypeRequest request, HttpServletRequest httpRequest) {
-        AccountTypeResponse response = authenticationService.checkAccountType(request.getEmail(),
-                httpRequest.getRemoteAddr());
+        AccountTypeResponse response =
+                authenticationService.checkAccountType(request.getEmail(), httpRequest.getRemoteAddr());
         return ResponseEntity.ok(ApiResponse.success("OK", response));
     }
 
