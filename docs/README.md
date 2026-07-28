@@ -51,6 +51,7 @@ Tài liệu được tổ chức theo **vòng đời phát triển phần mềm 
 | [database-design/JLPT_database.md](02-SDD-Architecture/database-design/JLPT_database.md) | Thiết kế CSDL nền tảng |
 | [database-design/MYSQL_MIGRATION_PLAN.md](02-SDD-Architecture/database-design/MYSQL_MIGRATION_PLAN.md) | Kế hoạch migration SQL Server → MySQL 8 (xem ADR-009) |
 | [ui-ux-design/DESIGN.md](02-SDD-Architecture/ui-ux-design/DESIGN.md) | Hệ thống thiết kế UI/UX (Hanami Theme) |
+| [feat_flow/README.md](02-SDD-Architecture/feat_flow/README.md) | Phân tích luồng chi tiết từng tính năng (có index & nhóm theo role) |
 
 ## 03 — Interface Specs · Đặc tả giao diện & tính năng
 
@@ -147,12 +148,17 @@ Tài liệu được tổ chức theo **vòng đời phát triển phần mềm 
 | [THESIS_DEFENSE_QNA.md](06-Management/THESIS_DEFENSE_QNA.md) | Kịch bản & câu hỏi bảo vệ đồ án |
 | [skills/codegraph_prompts.md](06-Management/skills/codegraph_prompts.md) | Bộ prompt dùng CodeGraph |
 | [skills/sql-performance.md](06-Management/skills/sql-performance.md) | Hướng dẫn tối ưu SQL (MySQL 8) |
+| [implementation_plan.md](06-Management/implementation_plan.md) | Báo cáo audit & kế hoạch tối ưu nền tảng |
 
-## Ở gốc `docs/`
+## 07 — Release Documents
 
-| File | Nội dung |
+Tài liệu bàn giao bản `.docx` + sơ đồ nguồn.
+
+| File / Thư mục | Nội dung |
 |---|---|
-| [implementation_plan.md](implementation_plan.md) | Báo cáo audit & kế hoạch tối ưu nền tảng |
+| `RDS_Document.docx` · `SDS_Document.docx` · `SDS_Document_v2.docx` · `2_SDS Document.docx` | Bản bàn giao RDS / SDS (xuất từ template) |
+| [diagrams/](07-Release-Documents/diagrams/) | Sơ đồ nguồn `.drawio` + ảnh xuất `.png` — thư mục con `rds/` và `sds/` |
+| [scripts/](07-Release-Documents/scripts/) | Script Python sinh tài liệu `.docx` (chạy từ **repo root**, vd `python docs/07-Release-Documents/scripts/build_sds.py`) |
 
 ---
 
@@ -162,5 +168,7 @@ Các điểm cần dọn dẹp tiếp — chưa xử lý để tránh mất dữ
 
 - **File "MOVED":** [feat-flashcard/SPEC.md](03-Interface-Specs/feature-specs/backend/feat-flashcard/SPEC.md) chỉ là con trỏ "đã chuyển"; nội dung thật ở [feat-flashcard-srs/](03-Interface-Specs/feature-specs/backend/feat-flashcard-srs/SPEC.md). Cân nhắc gộp/xóa.
 - **Đặt tên chưa nhất quán:** một số file dùng tiền tố theo người (`SPEC_NGUOI4_*`) hoặc dính liền (`MASTERFrontend-*`) thay vì theo feature. Không cấp bách, nhưng nên chuẩn hóa dần.
+- **File `-legacy` trong `feat_flow/`:** đã chuẩn hóa tên toàn bộ `feat_flow/` sang kebab-case; các bản phân tích cũ trùng chủ đề được gắn hậu tố `-legacy`. Xem [feat_flow/README.md § Bản legacy / nghi trùng](02-SDD-Architecture/feat_flow/README.md#-bản-legacy--nghi-trùng) để rà và xóa dứt điểm khi đã chắc chắn.
+- **Docx nghi trùng:** `1_SRS_… .docx` (mục 01) và `2_SDS Document.docx` (mục 07) là bản `.docx` cũ có thể trùng với `SRS-*.docx` / `SDS_Document*.docx` hiện hành; đã dời về đúng mục nhưng **chưa xóa** — cần rà thủ công. `SDS_Document_v2.docx` tồn tại ở **cả** `01-SRS-Requirements/` lẫn `07-Release-Documents/` (khác kích thước) — cần xác nhận bản nào là bản đúng.
 
 > Khi thêm/xóa/di chuyển file trong `docs/`, hãy cập nhật lại file `README.md` này để bản đồ luôn khớp thực tế.

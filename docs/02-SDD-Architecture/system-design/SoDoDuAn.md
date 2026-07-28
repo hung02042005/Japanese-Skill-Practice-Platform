@@ -126,7 +126,7 @@
 | | │   └── [THESIS_DEFENSE_QNA.md](../../06-Management/THESIS_DEFENSE_QNA.md) | Bộ 50+ Câu hỏi & Đáp án Phản biện Bảo vệ Đồ án |
 | | ├── **[07-Release-Documents/](../../07-Release-Documents)** | **Tài liệu đóng gói phát hành các phiên bản** |
 | | ├── [README.md](../../README.md) | Tổng quan hệ thống tài liệu |
-| | └── [implementation_plan.md](../../implementation_plan.md) | Kế hoạch thực thi phát triển hệ thống |
+| | └── [implementation_plan.md](../../06-Management/implementation_plan.md) | Kế hoạch thực thi phát triển hệ thống |
 | **📁 [graphify-out/](../../../graphify-out)** | [graphify-out/](../../../graphify-out) | Kết quả phân tích Knowledge Graph toàn bộ codebase |
 | **📁 [node_modules/](../../../node_modules)** | [node_modules/](../../../node_modules) | Thư viện và dependencies Node.js cài đặt ở Root |
 | **📁 [postman/](../../../postman)** | [postman/](../../../postman) | Thư mục lưu trữ Postman Collections & Environments xuất khẩu |
