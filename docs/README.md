@@ -156,7 +156,7 @@ Tài liệu bàn giao bản `.docx` + sơ đồ nguồn.
 
 | File / Thư mục | Nội dung |
 |---|---|
-| `RDS_Document.docx` · `SDS_Document.docx` · `SDS_Document_v2.docx` · `2_SDS Document.docx` | Bản bàn giao RDS / SDS (xuất từ template) |
+| `RDS_Document.docx` · `SDS_Document.docx` · `SDS_Document_v2.docx` | Bản bàn giao RDS / SDS (xuất từ template) |
 | [diagrams/](07-Release-Documents/diagrams/) | Sơ đồ nguồn `.drawio` + ảnh xuất `.png` — thư mục con `rds/` và `sds/` |
 | [scripts/](07-Release-Documents/scripts/) | Script Python sinh tài liệu `.docx` (chạy từ **repo root**, vd `python docs/07-Release-Documents/scripts/build_sds.py`) |
 
@@ -168,7 +168,8 @@ Các điểm cần dọn dẹp tiếp — chưa xử lý để tránh mất dữ
 
 - **File "MOVED":** [feat-flashcard/SPEC.md](03-Interface-Specs/feature-specs/backend/feat-flashcard/SPEC.md) chỉ là con trỏ "đã chuyển"; nội dung thật ở [feat-flashcard-srs/](03-Interface-Specs/feature-specs/backend/feat-flashcard-srs/SPEC.md). Cân nhắc gộp/xóa.
 - **Đặt tên chưa nhất quán:** một số file dùng tiền tố theo người (`SPEC_NGUOI4_*`) hoặc dính liền (`MASTERFrontend-*`) thay vì theo feature. Không cấp bách, nhưng nên chuẩn hóa dần.
-- **File `-legacy` trong `feat_flow/`:** đã chuẩn hóa tên toàn bộ `feat_flow/` sang kebab-case; các bản phân tích cũ trùng chủ đề được gắn hậu tố `-legacy`. Xem [feat_flow/README.md § Bản legacy / nghi trùng](02-SDD-Architecture/feat_flow/README.md#-bản-legacy--nghi-trùng) để rà và xóa dứt điểm khi đã chắc chắn.
-- **Docx nghi trùng:** `1_SRS_… .docx` (mục 01) và `2_SDS Document.docx` (mục 07) là bản `.docx` cũ có thể trùng với `SRS-*.docx` / `SDS_Document*.docx` hiện hành; đã dời về đúng mục nhưng **chưa xóa** — cần rà thủ công. `SDS_Document_v2.docx` tồn tại ở **cả** `01-SRS-Requirements/` lẫn `07-Release-Documents/` (khác kích thước) — cần xác nhận bản nào là bản đúng.
+- **`feat_flow/` đã dọn:** chuẩn hóa toàn bộ tên sang kebab-case; các bản phân tích cũ trùng chủ đề (thế hệ template 7 mục) đã được **xóa**, mỗi chủ đề chỉ còn một tài liệu hiện hành. Chi tiết: [feat_flow/README.md](02-SDD-Architecture/feat_flow/README.md).
+- **Docx trùng đã xóa:** `2_SDS Document.docx` (byte-hệt `07/SDS_Document_v2.docx`) và bản `RDS_Document.docx` thừa ở `01/` (byte-hệt `07/RDS_Document.docx`) đã được xóa.
+- **Docx còn cần rà thủ công (khác version, không xóa tự động):** `01-SRS-Requirements/1_SRS_SOFTWARE REQUIREMENT SPECIFICATION.docx` khác nội dung với `SRS-*.vi/en.docx`; và `SDS_Document_v2.docx` tồn tại ở **cả** `01-SRS-Requirements/` lẫn `07-Release-Documents/` nhưng **khác nội dung** (khác hash) — cần người xác nhận bản nào đúng rồi xóa bản thừa.
 
 > Khi thêm/xóa/di chuyển file trong `docs/`, hãy cập nhật lại file `README.md` này để bản đồ luôn khớp thực tế.

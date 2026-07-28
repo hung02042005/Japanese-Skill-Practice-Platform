@@ -3,7 +3,7 @@
 > Thư mục chứa các tài liệu **phân tích cấu trúc – luồng – kết nối** của từng tính năng (đọc trực tiếp từ source code).
 > File được **giữ phẳng** (không chia thư mục con) vì workflow [`analyze-feature`](../../../.agents/workflows/analyze-feature.md) ghi file mới trực tiếp vào đây, và các file **tham chiếu chéo lẫn nhau** theo tên. Nhóm logic dưới đây chỉ để tra cứu.
 
-Quy ước tên: `<chủ-đề>-feature-analysis.md` (kebab-case). Hậu tố `-legacy` = bản phân tích cũ/rút gọn hơn của cùng chủ đề — xem [§ Bản legacy / nghi trùng](#-bản-legacy--nghi-trùng).
+Quy ước tên: `<chủ-đề>-feature-analysis.md` (kebab-case).
 
 ---
 
@@ -11,19 +11,18 @@ Quy ước tên: `<chủ-đề>-feature-analysis.md` (kebab-case). Hậu tố `-
 
 | File | Nội dung |
 |---|---|
-| [authentication-feature-analysis.md](authentication-feature-analysis.md) | Xác thực (đăng nhập/JWT) — bản đầy đủ |
-| [authentication-feature-analysis-legacy.md](authentication-feature-analysis-legacy.md) | 🕰️ Bản cũ của Auth |
+| [authentication-feature-analysis.md](authentication-feature-analysis.md) | Xác thực (đăng nhập/JWT) |
 
 ## 🛠️ Admin
 
 | File | Nội dung |
 |---|---|
-| [admin-dashboard-feature-analysis.md](admin-dashboard-feature-analysis.md) · [legacy](admin-dashboard-feature-analysis-legacy.md) | Trang tổng quan quản trị |
-| [admin-reports-feature-analysis.md](admin-reports-feature-analysis.md) · [legacy](admin-reports-feature-analysis-legacy.md) | Analytics & Reporting |
-| [admin-panel-login-feature-analysis.md](admin-panel-login-feature-analysis.md) · [legacy](admin-panel-login-feature-analysis-legacy.md) | Đăng nhập Admin Panel |
-| [admin-user-management-feature-analysis.md](admin-user-management-feature-analysis.md) · [legacy](admin-user-management-feature-analysis-legacy.md) | Quản lý người dùng |
-| [admin-notification-rules-feature-analysis.md](admin-notification-rules-feature-analysis.md) · [legacy](admin-notification-rules-feature-analysis-legacy.md) | Quy tắc thông báo tự động |
-| [admin-settings-email-security-feature-analysis.md](admin-settings-email-security-feature-analysis.md) · [legacy](admin-settings-email-security-feature-analysis-legacy.md) | Cài đặt hệ thống (Email & Bảo mật) |
+| [admin-dashboard-feature-analysis.md](admin-dashboard-feature-analysis.md) | Trang tổng quan quản trị |
+| [admin-reports-feature-analysis.md](admin-reports-feature-analysis.md) | Analytics & Reporting |
+| [admin-panel-login-feature-analysis.md](admin-panel-login-feature-analysis.md) | Đăng nhập Admin Panel |
+| [admin-user-management-feature-analysis.md](admin-user-management-feature-analysis.md) | Quản lý người dùng |
+| [admin-notification-rules-feature-analysis.md](admin-notification-rules-feature-analysis.md) | Quy tắc thông báo tự động |
+| [admin-settings-email-security-feature-analysis.md](admin-settings-email-security-feature-analysis.md) | Cài đặt hệ thống (Email & Bảo mật) |
 | [admin-system-feature-analysis.md](admin-system-feature-analysis.md) | Bảo trì hệ thống, audit log (điểm nối chung của nhiều màn Admin) |
 
 ## 👔 Staff
@@ -31,8 +30,6 @@ Quy ước tên: `<chủ-đề>-feature-analysis.md` (kebab-case). Hậu tố `-
 | File | Nội dung |
 |---|---|
 | [staff-student-management-feature-analysis.md](staff-student-management-feature-analysis.md) | Staff quản lý tài khoản học viên (của người khác) |
-| [staff-student-management-feature-analysis-legacy-1.md](staff-student-management-feature-analysis-legacy-1.md) | 🕰️ Bản cũ (`manage_student_accounts`) |
-| [staff-student-management-feature-analysis-legacy-2.md](staff-student-management-feature-analysis-legacy-2.md) | 🕰️ Bản cũ (`manager_student_account`) |
 | [suspend-activate-account-feature-analysis.md](suspend-activate-account-feature-analysis.md) | Tạm khoá / mở khoá tài khoản |
 
 ## 🎓 Student
@@ -73,19 +70,4 @@ Thư mục [`feature-StaffCRUD/`](feature-StaffCRUD/): luồng tạo nội dung 
 
 ---
 
-## 🔎 Bản legacy / nghi trùng
-
-Trong quá trình dọn dẹp phát hiện **2 thế hệ** tài liệu phân tích cùng chủ đề: bản mới (đầy đủ, tiêu đề *"Phân Tích Feature…"*) và bản cũ/rút gọn (tiêu đề tiếng Anh *"… Feature Analysis"*). Theo yêu cầu, **không gộp/xóa nội dung** — bản cũ được đổi tên `-legacy` để bạn tự rà soát và quyết định.
-
-| Chủ đề | Bản hiện hành | Bản legacy (tên gốc) |
-|---|---|---|
-| Auth | `authentication-feature-analysis.md` | `authentication-feature-analysis-legacy.md` (gốc `auth_feature_analysis.md`) |
-| Admin dashboard | `admin-dashboard-feature-analysis.md` | `…-legacy.md` (gốc `admin_dashboard_…`) |
-| Admin reports | `admin-reports-feature-analysis.md` | `…-legacy.md` (gốc `admin_reports_…`) |
-| Admin login | `admin-panel-login-feature-analysis.md` | `admin-panel-login-…-legacy.md` (gốc `admin_login_…`) |
-| Admin user mgmt | `admin-user-management-feature-analysis.md` | `…-legacy.md` (gốc `user_management_…`) |
-| Notification rules | `admin-notification-rules-feature-analysis.md` | `…-legacy.md` (gốc `notification_rules_…`) |
-| Admin settings | `admin-settings-email-security-feature-analysis.md` | `…-legacy.md` (gốc `admin_settings_…`) |
-| Staff quản lý HV | `staff-student-management-feature-analysis.md` | `…-legacy-1.md` (gốc `manage_student_accounts_…`), `…-legacy-2.md` (gốc `manager_student_account_…`) |
-
-> ✅ **Việc cần làm (bạn quyết định):** với mỗi cặp trên, xác nhận bản `-legacy` đã bị bản hiện hành thay thế hoàn toàn hay chưa; nếu rồi thì `git rm` bản legacy để dứt điểm.
+> 🧹 **Đã dọn:** trước đây thư mục có 2 thế hệ phân tích cùng chủ đề (bản mới đầy đủ + bản cũ rút gọn theo template 7 mục). Các bản cũ trùng chủ đề đã được **xóa** (còn khôi phục được từ lịch sử git). Mỗi chủ đề nay chỉ còn **một** tài liệu phân tích hiện hành ở trên.
