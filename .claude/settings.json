@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -File tools/hooks/record-codegraph-usage.ps1"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__codegraph.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -File tools/hooks/record-codegraph-usage.ps1"
+          }
+        ]
+      }
+    ]
+  }
+}

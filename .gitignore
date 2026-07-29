@@ -31,7 +31,12 @@ backend_logs.txt
 graphify-out/
 
 # Local tooling & personal docs (không commit)
-.claude/
+# Ngoại lệ: .claude/settings.json là hook dùng CHUNG cho cả team (ManagementToken
+# usage tracking - xem docs/06-Management/skills/management-token-usage.md), nên
+# được commit; các file cá nhân khác trong .claude/ (settings.local.json, cache...)
+# vẫn bị ignore như cũ.
+.claude/*
+!.claude/settings.json
 docs/.obsidian/
 history chat/
 APHL_SEP490_G78_APHL_Report3_SRS.pdf
